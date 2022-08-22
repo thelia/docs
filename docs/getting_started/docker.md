@@ -3,8 +3,7 @@ title: Dockerize your Thelia
 sidebar_position: 6
 ---
 
-Since version 2.2, a docker configuration is provided in the repository of Thelia. It uses docker-compose. You can copy it for older version of Thelia it will works exactly.
-You can also copy it in thelia-project.
+A docker configuration is provided in the repository of Thelia. It uses docker-compose.
 
 It requires obviously [docker](https://docker.com/) and [docker-compose](http://docs.docker.com/compose/)
 
@@ -31,7 +30,7 @@ docker exec -it thelia_web_1 php composer.phar install
 
 ```thelia_web_1``` is the name of your main container. run ```docker-compose``` if your container name is different.
 
-As you can see, you use Thelia exactly if you have all the php/apache/mysql stack installed on your machine. This configuration contains xdebug so you can also use the ste by step feature.
+You can now use Thelia exactly as if you have all the php/apache/mysql stack installed on your machine. This configuration contains xdebug so you can also use the ste by step feature.
 
 ## Database information
 
