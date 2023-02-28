@@ -7,36 +7,69 @@ A docker configuration is provided in the repository of Thelia. It uses docker-c
 
 It requires obviously [docker](https://docker.com/) and [docker-compose](http://docs.docker.com/compose/)
 
-## start the containers
+## Get the project
 
-Simply run : 
+### With composer
 
-```
-docker-compose up -d
-```
+Run the composer command shown in the [dedicated page](/docs/getting_started/Installation).
 
-tip : create an alias for docker-compose, it's boring to write it all the time
+### Or download the archive
 
-## How to use it
+You can download the archive from official [releases pages](https://github.com/thelia/thelia/releases). Then, you will need to execute this command at root path:
 
-All the script are launched through docker. For examples : 
-
-```
-docker exec -it thelia_web_1 php Thelia cache:clear
-docker exec -it thelia_web_1 php setup/faker.php
-docker exec -it thelia_web_1 unit-tests.sh
-docker exec -it thelia_web_1 php composer.phar install
+``` 
+composer install
 ```
 
-```thelia_web_1``` is the name of your main container. run ```docker-compose``` if your container name is different.
+## Run docker
 
-You can now use Thelia exactly as if you have all the php/apache/mysql stack installed on your machine. This configuration contains xdebug so you can also use the ste by step feature.
+First, copy and paste content from file `.env.docker` to `.env` (at the beginning of the file).
 
-## Database information
+A script has been written to execute everything you need for docker. Just run this command from a terminal :
 
-* host : mariaDB
-* login : root
-* password : toor
+``` 
+bash ./start-docker.sh
+```
+
+If you want demo datas, add `-demo` argument to the command.
+
+*Sometimes, database connection fail and ask you connection information. Simply stop the script with `CTRL+C` then run again the script.*
+
+It will ask you a template name, you can write `modern` or `default`.
+
+If you have permission errors at the end of the execution or in the browser, simply run this from your terminal :
+
+``` 
+sudo chmod -R 777 var/log
+sudo chmod -R 777 var/cache
+sudo chmod -R 777 web
+```
+
+Your website should be accessible here : http://localhost:8080
+
+## PHP command
+
+To be able to run PHP command, you first need to execute this if you need :
+
+``` 
+docker-compose exec php-fpm bash
+```
+
+You will be inside the php docker container.
+You can now simply run commands like this :
+
+``` 
+php Thelia c:c
+php Thelia admin:create
+php local/setup/import.php
+``` 
+
+## Shut down docker
+
+Run this command from your root path if you need to stop your docker containers:
+``` 
+docker-compose down
+```
 
 
 ## How to change the configuration
