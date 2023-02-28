@@ -15,7 +15,7 @@ Run the composer command shown in the [dedicated page](/docs/getting_started/Ins
 
 ### Or download the archive
 
-You can download the archive from official [releases pages](https://github.com/thelia/thelia/releases). Then, you will need to execute this command at root path:
+You can download the archive from official [releases pages](https://github.com/thelia/thelia-project/releases). Then, you will need to execute this command at root path:
 
 ``` 
 composer install
