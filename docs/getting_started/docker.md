@@ -30,7 +30,7 @@ docker exec -it thelia_web_1 php composer.phar install
 
 ```thelia_web_1``` is the name of your main container. run ```docker-compose``` if your container name is different.
 
-You can now use Thelia exactly as if you have all the php/apache/mysql stack installed on your machine. This configuration contains xdebug so you can also use the ste by step feature.
+You can now use Thelia exactly as if you have all the php/apache/mysql stack installed on your machine. This configuration contains xdebug so you can also use the step by step feature.
 
 ## Database information
 
