@@ -53,9 +53,9 @@ You should execute this command at the root directory of your Thelia website :
 
 ```sh
 # generates classes
-bin/propel build -v --input-dir=local/config/ --output-dir=core/lib/ --enable-identifier-quoting
+vendor/thelia/propel/bin/propel build -v --input-dir=local/config/ --output-dir=core/lib/ --enable-identifier-quoting
 # generates thelia.sql
-bin/propel sql:build -v --input-dir=local/config/ --output-dir=setup/
+vendor/thelia/propel/bin/propel sql:build -v --input-dir=local/config/ --output-dir=setup/
 rm setup/sqldb.map
 ```
 
