@@ -18,6 +18,7 @@ Plus the [global arguments](./global_arguments)
 
 | Variable        | Value                 |
 | :-------------  | :-------------------- |
+| $EMAIL     	  | the admin email       |
 | $FIRSTNAME	  | the admin firstname   |
 | $ID	          | the admin id          |
 | $LASTNAME	      | the admin lastname    |

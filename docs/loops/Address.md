@@ -14,6 +14,7 @@ Address loop lists address addresses.
 | exclude       | A single or a list of address ids to exclude.                                              |                 | exclude="456,123"                 |
 | id            | A single or a list of address ids.                                                         |                 |  id="2", id="1,4,7"               |
 
+
 Plus the [global arguments](./global_arguments)
 
 ## Outputs
@@ -34,6 +35,7 @@ Plus the [global arguments](./global_arguments)
 | $LABEL	                                                            | the address label                                                                     |
 | $LASTNAME	                                                            | the address lastname                                                                  |
 | $PHONE	                                                            | the address phone                                                                     |
+| $STATE	                                                            |                                                                                       |
 | $TITLE	                                                            | the address title which might be use in [title loop](./Title)                         |
 | $ZIPCODE                                                              | the address zipcode                                                                   |
 
