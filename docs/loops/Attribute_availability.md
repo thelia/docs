@@ -12,11 +12,10 @@ Attribute availability loop lists attribute availabilities (e.g., attribute valu
 | attribute      | A single or a list of attribute ids. | | id="2", id="1,4,7" |
 | exclude      | A single or a list of attribute availability ids to exclude. | | exclude="456,123" |
 | id      | A single or a list of attribute availability ids. | |  id="2", id="1,4,7" |
-| lang      | A lang id | |  lang="1" |
 | order       | A list of values <br/> [Expected values](#attribute-av-order-possible-values) | manual | order="alpha_reverse" |
 | product      | A product ID. If present, only attribute values that are part of this product's combinations are returned | |  product="279" |
 
-Plus the [global arguments](./global_arguments)
+Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
 
 ## Outputs
 
@@ -40,4 +39,5 @@ Plus the [global outputs](./global_outputs)
 | Ascending value | Descending value  | Sorted fields |
 |-----------------|-------------------|:--------------|
 | alpha           | alpha_reverse     | title         |
+| id              | id_reverse        |               |
 | manual          | manual_reverse    |               |

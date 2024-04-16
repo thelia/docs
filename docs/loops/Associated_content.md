@@ -21,6 +21,8 @@ Associated content loop lists associated contents of a product or a category. It
 | Variable                                                                           | Value                           |
 | :--------------------------------------------------------------------------------  | :------------------------------ |
 | $CONTENT_ID	                                                                     | the associated content id       |
+| $ID	                                                                             |                                 |
+| $POSITION	                                                                         |                                 |
 | all [content loop](./Content) outputs, except ID, which is the ID of the relation. |                                 |
 
 ## Order possible values {#ass-content-order-possible-values}

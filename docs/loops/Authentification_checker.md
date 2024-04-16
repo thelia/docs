@@ -15,6 +15,8 @@ You may check in the front office if an administrator is logged in, and perform 
 | resource       | A comma separated list of resources |  |  |
 | role *       | A comma separated list of user roles |  |  role="ADMIN" or can be role="CUSTOMER" |
 
+Plus the [global arguments](./global_arguments)
+
 ## Examples
 
 I want to check if current administrator is allowed tu use the back-office search function.
