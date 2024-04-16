@@ -2,7 +2,7 @@
 title: Generic
 ---
 
-Generic loop can return any table present in your database and configured with propel. This loop is often useful on your own module table because most of the Thelia table already have dedicated loop.     
+Generic loop can return any table present in your database and configured with propel. This loop is often useful on your own module table because most of the Thelia table already have dedicated loop.  
 `{loop type="generic" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#area-arguments}
@@ -13,6 +13,7 @@ Generic loop can return any table present in your database and configured with p
 | filters    | A single or a list of filters to apply on columns in this format <code>column_name:value1,value2&#124;other_column:value</code> |                                | filters="id:1,3&#124;visible:1"     |
 | order      | A single or a list of orders to apply on columns  in this format <code>column_name:DESC&#124;other_column:ASC</code>            |                                | order="id:DESC&#124;created_at:ASC" |
 | locale     | The locale for translated columns                                                                                               | The current locale for session |                                     |
+| limit     | | | |
 
 Plus the [global arguments](./global_arguments)
 
@@ -32,4 +33,4 @@ I want to display all products visible and not virtual sorted by creation date (
         <li>{$ID} {$TITLE} ({$REF})</li>
     {/loop}
 </ul>
-``` 
+```
