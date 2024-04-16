@@ -14,7 +14,7 @@ Folder tree loop, to get a folder tree from a given folder to a given depth.
 | folder *   | A single folder id.                                     |         | folder="2"          |
 | visible    | Whatever we consider hidden folder or not.              |  true   | visible="false"     |
 
-Plus the [global arguments](./global_arguments)
+Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n.md)
 
 ## Outputs
 
