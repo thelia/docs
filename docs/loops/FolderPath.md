@@ -2,7 +2,7 @@
 title: Folder path
 ---
 
-Folder path loop provides the path through the catalog to a given folder. For example if we have an "alpha" folder standing in an "alpha_father" folder which itseflf belong to "root" folder. Folder path loop for folder "alpha" will return "root" then "alpha_father" then "alpha".   
+Folder path loop provides the path through the catalog to a given folder. For example if we have an "alpha" folder standing in an "alpha_father" folder which itseflf belong to "root" folder. Folder path loop for folder "alpha" will return "root" then "alpha_father" then "alpha".  
 `{loop type="folder-path" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#folder-arguments}
@@ -13,7 +13,7 @@ Folder path loop provides the path through the catalog to a given folder. For ex
 | folder * | A single folder id.                         |         | folder="2"          |
 | visible  | Whatever we consider hidden folder or not.  |  true   | visible="false"     |
 
-Plus the [global arguments](./global_arguments)
+Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n.md)
 
 ## Outputs
 

@@ -11,5 +11,11 @@ These arguments can be set on all loops
 | force_return    | force return result for i18n tables even if there is no record. | false | force_return="on" |
 | limit  | The maximum number of results to display. | | limit="10" |
 | name *  | The loop name. This name must be unique and is used to reference this loop. | | name="my_name_loop" |
+| no-cache | | | |
 | offset  |The first product to display offset. Will not be used if `page` argument is set. | 0 | offset="10" |
 | page  | The page to display. | | page="2" |
+| return_url | | | |
+| search_in | | | |
+| search_mode | | | |
+| search_term | | | |
+| type | | | |

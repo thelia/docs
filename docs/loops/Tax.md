@@ -2,7 +2,7 @@
 title: Tax
 ---
 
-loop displaying taxes available.   
+loop displaying taxes available.  
 `{loop type="tax" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#tax-arguments}
@@ -13,6 +13,7 @@ loop displaying taxes available.
 | exclude          | A single or list of tax ids to exclude      |         | exclude="2", exclude="1,4"                   |
 | exclude_tax_rule | A single or list of tax_rule ids to exclude |         | exclude_tax_rule="2", exclude_tax_rule="1,4" |
 | id               | A single or list of tax ids.                |         | id="2", id="1,4"                             |
+| order            |                                             | alpha   |                                              |
 | tax_rule         | A single or list of tax_rule ids            |         | tax_rule="2", tax_rule="1,4"                 |
 
 Plus the [global arguments](./global_arguments)
@@ -31,3 +32,12 @@ Plus the [global arguments](./global_arguments)
 | $TYPE          | The tax type                                                                                          |
 
 Plus the [global outputs](./global_outputs)
+
+## Order possible values
+
+[Arguments](#tax-arguments)
+
+| Ascending value | Descending value | Sorted fields                                                             |
+|-----------------|------------------|:--------------------------------------------------------------------------|
+| id              | id_reverse       | Id                                                                        |
+| alpha           | alpha_reverse    |                                                                           |
