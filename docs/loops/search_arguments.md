@@ -1,6 +1,6 @@
 ---
 title: Search arguments
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 These arguments can be set on all loops that are searchable

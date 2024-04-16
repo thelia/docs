@@ -1,10 +1,9 @@
 ---
 title: Global outputs
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 These output can be got on from all loops
-
 
 | Variable        |                                  Description                                  |
 |-----------------|:-----------------------------------------------------------------------------:|
