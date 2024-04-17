@@ -9,6 +9,7 @@ Lang loop.
 
 | Argument        | Description                                                                 |  Default  | Example                          |
 |-----------------|:----------------------------------------------------------------------------|:---------:|:---------------------------------|
+| acive           |                                                                             |   true    |                                  |
 | code            | A single or list of lang code.                                              |           | code="fr", code="fr,en"          |
 | default_only    | returns only the default language                                           |   false   | default_only="true"              |
 | exclude         | A single or list of lang ids.                                               |           | exclude="2", exclude="1,3"       |
@@ -16,6 +17,7 @@ Lang loop.
 | id              | A single or list of lang ids.                                               |           | id="2"                           |
 | locale          | A single or list of lang locale.                                            |           | code="fr_FR", code="fr_FR,fr_CA" |
 | order           | A list of values see [sorting possible values](#lang-order-possible-values) | position  | order="alpha_reverse"            |
+| visible         |                                                                             |   true    |                                  |
 
 Plus the [global arguments](./global_arguments)
 
@@ -23,6 +25,7 @@ Plus the [global arguments](./global_arguments)
 
 | Variable             | Value                                                         |
 |:---------------------|:--------------------------------------------------------------|
+| $ACTIVE              |                                                               |
 | $CODE                | lang code, example : fr                                       |
 | $DATE_FORMAT         | the lang date format                                          |
 | $DECIMAL_COUNT       | the number of digits after the decimal separator              |
@@ -35,6 +38,7 @@ Plus the [global arguments](./global_arguments)
 | $TIME_FORMAT         | the lang time format                                          |
 | $TITLE               | lang title                                                    |
 | $URL                 | the lang URL, only if a specific URL is defined for each lang |
+| $VISIBLE             |                                                               |
 
 Plus the [global outputs](./global_outputs)
 
