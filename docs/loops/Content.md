@@ -17,14 +17,12 @@ Content loop lists contents from your shop.
 | folder      | A single or a list of folder ids.  |  |   folder="3", folder="2,5,8" |
 | folder_default      | A single or a list of default folder ids allowing to retrieve all content having this parameter as default folder.  |  |   folder_default="2", folder_default="1,4,7" |
 | id      | A single or a list of content ids.  |  |  id="2", id="1,4,7" |
-| lang      | A lang id  |  |   lang="1" |
 | order       | A list of values <br/> [Expected values](#content-order-possible-values) | alpha | order="random" |
-| return_url       | A boolean value which allows the urls generation. | yes | return_url="no" |
 | title       | A title string |  | title="foo" |
 | visible       | A boolean value. | yes | visible="no" |
 | with_prev_next_info       | A boolean. If set to true, $PREVIOUS and $NEXT output arguments are available. | false | with_prev_next_info="yes" |
 
-Plus the [global arguments](./global_arguments) and [search arguments](./search_arguments)
+Plus the [global arguments](./global_arguments), the [global I18n](./global_arguments_I18n.md) and [search arguments](./search_arguments)
 
 ## Outputs
 
