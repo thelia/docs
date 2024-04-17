@@ -9,20 +9,22 @@ The document loop process, cache and display products, categories, contents and 
 
 | Argument    | Description                                                                                                          | Default | Example               |
 |-------------|:---------------------------------------------------------------------------------------------------------------------|:-------:|:----------------------|
-| brand **    | a brand identifier. The loop will return this brand's documents                                                      |   yes   | current="false"       |                                                    |           | product="2"                 |
 | category ** | a category identifier. The loop will return this category's documents                                                |         | category="2"          |
 | content **  | a content identifier. The loop will return this content's documents                                                  |         | content="2"           |
 | exclude     | A single or a comma-separated list of document IDs to exclude from the list.                                         |         | exclude="456,123"     |
 | folder **   | a folder identifier. The loop will return this folder's documents                                                    |         | folder="2"            |
+| force_return|                                                                                                                      | true    |                       |
 | id          | A single or a list of document ids.                                                                                  |         | id="2", id="1,4,7"    |
 | lang        | A language identifier, to specify the language in which the document information will be returned                    |         |                       |
 | order       | A list of values see [sorting possible values](#document-order-possible-values)                                      | manual  | order="alpha_reverse" |
 | product **  | a product identifier. The loop will return this product's documents                                                  |         | product="2"           |
+| query_namespace|                                                                                                                   | Thelia\\Model|                  |
 | source **   | see [Expected values](#document-source-expected-values)                                                              |         | source="category"     |
 | source_id   | The identifier of the object provided in the "source" parameter. Only considered if the "source" argument is present |         | source_id="2"         |
 | visible     | A boolean value.                                                                                                     |   yes   | visible="no"          |
+| with_prev_next_info|                                                                                                               |  false  |                       |
 
-Plus the [global arguments](./global_arguments)
+Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
 
 ## Outputs
 
@@ -30,6 +32,7 @@ Plus the [global arguments](./global_arguments)
 |:------------------------|:------------------------------------------------------------------------------------------|
 | $CHAPO                  | the document chapo                                                                        |
 | $DESCRIPTION            | the document description                                                                  |
+| $DOCUMENT_FILE          |                                                                                           |
 | $DOCUMENT_PATH          | The absolute path to the generated document file                                          |
 | $DOCUMENT_URL           | The absolute URL to the generated document                                                |
 | $ID                     | the document ID                                                                           |
@@ -63,5 +66,3 @@ Plus the [global outputs](./global_outputs)
 | content  |
 | folder   |
 | product  |
-
-

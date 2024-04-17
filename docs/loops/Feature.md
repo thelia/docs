@@ -19,7 +19,7 @@ Feature loop lists features.
 | title            | A a string title                                                                                    |         | title="foo"           |
 | visible          | A boolean value.                                                                                    |   yes   | visible="no"          |
 
-Plus the [global arguments](./global_arguments)
+Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
 
 ## Outputs
 
@@ -42,4 +42,5 @@ Plus the [global outputs](./global_outputs)
 | Ascending value | Descending value | Sorted fields |
 |-----------------|------------------|:--------------|
 | alpha           | alpha-reverse    | title         |
+| id              | id_reverse       |               |
 | manual          | manual_reverse   | position      |
