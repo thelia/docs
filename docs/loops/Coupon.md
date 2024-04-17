@@ -13,9 +13,9 @@ Return coupons information
 | id         | A single or a list of coupons ids.                                                                                                                   |         | id="2", id="1,4,7"                              |
 | in_use     | If true, only coupons currently in use in the checkout process are returned. If false, only coupons not in use in the checkout process are returned. |         | in_use="true"                                   |
 | is_enabled | If true, only enabled are returned. If false, only disabled coupons are returned.                                                                    |         | is_enabled="true"                               |
-| order      | A list of values see [sorting possible values](#coupon-order-possible-values)                                                                        | manual  | order="alpha_reverse"                           |
+| order      | A list of values see [sorting possible values](#coupon-order-possible-values)                                                                        | code    | order="alpha_reverse"                           |
 
-Plus the [global arguments](./global_arguments)
+Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
 
 ## Outputs
 
@@ -40,11 +40,12 @@ Plus the [global arguments](./global_arguments)
 | PER_CUSTOMER_USAGE_COUNT         | true if the coupon maximum usage count is per customer                   |
 | SERVICE_ID                       | the coupon service id                                                    |
 | SHORT_DESCRIPTION                | the coupon short description                                             |
+| START_DATE                       |                                                                          |
 | TITLE                            | the coupon title                                                         |
 | TOOLTIP                          | The coupon short description                                             |
 | USAGE_LEFT                       | number of usages left                                                    |
 
-Plus the [global outputs](./global_outputs)
+Plus the [global outputs](./global_outputs) and the [global I18n](./global_arguments_I18n.md)
 
 ## Order possible values {#coupon-order-possible-values}
 [Arguments](#coupon-arguments)
@@ -56,5 +57,6 @@ Plus the [global outputs](./global_outputs)
 | enabled         | enabled-reverse         | coupons               |
 | expiration-date | expiration-date-reverse | expiration date       |
 | id              | id-reverse              | id                    |
+| start-date      | start-date-reverse      |                       |
 | title           | title-reverse           | title                 |
 | usages-left     | usages-left-reverse     | usage count left      |
