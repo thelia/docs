@@ -9,16 +9,16 @@ Brand loop lists brands defined in your shop.
 
 | Argument | Description | Default | Example |
 | ------------- |:-------------| :-------------: | :-------------|
-| current     | A boolean value which allows either to exclude current brand from results, or match only this brand  |   | current="yes" |
-| id     | A single or a list of brand ids.  |   |  id="2", id="1,4,7" |
-| order       | A list of values <br/> [Expected values](#brand-order-possible-values) | manual | order="random" |
-| product       | A single product id. |  | product="2" |
-| return_url       | A boolean value which allows the urls generation. | yes | return_url="no" |
-| title       | A title string |  | title="foo" |
-| visible       | A boolean value. | yes | visible="no" |
-| with_prev_next_info       | A boolean. If set to true, $PREVIOUS and $NEXT output arguments are available. | false | with_prev_next_info="yes" |
+| current              | A boolean value which allows either to exclude current brand from results, or match only this brand  |   | current="yes" |
+| exclude              |   |   |   |
+| id                   | A single or a list of brand ids.  |   |  id="2", id="1,4,7" |
+| order                | A list of values <br/> [Expected values](#brand-order-possible-values) | alpha | order="random" |
+| product              | A single product id. |  | product="2" |
+| title                | A title string |  | title="foo" |
+| visible              | A boolean value. | yes | visible="no" |
+| with_prev_next_info  | A boolean. If set to true, $PREVIOUS and $NEXT output arguments are available. | false | with_prev_next_info="yes" |
 
-Plus the [global arguments](./global_arguments) and [search arguments](./search_arguments)
+Plus the [global arguments](./global_arguments), the [global I18n](./global_arguments_I18n.md) and [search arguments](./search_arguments)
 
 ## Outputs
 
@@ -56,3 +56,4 @@ Plus the [global outputs](./global_outputs)
 | manual          | manual-reverse    | order position                |
 | random          |                   |                               |
 | updated         | updated-reverse   | order on date of brand update |
+| visible         | visible-reverse   |                               |
