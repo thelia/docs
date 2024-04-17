@@ -2,14 +2,14 @@
 title: Currency
 ---
 
-Currency loop lists currencies.   
+Currency loop lists currencies.  
 `{loop type="currency" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#currency-arguments}
 
 | Argument     | Description                                                                     | Default | Example                      |
 |--------------|:--------------------------------------------------------------------------------|:-------:|:-----------------------------|
-| default_only | A boolean value to display only the default currency.                           |         | default_only="true"          |          
+| default_only | A boolean value to display only the default currency.                           |         | default_only="true"          |
 | exclude      | A single or a list of currency ids.                                             |         | exclude="2", exclude="1,4,7" |
 | id           | A single or a list of currency ids.                                             |         | id="2", id="1,4,7"           |
 | order        | A list of values see [sorting possible values](#currency-order-possible-values) | manual  | order="id_reverse"           |
@@ -35,6 +35,7 @@ Plus the [global arguments](./global_arguments) and the [global I18n](./global_a
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#currency-order-possible-values}
+
 [Arguments](#currency-arguments)
 
 | Ascending value | Descending value | Sorted fields |

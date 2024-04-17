@@ -2,7 +2,7 @@
 title: Export Category
 ---
 
-Export category loop lists all defined export categories.   
+Export category loop lists all defined export categories.  
 `{loop type="export-category" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#export-arguments}
@@ -27,6 +27,7 @@ Plus the [global arguments](./global_arguments)
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#export-order-possible-values}
+
 [Arguments](#export-arguments)
 
 | Ascending value | Descending value | Sorted fields |
