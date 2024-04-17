@@ -2,7 +2,7 @@
 title: Order product
 ---
 
-Order product loop displays Order products information.   
+Order product loop displays Order products information.  
 `{loop type="order_product" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#order-arguments}
@@ -10,10 +10,10 @@ Order product loop displays Order products information.
 | Argument | Description                              | Default | Example            |
 |----------|:-----------------------------------------|:-------:|:-------------------|
 | id       | A single or a list of order product ids. |         | id="2", id="1,4,7" |
-| order *  | A single order id.                       |         | order="2"          |
-| virtual  | A boolean value.                         |         | new="yes"          |
+| order    | A single order id.                       |  null   | order="2"          |
+| virtual  | A boolean value.                         |   *     | new="yes"          |
 
-Plus the [global arguments](./global_arguments) 
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 
@@ -49,5 +49,11 @@ Plus the [global arguments](./global_arguments)
 | $WAS_IN_PROMO              | whatever the order product sale elements was in promo or not   |
 | $WAS_NEW                   | whatever the order product sale elements was new or not        |
 | $WEIGHT                    | the order product sale elements weight                         |
+| $REAL_PRICE                |                                                                |
+| $REAL_TAXED_PRICE          |                                                                |
+| $REAL_PRICE_TAX            |                                                                |
+| $REAL_TOTAL_PRICE          |                                                                |
+| $REAL_TOTAL_TAXED_PRICE    |                                                                |
+| $REAL_TOTAL_PRICE_TAX      |                                                                |
 
 Plus the [global outputs](./global_outputs)
