@@ -34,7 +34,7 @@ Plus the [global arguments](./global_arguments)
 | $LABEL                                                                | the address label                                                                     |
 | $LASTNAME                                                             | the address lastname                                                                  |
 | $PHONE                                                                | the address phone                                                                     |
-| $STATE                                                                |                                                                                       |
+| $STATE                                                                | the ID of the associated state                                                        |
 | $TITLE                                                                | the address title which might be use in [title loop](./Title)                         |
 | $ZIPCODE                                                              | the address zipcode                                                                   |
 
