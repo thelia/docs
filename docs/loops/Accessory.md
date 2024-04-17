@@ -17,10 +17,10 @@ The accessory loop lists products accessories. As an accessory is itself a produ
 
 | Variable                                                                      | Value                           |
 | :---------------------------------------------------------------------------  | :------------------------------ |
-| $ACCESSORY_ID                                                                 | The product ID of the accessory |
-| $ID                                                                           | the accessory id                |
-| $POSITION                                                                     |                                 |
-| all [product loop](./product) outputs, except ID, which is the accessory ID   |                                 |
+| $ACCESSORY_ID                                                                 | The product ID of the accessory          |
+| $ID                                                                           | The accessory ID                         |
+| $POSITION                                                                     | The position of the accessory in the list|
+| all [product loop](./product) outputs, except ID, which is the accessory ID   |                                          |
 
 ## Examples
 

@@ -18,24 +18,24 @@ Plus the [global arguments](./global_arguments)
 
 ## Outputs
 
-| Variable                                                              | Value                                                                                 |
-| :-------------------------------------------------------------------  | :------------------------------------------------------------------------------------ |
-| $ADDRESS1                                                             | the first address line                                                                |
-| $ADDRESS2                                                             | the second address line                                                               |
-| $ADDRESS3                                                             | the third address line                                                                |
-| $CELLPHONE                                                            | the address cellphone                                                                 |
-| $CITY                                                                 | the address city                                                                      |
-| $COMPANY                                                              | the address company                                                                   |
-| $COUNTRY                                                              | the address country which might be use in [country loop](./Country)                   |
-| $CUSTOMER                                                             | the customer the address is link to which might be use in [customer loop](./Customer) |
-| $DEFAULT                                                              | return if address title is by default address                                         |
-| $FIRSTNAME                                                            | the address firstname                                                                 |
-| $ID                                                                   | the address id                                                                        |
-| $LABEL                                                                | the address label                                                                     |
-| $LASTNAME                                                             | the address lastname                                                                  |
-| $PHONE                                                                | the address phone                                                                     |
-| $STATE                                                                |                                                                                       |
-| $TITLE                                                                | the address title which might be use in [title loop](./Title)                         |
-| $ZIPCODE                                                              | the address zipcode                                                                   |
+| Variable   | Value                                                                                 |
+| :----------| :------------------------------------------------------------------------------------ |
+| $ADDRESS1  | the first address line                                                                |
+| $ADDRESS2  | the second address line                                                               |
+| $ADDRESS3  | the third address line                                                                |
+| $CELLPHONE | the address cellphone                                                                 |
+| $CITY      | the address city                                                                      |
+| $COMPANY   | the address company                                                                   |
+| $COUNTRY   | the address country which might be use in [country loop](./Country)                   |
+| $CUSTOMER  | the customer the address is link to which might be use in [customer loop](./Customer) |
+| $DEFAULT   | return if address title is by default address                                         |
+| $FIRSTNAME | the address firstname                                                                 |
+| $ID        | the address id                                                                        |
+| $LABEL     | the address label                                                                     |
+| $LASTNAME  | the address lastname                                                                  |
+| $PHONE     | the address phone                                                                     |
+| $STATE     | the ID of the associated state                                                        |
+| $TITLE     | the address title which might be use in [title loop](./Title)                         |
+| $ZIPCODE   | the address zipcode                                                                   |
 
 Plus the [global outputs](./global_outputs)

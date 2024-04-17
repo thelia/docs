@@ -7,18 +7,18 @@ Product sale elements loop lists product sale elements from your shop. You may n
 
 ## Arguments {#pse-arguments}
 
-| Argument      | Description                                                                    | Default         | Example                  |
-| ------------- |:-------------------------------------------------------------------------------| :-------------: | :------------------------|
-| attribute_availability |                                                                       |                 |                          |
-| currency      | A currency id                                                                  |                 | currency="1"             |
-| default       | A boolean value. If true, returns only the default product sale elements. If false, the default product sale element is not returned |  | default="yes" |
-| id            | A comma separated list of product sale elements id. Mandatory if the 'product' parameter is not present |  | id="1,3,8"     |
-| new           | A boolean value. If true, returns only product sale elements for which promo is on. The reverse with 'false' |  | new="yes" |
-| order         | A list of values see [sorting possible values](#pse-order-possible-values)     | random          | order="promo,min_price"  |
-| product       | A single product id. Mandatory if the 'id' parameter is not present            |                 | product="2"              |
-| promo         | A boolean value. If true, returns only product sale elements for which new is on. The reverse with 'false' |  | promo="yes" |
-| ref           |                                                                                |                 |                          |
-| visible       | A boolean value, or * (the default) for ignoring this filter                   | *               | visible="no"             |
+| Argument               | Description                                                                                                                          | Default         | Example                  |
+| ---------------------- |:-------------------------------------------------------------------------------------------------------------------------------------| :-------------: | :------------------------|
+| attribute_availability |                                                                                                                                      |                 |                          |
+| currency               | A currency id                                                                                                                        |                 | currency="1"             |
+| default                | A boolean value. If true, returns only the default product sale elements. If false, the default product sale element is not returned |                 | default="yes"            |
+| id                     | A comma separated list of product sale elements id. Mandatory if the 'product' parameter is not present                              |                 | id="1,3,8"               |
+| new                    | A boolean value. If true, returns only product sale elements for which promo is on. The reverse with 'false'                         |                 | new="yes"                |
+| order                  | A list of values see [sorting possible values](#pse-order-possible-values)                                                           | random          | order="promo,min_price"  |
+| product                | A single product id. Mandatory if the 'id' parameter is not present                                                                  |                 | product="2"              |
+| promo                  | A boolean value. If true, returns only product sale elements for which new is on. The reverse with 'false'                           |                 | promo="yes"              |
+| ref                    |                                                                                                                                      |                 |                          |
+| visible                | A boolean value, or * (the default) for ignoring this filter                                                                         | *               | visible="no"             |
 
 Plus the [global arguments](./global_arguments) and [search arguments](./search_arguments)
 
