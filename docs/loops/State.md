@@ -16,7 +16,7 @@ State loop lists states.
 | order    | A list of values see [sorting possible values](#sale-order-possible-values)                |   id    | order="alpha_reverse"          |
 | visible  | A boolean value to return visible or not visible states (possible values : yes, no or *).  |   yes   | visible="no"                   |
 
-Plus the [global arguments](./global_arguments) 
+Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n)  
 
 ## Outputs
 
