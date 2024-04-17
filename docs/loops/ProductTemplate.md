@@ -20,6 +20,6 @@ Plus the [global arguments](./global_arguments), [global arguments I18n](./globa
 | $ID                    | the content id                                                                |
 | $IS_TRANSLATED         | check if the content is translated                                            |
 | $LOCALE                | the locale (e.g. fr_FR) of the returned data                                  |
-| $NAME                  |                  s                                                             |
+| $NAME                  |                                                                               |
 
 Plus the [global outputs](./global_outputs)

@@ -2,7 +2,7 @@
 title: Payment
 ---
 
-payment loop displays payment modules information.   
+payment loop displays payment modules information.  
 `{loop type="payment" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#payment-arguments}
@@ -15,7 +15,7 @@ payment loop displays payment modules information.
 | id           | A module id.                                                                   |         | module=4                   |
 | order        | A list of values see [sorting possible values](#payment-order-possible-values) | manual  | order=" id_reverse"        |
 
-Plus the [global arguments](./global_arguments) 
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 
@@ -31,6 +31,7 @@ Plus the [global arguments](./global_arguments)
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#payment-order-possible-values}
+
 [Arguments](#payment-arguments)
 
 | Ascending value | Descending value | Sorted fields |

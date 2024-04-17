@@ -2,7 +2,7 @@
 title: State
 ---
 
-State loop lists states.   
+State loop lists states.  
 `{loop type="state" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#sale-arguments}
@@ -33,6 +33,7 @@ Plus the [global arguments](./global_arguments) and [global arguments I18n](./gl
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#sale-order-possible-values}
+
 [Arguments](#sale-arguments)
 
 | Ascending value | Descending value | Sorted fields       |

@@ -7,14 +7,14 @@ loop displaying taxes available.
 
 ## Arguments {#tax-arguments}
 
-| Argument         | Description                                 | Default | Example                                      |
-|------------------|:--------------------------------------------|:-------:|:---------------------------------------------|
-| country          | a country id                                |         | country="64"                                 |
-| exclude          | A single or list of tax ids to exclude      |         | exclude="2", exclude="1,4"                   |
-| exclude_tax_rule | A single or list of tax_rule ids to exclude |         | exclude_tax_rule="2", exclude_tax_rule="1,4" |
-| id               | A single or list of tax ids.                |         | id="2", id="1,4"                             |
-| order            | A list of values see [sorting possible values](#tax-order-possible-values) | alpha   |                         |
-| tax_rule         | A single or list of tax_rule ids            |         | tax_rule="2", tax_rule="1,4"                 |
+| Argument         | Description                                                                | Default | Example                                      |
+|------------------|:---------------------------------------------------------------------------|:-------:|:---------------------------------------------|
+| country          | a country id                                                               |        | country="64"                                  |
+| exclude          | A single or list of tax ids to exclude                                     |        | exclude="2", exclude="1,4"                    |
+| exclude_tax_rule | A single or list of tax_rule ids to exclude                                |        | exclude_tax_rule="2", exclude_tax_rule="1,4"  |
+| id               | A single or list of tax ids.                                               |        | id="2", id="1,4"                              |
+| order            | A list of values see [sorting possible values](#tax-order-possible-values) | alpha  |                                               |
+| tax_rule         | A single or list of tax_rule ids                                           |        | tax_rule="2", tax_rule="1,4"                  |
 
 Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n)  
 

@@ -7,12 +7,12 @@ Import category loop lists all defined import categories.
 
 ## Arguments {#import-arguments}
 
-| Argument | Description                                                                   | Default | Example                                                                          |
-|----------|:------------------------------------------------------------------------------|:-------:|:---------------------------------------------------------------------------------|
-| [import export category](./ImportExportCategory) arguments |                               |         |                                                                                  |
-| id       | A single or a list of import category ids.                                    |         | id="2", id="1,4,7"                                                               |
-| order    | A list of values see [sorting possible values](#import-order-possible-values) | manual  | order="alpha"                                                                    |
-| ref      | A single or a list of import category references.                             |         | ref="thelia.import.products", id="thelia.import.products,thelia.import.modules"  |
+| Argument                                                   | Description                                                                   | Default | Example                                                                          |
+|------------------------------------------------------------|:------------------------------------------------------------------------------|:-------:|:---------------------------------------------------------------------------------|
+| [import export category](./ImportExportCategory) arguments |                                                                               |         |                                                                                  |
+| id                                                         | A single or a list of import category ids.                                    |         | id="2", id="1,4,7"                                                               |
+| order                                                      | A list of values see [sorting possible values](#import-order-possible-values) | manual  | order="alpha"                                                                    |
+| ref                                                        | A single or a list of import category references.                             |         | ref="thelia.import.products", id="thelia.import.products,thelia.import.modules"  |
 
 Plus the [global arguments](./global_arguments)
 
