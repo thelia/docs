@@ -2,13 +2,14 @@
 title: Template
 ---
 
+Template loop, to get available back-office or front-office templates.  
 `{loop type="template" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#template-arguments}
 
 | Argument            | Description                                                 | Default | Example             |
 |---------------------|:------------------------------------------------------------|:-------:|:--------------------|
-| template-type       |                                                             |         |                     |
+| template-type       | the type of the template you want                           |         | template-type="pdf" |
 
 Plus the [global arguments](./global_arguments)  
 
@@ -16,9 +17,9 @@ Plus the [global arguments](./global_arguments)
 
 | Variable             | Value                                   |
 |:---------------------|:----------------------------------------|
-| $ABSOLUTE_PATH       |                                         |
-| $NAME                |                                         |
-| $RELATIVE_PATH       |                                         |
+| $ABSOLUTE_PATH       | absolute template path                  |
+| $NAME                | template name                           |
+| $RELATIVE_PATH       | relative template path                  |
 
 Plus the [global outputs](./global_outputs)
 
@@ -26,11 +27,9 @@ Plus the [global outputs](./global_outputs)
 
 [Arguments](#template-arguments)
 
-| Value                                   |
-|:----------------------------------------|
-| admin                                   |
-| back-office                             |
-| email                                   |
-| front                                   |
-| front-office                            |
-| mail                                    |
+| Value                     | Description               |
+|:--------------------------|---------------------------|
+| admin , back-office       | back-office template      |
+| email , mail              | email template            |
+| front , front-office      | front-office template     |
+| pdf                       | pdf template              |
