@@ -10,7 +10,7 @@ Brand loop lists brands defined in your shop.
 | Argument             | Description                                                                                          | Default         | Example                   |
 | -------------------- |:-----------------------------------------------------------------------------------------------------| :-------------: | :-------------------------|
 | current              | A boolean value which allows either to exclude current brand from results, or match only this brand  |                 | current="yes"             |
-| exclude              |                                                                                                      |                 |                           |
+| exclude              | A list of brand IDs to exclude from selection when running the loop                                  |                 |                           |
 | id                   | A single or a list of brand ids.                                                                     |                 |  id="2", id="1,4,7"       |
 | order                | A list of values <br/> [Expected values](#brand-order-possible-values)                               | alpha           | order="random"            |
 | product              | A single product id.                                                                                 |                 | product="2"               |
