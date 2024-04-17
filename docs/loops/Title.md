@@ -15,14 +15,14 @@ Plus the [global arguments](./global_arguments) and [global arguments I18n](./gl
 
 ## Outputs
 
-| Variable             | Value                                   |
-|:---------------------|:----------------------------------------|
-| $DEFAULT             | return if the title is by default title |
-| $ID                  | the title id                            |
-| $IS_TRANSLATED       |                                         |
-| $LOCALE              |                                         |
-| $LONG                | the full title                          |
-| $POSITION            | the title position                      |
-| $SHORT               | the short title                         |
+| Variable             | Value                                        |
+|:---------------------|:---------------------------------------------|
+| $DEFAULT             | return if the title is by default title      |
+| $ID                  | the title id                                 |
+| $IS_TRANSLATED       | check if the content is translated           |
+| $LOCALE              | the locale (e.g. fr_FR) of the returned data |
+| $LONG                | the full title                               |
+| $POSITION            | the title position                           |
+| $SHORT               | the short title                              |
 
 Plus the [global outputs](./global_outputs)
