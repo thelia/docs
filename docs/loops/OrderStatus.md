@@ -2,17 +2,18 @@
 title: Order status
 ---
 
-Order status loop displays order status information.   
+Order status loop displays order status information.  
 `{loop type="order_status" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#order-arguments}
 
 | Argument | Description                                                       | Default | Example            |
 |----------|:------------------------------------------------------------------|:-------:|:-------------------|
+| code     |                                                                   |         |                    |
 | id       | A single or a list of order status ids.                           |         | id="2", id="1,4,7" |
 | order    | A list of values see [Expected values](#order-possible-values)    | manual  | order="random"     |
 
-Plus the [global arguments](./global_arguments) 
+Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n)
 
 ## Outputs
 
@@ -33,6 +34,7 @@ Plus the [global arguments](./global_arguments)
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#order-possible-values}
+
 [Arguments](#order-arguments)
 
 | Ascending value | Descending value | Sorted fields |
