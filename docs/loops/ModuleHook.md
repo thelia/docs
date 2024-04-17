@@ -25,16 +25,16 @@ Plus the [global arguments](./global_arguments) and [global arguments I18n](./gl
 
 | Variable        | Value |
 |:----------------|:------|
-| $ID             |       |
+| $ACTIVE         |       |
+| $CLASSNAME      |       |
+| $HOOK_ACTIVE    |       |
 | $HOOK_ID        |       |
+| $ID             |       |
+| $METHOD         |       |
+| $MODULE_ACTIVE  |       |
+| $MODULE_CODE    |       |
 | $MODULE_ID      |       |
 | $MODULE_TITLE   |       |
-| $MODULE_CODE    |       |
-| $CLASSNAME      |       |
-| $METHOD         |       |
-| $ACTIVE         |       |
-| $HOOK_ACTIVE    |       |
-| $MODULE_ACTIVE  |       |
 | $POSITION       |       |
 | $TEMPLATES      |       |
 
@@ -46,7 +46,7 @@ Plus the [global outputs](./global_outputs)
 
 | Ascending value | Descending value | Sorted fields |
 |-----------------|------------------|:--------------|
-| id              | id_reverse       |               |
-| hook            | hook_reverse     |               |
-| manual          | manual_reverse   |               |
 | enabled         | enabled_reverse  |               |
+| hook            | hook_reverse     |               |
+| id              | id_reverse       |               |
+| manual          | manual_reverse   |               |
