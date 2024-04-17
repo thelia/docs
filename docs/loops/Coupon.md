@@ -2,14 +2,14 @@
 title: Coupon
 ---
 
-Return coupons information   
+Return coupons information  
 `{loop type="coupon" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#coupon-arguments}
 
 | Argument   | Description                                                                                                                                          | Default | Example                                         |
 |------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:------------------------------------------------|
-| code       | A single or a list of coupons code.                                                                                                                  |         | code="THECODE", code="ACODE,ANOTHERCODE,COCODE" |                                                    |           | product="2"                 |
+| code       | A single or a list of coupons code.                                                                                                                  |         | code="THECODE", code="ACODE,ANOTHERCODE,COCODE" |
 | id         | A single or a list of coupons ids.                                                                                                                   |         | id="2", id="1,4,7"                              |
 | in_use     | If true, only coupons currently in use in the checkout process are returned. If false, only coupons not in use in the checkout process are returned. |         | in_use="true"                                   |
 | is_enabled | If true, only enabled are returned. If false, only disabled coupons are returned.                                                                    |         | is_enabled="true"                               |
@@ -48,6 +48,7 @@ Plus the [global arguments](./global_arguments) and the [global I18n](./global_a
 Plus the [global outputs](./global_outputs) and the [global I18n](./global_arguments_I18n.md)
 
 ## Order possible values {#coupon-order-possible-values}
+
 [Arguments](#coupon-arguments)
 
 | Ascending value | Descending value        | Sorted fields         |

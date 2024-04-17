@@ -2,7 +2,7 @@
 title: Area
 ---
 
-Area loop returns shipping zones information.   
+Area loop returns shipping zones information.  
 `{loop type="area" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#area-arguments}
@@ -24,13 +24,14 @@ Plus the [global arguments](./global_arguments) and the [global I18n](./global_a
 
 | Variable   | Value                                  |
 | :--------  | :------------------------------------- |
-| $ID	     | the shipping zone id                   |
-| $NAME	     | the accessory name                     |
-| $POSTAGE	 |  |
+| $ID        | the shipping zone id                   |
+| $NAME      | the accessory name                     |
+| $POSTAGE   |                                        |
 
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#area-order-possible-values}
+
 [Arguments](#area-arguments)
 
 | Ascending value | Descending value  | Sorted fields |

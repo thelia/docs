@@ -2,7 +2,7 @@
 title: Customer
 ---
 
-Customer loop displays customers information.   
+Customer loop displays customers information.  
 `{loop type="customer" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#customer-arguments}
@@ -42,6 +42,7 @@ Plus the [global arguments](./global_arguments) and [search arguments](./search_
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#customer-order-possible-values}
+
 [Arguments](#customer-arguments)
 
 | Ascending value            | Descending value           | Sorted fields     |

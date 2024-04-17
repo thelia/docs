@@ -2,10 +2,10 @@
 title: Category tree
 ---
 
-Category tree loop, to get a category tree from a given category to a given depth.      
+Category tree loop, to get a category tree from a given category to a given depth.  
 `{loop type="category-tree" name="the-loop-name" [argument="value"], [...]}`
 
-## Arguments 
+## Arguments
 
 | Argument    | Description                                               | Default | Example         |
 | ----------- |:----------------------------------------------------------| :-----: | :---------------|
@@ -22,20 +22,21 @@ Plus the [global arguments](./global_arguments) and the [global I18n](./global_a
 
 | Variable            | Value                                    |
 | :------------------ | :--------------------------------------- |
-| $CHILD_COUNT	      |                                          |
-| $ID	              | the category id                          |
-| $LEVEL	          |                                          |
-| $PARENT	          | the parent category                      |
-| $PREV_LEVEL	      |                                          |
-| $TITLE	          |  the category title                      |
-| $URL	              |  the category URL                        |
-| $VISIBLE	          |  whatever the category is visible or not |
+| $CHILD_COUNT        |                                          |
+| $ID                 | the category id                          |
+| $LEVEL              |                                          |
+| $PARENT             | the parent category                      |
+| $PREV_LEVEL         |                                          |
+| $TITLE              |  the category title                      |
+| $URL                |  the category URL                        |
+| $VISIBLE            |  whatever the category is visible or not |
 
 Plus the [global outputs](./global_outputs)
 
 ## Examples
 
 I want to display a select list with all visible categories.
+
 ```smarty
 <select name="category">
     {loop name="categories-tree" type="category-tree" category="0"}
@@ -45,6 +46,7 @@ I want to display a select list with all visible categories.
 ```
 
 ## Order possible values {#brand-order-possible-values}
+
 [Arguments](#brand-arguments)
 
 | Ascending value | Descending value  | Sorted fields                 |

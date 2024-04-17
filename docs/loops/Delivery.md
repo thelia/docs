@@ -2,15 +2,15 @@
 title: Delivery
 ---
 
-delivery loop displays delivery modules information.   
+delivery loop displays delivery modules information.  
 `{loop type="delivery" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#delivery-arguments}
 
 | Argument     | Description                                                                     | Default | Example                    |
 |--------------|:--------------------------------------------------------------------------------|:-------:|:---------------------------|
-| all [produspecific base module loop](./BaseSpecificModule) arguments|                       |         |                            |
-| address      | An address id.                                                                  |         | address=21                 |                                                    |           | product="2"                 |
+| all [produspecific base module loop](./BaseSpecificModule) arguments|                          |         |                            |
+| address      | An address id.                                                                  |         | address=21                 |
 | code         | A module code.                                                                  |         | code='Atos'                |
 | country      | A country id.                                                                   |         | country=2                  |
 | exclude      | A list of module IDs to exclude from the results                                |         | exclude="12, 21"           |
@@ -40,6 +40,7 @@ Plus the [global arguments](./global_arguments)
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#delivery-order-possible-values}
+
 [Arguments](#delivery-arguments)
 
 | Ascending value | Descending value | Sorted fields                      |

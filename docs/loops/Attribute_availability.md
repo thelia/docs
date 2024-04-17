@@ -2,7 +2,7 @@
 title: Attribute availability
 ---
 
-Attribute availability loop lists attribute availabilities (e.g., attribute values).   
+Attribute availability loop lists attribute availabilities (e.g., attribute values).  
 `{loop type="attribute_availability" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#attribute-av-arguments}
@@ -21,19 +21,20 @@ Plus the [global arguments](./global_arguments) and the [global I18n](./global_a
 
 | Variable       | Value                                                       |
 | :------------  | :---------------------------------------------------------- |
-| $ATTRIBUTE_ID	 | the ID of the attribute this attribute availability belongs |
-| $CHAPO	     | the attribute availability chapo                            |
-| $DESCRIPTION	 | the attribute availability description                      |
-| $ID	         | the attribute availability id                               |
+| $ATTRIBUTE_ID  | the ID of the attribute this attribute availability belongs |
+| $CHAPO         | the attribute availability chapo                            |
+| $DESCRIPTION   | the attribute availability description                      |
+| $ID            | the attribute availability id                               |
 | $IS_TRANSLATED | check if the product is translated or not                   |
-| $LOCALE	     | the locale used for this loop                               |
-| $POSITION	     | the attribute availability position                         |
+| $LOCALE        | the locale used for this loop                               |
+| $POSITION      | the attribute availability position                         |
 | $POSTSCRIPTUM  | the attribute availability postscriptum                     |
-| $TITLE	     | the attribute availability title                            |
+| $TITLE         | the attribute availability title                            |
 
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#attribute-av-order-possible-values}
+
 [Arguments](#attribute-av-arguments)
 
 | Ascending value | Descending value  | Sorted fields |

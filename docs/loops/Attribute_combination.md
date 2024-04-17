@@ -2,7 +2,7 @@
 title: Attribute combination
 ---
 
-Attribute combination loop lists attribute combinations.     
+Attribute combination loop lists attribute combinations.  
 `{loop type="attribute_combination" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#pse-arguments}
@@ -18,22 +18,22 @@ Plus the [global I18n](./global_arguments_I18n.md)
 
 | Variable                                                  | Value                                   |
 | :-------------------------------------------------------  | :-------------------------------------- |
-| $ATTRIBUTE_AVAILABILITY_CHAPO	                            | the attribute availability chapo        |
-| $ATTRIBUTE_AVAILABILITY_DESCRIPTION	                    | the attribute availability description  |
-| $ATTRIBUTE_AVAILABILITY_ID	                            | the attribute availability id           |
-| $ATTRIBUTE_AVAILABILITY_POSTSCRIPTUM	                    | the attribute availability postscriptum |
-| $ATTRIBUTE_AVAILABILITY_TITLE	                            | the attribute availability title        |
-| $ATTRIBUTE_CHAPO	                                        | the attribute chapo                     |
-| $ATTRIBUTE_DESCRIPTION	                                | the attribute description               |
-| $ATTRIBUTE_ID	                                            | the attribute id                        |
-| $ATTRIBUTE_POSTSCRIPTUM	                                | the attribute postscriptum              |
-| $ATTRIBUTE_TITLE	                                        | the attribute title                     |
-| $LOCALE	                                                | the locale used for this loop           |
-
+| $ATTRIBUTE_AVAILABILITY_CHAPO                             | the attribute availability chapo        |
+| $ATTRIBUTE_AVAILABILITY_DESCRIPTION                       | the attribute availability description  |
+| $ATTRIBUTE_AVAILABILITY_ID                                | the attribute availability id           |
+| $ATTRIBUTE_AVAILABILITY_POSTSCRIPTUM                      | the attribute availability postscriptum |
+| $ATTRIBUTE_AVAILABILITY_TITLE                             | the attribute availability title        |
+| $ATTRIBUTE_CHAPO                                          | the attribute chapo                     |
+| $ATTRIBUTE_DESCRIPTION                                    | the attribute description               |
+| $ATTRIBUTE_ID                                             | the attribute id                        |
+| $ATTRIBUTE_POSTSCRIPTUM                                   | the attribute postscriptum              |
+| $ATTRIBUTE_TITLE                                          | the attribute title                     |
+| $LOCALE                                                   | the locale used for this loop           |
 
 ## Examples
 
 I want to display all products sale elements for current product and show all the attribute combinations which matched it.
+
 ```smarty
 <ul>
 {loop name="pse" type="product_sale_elements" product="$PRODUCT_ID"}
@@ -57,6 +57,7 @@ I want to display all products sale elements for current product and show all th
 ```
 
 ## Order possible values {#accessory-order-possible-values}
+
 [Arguments](#pse-arguments)
 
 | Ascending value                  | Descending value  | Sorted fields     |

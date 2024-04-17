@@ -2,7 +2,7 @@
 title: Category
 ---
 
-Category loop lists categories from your shop.    
+Category loop lists categories from your shop.  
 `{loop type="category" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#category-arguments}
@@ -33,31 +33,32 @@ Plus the [global arguments](./global_arguments), the [global I18n](./global_argu
 | Variable           | Value                                                                                                                                                                                        |
 |:-------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | $CHAPO             | the category chapo                                                                                                                                                                           |
-| $CHILD_COUNT       | Number of subcategories contained by the current category.<br/> ** Only available if "need_count_child" is set to true **                                                                    |
+| $CHILD_COUNT       | Number of subcategories contained by the current category.<br/> **Only available if "need_count_child" is set to true**                                                                      |
 | $DESCRIPTION       | the category description                                                                                                                                                                     |
-| $HAS_NEXT	         | true if a category exists after this one in the current parent category, following categories positions.<br/> ** Only available if "with_prev_next_info" is set to true **                   |
-| $HAS_PREVIOUS	     | true if a category exists before this one in the current parent category, following categories positions.<br/> ** Only available if "with_prev_next_info" is set to true **                  |
-| $ID	             | the category id                                                                                                                                                                            |
-| $IS_TRANSLATED	 | check if the category is translated or not                                                                                                                                                |
-| $LOCALE	         | the locale used for this loop                                                                                                                                                              |
-| $META_DESCRIPTION	 | the category meta description                                                                                                                                                                |
-| $META_KEYWORD	     | the category meta keyword                                                                                                                                                                    |
-| $META_TITLE	     | the category meta title                                                                                                                                                                    |
-| $NEXT	             | The ID of category after this one in the current parent category, following categories positions, or null if none exists.<br/> ** Only available if "with_prev_next_info" is set to true **  |
-| $PARENT	         | the parent category                                                                                                                                                                        |
-| $POSITION	         | the category position                                                                                                                                                                        |
-| $POSTSCRIPTUM	     | the category postscriptum                                                                                                                                                                    |
-| $PRODUCT_COUNT	 | Number of visible products contained by the current category. <br/> ** Only available if "need_product_child" is set to true **                                                           |
-| $PREVIOUS	         | The ID of category before this one in the current parent category, following categories positions, or null if none exists.<br/> ** Only available if "with_prev_next_info" is set to true ** |
-| $ROOT	             |                                                                                                                                                                    |                         |                                                                                                                                     |
-| $TEMPLATE	         | the template id associated to this category                                                                                                                                                  |
-| $TITLE	         | the category title                                                                                                                                                                        |
-| $URL	             | the category URL                                                                                                                                                                            |
-| $VISIBLE	         | Return if the category is visible or not                                                                                                                                                    |
+| $HAS_NEXT          | true if a category exists after this one in the current parent category, following categories positions.<br/> **Only available if "with_prev_next_info" is set to true**                     |
+| $HAS_PREVIOUS      | true if a category exists before this one in the current parent category, following categories positions.<br/> **Only available if "with_prev_next_info" is set to true**                    |
+| $ID                | the category id                                                                                                                                                                              |
+| $IS_TRANSLATED     | check if the category is translated or not                                                                                                                                                   |
+| $LOCALE            | the locale used for this loop                                                                                                                                                                |
+| $META_DESCRIPTION  | the category meta description                                                                                                                                                                |
+| $META_KEYWORD      | the category meta keyword                                                                                                                                                                    |
+| $META_TITLE        | the category meta title                                                                                                                                                                      |
+| $NEXT              | The ID of category after this one in the current parent category, following categories positions, or null if none exists.<br/> **Only available if "with_prev_next_info" is set to true**    |
+| $PARENT            | the parent category                                                                                                                                                                          |
+| $POSITION          | the category position                                                                                                                                                                        |
+| $POSTSCRIPTUM      | the category postscriptum                                                                                                                                                                    |
+| $PRODUCT_COUNT     | Number of visible products contained by the current category. <br/> **Only available if "need_product_child" is set to true**                                                                |
+| $PREVIOUS          | The ID of category before this one in the current parent category, following categories positions, or null if none exists.<br/> **Only available if "with_prev_next_info" is set to true**   |
+| $ROOT              |                                                                                                                                                                                              |
+| $TEMPLATE          | the template id associated to this category                                                                                                                                                  |
+| $TITLE             | the category title                                                                                                                                                                           |
+| $URL               | the category URL                                                                                                                                                                             |
+| $VISIBLE           | Return if the category is visible or not                                                                                                                                                     |
 
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#category-order-possible-values}
+
 [Arguments](#category-arguments)
 
 | Ascending value  | Descending value | Sorted fields            |

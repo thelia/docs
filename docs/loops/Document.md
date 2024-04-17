@@ -2,7 +2,7 @@
 title: Document
 ---
 
-The document loop process, cache and display products, categories, contents and folders documents.   
+The document loop process, cache and display products, categories, contents and folders documents.  
 `{loop type="document" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#document-arguments}
@@ -48,6 +48,7 @@ Plus the [global arguments](./global_arguments) and the [global I18n](./global_a
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#document-order-possible-values}
+
 [Arguments](#document-arguments)
 
 | Ascending value | Descending value | Sorted fields       |
@@ -57,6 +58,7 @@ Plus the [global outputs](./global_outputs)
 | random          |                  | pseudo-random order |
 
 ## Souce expected values {#document-source-expected-values}
+
 [Arguments](#document-arguments)
 
 | value    |

@@ -2,14 +2,14 @@
 title: Cart
 ---
 
-Cart loop displays cart information.      
+Cart loop displays cart information.  
 `{loop type="cart" name="the-loop-name" [argument="value"], [...]}`
 
-## Arguments {#pse-arguments}
+## Arguments {#cart-arguments}
 
-| Argument | Description | Default | Example |
-| ------------- |:-------------| :-------------: | :-------------|
-| order         | A list of values <br/> Expected values : <br/> - reverse : reverse chronological item add order | normal | order="reverse" |
+| Argument      | Description                                                                                     | Default         | Example       |
+| ------------- |:------------------------------------------------------------------------------------------------| :-------------: | :-------------|
+| order         | A list of values <br/> Expected values : <br/> - reverse : reverse chronological item add order | normal          | order="reverse"|
 
 Plus the [global arguments](./global_arguments)
 
@@ -43,7 +43,8 @@ Plus the [global arguments](./global_arguments)
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#brand-order-possible-values}
-[Arguments](#brand-arguments)
+
+[Arguments](#cart-arguments)
 
 | Ascending value | Descending value  | Sorted fields                 |
 |-----------------|-------------------|:------------------------------|

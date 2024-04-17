@@ -2,7 +2,7 @@
 title: Feature
 ---
 
-Feature loop lists features.   
+Feature loop lists features.  
 `{loop type="feature" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#feature-arguments}
@@ -37,6 +37,7 @@ Plus the [global arguments](./global_arguments) and the [global I18n](./global_a
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#feature-order-possible-values}
+
 [Arguments](#feature-arguments)
 
 | Ascending value | Descending value | Sorted fields |
