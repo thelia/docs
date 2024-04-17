@@ -9,6 +9,7 @@ delivery loop displays delivery modules information.
 
 | Argument     | Description                                                                     | Default | Example                    |
 |--------------|:--------------------------------------------------------------------------------|:-------:|:---------------------------|
+| all [produspecific base module loop](./BaseSpecificModule) arguments|                       |         |                            |
 | address      | An address id.                                                                  |         | address=21                 |                                                    |           | product="2"                 |
 | code         | A module code.                                                                  |         | code='Atos'                |
 | country      | A country id.                                                                   |         | country=2                  |
