@@ -2,7 +2,7 @@
 title: Config
 ---
 
-Config loop, to access configuration variables    
+Config loop, to access configuration variables  
 `{loop type="config" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#conf-arguments}
@@ -38,6 +38,7 @@ Plus the [global arguments](./global_arguments) and the [global I18n](./global_a
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#conf-order-possible-values}
+
 [Arguments](#conf-arguments)
 
 | Ascending value                  | Descending value  | Sorted fields |

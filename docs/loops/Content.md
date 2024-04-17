@@ -2,7 +2,7 @@
 title: Content
 ---
 
-Content loop lists contents from your shop.     
+Content loop lists contents from your shop.  
 `{loop type="content" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#content-arguments}
@@ -26,39 +26,40 @@ Plus the [global arguments](./global_arguments), the [global I18n](./global_argu
 
 ## Outputs
 
-| Variable | Value                           | If with_prev_next_info='true' | If with_prev_next_info='false' |
-| :---------------------------------------------------------------------------  | :------------------------------ | :-------: | :-------: |
-| $CHAPO	                                                                | the content chapo | ✅ | ✅ |
-| $DEFAULT_FOLDER	                                                                | the default folder id for the current content | ✅ | ✅ |
-| $DESCRIPTION	                                                                | the content description | ✅ | ✅ |
-| $HAS_NEXT	                                                                | true if a content exists after this one in the current folder, following contents positions.| ✅ | 🚫 |
-| $HAS_PREVIOUS	                                                                | true if a content exists before this one in the current folder, following contents positions.| ✅ | 🚫 |
-| $ID	                                                                | the content id | ✅ | ✅ |
-| $IS_TRANSLATED	                                                                | check if the content is translated | ✅ | ✅ |
-| $LOCALE	                                                                | The locale used for this research | ✅ | ✅ |
-| $META_DESCRIPTION	                                                                | the content meta description | ✅ | ✅ |
-| $META_KEYWORDS	                                                                | the content meta keywords | ✅ | ✅ |
-| $META_TITLE	                                                                | the content meta title | ✅ | ✅ |
-| $NEXT	                                                                | The ID of content after this one in the current folder, following contents positions, or null if none exists. | ✅ | 🚫 |
-| $POSITION	                                                                | the content position | ✅ | ✅ |
-| $POSTSCRIPTUM	                                                                | the content postscriptum | ✅ | ✅ |
-| $PREVIOUS	                                                                | The ID of content before this one in the current folder, following contents positions, or null if none exists. | ✅ | 🚫 |
-| $TITLE	                                                                | the content title | ✅ | ✅ |
-| $URL	                                                                | the content URL | ✅ | ✅ |
+| Variable                                                                      | Value                                                                                                          | If with_prev_next_info='true' | If with_prev_next_info='false' |
+| :---------------------------------------------------------------------------  | :------------------------------------------------------------------------------------------------------------- | :---------------------------: | :----------------------------: |
+| $CHAPO                                                                        | the content chapo                                                                                              | ✅                             | ✅                             |
+| $DEFAULT_FOLDER                                                               | the default folder id for the current content                                                                  | ✅                             | ✅                             |
+| $DESCRIPTION                                                                  | the content description                                                                                        | ✅                             | ✅                             |
+| $HAS_NEXT                                                                     | true if a content exists after this one in the current folder, following contents positions.                   | ✅                             | 🚫                             |
+| $HAS_PREVIOUS                                                                 | true if a content exists before this one in the current folder, following contents positions.                  | ✅                             | 🚫                             |
+| $ID                                                                           | the content id                                                                                                 | ✅                             | ✅                             |
+| $IS_TRANSLATED                                                                | check if the content is translated                                                                             | ✅                             | ✅                             |
+| $LOCALE                                                                       | The locale used for this research                                                                              | ✅                             | ✅                             |
+| $META_DESCRIPTION                                                             | the content meta description                                                                                   | ✅                             | ✅                             |
+| $META_KEYWORDS                                                                | the content meta keywords                                                                                      | ✅                             | ✅                             |
+| $META_TITLE                                                                   | the content meta title                                                                                         | ✅                             | ✅                             |
+| $NEXT                                                                         | The ID of content after this one in the current folder, following contents positions, or null if none exists.  | ✅                             | 🚫                             |
+| $POSITION                                                                     | the content position                                                                                           | ✅                             | ✅                             |
+| $POSTSCRIPTUM                                                                 | the content postscriptum                                                                                       | ✅                             | ✅                             |
+| $PREVIOUS                                                                     | The ID of content before this one in the current folder, following contents positions, or null if none exists. | ✅                             | 🚫                             |
+| $TITLE                                                                        | the content title                                                                                              | ✅                             | ✅                             |
+| $URL                                                                          | the content URL                                                                                                | ✅                             | ✅                             |
 
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#content-order-possible-values}
+
 [Arguments](#content-arguments)
 
-| Ascending value                      | Descending value  | Sorted fields |
-|--------------------------------------|-------------------|:--------------|
-| alpha                            | alpha_reverse | title     |
-| created                            | created_reverse | date of content creation     |
-| given_id                            |  | eturn the same order received in `id` argument which therefore must be set     |
-| id                            | id_reverse | ID    |
-| manual                            | manual_reverse | position, considering a given folder. `folder` argument must be set    |
-| position                            | position_reverse | position, without considering a parent folder   |
-| random                            |  |   |
-| updated                            | updated_reverse  | date of content update  |
-| visible                            | visible_reverse  | online/offline items firts  |
+| Ascending value      | Descending value  | Sorted fields |
+|----------------------|-------------------|:----------------------------------------------------------------------------|
+| alpha                | alpha_reverse     | title                                                                       |
+| created              | created_reverse   | date of content creation                                                    |
+| given_id             |                   | return the same order received in `id` argument which therefore must be set |
+| id                   | id_reverse        | ID                                                                          |
+| manual               | manual_reverse    | position, considering a given folder. `folder` argument must be set         |
+| position             | position_reverse  | position, without considering a parent folder                               |
+| random               |                   |                                                                             |
+| updated              | updated_reverse   | date of content update                                                      |
+| visible              | visible_reverse   | online/offline items firts                                                  |
