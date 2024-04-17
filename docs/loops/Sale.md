@@ -2,7 +2,7 @@
 title: Sale
 ---
 
-Sale loop provides an access to sale operations defined on your shop.   
+Sale loop provides an access to sale operations defined on your shop.  
 `{loop type="sale" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#sale-arguments}
@@ -13,10 +13,10 @@ Sale loop provides an access to sale operations defined on your shop.
 | currency | A currency id, to get the price offset defined for this currency                                                     | The current shop currency  | currency="1"        |
 | exclude  | A single or a list of sale ids to excluded from results.                                                             |                            | id="2", id="1,4,7"  |
 | id       | A single or a list of sale ids.                                                                                      |                            | id="2", id="1,4,7"  |
-| order    | A list of values see [sorting possible values](#sale-order-possible-values)                                          |           manual           | order=" random"     |
+| order    | A list of values see [sorting possible values](#sale-order-possible-values)                                          | start-date              | order=" random"     |
 | product  | A single or a list of product IDs. If specified, the loop will return the sales in which these products are selected |                            | id="2", id="1,4,7"  |
 
-Plus the [global arguments](./global_arguments) and [search arguments](./search_arguments)
+Plus the [global arguments](./global_arguments), [global arguments I18n](./global_arguments_I18n) and [search arguments](./search_arguments)
 
 ## Outputs
 
@@ -43,15 +43,16 @@ Plus the [global arguments](./global_arguments) and [search arguments](./search_
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#sale-order-possible-values}
+
 [Arguments](#sale-arguments)
 
-| Ascending value | Descending value | Sorted fields         |
-|-----------------|------------------|:----------------------|
-| active          | active-reverse   | active                |
-| alpha           | alpha-reverse    | title                 |
-| created         | created-reverse  | date of sale creation |
-| end-date        | end-date-reverse | end date              |
-| id              | id-reverse       | id                    |
-| label           | label-reverse    | label                 |
-| start-date      | start-date       | start date            |
-| updated         | updated-reverse  | date of sale update   |
+| Ascending value | Descending value   | Sorted fields         |
+|-----------------|--------------------|:----------------------|
+| active          | active-reverse     | active                |
+| alpha           | alpha-reverse      | title                 |
+| created         | created-reverse    | date of sale creation |
+| end-date        | end-date-reverse   | end date              |
+| id              | id-reverse         | id                    |
+| label           | label-reverse      | label                 |
+| start-date      | start-date-reverse | start date            |
+| updated         | updated-reverse    | date of sale update   |
