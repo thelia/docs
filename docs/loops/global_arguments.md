@@ -14,8 +14,5 @@ These arguments can be set on all loops
 | no-cache | | | |
 | offset  |The first product to display offset. Will not be used if `page` argument is set. | 0 | offset="10" |
 | page  | The page to display. | | page="2" |
-| return_url | | | |
-| search_in | | | |
-| search_mode | | | |
-| search_term | | | |
+| return_url | A boolean value which allows the urls generation. | yes | return_url="no" |
 | type | | | |
