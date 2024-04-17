@@ -13,7 +13,7 @@ Category path loop provides the path through the catalog to a given category. Fo
 | depth         | The max depth                                |      | depth="5"       |
 | visible       | Whatever we consider hidden category or not. | true | visible="false" |
 
-Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

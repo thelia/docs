@@ -12,7 +12,7 @@ title: Resource
 | order    | A list of values see [sorting possible values](#resource-order-possible-values)                 | id               | order="title"       |
 | profile  |                                                                                                 |                  |                     |
 
-Plus the [global arguments](./global_arguments), [global arguments I18n](./global_arguments_I18n)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

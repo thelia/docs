@@ -14,7 +14,7 @@ Taxes by country loop.
 | state       | the state where the tax applies                                            |         | state="45"          |
 | tax_rule    | the tax rule                                                               | null    | tax_rule="2"        |
 
-Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n)  
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

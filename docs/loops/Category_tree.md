@@ -16,7 +16,7 @@ Category tree loop, to get a category tree from a given category to a given dept
 | order       |                                                           | position|                 |
 | visible     | Whatever we consider hidden category or not.              | true    |                 |
 
-Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

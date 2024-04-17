@@ -13,7 +13,7 @@ loop displaying taxes rules created.
 | id       | A single or list of tax rule ids.                                          |         | id="2", id="1,4"           |
 | order    | A list of values see [sorting possible values](#tax-order-possible-values) |  alpha  | order="random"             |
 
-Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n)  
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

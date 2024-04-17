@@ -19,7 +19,7 @@ Feature loop lists features.
 | title            | A a string title                                                                                    |         | title="foo"           |
 | visible          | A boolean value.                                                                                    |   yes   | visible="no"          |
 
-Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

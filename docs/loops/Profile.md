@@ -10,7 +10,7 @@ title: Profile
 |----------|:------------------------------------------------------------------------|:--------------------------:|:--------------------|
 | id       | A single or a list of sale ids.                                         |                            | id="2", id="1,4,7"  |
 
-Plus the [global arguments](./global_arguments), [global arguments I18n](./global_arguments_I18n)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

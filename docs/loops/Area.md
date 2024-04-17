@@ -18,7 +18,7 @@ Area loop returns shipping zones information.
 | with_zone            | A module ID. Returns shipping zones which are assigned to this module ID                               |         |                    |
 | without_zone         | A module ID. Returns shipping zones which are not assigned to this module ID                           |         |                    |
 
-Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

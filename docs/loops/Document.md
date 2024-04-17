@@ -24,7 +24,7 @@ The document loop process, cache and display products, categories, contents and 
 | visible     | A boolean value.                                                                                                     |   yes   | visible="no"          |
 | with_prev_next_info|                                                                                                               |  false  |                       |
 
-Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 
