@@ -2,7 +2,7 @@
 title: Lang
 ---
 
-Lang loop.   
+Lang loop.  
 `{loop type="lang" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#lang-arguments}
@@ -43,6 +43,7 @@ Plus the [global arguments](./global_arguments)
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#lang-order-possible-values}
+
 [Arguments](#lang-arguments)
 
 | Ascending value | Descending value  | Sorted fields |
