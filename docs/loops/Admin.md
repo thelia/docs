@@ -2,7 +2,7 @@
 title: Admin
 ---
 
-Admin loop displays admins information.      
+Admin loop displays admins information.  
 `{loop type="admin" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#pse-arguments}
@@ -18,12 +18,12 @@ Plus the [global arguments](./global_arguments)
 
 | Variable        | Value                 |
 | :-------------  | :-------------------- |
-| $EMAIL     	  | the admin email       |
-| $FIRSTNAME	  | the admin firstname   |
-| $ID	          | the admin id          |
-| $LASTNAME	      | the admin lastname    |
-| $LOCALE	      | the admin locale      |
-| $LOGIN	      | the admin login       |
-| $PROFILE	      | the admin profile id  |
+| $EMAIL          | the admin email       |
+| $FIRSTNAME      | the admin firstname   |
+| $ID             | the admin id          |
+| $LASTNAME       | the admin lastname    |
+| $LOCALE         | the admin locale      |
+| $LOGIN          | the admin login       |
+| $PROFILE        | the admin profile id  |
 
 Plus the [global outputs](./global_outputs)

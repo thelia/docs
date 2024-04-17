@@ -16,6 +16,7 @@ This class is abstract
 Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
 
 ## Order possible values {#accessory-order-possible-values}
+
 [Arguments](#pse-arguments)
 
 | Ascending value                      | Descending value  | Sorted fields |

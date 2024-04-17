@@ -17,12 +17,13 @@ Plus the [global arguments](./global_arguments)
 | Variable                                                                      | Value                           |
 | :---------------------------------------------------------------------------  | :------------------------------ |
 | $EXTENSION                                                                    |                                 |
-| $ID	                                                                        |                                 |
-| $MIME	                                                                        |                                 |
-| $NAME                                 		                                |                                 |
-| $TYPE                                 		                                |                                 |
+| $ID                                                                           |                                 |
+| $MIME                                                                         |                                 |
+| $NAME                                                                         |                                 |
+| $TYPE                                                                         |                                 |
 
 ## Order possible values {#accessory-order-possible-values}
+
 [Arguments](#pse-arguments)
 
 | Ascending value                      | Descending value  | Sorted fields |

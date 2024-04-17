@@ -2,7 +2,7 @@
 title: Attribute
 ---
 
-Attribute loop lists attributes.     
+Attribute loop lists attributes.   
 `{loop type="attribute" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#attribute-arguments}
@@ -22,18 +22,19 @@ Plus the [global arguments](./global_arguments) and the [global I18n](./global_a
 
 | Variable       | Value                                     |
 | :------------  | :---------------------------------------- |
-| $CHAPO	     | the attribute chapo                       |
-| $DESCRIPTION	 | the attribute description                 |
-| $ID	         | the attribute id                          |
+| $CHAPO         | the attribute chapo                       |
+| $DESCRIPTION   | the attribute description                 |
+| $ID            | the attribute id                          |
 | $IS_TRANSLATED | check if the product is translated or not |
 | $LOCALE        |                                           |
-| $POSITION	     | If none of the product, template or exclude_template parameter is present, $POSITION contains the attribute position. Otherwise, it contains the attribute position in the product template context.          |
-| $POSTSCRIPTUM	 | the attribute postscriptum                |
+| $POSITION      | If none of the product, template or exclude_template parameter is present, $POSITION contains the attribute position. Otherwise, it contains the attribute position in the product template context.          |
+| $POSTSCRIPTUM  | the attribute postscriptum                |
 | $TITLE         | the attribute title                       |
 
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#attribute-order-possible-values}
+
 [Arguments](#attribute-arguments)
 
 | Ascending value | Descending value  | Sorted fields |
