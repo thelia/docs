@@ -13,7 +13,7 @@ loop displaying taxes available.
 | exclude          | A single or list of tax ids to exclude                                     |        | exclude="2", exclude="1,4"                    |
 | exclude_tax_rule | A single or list of tax_rule ids to exclude                                |        | exclude_tax_rule="2", exclude_tax_rule="1,4"  |
 | id               | A single or list of tax ids.                                               |        | id="2", id="1,4"                              |
-| order            | A list of values see [sorting possible values](#tax-order-possible-values) | alpha  |                                               |
+| order            | A list of values see [sorting possible values](#tax-order-possible-values) | alpha  | order="id"                                    |
 | tax_rule         | A single or list of tax_rule ids                                           |        | tax_rule="2", tax_rule="1,4"                  |
 
 Plus the [global arguments](./global_arguments)
@@ -39,5 +39,5 @@ Plus the [global outputs](./global_outputs)
 
 | Ascending value | Descending value | Sorted fields                                                             |
 |-----------------|------------------|:--------------------------------------------------------------------------|
-| alpha           | alpha_reverse    |                                                                           |
+| alpha           | alpha_reverse    | Title                                                                     |
 | id              | id_reverse       | Id                                                                        |
