@@ -7,12 +7,12 @@ Order product attribute combination loop lists order product attribute combinati
 
 ## Arguments {#order-arguments}
 
-| Argument         | Description                                                                                                                                                                                      | Default | Example               |
-|------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----------------------|
-| order            | A list of values <br/> Expected values : <br/> - alpha : alphabetical order on order product attribute title <br/> - alpha_reverse : reverse alphabetical order on order product attribute title |  alpha  | order="alpha_reverse" |
-| order_product    | A single order product id.                                                                                                                                                                       |  null   | order_product="2"     |
+| Argument         | Description                                         | Default | Example               |
+|------------------|:----------------------------------------------------|:-------:|:----------------------|
+| order            | See [Order possible values](#order-possible-values) |  alpha   | order="alpha_reverse"|
+| order_product    | A single order product id.                          |  null   | order_product="2"     |
 
-Plus the [global arguments](./global_arguments)
+Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n.md)
 
 ## Outputs
 
@@ -30,3 +30,11 @@ Plus the [global arguments](./global_arguments)
 | $ORDER_PRODUCT_ID                    | the related order product ID                          |
 
 Plus the [global outputs](./global_outputs)
+
+## Order possible values
+
+[Arguments](#order-arguments)
+
+| Ascending value | Descending value | Sorted fields |
+|-----------------|------------------|:--------------|
+| alpha           | alpha_reverse    |               |
