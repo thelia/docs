@@ -16,7 +16,7 @@ loop displaying taxes available.
 | order            | A list of values see [sorting possible values](#tax-order-possible-values) | alpha  |                                               |
 | tax_rule         | A single or list of tax_rule ids                                           |        | tax_rule="2", tax_rule="1,4"                  |
 
-Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n)  
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

@@ -13,7 +13,7 @@ Generic loop can return any table present in your database and configured with p
 | filters    | A single or a list of filters to apply on columns in this format <code>column_name:value1,value2&#124;other_column:value</code> |                                | filters="id:1,3&#124;visible:1"     |
 | order      | A single or a list of orders to apply on columns  in this format <code>column_name:DESC&#124;other_column:ASC</code>            |                                | order="id:DESC&#124;created_at:ASC" |
 | locale     | The locale for translated columns                                                                                               | The current locale for session |                                     |
-| limit     | | | |
+| limit      | The number of rows to return                                                                                                    |                                | limit="10"                          |
 
 Plus the [global arguments](./global_arguments)
 

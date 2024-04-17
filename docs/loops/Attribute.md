@@ -16,7 +16,7 @@ Attribute loop lists attributes.
 | product           | A single or a list of product ids.                                                                  |         | id="2", id="1,4,7"    |
 | template          | A single or a list of template ids. Only features attached to these templates will be returned.     |         | id="2", id="1,4,7"    |
 
-Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

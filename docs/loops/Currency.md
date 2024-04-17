@@ -14,7 +14,7 @@ Currency loop lists currencies.
 | id           | A single or a list of currency ids.                                             |         | id="2", id="1,4,7"           |
 | order        | A list of values see [sorting possible values](#currency-order-possible-values) | manual  | order="id_reverse"           |
 
-Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

@@ -15,7 +15,7 @@ Return coupons information
 | is_enabled | If true, only enabled are returned. If false, only disabled coupons are returned.                                                                    |         | is_enabled="true"                               |
 | order      | A list of values see [sorting possible values](#coupon-order-possible-values)                                                                        | code    | order="alpha_reverse"                           |
 
-Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 
@@ -45,7 +45,7 @@ Plus the [global arguments](./global_arguments) and the [global I18n](./global_a
 | TOOLTIP                          | The coupon short description                                             |
 | USAGE_LEFT                       | number of usages left                                                    |
 
-Plus the [global outputs](./global_outputs) and the [global I18n](./global_arguments_I18n.md)
+Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#coupon-order-possible-values}
 

@@ -16,7 +16,7 @@ Config loop, to access configuration variables
 | secured       | A boolean value.                                                      |         |  secured="no"                |
 | variable      | Name of a variable config                                             |         |  variable="rewriting_enable" |
 
-Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

@@ -43,7 +43,7 @@ Product loop lists products from your shop. You very probably will have to use t
 | with_prev_next_info        | A boolean. If set to true, $HAS_PREVIOUS, $HAS_NEXT, $PREVIOUS, and $NEXT output variables are available.                                                                                                                                                                                                                            | false   | with_prev_next_info="yes"                                                                                                                                                                                                                                     |
 | with_prev_next_visible     |                                                                                                                                                                                                                                                                                                                                      | *       |                                                                                                                                                                                                                                                               |
 
-Plus the [global arguments](./global_arguments), [global arguments I18n](./global_arguments_I18n) and [search arguments](./search_arguments)
+Plus the [global arguments](./global_arguments) and [search arguments](./search_arguments)
 
 ## Outputs
 

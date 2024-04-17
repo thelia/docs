@@ -18,7 +18,7 @@ Country loop lists countries.
 | visible      | A boolean value to return visible or not visible countries (possible values : yes, no or *).       |   yes   | visible="no"                              |
 | with_area    | A boolean value to return either countries whose area is defined either all the others.            |         | with_area="true"                          |
 
-Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

@@ -13,7 +13,7 @@ This class is abstract
 | id           | A module id.                                                                   |         | module=4                   |
 | order        | A list of values see [sorting possible values](#bsm-order-possible-values)     | manual  | order=" id_reverse"        |
 
-Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Order possible values {#bsm-order-possible-values}
 

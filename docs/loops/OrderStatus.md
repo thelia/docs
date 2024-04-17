@@ -13,7 +13,7 @@ Order status loop displays order status information.
 | id       | A single or a list of order status ids.                           |         | id="2", id="1,4,7" |
 | order    | A list of values see [Expected values](#order-possible-values)    | manual  | order="random"     |
 
-Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

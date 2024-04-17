@@ -11,7 +11,7 @@ Title loop lists titles.
 |----------|:---------------------------------------------------------------------------|:-------:|:--------------------|
 | id       | A single or a list of title ids.                                           |         | id="2", id="1,4,7"  |
 
-Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n)  
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 
