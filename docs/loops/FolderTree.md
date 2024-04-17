@@ -20,9 +20,9 @@ Plus the [global arguments](./global_arguments) and [global arguments I18n](./gl
 
 | Variable     | Value                                  |
 |:-------------|:---------------------------------------|
-| $CHILD_COUNT |                                        |
+| $CHILD_COUNT | the number of child folders            |
 | $ID          | the folder id                          |
-| $LEVEL       |                                        |
+| $LEVEL       | the folder level                       |
 | $PARENT      | the parent folder                      |
 | $TITLE       | the folder title                       |
 | $URL         | the folder URL                         |
