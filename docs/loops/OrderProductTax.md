@@ -2,16 +2,16 @@
 title: Order product tax
 ---
 
-Order product tax loop displays taxes available.   
+Order product tax loop displays taxes available.  
 `{loop type="order_product_tax" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#order-arguments}
 
 | Argument         | Description                 | Default | Example            |
 |------------------|:----------------------------|:-------:|:-------------------|
-| order_product *  | A single order product id.  |         | order_product="2"  |
+| order_product    | A single order product id.  | null    | order_product="2"  |
 
-Plus the [global arguments](./global_arguments) 
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 
