@@ -2,7 +2,7 @@
 title: Import Category
 ---
 
-Import category loop lists all defined import categories.   
+Import category loop lists all defined import categories.  
 `{loop type="import-category" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#import-arguments}
