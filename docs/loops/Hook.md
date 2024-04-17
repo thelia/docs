@@ -10,11 +10,11 @@ title: Hook
 
 | Argument | Description | Default | Example |
 |----------|:------------|:-------:|:--------|
+| active   | | | |
 | code     | The hook code | | |
+| exclude  | | | |
 | hook_type| The type of hook | | |
 | order    | | | |
-| exclude  | | | |
-| active   | | | |
 
 Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n.md)
 
@@ -22,19 +22,19 @@ Plus the [global arguments](./global_arguments) and [global arguments I18n](./gl
 
 | Variable        | Value |
 |:----------------|:------|
+| $ACTIVE         | |
+| $BLOCK          | |
+| $BY_MODULE      | |
+| $CHAPO          | |
+| $CODE           | |
+| $DESCRIPTION    | |
 | $ID             | |
 | $IS_TRANSLATED  | |
 | $LOCALE         | |
-| $TITLE          | |
-| $CHAPO          | |
-| $DESCRIPTION    | |
-| $CODE           | |
-| $TYPE           | |
 | $NATIVE         | |
-| $ACTIVE         | |
-| $BY_MODULE      | |
-| $BLOCK          | |
 | $POSITION       | |
+| $TITLE          | |
+| $TYPE           | |
 
 Plus the [global outputs](./global_outputs)
 
@@ -44,9 +44,9 @@ Plus the [global outputs](./global_outputs)
 
 | Ascending value | Descending value | Sorted fields |
 |-----------------|------------------|:--------------|
-| id              | id_reverse       | |
 | alpha           | alpha_reverse    | |
-| manual          | manual_reverse   | |
-| enabled         | enabled_reverse  | |
-| native          | native_reverse   | |
 | code            | code_reverse     | |
+| enabled         | enabled_reverse  | |
+| id              | id_reverse       | |
+| manual          | manual_reverse   | |
+| native          | native_reverse   | |
