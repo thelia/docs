@@ -11,7 +11,7 @@ This class is abstract
 | exclude      | A list of module IDs to exclude from the results                               |         | exclude="12,21"            |
 | exclude_code | A list of module codes to exclude from the results                             |         | exclude_code="Cheque,Atos" |
 | id           | A module id.                                                                   |         | module=4                   |
-| order        | A list of values see [sorting possible values](#bsm-order-possible-values) | manual  | order=" id_reverse"        |
+| order        | A list of values see [sorting possible values](#bsm-order-possible-values)     | manual  | order=" id_reverse"        |
 
 Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
 
