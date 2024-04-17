@@ -12,10 +12,11 @@ Category tree loop, to get a category tree from a given category to a given dept
 | category *  | A single category id.                                     |         | category="2"    |
 | depth       | The max depth                                             |         | depth="5"       |
 | exclude     | A single or a list of category ids to exclude for result. |         | exclude="5,72"  |
-| return_url  | A boolean value which allows the urls generation.         | yes     | return_url="no" |
-| visible     | Whatever we consider hidden category or not.              | true    | visible="false" |
+| need_count_child     |                                                  |         |                 |
+| order       |                                                           | position|                 |
+| visible     | Whatever we consider hidden category or not.              | true    |                 |
 
-Plus the [global arguments](./global_arguments)
+Plus the [global arguments](./global_arguments) and the [global I18n](./global_arguments_I18n.md)
 
 ## Outputs
 
@@ -42,3 +43,12 @@ I want to display a select list with all visible categories.
     {/loop}
 </select>
 ```
+
+## Order possible values {#brand-order-possible-values}
+[Arguments](#brand-arguments)
+
+| Ascending value | Descending value  | Sorted fields                 |
+|-----------------|-------------------|:------------------------------|
+| alpha           | alpha_reverse     |                               |
+| id              | id_reverse        |                               |
+| position        | position_reverse  |                               |
