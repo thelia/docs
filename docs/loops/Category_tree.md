@@ -7,29 +7,29 @@ Category tree loop, to get a category tree from a given category to a given dept
 
 ## Arguments
 
-| Argument    | Description                                               | Default | Example         |
-| ----------- |:----------------------------------------------------------| :-----: | :---------------|
-| category *  | A single category id.                                     |         | category="2"    |
-| depth       | The max depth                                             |         | depth="5"       |
-| exclude     | A single or a list of category ids to exclude for result. |         | exclude="5,72"  |
-| need_count_child     |                                                  |         |                 |
-| order       |                                                           | position|                 |
-| visible     | Whatever we consider hidden category or not.              | true    |                 |
+| Argument         | Description                                                                                            | Default | Example         |
+| ---------------- |:------------------------------------------------------------------------------------------------------ | :-----: | :---------------|
+| category *       | A single category id.                                                                                  |         | category="2"    |
+| depth            | The max depth                                                                                          |         | depth="5"       |
+| exclude          | A single or a list of category ids to exclude for result.                                              |         | exclude="5,72"  |
+| need_count_child | A boolean which indicates whether the number of children in each category should be taken into account |         |                 |
+| order            | A list of values <br/> [Expected values](#category-order-possible-values)                              | position| order="random"  |
+| visible          | Whatever we consider hidden category or not.                                                           | true    |                 |
 
 Plus the [global arguments](./global_arguments)
 
 ## Outputs
 
-| Variable            | Value                                    |
-| :------------------ | :--------------------------------------- |
-| $CHILD_COUNT        |                                          |
-| $ID                 | the category id                          |
-| $LEVEL              |                                          |
-| $PARENT             | the parent category                      |
-| $PREV_LEVEL         |                                          |
-| $TITLE              |  the category title                      |
-| $URL                |  the category URL                        |
-| $VISIBLE            |  whatever the category is visible or not |
+| Variable            | Value                                                   |
+| :------------------ | :------------------------------------------------------ |
+| $CHILD_COUNT        | The number of direct children of a category in the tree |
+| $ID                 | the category id                                         |
+| $LEVEL              | The depth of the category in the tree                   |
+| $PARENT             | the parent category                                     |
+| $PREV_LEVEL         | The depth of the direct parent category in the tree.    |
+| $TITLE              |  the category title                                     |
+| $URL                |  the category URL                                       |
+| $VISIBLE            |  whatever the category is visible or not                |
 
 Plus the [global outputs](./global_outputs)
 
