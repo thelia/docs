@@ -13,6 +13,7 @@ Export loop lists all defined exports.
 | id       | A single or a list of export ids.                                             |         | id="2", id="1,4,7"                                                             |
 | order    | A list of values see [sorting possible values](#export-order-possible-values) | manual  | order="alpha"                                                                  |
 | ref      | A single or a list of export references.                                      |         | ref="thelia.export.customer", id="thelia.export.customer,thelia.export.orders" |
+|          | And the [Import export type arguments](./ImportExportType)                    |         |                                                                                |
 
 Plus the [global arguments](./global_arguments)
 
