@@ -7,40 +7,40 @@ Product sale elements loop lists product sale elements from your shop. You may n
 
 ## Arguments {#pse-arguments}
 
-| Argument               | Description                                                                                                                          | Default         | Example                  |
-| ---------------------- |:-------------------------------------------------------------------------------------------------------------------------------------| :-------------: | :------------------------|
-| attribute_availability |                                                                                                                                      |                 |                          |
-| currency               | A currency id                                                                                                                        |                 | currency="1"             |
-| default                | A boolean value. If true, returns only the default product sale elements. If false, the default product sale element is not returned |                 | default="yes"            |
-| id                     | A comma separated list of product sale elements id. Mandatory if the 'product' parameter is not present                              |                 | id="1,3,8"               |
-| new                    | A boolean value. If true, returns only product sale elements for which promo is on. The reverse with 'false'                         |                 | new="yes"                |
-| order                  | A list of values see [sorting possible values](#pse-order-possible-values)                                                           | random          | order="promo,min_price"  |
-| product                | A single product id. Mandatory if the 'id' parameter is not present                                                                  |                 | product="2"              |
-| promo                  | A boolean value. If true, returns only product sale elements for which new is on. The reverse with 'false'                           |                 | promo="yes"              |
-| ref                    |                                                                                                                                      |                 |                          |
-| visible                | A boolean value, or * (the default) for ignoring this filter                                                                         | *               | visible="no"             |
+| Argument               | Description                                                                                                                          | Default         | Example                      |
+| ---------------------- |:-------------------------------------------------------------------------------------------------------------------------------------| :-------------: | :----------------------------|
+| attribute_availability | A single or a list of attribute availability (may not yet be managed on the back-end ?)                                              |                 | attribute_availability="2,7" |
+| currency               | A currency id                                                                                                                        |                 | currency="1"                 |
+| default                | A boolean value. If true, returns only the default product sale elements. If false, the default product sale element is not returned |                 | default="yes"                |
+| id                     | A comma separated list of product sale elements id. Mandatory if the 'product' parameter is not present                              |                 | id="1,3,8"                   |
+| new                    | A boolean value. If true, returns only product sale elements for which promo is on. The reverse with 'false'                         |                 | new="yes"                    |
+| order                  | A list of values see [sorting possible values](#pse-order-possible-values)                                                           | random          | order="promo,min_price"      |
+| product                | A single product id. Mandatory if the 'id' parameter is not present                                                                  |                 | product="2"                  |
+| promo                  | A boolean value. If true, returns only product sale elements for which new is on. The reverse with 'false'                           |                 | promo="yes"                  |
+| ref                    | A product reference                                                                                                                  |                 | ref="a_ref"                  |
+| visible                | A boolean value, or * (the default) for ignoring this filter                                                                         |                 | visible="no"                 |
 
 Plus the [global arguments](./global_arguments) and [search arguments](./search_arguments)
 
 ## Outputs
 
-| Variable       | Value                                                                                   |
-| :------------- | :-------------------------------------------------------------------------------------- |
-| $EAN_CODE      | the product sale element EAN Code                                                       |
-| $ID            | the product sale element id                                                             |
-| $IS_DEFAULT    | returns if the product sale element is the default product sale element for the product |
-| $IS_NEW        | returns if the product sale element is new                                              |
-| $IS_PROMO      | returns if the product sale element is in promo                                         |
-| $PRICE         | the product sale element price                                                          |
-| $PRICE_TAX     | the product sale element price tax                                                      |
-| $PRODUCT_ID    | the related product id                                                                  |
-| $PROMO_PRICE   | the product sale element promo price                                                    |
-| $PROMO_PRICE_TAX | the product sale element promo price tax                                              |
-| $QUANTITY      | the product sale element stock quantity                                                 |
-| $REF           | the product sale element reference                                                      |
-| $TAXED_PRICE   | the product sale element taxed price                                                    |
-| $TAXED_PROMO_PRICE | the product sale element taxed promo price                                          |
-| $WEIGHT        | the product sale element weight                                                         |
+| Variable           | Value                                                                                   |
+| :----------------- | :-------------------------------------------------------------------------------------- |
+| $EAN_CODE          | the product sale element EAN Code                                                       |
+| $ID                | the product sale element id                                                             |
+| $IS_DEFAULT        | returns if the product sale element is the default product sale element for the product |
+| $IS_NEW            | returns if the product sale element is new                                              |
+| $IS_PROMO          | returns if the product sale element is in promo                                         |
+| $PRICE             | the product sale element price                                                          |
+| $PRICE_TAX         | the product sale element price tax                                                      |
+| $PRODUCT_ID        | the related product id                                                                  |
+| $PROMO_PRICE       | the product sale element promo price                                                    |
+| $PROMO_PRICE_TAX   | the product sale element promo price tax                                                |
+| $QUANTITY          | the product sale element stock quantity                                                 |
+| $REF               | the product sale element reference                                                      |
+| $TAXED_PRICE       | the product sale element taxed price                                                    |
+| $TAXED_PROMO_PRICE | the product sale element taxed promo price                                              |
+| $WEIGHT            | the product sale element weight                                                         |
 
 Plus the [global outputs](./global_outputs)
 
@@ -75,12 +75,12 @@ I want to display all products sale elements for current product and show all th
 | Ascending value | Descending value | Sorted fields                                                             |
 |-----------------|------------------|:--------------------------------------------------------------------------|
 | id              | id_reverse       | Id                                                                        |
-| created         | created_reverse  |                                                                           |
+| created         | created_reverse  | creation date                                                             |
 | max_price       | min_price        | Price                                                                     |
 | new             |                  | new products first                                                        |
 | promo           |                  | promo products first                                                      |
 | quantity        | quantity_reverse | quantity                                                                  |
-| random          |                  |                                                                           |
-| ref             | ref_reverse      |  reference                                                                |
-| updated         | updated_reverse  |                                                                           |
-| weight          | weight_reverse   |  weight                                                                   |
+| random          |                  | pseudo-random                                                             |
+| ref             | ref_reverse      | reference                                                                 |
+| updated         | updated_reverse  | update date                                                               |
+| weight          | weight_reverse   | weight                                                                    |
