@@ -20,7 +20,7 @@ The module loop retrieve module informations
 | order       | A list of values see [sorting possible values](#module-order-possible-values)                                                                  | manual  | order="alpha_reverse"        |
 | profile     | A single or a list of profile ids.                                                                                                             |         | profile="2", profile="1,4,7" |
 
-Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

@@ -18,7 +18,7 @@ Brand loop lists brands defined in your shop.
 | visible              | A boolean value.                                                                                     | yes             | visible="no"              |
 | with_prev_next_info  | A boolean. If set to true, $PREVIOUS and $NEXT output arguments are available.                       | false           | with_prev_next_info="yes" |
 
-Plus the [global arguments](./global_arguments), the [global I18n](./global_arguments_I18n.md) and [search arguments](./search_arguments)
+Plus the [global arguments](./global_arguments) and [search arguments](./search_arguments)
 
 ## Outputs
 

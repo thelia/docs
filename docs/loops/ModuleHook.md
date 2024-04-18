@@ -19,7 +19,7 @@ title: Module Hook
 | module_active   |             |         |         |
 | order           | a list of values see [sorting possible values](#area-order-possible-values) | manual | order="id" |
 
-Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs {#area-outputs}
 

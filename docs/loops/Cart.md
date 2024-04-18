@@ -22,15 +22,15 @@ Plus the [global arguments](./global_arguments)
 | $PRICE                       | the product sale elements price (unit price)                          |
 | $PRODUCT_ID                  | the product id                                                        |
 | $PRODUCT_SALE_ELEMENTS_ID    | the product sale elements id                                          |
-| $PRODUCT_SALE_ELEMENTS_REF   |                                                                       |
+| $PRODUCT_SALE_ELEMENTS_REF   | the sales item reference                                              |
 | $PRODUCT_URL                 | the product url                                                       |
 | $PROMO_PRICE                 | the product sale elements in promo price (unit price)                 |
 | $PROMO_TAXED_PRICE           | the product sale elements in promo price including taxes (unit price) |
 | $QUANTITY                    | the cart item quantity                                                |
-| $REAL_PRICE                  |                                                                       |
-| $REAL_TAXED_PRICE            |                                                                       |
-| $REAL_TOTAL_PRICE            |                                                                       |
-| $REAL_TOTAL_TAXED_PRICE      |                                                                       |
+| $REAL_PRICE                  | the actual price of item in cart                                      |
+| $REAL_TAXED_PRICE            | the actual price of item in cart, after taxes are applied             |
+| $REAL_TOTAL_PRICE            | the actual total price of all items in cart                           |
+| $REAL_TOTAL_TAXED_PRICE      | the actual total price of all items in cart, after taxes are applied  |
 | $REF                         | the product ref                                                       |
 | $STOCK                       | the product sale elements available stock                             |
 | $TAXED_PRICE                 | the product sale elements price including taxes (unit price)          |

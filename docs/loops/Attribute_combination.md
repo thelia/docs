@@ -12,7 +12,7 @@ Attribute combination loop lists attribute combinations.
 | order                    | A list of values <br/> [Expected values](#accessory-order-possible-values) | alpha   | order="alpha_reverse" |
 | product_sale_elements \* | A single product sale elements id.                                         |         |  product="2"          |
 
-Plus the [global I18n](./global_arguments_I18n.md)
+
 
 ## Outputs
 
