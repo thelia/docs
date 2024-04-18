@@ -9,13 +9,13 @@ Module hook loop lists all defined module hooks.
 
 | Argument        | Description                                                                 | Default | Example              |
 |-----------------|:----------------------------------------------------------------------------|:-------:|:---------------------|
-| active          | Check if the hook is active                                                 |         | active="1"           |
+| active          | Check if the hook is active                                                 |   *     | active="1"           |
 | exclude         | A single or a list of hook IDs to exclude                                   |         | exclude="1,2,3"      |
 | hook            | The hook name                                                               |         | hook="displayHeader" |
-| hook_active     | Check if the hook is active                                                 |         | hook_active="1"      |
+| hook_active     | Check if the hook is active                                                 |   *     | hook_active="1"      |
 | id              | The hook ID                                                                 |         | id="2"               |
 | module          | The module name                                                             |         | module="blockcart"   |
-| module_active   | Check if the module is active                                               |         | module_active="1"    |
+| module_active   | Check if the module is active                                               |   *     | module_active="1"    |
 | order           | a list of values see [sorting possible values](#area-order-possible-values) | manual  | order="id"           |
 
 Plus the [global arguments](./global_arguments)
