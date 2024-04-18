@@ -3,7 +3,7 @@ title: Category tree
 ---
 
 Category tree loop, to get a category tree from a given category to a given depth.  
-`{loop type="category-tree" name="the-loop-name" [argument="value"], [...]}`
+`{loop type="category_tree" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments
 

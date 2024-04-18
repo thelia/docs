@@ -3,7 +3,7 @@ title: Country Area
 ---
 
 Country area loop lists.  
-`{loop type="country-area" name="the-loop-name" [argument="value"], [...]}`
+`{loop type="country_area" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#country-arguments}
 

@@ -3,7 +3,6 @@ title: Import Export Type
 ---
 
 Import export type loop lists all defined import export types.  
-`{loop type="import_export_type" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#area-arguments}
 

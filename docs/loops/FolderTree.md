@@ -3,7 +3,7 @@ title: Folder tree
 ---
 
 Folder tree loop, to get a folder tree from a given folder to a given depth.  
-`{loop type="folder-tree" name="the-loop-name" [argument="value"], [...]}`
+`{loop type="folder_tree" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#folder-arguments}
 

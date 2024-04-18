@@ -3,7 +3,7 @@ title: Tax rule
 ---
 
 loop displaying taxes rules created.  
-`{loop type="tax-rule" name="the-loop-name" [argument="value"], [...]}`
+`{loop type="tax_rule" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#tax-arguments}
 

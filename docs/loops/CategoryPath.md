@@ -3,7 +3,7 @@ title: Category path
 ---
 
 Category path loop provides the path through the catalog to a given category. For example if we have an "alpha" category standing in an "alpha_father" category which itseflf belong to "root" category. Category path loop for category "alpha" will return "root" then "alpha_father" then "alpha".  
-`{loop type="category-path" name="the-loop-name" [argument="value"], [...]}`
+`{loop type="category_path" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments
 

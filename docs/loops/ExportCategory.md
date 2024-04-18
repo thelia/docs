@@ -3,7 +3,7 @@ title: Export Category
 ---
 
 Export category loop lists all defined export categories.  
-`{loop type="export-category" name="the-loop-name" [argument="value"], [...]}`
+`{loop type="export_category" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#export-arguments}
 

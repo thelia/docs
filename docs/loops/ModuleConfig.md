@@ -3,7 +3,7 @@ title: Module Config
 ---
 
 The module config loop retrieve module config informations
-`{loop type="moduleconfig" name="the-loop-name" [argument="value"], [...]}`
+`{loop type="module_config" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#area-arguments}
 

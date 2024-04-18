@@ -3,7 +3,7 @@ title: Feature availability
 ---
 
 Feature availability loop lists feature availabilities.  
-`{loop type="feature-availability" name="the-loop-name" [argument="value"], [...]}`
+`{loop type="feature_availability" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#feature-arguments}
 
