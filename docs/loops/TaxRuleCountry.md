@@ -2,7 +2,7 @@
 title: Tax Rule Country
 ---
 
-Taxes by country loop.
+Taxes by country loop.  
 `{loop type="tax_rule_country" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#tax-arguments}
@@ -10,9 +10,9 @@ Taxes by country loop.
 | Argument    | Description                                                                | Default | Example             |
 |-------------|:---------------------------------------------------------------------------|:-------:|:--------------------|
 | ask         | to choose the [function provided by te loop](#ask-expected-value)          | taxes   | ask="countries"     |
-| country     | the country where the tax applies                                          | null    | country="14"        |
+| country *   | the country where the tax applies                                          | null    | country="14"        |
 | state       | the state where the tax applies                                            |         | state="45"          |
-| tax_rule    | the tax rule                                                               | null    | tax_rule="2"        |
+| tax_rule *  | the tax rule                                                               | null    | tax_rule="2"        |
 
 Plus the [global arguments](./global_arguments)
 
