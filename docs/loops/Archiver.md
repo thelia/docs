@@ -2,7 +2,8 @@
 title: Archiver
 ---
 
-Retrieves a list of archivers, sorts them and returns its information
+Retrieves a list of archivers, sorts them and returns its information.  
+`{loop type="archiver" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#pse-arguments}
 
