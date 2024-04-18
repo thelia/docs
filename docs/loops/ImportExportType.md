@@ -9,7 +9,7 @@ Import export type loop lists all defined import export types.
 
 | Argument | Description    | Default | Example                |
 |----------|:---------------|:-------:|:-----------------------|
-| catgory  | category name  |         | category="my_category" |
+| category | category name  |         | category="my_category" |
 | id       | the type ID    |         | id="2"                 |
 | order    | Sorting order  |         | order="id"             |
 | ref      | The ref column |         | ref="reference"        |
