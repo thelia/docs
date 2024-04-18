@@ -26,7 +26,7 @@ Plus the [global arguments](./global_arguments)
 | $DESCRIPTION                                                              | The config variable description           |
 | $HIDDEN                                                                   | check if the config variable is hidden    |
 | $ID                                                                       | the config variable id                    |
-| $IS_OVERRIDDEN_IN_ENV                                                     |                                           |
+| $IS_OVERRIDDEN_IN_ENV                                                     | check if the config is overridden         |
 | $IS_TRANSLATED                                                            | check if the config is translated         |
 | $LOCALE                                                                   | The locale used for this research         |
 | $NAME                                                                     | The config variable name                  |

@@ -8,7 +8,7 @@ Category path loop provides the path through the catalog to a given category. Fo
 ## Arguments
 
 | Argument | Description | Default | Example |
-| ------------- |:-------------| :-------------: | :-------------|
+| ------------- |:---------------------------------------------| :--: | :---------------|
 | category *    | A single category id.                        |      | category="2"    |
 | depth         | The max depth                                |      | depth="5"       |
 | visible       | Whatever we consider hidden category or not. | true | visible="false" |
@@ -17,13 +17,13 @@ Plus the [global arguments](./global_arguments)
 
 ## Outputs
 
-| Variable       | Value               |
-| :------------- | :------------------ |
-| $ID            | the category id     |
-| $LOCALE        |                     |
-| $PARENT        | the parent category |
-| $TITLE         | the category title  |
-| $URL           | the category URL    |
+| Variable       | Value                                                    |
+| :------------- | :------------------------------------------------------- |
+| $ID            | the category id                                          |
+| $LOCALE        | the language in which the information will be displayed  |
+| $PARENT        | the parent category                                      |
+| $TITLE         | the category title                                       |
+| $URL           | the category URL                                         |
 
 Plus the [global outputs](./global_outputs)
 

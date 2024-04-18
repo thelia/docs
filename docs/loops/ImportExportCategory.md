@@ -2,8 +2,7 @@
 title: Import Export Category
 ---
 
-...
-
+Import export category loop lists all defined import export categories.  
 `{loop type="importexportcategory" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#area-arguments}
