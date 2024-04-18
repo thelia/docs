@@ -3,7 +3,7 @@ title: Module Hook
 ---
 
 Module hook loop lists all defined module hooks.
-`{loop type="hook" name="the-loop-name" [argument="value"], [...]}`
+`{loop type="module_hook" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#area-arguments}
 
