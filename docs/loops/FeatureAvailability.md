@@ -10,7 +10,7 @@ Feature availability loop lists feature availabilities.
 | Argument | Description                                                                    | Default | Example               |
 |----------|:-------------------------------------------------------------------------------|:-------:|:----------------------|
 | exclude  | A single or a list of feature availability ids to exclude.                     |         | exclude="456,123"     |
-| feature  | A single or a list of feature ids.                                             |         |                       |
+| feature  | A single or a list of feature ids.                                             |         | feature="2,5"         |
 | id       | A single or a list of feature availability ids.                                |         | id="2", id="1,4,7"    |
 | order    | A list of values see [sorting possible values](#feature-order-possible-values) | manual  | order="alpha_reverse" |
 

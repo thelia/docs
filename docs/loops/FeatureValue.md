@@ -13,7 +13,7 @@ Feature value loop lists feature availabilities.
 | exclude_free_text            | A boolean value to return only features with free text value (no feature availability). | 0       | exclude_free_text="1" or exclude_free_text="true" |
 | feature                      | A single feature id.                                                                    | null    | feature="2"                                       |
 | feature_availability         | A single or a list of feature availability ids.                                         |         | feature_availability="2,5"                        |
-| force_return                 |                                                                                         | true    |                                                   |
+| force_return                 | A boolean value to return all features, even if they are not available.                 | true    | force_return="1"                                  |
 | free_text                    | A single or a list of strings.                                                          |         | free_text="some text,some other text"             |
 | order                        | A list of values see [sorting possible values](#feature-order-possible-values)          | manual  | order="alpha_reverse"                             |
 | product                      | A single product id.                                                                    |         | product="9"                                       |

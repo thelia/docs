@@ -20,7 +20,7 @@ Plus the [global arguments](./global_arguments)
 
 | Variable       | Value                                           |
 |:---------------|:------------------------------------------------|
-| $FORMAT        |                                                 |
+| $FORMAT        | the format of the currency                      |
 | $ID            | the currency id                                 |
 | $ISOCODE       | the ISO numeric currency code                   |
 | $IS_DEFAULT    | returns if the currency is the default currency |
@@ -30,7 +30,7 @@ Plus the [global arguments](./global_arguments)
 | $POSITION      | the currency position                           |
 | $RATE          | the currency rate                               |
 | $SYMBOL        | the ISO numeric currency symbol                 |
-| $VISIBLE       |                                                 |
+| $VISIBLE       | the visibility status of the currency           |
 
 Plus the [global outputs](./global_outputs)
 
@@ -38,13 +38,13 @@ Plus the [global outputs](./global_outputs)
 
 [Arguments](#currency-arguments)
 
-| Ascending value | Descending value | Sorted fields |
-|-----------------|------------------|:--------------|
-| code            | code-reverse     | currency code |
-| id              | id_reverse       | id            |
-| is_default      | is_default_reverse|              |
-| manual          | manual_reverse   |               |
-| name            | name_reverse     | name          |
-| rate            | rate_reverse     |               |
-| symbol          | symbol_reverse   |               |
-| visible         | visible_reverse  |               |
+| Ascending value | Descending value    | Sorted fields |
+|-----------------|-------------------- |:--------------|
+| code            | code-reverse        | currency code |
+| id              | id_reverse          | id            |
+| is_default      | is_default_reverse  | by default    |
+| manual          | manual_reverse      | position      |
+| name            | name_reverse        | name          |
+| rate            | rate_reverse        | rate          |
+| symbol          | symbol_reverse      | symbol        |
+| visible         | visible_reverse     | visible       |
