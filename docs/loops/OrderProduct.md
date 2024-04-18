@@ -49,11 +49,11 @@ Plus the [global arguments](./global_arguments)
 | $WAS_IN_PROMO              | whatever the order product sale elements was in promo or not   |
 | $WAS_NEW                   | whatever the order product sale elements was new or not        |
 | $WEIGHT                    | the order product sale elements weight                         |
-| $REAL_PRICE                |                                                                |
-| $REAL_TAXED_PRICE          |                                                                |
-| $REAL_PRICE_TAX            |                                                                |
-| $REAL_TOTAL_PRICE          |                                                                |
-| $REAL_TOTAL_TAXED_PRICE    |                                                                |
-| $REAL_TOTAL_PRICE_TAX      |                                                                |
+| $REAL_PRICE                | the real price of the product                                  |
+| $REAL_TAXED_PRICE          | the real price of the product including taxes                  |
+| $REAL_PRICE_TAX            | the real price of the taxe for the product                     |
+| $REAL_TOTAL_PRICE          | the real total price of the product                            |
+| $REAL_TOTAL_TAXED_PRICE    | the real total price of the product including taxes            |
+| $REAL_TOTAL_PRICE_TAX      | the real total price of the taxe for the product               |
 
 Plus the [global outputs](./global_outputs)

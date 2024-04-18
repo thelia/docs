@@ -7,13 +7,9 @@ payment loop displays payment modules information.
 
 ## Arguments {#payment-arguments}
 
-| Argument     | Description                                                                    | Default | Example                    |
-|--------------|:-------------------------------------------------------------------------------|:-------:|:---------------------------|
-| code         | A module code.                                                                 |         | code='Atos'                |
-| exclude      | A list of module IDs to exclude from the results                               |         | exclude="12,21"            |
-| exclude_code | A list of module codes to exclude from the results                             |         | exclude_code="Cheque,Atos" |
-| id           | A module id.                                                                   |         | module=4                   |
-| order        | A list of values see [sorting possible values](#payment-order-possible-values) | manual  | order=" id_reverse"        |
+| Argument                                                   | Description        | Default | Example         |
+|------------------------------------------------------------|:-------------------|:-------:|:----------------|
+| all [base specific module arguments](./BaseSpecificModule) |                    |         |                 |
 
 Plus the [global arguments](./global_arguments)
 
@@ -29,13 +25,3 @@ Plus the [global arguments](./global_arguments)
 | $TITLE        | the payment module title             |
 
 Plus the [global outputs](./global_outputs)
-
-## Order possible values {#payment-order-possible-values}
-
-[Arguments](#payment-arguments)
-
-| Ascending value | Descending value | Sorted fields |
-|-----------------|------------------|:--------------|
-| alpha           | alpha_reverse    | title         |
-| id              | id_reverse       | id            |
-| manual          | manual_reverse   | position      |
