@@ -7,17 +7,17 @@ delivery loop displays delivery modules information.
 
 ## Arguments {#delivery-arguments}
 
-| Argument     | Description                                                                     | Default | Example                    |
-|--------------|:--------------------------------------------------------------------------------|:-------:|:---------------------------|
-| all [produspecific base module loop](./BaseSpecificModule) arguments|                          |         |                            |
-| address      | An address id.                                                                  |         | address=21                 |
-| code         | A module code.                                                                  |         | code='Atos'                |
-| country      | A country id.                                                                   |         | country=2                  |
-| exclude      | A list of module IDs to exclude from the results                                |         | exclude="12, 21"           |
-| exclude_code | A list of module codes to exclude from the results                              |         | exclude_code="Cheque,Atos" |
-| id           | A module id.                                                                    |         | module=4                   |
-| order        | A list of values see [sorting possible values](#delivery-order-possible-values) | manual  | order="id_reverse"         |
-| state        | A state id.                                                                     |         | state=12                   |
+| Argument                                                              | Description                                                                     | Default | Example                    |
+|---------------------------------------------------------------------- |:--------------------------------------------------------------------------------|:-------:|:---------------------------|
+| all [produspecific base module loop](./BaseSpecificModule) arguments  |                                                                                 |         |                            |
+| address                                                               | An address id.                                                                  |         | address=21                 |
+| code                                                                  | A module code.                                                                  |         | code='Atos'                |
+| country                                                               | A country id.                                                                   |         | country=2                  |
+| exclude                                                               | A list of module IDs to exclude from the results                                |         | exclude="12, 21"           |
+| exclude_code                                                          | A list of module codes to exclude from the results                              |         | exclude_code="Cheque,Atos" |
+| id                                                                    | A module id.                                                                    |         | module=4                   |
+| order                                                                 | A list of values see [sorting possible values](#delivery-order-possible-values) | manual  | order="id_reverse"         |
+| state                                                                 | A state id.                                                                     |         | state=12                   |
 
 Plus the [global arguments](./global_arguments)
 
