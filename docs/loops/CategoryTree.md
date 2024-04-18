@@ -51,6 +51,6 @@ I want to display a select list with all visible categories.
 
 | Ascending value | Descending value  | Sorted fields                 |
 |-----------------|-------------------|:------------------------------|
-| alpha           | alpha_reverse     |                               |
-| id              | id_reverse        |                               |
-| position        | position_reverse  |                               |
+| alpha           | alpha_reverse     | sort by column                |
+| id              | id_reverse        | id                            |
+| position        | position_reverse  | position                      |
