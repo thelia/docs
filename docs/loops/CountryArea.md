@@ -18,12 +18,12 @@ Plus the [global arguments](./global_arguments)
 
 ## Outputs
 
-| Variable         | Value                                                                                             |
-|:-----------------|:--------------------------------------------------------------------------------------------------|
-| $AREA_ID         | The ID of the area corresponding to the country.                                                  |
-| $COUNTRY_ID      | The ID of the country.                                                                            |
-| $ID              | The ID of the country area.                                                                       |
-| $STATE_ID        | The ID of the state corresponding to the country.                                                 |
+| Variable         | Value                                             |
+|:-----------------|:--------------------------------------------------|
+| $AREA_ID         | The ID of the area corresponding to the country.  |
+| $COUNTRY_ID      | The ID of the country.                            |
+| $ID              | The ID of the country area.                       |
+| $STATE_ID        | The ID of the state corresponding to the country. |
 
 Plus the [global outputs](./global_outputs)
 
@@ -31,9 +31,9 @@ Plus the [global outputs](./global_outputs)
 
 [Arguments](#country-arguments)
 
-| Ascending value | Descending value | Sorted fields                    |
-|-----------------|------------------|:---------------------------------|
-| area            | area-reverse     |                                  |
-| country         | country_reverse  |                                  |
-| id              | id_reverse       |                                  |
-| state           | state_reverse    |                                  |
+| Ascending value | Descending value | Sorted fields        |
+|-----------------|------------------|:---------------------|
+| area            | area-reverse     | ID of the area       |
+| country         | country_reverse  | ID of the country    |
+| id              | id_reverse       | ID                   |
+| state           | state_reverse    | ID of the state      |
