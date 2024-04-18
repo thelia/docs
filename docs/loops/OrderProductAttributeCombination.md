@@ -10,7 +10,7 @@ Order product attribute combination loop lists order product attribute combinati
 | Argument         | Description                                         | Default | Example               |
 |------------------|:----------------------------------------------------|:-------:|:----------------------|
 | order            | See [Order possible values](#order-possible-values) |  alpha  | order="alpha_reverse" |
-| order_product    | A single order product id.                          |  null   | order_product="2"     |
+| order_product *  | A single order product id.                          |  null   | order_product="2"     |
 
 Plus the [global arguments](./global_arguments)
 

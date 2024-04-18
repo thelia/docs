@@ -9,7 +9,7 @@ Order product tax loop displays taxes available.
 
 | Argument         | Description                 | Default | Example            |
 |------------------|:----------------------------|:-------:|:-------------------|
-| order_product    | A single order product id.  | null    | order_product="2"  |
+| order_product *  | A single order product id.  | null    | order_product="2"  |
 
 Plus the [global arguments](./global_arguments)
 

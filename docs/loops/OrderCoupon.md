@@ -9,7 +9,7 @@ Retrieve order coupons information for a given order
 
 | Argument | Description         | Default | Example    |
 |----------|:--------------------|:-------:|:-----------|
-| order    | A single order id.  |   null  | order="2"  |
+| order *  | A single order id.  |   null  | order="2"  |
 
 Plus the [global arguments](./global_arguments)
 
