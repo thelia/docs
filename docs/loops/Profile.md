@@ -2,6 +2,7 @@
 title: Profile
 ---
  
+Profile loop lists profiles.  
 `{loop type="profile" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#profile-arguments}
@@ -17,8 +18,8 @@ Plus the [global arguments](./global_arguments)
 | Variable               | Value                                                                         |
 |:-----------------------|:------------------------------------------------------------------------------|
 | $CHAPO                 | the chapo                                                                     |
-| $CODE                  |                                                                               |
-| $DESCRIPTION           |                                                                               |
+| $CODE                  | the content code                                                              |
+| $DESCRIPTION           | the content description                                                       |
 | $ID                    | the content id                                                                |
 | $IS_TRANSLATED         | check if the content is translated                                            |
 | $LOCALE                | the locale (e.g. fr_FR) of the returned data                                  |
