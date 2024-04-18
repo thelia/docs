@@ -2,33 +2,32 @@
 title: Import Export Type
 ---
 
-...
-
+Import export type loop lists all defined import export types.  
 `{loop type="importexporttype" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#area-arguments}
 
-| Argument | Description | Default | Example |
-|----------|:------------|:-------:|:--------|
-| catgory  |             |         |         |
-| id       |             |         |         |
-| order    |             |         |         |
-| ref      |             |         |         |
+| Argument | Description    | Default | Example                |
+|----------|:---------------|:-------:|:-----------------------|
+| catgory  | category name  |         | category="my_category" |
+| id       | the type ID    |         | id="2"                 |
+| order    | Sorting order  |         | order="id"             |
+| ref      | The ref column |         | ref="reference"        |
 
 Plus the [global arguments](./global_arguments)
 
 ## Outputs {#area-outputs}
 
-| Variable        | Value |
-|:----------------|:------|
-| CATEGORY_ID     |       |
-| DESCRIPTION     |       |
-| HANDLE_CLASS    |       |
-| ID              |       |
-| POSITION        |       |
-| REF             |       |
-| TITLE           |       |
-| URL             |       |
+| Variable        | Value                    |
+|:----------------|:-------------------------|
+| CATEGORY_ID     | The category ID          |
+| DESCRIPTION     | The category description |
+| HANDLE_CLASS    | The handle class         |
+| ID              | The type ID              |
+| POSITION        | The category position    |
+| REF             | The ref column           |
+| TITLE           | The category title       |
+| URL             | The category URL         |
 
 Plus the [global outputs](./global_outputs)
 
@@ -38,7 +37,7 @@ Plus the [global outputs](./global_outputs)
 
 | Ascending value | Descending value | Sorted fields |
 |-----------------|------------------|:--------------|
-| alpha           | alpha_reverse    |               |
-| id              | id_reverse       |               |
-| manual          | manual_reverse   |               |
-| ref             | ref_reverse      |               |
+| alpha           | alpha_reverse    | I18n title    |
+| id              | id_reverse       | id            |
+| manual          | manual_reverse   | position      |
+| ref             | ref_reverse      | ref           |
