@@ -2,15 +2,16 @@
 title: Resource
 ---
 
+Resource loop lists resources.  
 `{loop type="resource" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#resource-arguments}
 
 | Argument | Description                                                                                     |     Default      | Example             |
 |----------|:------------------------------------------------------------------------------------------------|:----------------:|:--------------------|
-| code     |                                                                                                 |                  |                     |
+| code     | The resource code                                                                               |                  | code="a_code"       |
 | order    | A list of values see [sorting possible values](#resource-order-possible-values)                 | id               | order="title"       |
-| profile  |                                                                                                 |                  |                     |
+| profile  | The profile id                                                                                  |                  | profile="4"         |
 
 Plus the [global arguments](./global_arguments)
 
