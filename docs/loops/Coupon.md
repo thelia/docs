@@ -58,6 +58,6 @@ Plus the [global outputs](./global_outputs)
 | enabled         | enabled-reverse         | coupons               |
 | expiration-date | expiration-date-reverse | expiration date       |
 | id              | id-reverse              | id                    |
-| start-date      | start-date-reverse      |                       |
+| start-date      | start-date-reverse      | start date            |
 | title           | title-reverse           | title                 |
 | usages-left     | usages-left-reverse     | usage count left      |
