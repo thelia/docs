@@ -12,7 +12,7 @@ Order product attribute combination loop lists order product attribute combinati
 | order            | See [Order possible values](#order-possible-values) |  alpha   | order="alpha_reverse"|
 | order_product    | A single order product id.                          |  null   | order_product="2"     |
 
-Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

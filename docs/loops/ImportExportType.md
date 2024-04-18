@@ -15,7 +15,7 @@ title: Import Export Type
 | order    |             |         |         |
 | ref      |             |         |         |
 
-Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs {#area-outputs}
 

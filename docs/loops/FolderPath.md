@@ -13,7 +13,7 @@ Folder path loop provides the path through the catalog to a given folder. For ex
 | folder * | A single folder id.                         |         | folder="2"          |
 | visible  | Whatever we consider hidden folder or not.  |  true   | visible="false"     |
 
-Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

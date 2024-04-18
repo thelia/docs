@@ -34,7 +34,7 @@ The image loop process, cache and display images, categories, contents and folde
 | width                    | A width in pixels, for resizing image. If only the width is provided, the image ratio is preserved.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |              | width="200"                                         |
 | with_prev_next_info      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |              |                                                     |
 
-Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 

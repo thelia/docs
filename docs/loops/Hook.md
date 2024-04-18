@@ -15,7 +15,7 @@ Get data from the hook table.
 | hook_type| The type of hook                                    |         |              |
 | order    | See [Order possible values](#order-possible-values) |   id    | order='code' |
 
-Plus the [global arguments](./global_arguments) and [global arguments I18n](./global_arguments_I18n.md)
+Plus the [global arguments](./global_arguments)
 
 ## Outputs {#area-outputs}
 
