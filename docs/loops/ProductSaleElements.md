@@ -18,7 +18,7 @@ Product sale elements loop lists product sale elements from your shop. You may n
 | product                | A single product id. Mandatory if the 'id' parameter is not present                                                                  |                 | product="2"                  |
 | promo                  | A boolean value. If true, returns only product sale elements for which new is on. The reverse with 'false'                           |                 | promo="yes"                  |
 | ref                    | A product reference                                                                                                                  |                 | ref="a_ref"                  |
-| visible                | A boolean value, or * (the default) for ignoring this filter                                                                         |                 | visible="no"                 |
+| visible                | A boolean value, or * (the default) for ignoring this filter                                                                         |  *              | visible="no"                 |
 
 Plus the [global arguments](./global_arguments) and [search arguments](./search_arguments)
 

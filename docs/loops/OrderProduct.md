@@ -10,7 +10,7 @@ Order product loop displays Order products information.
 | Argument | Description                              | Default | Example            |
 |----------|:-----------------------------------------|:-------:|:-------------------|
 | id       | A single or a list of order product ids. |         | id="2", id="1,4,7" |
-| order    | A single order id.                       |  null   | order="2"          |
+| order *  | A single order id.                       |  null   | order="2"          |
 | virtual  | A boolean value.                         |   *     | new="yes"          |
 
 Plus the [global arguments](./global_arguments)

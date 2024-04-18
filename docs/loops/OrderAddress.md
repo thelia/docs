@@ -9,7 +9,7 @@ Order address loop displays order addresses information.
 
 | Argument | Description                | Default | Example |
 |----------|:---------------------------|:-------:|:--------|
-| id       | A single order address id  |  null   | id="2"  |
+| id *     | A single order address id  |  null   | id="2"  |
 
 Plus the [global arguments](./global_arguments)
 
