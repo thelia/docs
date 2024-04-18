@@ -36,6 +36,6 @@ Plus the [global outputs](./global_outputs)
 
 | Ascending value | Descending value  | Sorted fields |
 |-----------------|-------------------|:--------------|
-| alpha           |                   | title         |
+| alpha           |                   |  title        |
 | id              | id-reverse        |  ID order     |
-| name            | name-reverse      |               |
+| name            | name-reverse      |  name         |

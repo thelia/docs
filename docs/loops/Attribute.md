@@ -40,5 +40,5 @@ Plus the [global outputs](./global_outputs)
 | Ascending value | Descending value  | Sorted fields |
 |-----------------|-------------------|:--------------|
 | alpha           | alpha_reverse     | title         |
-| id              | id_reverse        |               |
-| manual          | manual_reverse    |               |
+| id              | id_reverse        | id            |
+| manual          | manual_reverse    | position      |

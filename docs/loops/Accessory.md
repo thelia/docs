@@ -8,15 +8,15 @@ The accessory loop lists products accessories. As an accessory is itself a produ
 ## Arguments {#pse-arguments}
 
 | Argument | Description | Default | Example |
-| ------------- |:-------------| :-------------: | :-------------|
-| all [product loop](./product) arguments      |  |              | order="min_price", max_price="100" |
-| order       | A list of values <br/> [Expected values](#accessory-order-possible-values) | accessory | order="accessory,max_price" |
-| product \*            | A single product id. | | product="2" |
+| -------------------------------------------- |:---------------------------------------------------------------------------| :-------: | :----------------------------------|
+| all [product loop](./product) arguments      |                                                                            |           | order="min_price", max_price="100" |
+| order                                        | A list of values <br/> [Expected values](#accessory-order-possible-values) | accessory | order="accessory,max_price"        |
+| product \*                                   | A single product id.                                                       |           | product="2"                        |
 
 ## Outputs
 
-| Variable                                                                      | Value                           |
-| :---------------------------------------------------------------------------  | :------------------------------ |
+| Variable                                                                      | Value                                    |
+| :---------------------------------------------------------------------------  | :--------------------------------------- |
 | $ACCESSORY_ID                                                                 | The product ID of the accessory          |
 | $ID                                                                           | The accessory ID                         |
 | $POSITION                                                                     | The position of the accessory in the list|

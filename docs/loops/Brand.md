@@ -57,4 +57,4 @@ Plus the [global outputs](./global_outputs)
 | manual          | manual-reverse    | order position                |
 | random          |                   |                               |
 | updated         | updated-reverse   | order on date of brand update |
-| visible         | visible-reverse   |                               |
+| visible         | visible-reverse   | visible                       |
