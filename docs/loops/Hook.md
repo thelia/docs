@@ -9,7 +9,7 @@ Get data from the hook table.
 
 | Argument | Description                                         | Default | Example      |
 |----------|:----------------------------------------------------|:-------:|:-------------|
-| active   | If the hook is active or not                        |         |              |
+| active   | If the hook is active or not                        |    *    |              |
 | code     | The hook code                                       |         |              |
 | exclude  | A single or a list of hook ids to exclude           |         |              |
 | hook_type| The type of hook                                    |         |              |
