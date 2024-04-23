@@ -1151,7 +1151,7 @@ __________________
 
 </details>
 
-### Payment module 
+### Payment 
 
 <details><summary>Detail</summary>
 
@@ -1162,12 +1162,6 @@ __________________
 **MODULE_PAYMENT_MANAGE_STOCK** = 'thelia.module.payment.manage_stock'  
 
 __________________
-
--  ModuleDeleteEvent -> $assume_delete $module_id   
--  ModuleEvent -> $module   
--  ModuleInstallEvent -> $module   
--  ModuleToggleActivationEvent -> $assume_deactivate $module_id   
-
 
 -  BasePaymentEvent -> $module   
 -  IsValidPaymentEvent -> $cart $module   
