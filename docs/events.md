@@ -194,12 +194,12 @@ __________________
 -  AttributeAvCreateEvent -> no constructor found in this file  
 -  AttributeAvDeleteEvent -> $attributeAv_id   
 - **⚠️ Warning**
- >  AttributeAvEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Attribute/AttributeAvEvent.php
+ >  AttributeAvEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Attribute/AttributeAvEvent.php
 -  AttributeAvUpdateEvent -> $attributeAv_id   
 -  AttributeCreateEvent -> no constructor found in this file  
 -  AttributeDeleteEvent -> $attribute_id   
 - **⚠️ Warning**
- >  AttributeEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Attribute/AttributeEvent.php
+ >  AttributeEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Attribute/AttributeEvent.php
 -  AttributeUpdateEvent -> $attribute_id   
 
 
@@ -222,12 +222,12 @@ __________________
 -  AttributeAvCreateEvent -> no constructor found in this file  
 -  AttributeAvDeleteEvent -> $attributeAv_id   
 - **⚠️ Warning**
- >  AttributeAvEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Attribute/AttributeAvEvent.php
+ >  AttributeAvEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Attribute/AttributeAvEvent.php
 -  AttributeAvUpdateEvent -> $attributeAv_id   
 -  AttributeCreateEvent -> no constructor found in this file  
 -  AttributeDeleteEvent -> $attribute_id   
 - **⚠️ Warning**
- >  AttributeEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Attribute/AttributeEvent.php
+ >  AttributeEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Attribute/AttributeEvent.php
 -  AttributeUpdateEvent -> $attribute_id   
 
 
@@ -256,7 +256,7 @@ __________________
 -  BrandCreateEvent -> no constructor found in this file  
 -  BrandDeleteEvent -> $brand_id   
 - **⚠️ Warning**
- >  BrandEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Brand/BrandEvent.php
+ >  BrandEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Brand/BrandEvent.php
 -  BrandToggleVisibilityEvent -> no constructor found in this file  
 -  BrandUpdateEvent -> $brandId   
 
@@ -359,12 +359,12 @@ __________________
 
 -  CategoryAddContentEvent -> $category $content_id   
 - **⚠️ Warning**
- >  CategoryAssociatedContentEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Category/CategoryAssociatedContentEvent.php
+ >  CategoryAssociatedContentEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Category/CategoryAssociatedContentEvent.php
 -  CategoryCreateEvent -> no constructor found in this file  
 -  CategoryDeleteContentEvent -> $category $content_id   
 -  CategoryDeleteEvent -> $categoryId   
 - **⚠️ Warning**
- >  CategoryEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Category/CategoryEvent.php
+ >  CategoryEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Category/CategoryEvent.php
 -  CategoryToggleVisibilityEvent -> no constructor found in this file  
 -  CategoryUpdateEvent -> $category_id   
 
@@ -402,7 +402,7 @@ __________________
 -  ConfigCreateEvent -> no constructor found in this file  
 -  ConfigDeleteEvent -> $config_id   
 - **⚠️ Warning**
- >  ConfigEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Config/ConfigEvent.php
+ >  ConfigEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Config/ConfigEvent.php
 -  ConfigUpdateEvent -> $config_id   
 
 
@@ -451,7 +451,7 @@ __________________
 -  ContentCreateEvent -> no constructor found in this file  
 -  ContentDeleteEvent -> $content_id   
 - **⚠️ Warning**
- >  ContentEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Content/ContentEvent.php
+ >  ContentEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Content/ContentEvent.php
 -  ContentRemoveFolderEvent -> no constructor found in this file  
 -  ContentToggleVisibilityEvent -> no constructor found in this file  
 -  ContentUpdateEvent -> $content_id   
@@ -492,7 +492,7 @@ __________________
 -  CountryCreateEvent -> no constructor found in this file  
 -  CountryDeleteEvent -> $country_id   
 - **⚠️ Warning**
- >  CountryEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Country/CountryEvent.php
+ >  CountryEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Country/CountryEvent.php
 -  CountryToggleDefaultEvent -> $country_id   
 -  CountryToggleVisibilityEvent -> no constructor found in this file  
 -  CountryUpdateEvent -> $country_id   
@@ -557,7 +557,7 @@ __________________
 -  CurrencyCreateEvent -> no constructor found in this file  
 -  CurrencyDeleteEvent -> $currencyId   
 - **⚠️ Warning**
- >  CurrencyEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Currency/CurrencyEvent.php
+ >  CurrencyEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Currency/CurrencyEvent.php
 -  CurrencyUpdateEvent -> $currencyId   
 -  CurrencyUpdateRateEvent -> no constructor found in this file  
 
@@ -596,7 +596,7 @@ __________________
 
 -  CustomerCreateOrUpdateEvent -> $address1 $address2 $address3 $cellphone $city $company $country $discount $email $firstname $langId $lastname $password $phone $ref $reseller $sponsor $state $title $zipcode   
 - **⚠️ Warning**
- >  CustomerEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Customer/CustomerEvent.php
+ >  CustomerEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Customer/CustomerEvent.php
 -  CustomerLoginEvent -> no constructor found in this file  
 
 
@@ -616,7 +616,7 @@ __________________
 
 -  CustomerCreateOrUpdateEvent -> $address1 $address2 $address3 $cellphone $city $company $country $discount $email $firstname $langId $lastname $password $phone $ref $reseller $sponsor $state $title $zipcode   
 - **⚠️ Warning**
- >  CustomerEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Customer/CustomerEvent.php
+ >  CustomerEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Customer/CustomerEvent.php
 -  CustomerLoginEvent -> no constructor found in this file  
 
 
@@ -710,12 +710,12 @@ __________________
 -  FeatureAvCreateEvent -> no constructor found in this file  
 -  FeatureAvDeleteEvent -> $featureAv_id   
 - **⚠️ Warning**
- >  FeatureAvEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Feature/FeatureAvEvent.php
+ >  FeatureAvEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Feature/FeatureAvEvent.php
 -  FeatureAvUpdateEvent -> $featureAv_id   
 -  FeatureCreateEvent -> no constructor found in this file  
 -  FeatureDeleteEvent -> $feature_id   
 - **⚠️ Warning**
- >  FeatureEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Feature/FeatureEvent.php
+ >  FeatureEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Feature/FeatureEvent.php
 -  FeatureUpdateEvent -> $feature_id   
 
 
@@ -743,12 +743,12 @@ __________________
 -  FeatureAvCreateEvent -> no constructor found in this file  
 -  FeatureAvDeleteEvent -> $featureAv_id   
 - **⚠️ Warning**
- >  FeatureAvEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Feature/FeatureAvEvent.php
+ >  FeatureAvEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Feature/FeatureAvEvent.php
 -  FeatureAvUpdateEvent -> $featureAv_id   
 -  FeatureCreateEvent -> no constructor found in this file  
 -  FeatureDeleteEvent -> $feature_id   
 - **⚠️ Warning**
- >  FeatureEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Feature/FeatureEvent.php
+ >  FeatureEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Feature/FeatureEvent.php
 -  FeatureUpdateEvent -> $feature_id   
 
 
@@ -777,7 +777,7 @@ __________________
 -  FolderCreateEvent -> no constructor found in this file  
 -  FolderDeleteEvent -> $folder_id   
 - **⚠️ Warning**
- >  FolderEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Folder/FolderEvent.php
+ >  FolderEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Folder/FolderEvent.php
 -  FolderToggleVisibilityEvent -> no constructor found in this file  
 -  FolderUpdateEvent -> $folder_id   
 
@@ -927,7 +927,7 @@ __________________
 -  LangDefaultBehaviorEvent -> $defaultBehavior   
 -  LangDeleteEvent -> $lang_id   
 - **⚠️ Warning**
- >  LangEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Lang/LangEvent.php
+ >  LangEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Lang/LangEvent.php
 -  LangToggleActiveEvent -> no constructor found in this file  
 -  LangToggleDefaultEvent -> $lang_id   
 -  LangToggleVisibleEvent -> no constructor found in this file  
@@ -990,7 +990,7 @@ __________________
 -  MessageCreateEvent -> no constructor found in this file  
 -  MessageDeleteEvent -> $message_id   
 - **⚠️ Warning**
- >  MessageEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Message/MessageEvent.php
+ >  MessageEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Message/MessageEvent.php
 -  MessageUpdateEvent -> $message_id   
 
 
@@ -1228,7 +1228,7 @@ __________________
 -  ProductAddCategoryEvent -> $category_id $product   
 -  ProductAddContentEvent -> $content_id $product   
 - **⚠️ Warning**
- >  ProductAssociatedContentEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Product/ProductAssociatedContentEvent.php
+ >  ProductAssociatedContentEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Product/ProductAssociatedContentEvent.php
 -  ProductCloneEvent -> $lang $originalProduct $ref   
 -  ProductCombinationGenerationEvent -> $combinations $currency_id $product   
 -  ProductCreateEvent -> no constructor found in this file  
@@ -1237,7 +1237,7 @@ __________________
 -  ProductDeleteContentEvent -> $content_id $product   
 -  ProductDeleteEvent -> $product_id   
 - **⚠️ Warning**
- >  ProductEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Product/ProductEvent.php
+ >  ProductEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Product/ProductEvent.php
 -  ProductSetTemplateEvent -> $currency_id $product $template_id   
 -  ProductToggleVisibilityEvent -> no constructor found in this file  
 -  ProductUpdateEvent -> $product_id   
@@ -1283,7 +1283,7 @@ __________________
 -  ProductAddCategoryEvent -> $category_id $product   
 -  ProductAddContentEvent -> $content_id $product   
 - **⚠️ Warning**
- >  ProductAssociatedContentEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Product/ProductAssociatedContentEvent.php
+ >  ProductAssociatedContentEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Product/ProductAssociatedContentEvent.php
 -  ProductCloneEvent -> $lang $originalProduct $ref   
 -  ProductCombinationGenerationEvent -> $combinations $currency_id $product   
 -  ProductCreateEvent -> no constructor found in this file  
@@ -1292,7 +1292,7 @@ __________________
 -  ProductDeleteContentEvent -> $content_id $product   
 -  ProductDeleteEvent -> $product_id   
 - **⚠️ Warning**
- >  ProductEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Product/ProductEvent.php
+ >  ProductEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Product/ProductEvent.php
 -  ProductSetTemplateEvent -> $currency_id $product $template_id   
 -  ProductToggleVisibilityEvent -> no constructor found in this file  
 -  ProductUpdateEvent -> $product_id   
@@ -1314,7 +1314,7 @@ __________________
 -  TemplateDeleteFeatureEvent -> $feature_id $template   
 -  TemplateDuplicateEvent -> $locale $sourceTemplateId   
 - **⚠️ Warning**
- >  TemplateEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Template/TemplateEvent.php
+ >  TemplateEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Template/TemplateEvent.php
 -  TemplateUpdateEvent -> $template_id   
 
 
@@ -1372,7 +1372,7 @@ __________________
 -  SaleCreateEvent -> no constructor found in this file  
 -  SaleDeleteEvent -> $saleId   
 - **⚠️ Warning**
- >  SaleEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/Sale/SaleEvent.php
+ >  SaleEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Sale/SaleEvent.php
 -  SaleToggleActivityEvent -> no constructor found in this file  
 -  SaleUpdateEvent -> $saleId   
 
@@ -1412,7 +1412,7 @@ __________________
 -  StateCreateEvent -> no constructor found in this file  
 -  StateDeleteEvent -> $state_id   
 - **⚠️ Warning**
- >  StateEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/State/StateEvent.php
+ >  StateEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/State/StateEvent.php
 -  StateToggleVisibilityEvent -> no constructor found in this file  
 -  StateUpdateEvent -> $state_id   
 
@@ -1482,7 +1482,7 @@ __________________
 
 **noCategory** : 
 - **⚠️ Warning**
- >  AccessoryEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/AccessoryEvent.php
+ >  AccessoryEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/AccessoryEvent.php
 -  ActionEvent -> no constructor found in this file  
 -  CachedFileEvent -> no constructor found in this file  
 -  DefaultActionEvent -> no constructor found in this file  
@@ -1498,7 +1498,7 @@ __________________
 -  ToggleVisibilityEvent -> $object_id   
 -  UpdateFilePositionEvent -> $mode $object_id $position $position; $query   
 - **⚠️ Warning**
- >  UpdatePositionEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/UpdatePositionEvent.php
+ >  UpdatePositionEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/UpdatePositionEvent.php
 -  UpdateSeoEvent -> $locale $meta_description $meta_keywords $meta_title $object_id $url   
 -  ViewCheckEvent -> $view $view_id   
 
@@ -1506,7 +1506,7 @@ __________________
 **FeatureProduct** : 
 -  FeatureProductDeleteEvent -> $feature_id $product_id   
 - **⚠️ Warning**
- >  FeatureProductEvent is **deprecated**, please use /Users/mnordest/Sites/thelia/core/lib/Thelia/Core/Event/FeatureProduct/FeatureProductEvent.php
+ >  FeatureProductEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/FeatureProduct/FeatureProductEvent.php
 -  FeatureProductUpdateEvent -> $feature_id $feature_value $is_text_value $product_id   
 
 
