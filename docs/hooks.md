@@ -252,9 +252,9 @@ class MyModule extends BaseModule
 
 ## Default hook list
 
-### backOffice
+### Backoffice
 
-#### Thème: default
+#### Thème: Default
 
 ##### admin-logs.html
 
@@ -2000,9 +2000,9 @@ class MyModule extends BaseModule
 
 </details>
 
-### frontOffice
+### Frontoffice
 
-#### Thème: default
+#### Thème: Default
 
 ##### 404.html
 
@@ -2616,7 +2616,7 @@ class MyModule extends BaseModule
 
 </details>
 
-#### Thème: modern
+#### Thème: Modern
 
 ##### 404.html
 
@@ -2919,7 +2919,7 @@ class MyModule extends BaseModule
 
 </details>
 
-##### Newsletter.html
+##### newsletter.html
 
 <details>
 
@@ -3071,9 +3071,9 @@ class MyModule extends BaseModule
 
 </details>
 
-### pdf
+### Pdf
 
-#### Thème: default
+#### Thème: Default
 
 ##### delivery.html
 
@@ -3156,9 +3156,9 @@ class MyModule extends BaseModule
 
 </details>
 
-### email
+### Email
 
-#### Thème: default
+#### Thème: Default
 
 ##### order_confirmation.html
 
