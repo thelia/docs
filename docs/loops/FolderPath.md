@@ -2,8 +2,8 @@
 title: Folder path
 ---
 
-Folder path loop provides the path through the catalog to a given folder. For example if we have an "alpha" folder standing in an "alpha_father" folder which itseflf belong to "root" folder. Folder path loop for folder "alpha" will return "root" then "alpha_father" then "alpha".   
-`{loop type="folder-path" name="the-loop-name" [argument="value"], [...]}`
+Folder path loop provides the path through the catalog to a given folder. For example if we have an "alpha" folder standing in an "alpha_father" folder which itseflf belong to "root" folder. Folder path loop for folder "alpha" will return "root" then "alpha_father" then "alpha".  
+`{loop type="folder_path" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#folder-arguments}
 

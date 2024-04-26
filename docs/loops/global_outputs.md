@@ -5,7 +5,6 @@ sidebar_position: 3
 
 These output can be got on from all loops
 
-
 | Variable        |                                  Description                                  |
 |-----------------|:-----------------------------------------------------------------------------:|
 | $LOOP_COUNT     |                  The current results index, starting from 1                   |

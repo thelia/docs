@@ -2,20 +2,21 @@
 title: Feature value
 ---
 
-Feature value loop lists feature availabilities.   
+Feature value loop lists feature availabilities.  
 `{loop type="feature_value" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#feature-arguments}
 
 | Argument                     | Description                                                                             | Default | Example                                           |
 |------------------------------|:----------------------------------------------------------------------------------------|:-------:|:--------------------------------------------------|
-| exclude_feature_availability | A boolean value to return only features with feature availability (no personal value).  |         | feature_availability="true"                       |
-| exclude_free_text            | A boolean value to return only features with free text value (no feature availability). |         | exclude_free_text="1" or exclude_free_text="true" |
-| feature *                    | A single feature id.                                                                    |         | feature="2"                                       |
+| exclude_feature_availability | A boolean value to return only features with feature availability (no personal value).  | 0       | feature_availability="true"                       |
+| exclude_free_text            | A boolean value to return only features with free text value (no feature availability). | 0       | exclude_free_text="1" or exclude_free_text="true" |
+| feature *                    | A single feature id.                                                                    | null    | feature="2"                                       |
 | feature_availability         | A single or a list of feature availability ids.                                         |         | feature_availability="2,5"                        |
-| free_text                    | A single or a list of strings.                                                    |         | free_text="some text,some other text"             |
+| force_return                 | A boolean value to return all features, even if they are not available.                 | true    | force_return="1"                                  |
+| free_text                    | A single or a list of strings.                                                          |         | free_text="some text,some other text"             |
 | order                        | A list of values see [sorting possible values](#feature-order-possible-values)          | manual  | order="alpha_reverse"                             |
-| product                      | A single product id.                                |         | product="9"                                       |
+| product                      | A single product id.                                                                    |         | product="9"                                       |
 
 Plus the [global arguments](./global_arguments)
 
@@ -30,7 +31,7 @@ Plus the [global arguments](./global_arguments)
 | $ID              | the feature value id                                                                        |
 | $IS_FEATURE_AV   | 1 if this feature is feature av., 0 otherwise.                                              |
 | $IS_FREE_TEXT    | 1 if this feature is free text, 0 otherwise.                                                |
-| $LOCALE          | 	the locale of returned results                                                             |
+| $LOCALE          | the locale of returned results                                                              |
 | $POSITION        | the feature value position                                                                  |
 | $POSTSCRIPTUM    | the feature availability postscriptum                                                       |
 | $PRODUCT         | the id of the product. Deprecated, please use $PRODUCT_ID instead                           |
@@ -40,9 +41,10 @@ Plus the [global arguments](./global_arguments)
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#feature-order-possible-values}
+
 [Arguments](#feature-arguments)
 
 | Ascending value | Descending value | Sorted fields |
 |-----------------|------------------|:--------------|
-| alpha           | alpha-reverse    | title         |
+| alpha           | alpha_reverse    | title         |
 | manual          | manual_reverse   | position      |

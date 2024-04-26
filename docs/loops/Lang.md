@@ -2,20 +2,22 @@
 title: Lang
 ---
 
-Lang loop.   
+Lang loop.  
 `{loop type="lang" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#lang-arguments}
 
 | Argument        | Description                                                                 |  Default  | Example                          |
 |-----------------|:----------------------------------------------------------------------------|:---------:|:---------------------------------|
+| acive           | returns only active languages                                               |   true    | active="false"                   |
 | code            | A single or list of lang code.                                              |           | code="fr", code="fr,en"          |
 | default_only    | returns only the default language                                           |   false   | default_only="true"              |
 | exclude         | A single or list of lang ids.                                               |           | exclude="2", exclude="1,3"       |
-| exclude_default | exclude the default language from results                                   |   false   | exclude_default="true"           |
+| exclude_default | Exclude the default language from results                                   |   false   | exclude_default="true"           |
 | id              | A single or list of lang ids.                                               |           | id="2"                           |
 | locale          | A single or list of lang locale.                                            |           | code="fr_FR", code="fr_FR,fr_CA" |
 | order           | A list of values see [sorting possible values](#lang-order-possible-values) | position  | order="alpha_reverse"            |
+| visible         | returns only visible languages                                              |   true    | visible="false"                  |
 
 Plus the [global arguments](./global_arguments)
 
@@ -23,6 +25,7 @@ Plus the [global arguments](./global_arguments)
 
 | Variable             | Value                                                         |
 |:---------------------|:--------------------------------------------------------------|
+| $ACTIVE              | check if the lang is active or not                            |
 | $CODE                | lang code, example : fr                                       |
 | $DATE_FORMAT         | the lang date format                                          |
 | $DECIMAL_COUNT       | the number of digits after the decimal separator              |
@@ -35,10 +38,12 @@ Plus the [global arguments](./global_arguments)
 | $TIME_FORMAT         | the lang time format                                          |
 | $TITLE               | lang title                                                    |
 | $URL                 | the lang URL, only if a specific URL is defined for each lang |
+| $VISIBLE             | check if the lang is visible or not                           |
 
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#lang-order-possible-values}
+
 [Arguments](#lang-arguments)
 
 | Ascending value | Descending value  | Sorted fields |

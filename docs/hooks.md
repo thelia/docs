@@ -251,1715 +251,2958 @@ class MyModule extends BaseModule
 ```
 
 ## Default hook list
-### Front office
-#### 404.html
-*   **404.stylesheet**: Page 404 - CSS stylesheet
 
-*   **404.after-javascript-include**: Page 404 - after javascript include
-
-*   **404.javascript-initialization**: Page 404 - javascript initialization
-
-*   **404.content**: Page 404 - content area
-
-
-#### account-order.html
-
-*   **account-order.information**: account-order - information
-
-*   **account-order.after-information**: account-order - after-information
-
-*   **account-order.delivery-information**: account-order - delivery-information
-
-*   **account-order.delivery-address**: account-order - delivery address
-
-*   **account-order.invoice-information**: account-order - invoice-information
-
-*   **account-order.invoice-address**: account-order - invoice-address
-
-*   **account-order.invoice-address-bottom**: account-order - invoice-address-bottom
-
-*   **account-order.after-addresses**: account-order - after-addresses
-
-*   **account-order.products-top**: account-order - products-top
-
-*   **account-order.product**: account-order - product
-
-*   **account-order.products-bottom**: account-order - products-bottom
-
-*   **account-order.after-products**: account-order - after-products
-
-*   **account-order.bottom**: account-order - at the bottom
-
-*   **account-order.stylesheet**: account-order - CSS stylesheet
-
-*   **account-order.after-javascript-include**: account-order - after javascript include
-
-*   **account-order.javascript-initialization**: account-order - javascript initialization
-
-*   **account-order.top**: account-order - at the top
-
-
-#### account-password.html
-
-*   **account-password.bottom**: Change password - at the bottom
-
-*   **account-password.stylesheet**: Change password - CSS stylesheet
-
-*   **account-password.after-javascript-include**: Change password - after javascript include
-
-*   **account-password.javascript-initialization**: Change password - javascript initialization
-
-*   **account-password.top**: Change password - at the top
-
-
-#### account-update.html
-
-*   **account-update.form-top**: Update customer account - at the top of the form
-
-*   **account-update.form-bottom**: Update customer account - at the bottom of the form
-
-*   **account-update.bottom**: Update customer account - at the bottom
-
-*   **account-update.stylesheet**: Update customer account - CSS stylesheet
-
-*   **account-update.after-javascript-include**: Update customer account - after javascript include
-
-*   **account-update.javascript-initialization**: Update customer account - javascript initialization
-
-*   **account-update.top**: Update customer account - at the top
-
-
-#### account.html
-
-*   **account.additional**: customer account - additional information
-
-*   **account.bottom**: customer account - at the bottom
-
-*   **account.stylesheet**: customer account - CSS stylesheet
-
-*   **account.after-javascript-include**: customer account - after javascript include
-
-*   **account.javascript-initialization**: customer account - javascript initialization
-
-*   **account.top**: customer account - at the top
-
-
-#### address-update.html
-
-*   **address-update.form-top**: Address update - at the top of the form
-
-*   **address-update.form-bottom**: Address update - at the bottom of the form
-
-*   **address-update.bottom**: Address update - at the bottom
-
-*   **address-update.stylesheet**: Address update - CSS stylesheet
-
-*   **address-update.after-javascript-include**: Address update - after javascript include
-
-*   **address-update.javascript-initialization**: Address update - javascript initialization
-
-*   **address-update.top**: Address update - at the top
-
-
-#### address.html
-
-*   **address-create.form-top**: Address creation - at the top of the form
-
-*   **address-create.form-bottom**: Address creation - at the bottom of the form
-
-*   **address-create.bottom**: Address creation - at the bottom
-
-*   **address-create.stylesheet**: Address creation - CSS stylesheet
-
-*   **address-create.after-javascript-include**: Address creation - after javascript include
-
-*   **address-create.javascript-initialization**: Address creation - javascript initialization
-
-*   **address-create.top**: Address creation - at the top
-
-
-#### articles.html
-
-*   **content.sidebar-body**: Content page - the body of the sidebar
-
-*   **content.sidebar-bottom**: Content page - at the bottom of the sidebar
-
-*   **content.sidebar-top**: Content page - at the top of the sidebar
-
-
-#### badresponse.html
-
-*   **badresponseorder.after-javascript-include**: Payment failed - after javascript include
-
-*   **badresponseorder.javascript-initialization**: Payment failed - javascript initialization
-
-*   **badresponseorder.stylesheet**: Payment failed - CSS stylesheet
-
-
-#### brand-menu.html
-
-*   **brand.sidebar-body**: brand - the body of the sidebar
-
-*   **brand.sidebar-bottom**: brand - at the bottom of the sidebar
-
-*   **brand.sidebar-top**: brand - at the top of the sidebar
-
-
-#### brand.html
-
-*   **brand.main-top**: brand - at the top of the main area
-
-*   **brand.content-top**: brand - before the main content area
-
-*   **brand.content-bottom**: brand - after the main content area
-
-*   **brand.main-bottom**: brand - at the bottom of the main area
-
-*   **brand.main-top**: brand - at the top of the main area
-
-*   **brand.content-top**: brand - before the main content area
-
-*   **brand.content-bottom**: brand - after the main content area
-
-*   **brand.main-bottom**: brand - at the bottom of the main area
-
-*   **brand.bottom**: brand - at the bottom
-
-*   **brand.stylesheet**: brand - CSS stylesheet
-
-*   **brand.after-javascript-include**: brand - after javascript include
-
-*   **brand.javascript-initialization**: brand - javascript initialization
-
-*   **brand.top**: brand - at the top
-
-
-#### cart.html
-
-*   **cart.bottom**: Cart - at the bottom
-
-*   **cart.after-javascript-include**: Cart - after javascript include
-
-*   **cart.stylesheet**: Cart - CSS stylesheet
-
-*   **cart.javascript-initialization**: Cart - javascript initialization
-
-*   **cart.top**: Cart - at the top
-
-
-#### category.html
-
-*   **category.main-top**: Category page - at the top of the main area
-
-*   **category.content-top**: Category page - before the main content area
-
-*   **category.content-bottom**: Category page - after the main content area
-
-*   **category.main-bottom**: Category page - at the bottom of the main area
-
-*   **category.bottom**: Category page - at the bottom
-
-*   **category.stylesheet**: Category page - CSS stylesheet
-
-*   **category.after-javascript-include**: Category page - after javascript include
-
-*   **category.javascript-initialization**: Category page - javascript initialization
-
-*   **category.top**: Category page - at the top
-
-
-#### contact-success.html
-
-*   **contact.success**: Contact page - if successful response
-
-#### contact.html
-
-*   **contact.form-top**: Contact page - at the top of the form
-
-*   **contact.form-bottom**: Contact page - at the bottom of the form
-
-*   **contact.bottom**: Contact page - at the bottom
-
-*   **contact.stylesheet**: Contact page - CSS stylesheet
-
-*   **contact.after-javascript-include**: Contact page - after javascript include
-
-*   **contact.javascript-initialization**: Contact page - javascript initialization
-
-*   **contact.top**: Contact page - at the top
-
-
-#### content.html
-
-*   **content.main-top**: Content page - at the top of the main area
-
-*   **content.content-top**: Content page - before the main content area
-
-*   **content.content-bottom**: Content page - after the main content area
-
-*   **content.main-bottom**: Content page - at the bottom of the main area
-
-*   **content.bottom**: Content page - at the bottom
-
-*   **content.stylesheet**: Content page - CSS stylesheet
-
-*   **content.after-javascript-include**: Content page - after javascript include
-
-*   **content.javascript-initialization**: Content page - javascript initialization
-
-*   **content.top**: Content page - at the top
-
-
-#### currency.html
-
-*   **currency.bottom**: Curency selection page - at the bottom
-
-*   **currency.stylesheet**: Curency selection page - CSS stylesheet
-
-*   **currency.after-javascript-include**: Curency selection page - after javascript include
-
-*   **currency.javascript-initialization**: Curency selection page - javascript initialization
-
-*   **currency.top**: Curency selection page - at the top
-
-
-#### folder.html
-
-*   **folder.main-top**: Folder page - at the top of the main area
-
-*   **folder.content-top**: Folder page - before the main content area
-
-*   **folder.content-bottom**: Folder page - after the main content area
-
-*   **folder.main-bottom**: Folder page - at the bottom of the main area
-
-*   **folder.bottom**: Folder page - at the bottom
-
-*   **folder.stylesheet**: Folder page - CSS stylesheet
-
-*   **folder.after-javascript-include**: Folder page - after javascript include
-
-*   **folder.javascript-initialization**: Folder page - javascript initialization
-
-*   **folder.top**: Folder page - at the top
-
-
-#### index.html
-
-*   **home.stylesheet**: Home page - CSS stylesheet
-
-*   **home.after-javascript-include**: Home page - after javascript include
-
-*   **home.javascript-initialization**: Home page - javascript initialization
-
-*   **home.body**: Home page - main area
-
-
-#### language.html
-
-*   **language.bottom**: language selection page - at the bottom
-
-*   **language.stylesheet**: language selection page - CSS stylesheet
-
-*   **language.after-javascript-include**: language selection page - after javascript include
-
-*   **language.javascript-initialization**: language selection page - javascript initialization
-
-*   **language.top**: language selection page - at the top
-
-
-#### layout.tpl
-
-*   **main.stylesheet**: HTML layout - CSS stylesheet
-
-*   **main.head-bottom**: HTML layout - before the end of the head tag
-
-*   **main.body-top**: HTML layout - after the opening of the body tag
-
-*   **main.header-top**: HTML layout - at the top of the header
-
-*   **main.navbar-secondary**: HTML layout - secondary navigation
-
-*   **main.navbar-primary**: HTML layout - primary navigation
-
-*   **main.header-bottom**: HTML layout - at the bottom of the header
-
-*   **main.content-top**: HTML layout - before the main content area
-
-*   **main.content-bottom**: HTML layout - after the main content area
-
-*   **main.footer-top**: HTML layout - at the top of the footer
-
-*   **main.footer-body**: HTML layout - footer body
-
-*   **main.footer-bottom**: HTML layout - bottom of the footer
-
-*   **main.after-javascript-include**: HTML layout - after javascript include
-
-*   **main.javascript-initialization**: HTML layout - javascript initialization
-
-*   **main.body-bottom**: HTML layout - before the end body tag
-
-*   **main.head-top**: HTML layout - after the opening of the head tag
-
-
-#### login.html
-
-*   **login.main-top**: Login page - at the top of the main area
-
-*   **login.form-top**: Login page - at the top of the form
-
-*   **login.form-bottom**: Login page - at the bottom of the form
-
-*   **login.main-bottom**: Login page - at the bottom of the main area
-
-*   **login.bottom**: Login page - at the bottom
-
-*   **login.stylesheet**: Login page - CSS stylesheet
-
-*   **login.after-javascript-include**: Login page - after javascript include
-
-*   **login.javascript-initialization**: Login page - javascript initialization
-
-*   **login.top**: Login page - at the top
-
-
-#### menu.html
-
-*   **category.sidebar-body**: Category page - the body of the sidebar
-
-*   **category.sidebar-bottom**: Category page - at the bottom of the sidebar
-
-*   **category.sidebar-top**: Category page - at the top of the sidebar
-
-
-#### newsletter.html
-
-*   **newsletter.bottom**: Newsletter page - at the bottom
-
-*   **newsletter.stylesheet**: Newsletter page - CSS stylesheet
-
-*   **newsletter.after-javascript-include**: Newsletter page - after javascript include
-
-*   **newsletter.javascript-initialization**: Newsletter page - javascript initialization
-
-*   **newsletter.top**: Newsletter page - at the top
-
-
-#### order-delivery-module-list.html
-
-*   **order-delivery.javascript**: Delivery choice - javascript
-
-*   **order-delivery.extra**: Delivery choice - extra area
-
-
-#### order-delivery.html
-
-*   **order-delivery.form-top**: Delivery choice - at the top of the form
-
-*   **order-delivery.form-bottom**: Delivery choice - at the bottom of the form
-
-*   **order-delivery.bottom**: Delivery choice - at the bottom
-
-*   **order-delivery.javascript-initialization**: Delivery choice - javascript initialization
-
-*   **order-delivery.stylesheet**: Delivery choice - CSS stylesheet
-
-*   **order-delivery.after-javascript-include**: Delivery choice - after javascript include
-
-*   **order-delivery.top**: Delivery choice - at the top
-
-
-#### order-failed.html
-
-*   **order-failed.bottom**: Order failed - at the bottom
-
-*   **order-failed.stylesheet**: Order failed - CSS stylesheet
-
-*   **order-failed.after-javascript-include**: Order failed - after javascript include
-
-*   **order-failed.javascript-initialization**: Order failed - javascript initialization
-
-*   **order-failed.top**: Order failed - at the top
-
-
-#### order-invoice.html
-
-*   **order-invoice.delivery-address**: Invoice choice - delivery address
-
-*   **order-invoice.payment-extra**: Invoice choice - extra payment zone
-
-*   **order-invoice.bottom**: Invoice choice - at the bottom
-
-*   **order-invoice.javascript-initialization**: Invoice choice - javascript initialization
-
-*   **order-invoice.stylesheet**: Invoice choice - CSS stylesheet
-
-*   **order-invoice.after-javascript-include**: Invoice choice - after javascript include
-
-*   **order-invoice.top**: Invoice choice - at the top
-
-
-#### order-payment-gateway.html
-
-*   **order-payment-gateway.javascript**: Payment gateway - javascript
-
-*   **order-payment-gateway.javascript-initialization**: Payment gateway - javascript initialization
-
-*   **order-payment-gateway.stylesheet**: Payment gateway - CSS stylesheet
-
-*   **order-payment-gateway.after-javascript-include**: Payment gateway - after javascript include
-
-*   **order-payment-gateway.body**: Payment gateway - main area
-
-
-#### order-placed.html
-
-*   **order-placed.additional-payment-info**: Placed order - additional-payment-info
-
-*   **order-placed.stylesheet**: Placed order - CSS stylesheet
-
-*   **order-placed.after-javascript-include**: Placed order - after javascript include
-
-*   **order-placed.javascript-initialization**: Placed order - javascript initialization
-
-*   **order-placed.body**: Placed order - main area
-
-
-#### password.html
-
-*   **password.form-top**: Lost password - at the top of the form
-
-*   **password.form-bottom**: Lost password - at the bottom of the form
-
-*   **password.bottom**: Lost password - at the bottom
-
-*   **password.stylesheet**: Lost password - CSS stylesheet
-
-*   **password.after-javascript-include**: Lost password - after javascript include
-
-*   **password.javascript-initialization**: Lost password - javascript initialization
-
-*   **password.top**: Lost password - at the top
-
-
-#### product.html
-
-*   **product.gallery**: Product page - photo gallery
-
-*   **product.details-top**: Product page - at the top of the detail
-
-*   **product.details-bottom**: Product page - at the bottom of the detail area
-
-*   **product.additional**: Product page - additional information
-
-*   **product.bottom**: Product page - at the bottom
-
-*   **product.stylesheet**: Product page - CSS stylesheet
-
-*   **product.after-javascript-include**: Product page - after javascript include
-
-*   **product.javascript-initialization**: Product page - javascript initialization
-
-*   **product.top**: Product page - at the top
-
-
-#### register.html
-
-*   **register.form-top**: Register - at the top of the form
-
-*   **register.form-bottom**: Register - at the bottom of the form
-
-*   **register.bottom**: Register - at the bottom
-
-*   **register.stylesheet**: Register - CSS stylesheet
-
-*   **register.after-javascript-include**: Register - after javascript include
-
-*   **register.javascript-initialization**: Register - javascript initialization
-
-*   **register.top**: Register - at the top
-
-
-#### sale.html
-
-*   **sale.bottom**: sale - at the bottom
-
-*   **sale.stylesheet**: sale - CSS stylesheet
-
-*   **sale.after-javascript-include**: sale - after javascript include
-
-*   **sale.javascript-initialization**: sale - javascript initialization
-
-*   **sale.top**: sale - at the top
-
-
-#### search.html
-
-*   **search.after-javascript-include**: Search page - after javascript include
-
-*   **search.javascript-initialization**: Search page - javascript initialization
-
-*   **search.stylesheet**: Search page - CSS stylesheet
-
-
-#### single-product.html
-
-*   **singleproduct.bottom**: Product loop - at the bottom
-
-*   **singleproduct.top**: Product loop - at the top
-
-
-#### sitemap.html
-
-*   **sitemap.bottom**: Sitemap - at the bottom
-
-#### view\_all.html
-
-*   **viewall.bottom**: All Products - at the bottom
-
-*   **viewall.stylesheet**: All Products - CSS stylesheet
-
-*   **viewall.after-javascript-include**: All Products - after javascript include
-
-*   **viewall.javascript-initialization**: All Products - javascript initialization
-
-*   **viewall.top**: All Products - at the top
-
-
-### Back Office
-----------------------------
-
-#### admin-layout.tpl
-
-*   **main.before-topbar**: Layout - before topbar
-
-*   **main.topbar-top**: Layout - at the top of the top bar
-
-*   **main.topbar-bottom**: Layout - at the bottom of the top bar
-
-*   **main.inside-topbar**: Layout - inside top bar
-
-*   **main.after-topbar**: Layout - after top bar
-
-*   **main.topbar-top**: Layout - at the top of the top bar
-
-*   **main.topbar-bottom**: Layout - at the bottom of the top bar
-
-*   **main.before-content**: Layout - before-content
-
-*   **main.after-content**: Layout - after-content
-
-*   **main.before-footer**: Layout - before footer
-
-*   **main.in-footer**: Layout - in footer
-
-*   **main.after-footer**: Layout - after footer
-
-*   **main.footer-js**: Layout - JavaScript
-
-*   **main.head-css**: Layout - CSS
-
-
-#### admin-logs.html
-
-*   **admin-logs.bottom**: Logs - bottom
-
-*   **admin-logs.js**: Logs - JavaScript
-
-*   **admin-logs.top**: Logs - at the top
-
-
-#### administrators.html
-
-*   **adminisrators.header**: adminisrators - header
-
-*   **administrators.row**: Administrators - row
-
-*   **administrators.bottom**: Administrators - bottom
-
-*   **administrator.create-form**: Administrator - create form
-
-*   **administrator.update-form**: Administrator - update form
-
-*   **administrator.delete-form**: Administrator - delete form
-
-*   **administrators.js**: Administrators - JavaScript
-
-*   **administrators.top**: Administrators - at the top
-
-
-#### advanced-configuration.html
-
-*   **advanced-configuration.js**: advanced-configuration - JavaScript
-
-#### attribute-edit.html
-
-*   **attributes-value.table-header**: Attributes value - table header
-
-*   **attributes-value.table-row**: Attributes value - table row
-
-*   **attribute-edit.bottom**: attribute-edit - bottom
-
-*   **attribute-value.create-form**: Attribute value - create form
-
-*   **attribute.id-delete-form**: Attribut - id delete form
-
-*   **attribute.edit-js**: Attribut - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **attribute-edit.top**: attribute-edit - at the top
-
-
-#### attributes.html
-
-*   **attributes.table-header**: Attributes - table header
-
-*   **attributes.table-row**: Attributes - table row
-
-*   **attributes.bottom**: Attributes - bottom
-
-*   **attribute.create-form**: Attribut - create form
-
-*   **attribute.delete-form**: Attribut - delete form
-
-*   **attribute.add-to-all-form**: Attribut - add to all form
-
-*   **attribute.remove-to-all-form**: Attribut - remove to all form
-
-*   **attributes.js**: Attributes - JavaScript
-
-*   **attributes.top**: Attributes - at the top
-
-
-#### brand-edit.html
-
-*   **brand.tab**: Brand - tab
-
-*   **brand.update-form**: Brand - update form
-
-*   **brand.tab-content**: Brand - content
-
-*   **brand-edit.bottom**: brand-edit - bottom
-
-*   **brand.edit-js**: Brand - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **brand-edit.top**: brand-edit - at the top
-
-
-#### brands.html
-
-*   **brands.table-header**: Brands - table header
-
-*   **brands.table-row**: Brands - table row
-
-*   **brands.bottom**: Brands - bottom
-
-*   **brand.create-form**: Brand - create form
-
-*   **brand.delete-form**: Brand - delete form
-
-*   **brand.js**: Brand - JavaScript
-
-*   **brands.top**: Brands - at the top
-
-
-#### categories.html
-
-*   **categories.caption**: Categories - caption
-
-*   **categories.header**: Categories - header
-
-*   **categories.row**: Categories - row
-
-*   **products.caption**: Products - caption
-
-*   **products.header**: Products - header
-
-*   **products.row**: Products - row
-
-*   **categories.bottom**: Categories - bottom
-
-*   **categories.catalog-bottom**: Categories - at the bottom of the catalog
-
-*   **category.create-form**: Category - create form
-
-*   **product.create-form**: Product - create form
-
-*   **category.delete-form**: Category - delete form
-
-*   **product.delete-form**: Product - delete form
-
-*   **categories.js**: Categories - JavaScript
-
-*   **categories.top**: Categories - at the top
-
-
-#### category-edit.html
-
-*   **category.tab**: Category - tab
-
-*   **category.contents-table-header**: Category - contents table header
-
-*   **category.contents-table-row**: Category - contents table row
-
-*   **category.tab-content**: Category - content
-
-*   **category-edit.bottom**: category-edit - bottom
-
-*   **category.edit-js**: Category - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **category-edit.top**: category-edit - at the top
-
-
-#### config-store.html
-
-*   **config-store.js**: Store Information - JavaScript
-
-#### configuration.html
-
-*   **configuration.catalog-top**: Configuration - at the top of the catalog area
-
-*   **configuration.catalog-bottom**: Configuration - at the bottom of the catalog
-
-*   **configuration.shipping-top**: Configuration - at the top of the shipping area
-
-*   **configuration.shipping-bottom**: Configuration - at the bottom of the shipping area
-
-*   **configuration.system-top**: Configuration - at the top of the system area
-
-*   **configuration.system-bottom**: Configuration - at the bottom of the system area
-
-*   **configuration.bottom**: Configuration - bottom
-
-*   **configuration.js**: Configuration - JavaScript
-
-*   **configuration.top**: Configuration - at the top
-
-
-#### content-edit.html
-
-*   **content.tab**: Content - tab
-
-*   **content.tab-content**: Content - content
-
-*   **content-edit.bottom**: content-edit - bottom
-
-*   **content.edit-js**: Content - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **content-edit.top**: content-edit - at the top
-
-
-#### content-folder-management.html
-
-*   **product.folders-table-row**: Product - folders table row
-
-*   **product.folders-table-header**: Product - folders table header
-
-
-#### countries.html
-
-*   **countries.table-header**: Countries - table header
-
-*   **countries.table-row**: Countries - table row
-
-*   **countries.bottom**: Countries - bottom
-
-*   **country.create-form**: Country - create form
-
-*   **country.delete-form**: Country - delete form
-
-*   **countries.js**: Countries - JavaScript
-
-*   **countries.top**: Countries - at the top
-
-
-#### country-edit.html
-
-*   **country-edit.bottom**: country-edit - bottom
-
-*   **country.edit-js**: Country - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **country-edit.top**: country-edit - at the top
-
-
-#### coupon-create.html
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **coupon.create-js**: Coupon - create JavaScript
-
-
-#### coupon-list.html
-
-*   **coupon.list-caption**: Coupon - list caption
-
-*   **coupon.table-header**: Coupon - table header
-
-*   **coupon.table-row**: Coupon - table row
-
-*   **coupon.bottom**: Coupon - bottom
-
-*   **coupon.delete-form**: Coupon - delete form
-
-*   **coupon.list-js**: Coupon - list JavaScript
-
-*   **coupon.top**: Coupon - at the top
-
-
-#### coupon-update.html
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **coupon.update-js**: Coupon - update JavaScript
-
-
-#### currencies.html
-
-*   **currencies.table-header**: Currencies - table header
-
-*   **currencies.table-row**: Currencies - table row
-
-*   **currencies.bottom**: Currencies - bottom
-
-*   **currency.create-form**: Currency - create form
-
-*   **currency.delete-form**: Currency - delete form
-
-*   **currencies.js**: Currencies - JavaScript
-
-*   **currencies.top**: Currencies - at the top
-
-
-#### currency-edit.html
-
-*   **currency-edit.bottom**: currency-edit - bottom
-
-*   **currency.edit-js**: Currency - Edit JavaScript
-
-*   **currency-edit.top**: currency-edit - at the top
-
-
-#### customer-edit.html
-
-*   **customer.orders-table-header**: Customer - orders-table-header
-
-*   **customer.edit**: Customer - Edit
-
-*   **customer-edit.bottom**: customer-edit - bottom
-
-*   **customer.address-create-form**: Customer - address create form
-
-*   **customer.address-update-form**: Customer - address update form
-
-*   **customer.address-delete-form**: Customer - address delete form
-
-*   **customer.edit-js**: Customer - Edit JavaScript
-
-*   **customer-edit.top**: customer-edit - at the top
-
-
-#### customers.html
-
-*   **customers.caption**: Customers - caption
-
-*   **customers.header**: Customers - header
-
-*   **customers.row**: Customers - row
-
-*   **customer.bottom**: Customer - bottom
-
-*   **customer.create-form**: Customer - create form
-
-*   **customer.delete-form**: Customer - delete form
-
-*   **customers.js**: Customers - JavaScript
-
-*   **customer.top**: Customer - at the top
-
-
-#### document-edit.html
-
-*   **document-edit.bottom**: document-edit - bottom
-
-*   **document.edit-js**: Document - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **document-edit.top**: document-edit - at the top
-
-
-#### document-upload-form.html
-
-*   **tab-image.bottom**: tab-image - bottom
-
-*   **tab-image.top**: tab-image - at the top
-
-
-#### export-modal.html
-
-*   **export.bottom**: Export - bottom
-
-*   **export.top**: Export - at the top
-
-
-#### export-page.html
-
-*   **export.bottom**: Export - bottom
-
-*   **export.js**: Export - JavaScript
-
-*   **export.top**: Export - at the top
-
-
-#### export.html
-
-*   **export.table-header**: Export - table header
-
-*   **export.table-row**: Export - table row
-
-*   **exports.row**: exports - row
-
-*   **exports.bottom**: exports - bottom
-
-*   **exports.js**: exports - JavaScript
-
-*   **exports.top**: exports - at the top
-
-
-#### feature-edit.html
-
-*   **features-value.table-header**: Features value - table header
-
-*   **features-value.table-row**: Features value - table row
-
-*   **feature-edit.bottom**: feature-edit - bottom
-
-*   **feature.value-create-form**: Feature - Value create form
-
-*   **feature.edit-js**: Feature - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **feature-edit.top**: feature-edit - at the top
-
-
-#### features.html
-
-*   **features.table-header**: Features - table header
-
-*   **features.table-row**: Features - table row
-
-*   **features.bottom**: Features - bottom
-
-*   **feature.create-form**: Feature - create form
-
-*   **feature.delete-form**: Feature - delete form
-
-*   **feature.add-to-all-form**: Feature - add to all form
-
-*   **feature.remove-to-all-form**: Feature - remove to all form
-
-*   **features.js**: Features - JavaScript
-
-*   **features.top**: Features - at the top
-
-
-#### folder-edit.html
-
-*   **folder.tab**: Folder - tab
-
-*   **folder.tab-content**: Folder - content
-
-*   **folder-edit.bottom**: folder-edit - bottom
-
-*   **folder.edit-js**: Folder - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **folder-edit.top**: folder-edit - at the top
-
-
-#### folders.html
-
-*   **folders.caption**: Folder - caption
-
-*   **folders.header**: Folder - header
-
-*   **folders.row**: Folder - row
-
-*   **contents.caption**: Contents - caption
-
-*   **contents.header**: Contents - header
-
-*   **contents.row**: Contents - row
-
-*   **folders.bottom**: Folder - bottom
-
-*   **folder.create-form**: Folder - create form
-
-*   **content.create-form**: Content - create form
-
-*   **folder.delete-form**: Folder - delete form
-
-*   **content.delete-form**: Content - delete form
-
-*   **folders.js**: Folder - JavaScript
-
-*   **folders.top**: Folder - at the top
-
-
-#### home.html
-
-*   **home.block**: Home - block
-
-*   **home.bottom**: Home - bottom
-
-*   **home.js**: Home - JavaScript
-
-*   **home.top**: Home - at the top
-
-
-#### hook-edit.html
-
-*   **hook-edit.bottom**: hook-edit - bottom
-
-*   **hook.edit-js**: Hook - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **hook-edit.top**: hook-edit - at the top
-
-
-#### hooks.html
-
-*   **hooks.table-header**: Hooks - table header
-
-*   **hooks.table-row**: Hooks - table row
-
-*   **hooks.bottom**: Hooks - bottom
-
-*   **hook.create-form**: Hook - create form
-
-*   **hook.delete-form**: Hook - delete form
-
-*   **hooks.js**: Hooks - JavaScript
-
-*   **hooks.top**: Hooks - at the top
-
-
-#### image-edit.html
-
-*   **image-edit.bottom**: image-edit - bottom
-
-*   **image.edit-js**: Image - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **image-edit.top**: image-edit - at the top
-
-
-#### image-upload-form.html
-
-*   **tab-image.bottom**: tab-image - bottom
-
-*   **tab-image.top**: tab-image - at the top
-
-
-#### import-page.html
-
-*   **import.js**: import - JavaScript
-
-#### import.html
-
-*   **import.table-header**: import - table header
-
-*   **import.table-row**: import - table row
-
-*   **imports.row**: imports - row
-
-*   **imports.bottom**: imports - bottom
-
-*   **imports.js**: imports - JavaScript
-
-*   **imports.top**: imports - at the top
-
-
-#### languages.html
-
-*   **languages.bottom**: Languages - bottom
-
-*   **language.create-form**: Language - create form
-
-*   **languages.delete-form**: Languages - delete form
-
-*   **languages.js**: Languages - JavaScript
-
-*   **languages.top**: Languages - at the top
-
-
-#### login.html
-
-*   **index.middle**: Dashboard - middle
-
-*   **index.bottom**: Dashboard - bottom
-
-*   **index.top**: Dashboard - at the top
-
-
-#### mailing-system.html
-
-*   **mailing-system.bottom**: Mailing system - bottom
-
-*   **mailing-system.js**: Mailing system - JavaScript
-
-*   **mailing-system.top**: Mailing system - at the top
-
-
-#### main-menu.html
-
-*   **main.top-menu-customer**: Layout - in the menu customers
-
-*   **main.top-menu-order**: Layout - in the menu orders
-
-*   **main.top-menu-catalog**: Layout - in the menu catalog
-
-*   **main.top-menu-content**: Layout - in the menu folders
-
-*   **main.top-menu-tools**: Layout - in the menu tools
-
-*   **main.top-menu-modules**: Layout - in the menu modules
-
-*   **main.top-menu-configuration**: Layout - in the menu configuration
-
-*   **main.in-top-menu-items**: Layout - in top menu items
-
-*   **main.after-top-menu**: Layout - after top menu
-
-*   **main.before-top-menu**: Layout - before top menu
-
-
-#### message-edit.html
-
-*   **message-edit.bottom**: message-edit - bottom
-
-*   **message.edit-js**: Message - Edit JavaScript
-
-*   **message-edit.top**: message-edit - at the top
-
-
-#### messages.html
-
-*   **messages.table-header**: Messages - table header
-
-*   **messages.table-row**: Messages - table row
-
-*   **messages.bottom**: Messages - bottom
-
-*   **message.create-form**: Message - create form
-
-*   **message.delete-form**: Message - delete form
-
-*   **messages.js**: Messages - JavaScript
-
-*   **messages.top**: Messages - at the top
-
-
-#### module-block.html
-
-*   **modules.table-row**: Modules - table row
-
-*   **modules.table-header**: Modules - table header
-
-
-#### module-configure.html
-
-*   **module.config-js**: Module - configuration JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **module.configuration**: Module - configuration
-
-
-#### module-edit.html
-
-*   **module-edit.bottom**: module-edit - bottom
-
-*   **module.edit-js**: Module - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **module-edit.top**: module-edit - at the top
-
-
-#### module-hook-edit.html
-
-*   **module-hook-edit.bottom**: module-hook-edit - bottom
-
-*   **module-hook.edit-js**: Module hook - Edit JavaScript
-
-*   **module-hook-edit.top**: module-hook-edit - at the top
-
-
-#### module-hooks.html
-
-*   **module-hook.delete-form**: Module hook - delete form
-
-*   **module-hook.js**: Module hook - JavaScript
-
-*   **module-hook.create-form**: Module hook - create form
-
-
-#### modules.html
-
-*   **modules.bottom**: Modules - bottom
-
-*   **modules.js**: Modules - JavaScript
-
-*   **modules.top**: Modules - at the top
-
-
-#### order-edit.html
-
-*   **order.tab**: Order - tab
-
-*   **order-edit.cart-top**: order-edit - cart-top
-
-*   **order-edit.before-order-product-list**: order-edit - before-order-product-list
-
-*   **order-edit.before-order-product-row**: order-edit - before-order-product-row
-
-*   **order-edit.product-list**: order-edit - product list
-
-*   **order-edit.after-order-product-row**: order-edit - after-order-product-row
-
-*   **order-edit.after-order-product-list**: order-edit - after-order-product-list
-
-*   **order-edit.customer-information-bottom**: order-edit - customer-information-bottom
-
-*   **order-edit.payment-module-bottom**: order-edit - payment-module-bottom
-
-*   **order-edit.cart-bottom**: order-edit - cart-bottom
-
-*   **order-edit.bill-top**: order-edit - bill-top
-
-*   **order-edit.delivery-module-bottom**: order-edit - delivery-module-bottom
-
-*   **order-edit.bill-delivery-address**: order-edit - bill-delivery-address
-
-*   **order-edit.bill-bottom**: order-edit - bill-bottom
-
-*   **order.tab-content**: Order - content
-
-*   **order-edit.bottom**: order-edit - bottom
-
-*   **order.edit-js**: Order - Edit JavaScript
-
-*   **order-edit.top**: order-edit - at the top
-
-
-#### orders.html
-
-*   **orders.table-header**: Orders - table header
-
-*   **orders.table-row**: Orders - table row
-
-*   **orders.bottom**: Orders - bottom
-
-*   **orders.js**: Orders - JavaScript
-
-*   **orders.top**: Orders - at the top
-
-
-#### product-attributes-tab.html
-
-*   **product.attributes-table-row**: Product - attributes table row
-
-*   **product.features-table-header**: Product - features-table-header
-
-*   **product.features-table-row**: Product - features table row
-
-*   **product.attributes-table-header**: Product - attributes table header
-
-
-#### product-edit.html
-
-*   **product.tab**: Product - tab
-
-*   **product.tab-content**: Product - content
-
-*   **product-edit.bottom**: product-edit - bottom
-
-*   **product.edit-js**: Product - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **product-edit.top**: product-edit - at the top
-
-
-#### product-prices-tab.html
-
-*   **product.details-details-form**: Product - stock edit form
-
-*   **product.details-promotion-form**: Product - details promotion form
-
-*   **product.before-combinations**: Product - before combinations
-
-*   **product.combinations-list-caption**: Product - combinations list caption
-
-*   **product.combinations-row**: Product - combinations-row
-
-*   **product.after-combinations**: Product - after combinations
-
-*   **product.after-combinations**: Product - after combinations
-
-*   **product.combination-delete-form**: Product - combination delete form
-
-*   **product.details-pricing-form**: Product - details pricing form
-
-
-#### product-related-tab.html
-
-*   **product.contents-table-row**: Product - contents table row
-
-*   **product.accessories-table-header**: Product - accessories table header
-
-*   **product.accessories-table-row**: Product - accessories table row
-
-*   **product.categories-table-header**: Product - categories table header
-
-*   **product.categories-table-row**: Product - categories table row
-
-*   **product.contents-table-header**: Product - contents table header
-
-
-#### profile-edit.html
-
-*   **profile-edit.bottom**: profile-edit - bottom
-
-*   **profile.edit-js**: Profile - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **profile-edit.top**: profile-edit - at the top
-
-
-#### profiles.html
-
-*   **profile.table-header**: Profile - table header
-
-*   **profile.table-row**: Profile - table row
-
-*   **profiles.bottom**: Profiles - bottom
-
-*   **profile.create-form**: Profile - create form
-
-*   **profile.delete-form**: Profile - delete form
-
-*   **profiles.js**: Profiles - JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **profiles.top**: Profiles - at the top
-
-
-#### sale-edit.html
-
-*   **sale-edit.bottom**: sale-edit - bottom
-
-*   **sale.edit-js**: sale - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **sale-edit.top**: sale-edit - at the top
-
-
-#### sales.html
-
-*   **sales.table-header**: sales - table header
-
-*   **sales.table-row**: sales - table row
-
-*   **sales.bottom**: sales - bottom
-
-*   **sale.create-form**: sale - create form
-
-*   **sale.delete-form**: sale - delete form
-
-*   **sales.js**: sales - JavaScript
-
-*   **sales.top**: sales - at the top
-
-
-#### search.html
-
-*   **customers.header**: Customers - header
-
-*   **customers.row**: Customers - row
-
-*   **search.bottom**: Search - bottom
-
-*   **customer.delete-form**: Customer - delete form
-
-*   **search.js**: Search - JavaScript
-
-*   **search.top**: Search - at the top
-
-
-#### seo-tab.html
-
-*   **tab-seo.bottom**: tab-seo - bottom
-
-*   **tab-seo.top**: tab-seo - at the top
-
-
-#### shipping-configuration-edit.html
-
-*   **shipping-configuration.edit**: Shipping configuration - Edit
-
-*   **shipping-configuration-edit.bottom**: shipping-configuration-edit - bottom
-
-*   **shipping-configuration.country-delete-form**: Shipping configuration - country delete form
-
-*   **shipping-configuration.edit-js**: Shipping configuration - Edit JavaScript
-
-*   **shipping-configuration-edit.top**: shipping-configuration-edit - at the top
-
-
-#### shipping-configuration.html
-
-*   **shipping-configuration.table-header**: Shipping configuration - table header
-
-*   **shipping-configuration.table-row**: Shipping configuration - table row
-
-*   **shipping-configuration.bottom**: Shipping configuration - bottom
-
-*   **shipping-configuration.create-form**: Shipping configuration - create form
-
-*   **shipping-configuration.delete-form**: Shipping configuration - delete form
-
-*   **shipping-configuration.js**: Shipping configuration - JavaScript
-
-*   **shipping-configuration.top**: Shipping configuration - at the top
-
-
-#### shipping-zones-edit.html
-
-*   **shipping-zones-edit.bottom**: shipping-zones-edit - bottom
-
-*   **zone.delete-form**: Zone - delete form
-
-*   **shipping-zones.edit-js**: Delivery zone - Edit JavaScript
-
-*   **shipping-zones-edit.top**: shipping-zones-edit - at the top
-
-
-#### shipping-zones.html
-
-*   **shipping-zones.table-header**: Delivery zone - table header
-
-*   **shipping-zones.table-row**: Delivery zone - table row
-
-*   **shipping-zones.bottom**: Delivery zone - bottom
-
-*   **shipping-zones.js**: Delivery zone - JavaScript
-
-*   **shipping-zones.top**: Delivery zone - at the top
-
-
-#### system-logs.html
-
-*   **system.logs-js**: System - logs JavaScript
-
-#### tax-edit.html
-
-*   **tax-edit.bottom**: tax-edit - bottom
-
-*   **tax.edit-js**: Tax - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **tax-edit.top**: tax-edit - at the top
-
-
-#### tax-rule-edit.html
-
-*   **tax-rule-edit.bottom**: tax-rule-edit - bottom
-
-*   **taxes.update-form**: Taxes - update form
-
-*   **tax-rule.edit-js**: tax rule - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **tax-rule-edit.top**: tax-rule-edit - at the top
-
-
-#### taxes-rules.html
-
-*   **taxes-rules.bottom**: Taxes rules - bottom
-
-*   **tax.create-form**: Tax - create form
-
-*   **tax.delete-form**: Tax - delete form
-
-*   **tax-rule.create-form**: tax rule - create form
-
-*   **tax-rule.delete-form**: tax rule - delete form
-
-*   **taxes-rules.js**: Taxes rules - JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **taxes-rules.top**: Taxes rules - at the top
-
-
-#### template-attribute-list.html
-
-*   **template.attributes-table-row**: Template - attributes table row
-
-*   **template.attributes-table-header**: Template - attributes table header
-
-
-#### template-edit.html
-
-*   **template-edit.bottom**: template-edit - bottom
-
-*   **template.edit-js**: Template - Edit JavaScript
-
-*   **template-edit.top**: template-edit - at the top
-
-
-#### template-feature-list.html
-
-*   **template.features-table-row**: Template - features table row
-
-*   **template.features-table-header**: Template - features-table-header
-
-
-#### templates.html
-
-*   **templates.table-header**: Templates - table header
-
-*   **templates.table-row**: Templates - table row
-
-*   **templates.bottom**: Templates - bottom
-
-*   **template.create-form**: Template - create form
-
-*   **template.delete-form**: Template - delete form
-
-*   **templates.js**: Templates - JavaScript
-
-*   **templates.top**: Templates - at the top
-
-
-#### tools.html
-
-*   **tools.col1-top**: Tools - at the top of the column
-
-*   **tools.col1-bottom**: Tools - at the bottom of column 1
-
-*   **tools.bottom**: Tools - bottom
-
-*   **tools.js**: Tools - JavaScript
-
-*   **tools.top**: Tools - at the top
-
-
-#### translations.html
-
-*   **translations.js**: Translations - JavaScript
-
-#### variable-edit.html
-
-*   **variables-edit.bottom**: variables-edit - bottom
-
-*   **variable.edit-js**: Variable - Edit JavaScript
-
-*   **wysiwyg.js**: wysiwyg - JavaScript
-
-*   **variables-edit.top**: variables-edit - at the top
-
-
-#### variables.html
-
-*   **variables.table-header**: Variables - table header
-
-*   **variables.table-row**: Variables - table row
-
-*   **variables.bottom**: Variables - bottom
-
-*   **variable.create-form**: Variable - create form
-
-*   **variable.delete-form**: Variable - delete form
-
-*   **variables.js**: Variables - JavaScript
-
-*   **variables.top**: Variables - at the top
-
-
-### PDF
-------------
-
-#### delivery.html
-
-*   **delivery.header**: Delivery - in the header
-
-*   **delivery.footer-top**: Delivery - at the top of the footer
-
-*   **delivery.imprint**: Delivery - imprint
-
-*   **delivery.footer-bottom**: Delivery - at the bottom of the footer
-
-*   **delivery.information**: Delivery - at the bottom of information area
-
-*   **delivery.after-information**: Delivery - after the information area
-
-*   **delivery.delivery-address**: Delivery - delivery address
-
-*   **delivery.after-addresses**: Delivery - after addresse area
-
-*   **delivery.after-delivery-module**: Delivery - after-delivery-module
-
-*   **delivery.after-summary**: Delivery - after the order summary
-
-*   **delivery.css**: Delivery - CSS
-
-
-#### invoice.html
-
-*   **invoice.header**: Invoice - in the header
-
-*   **invoice.footer-top**: Invoice - at the top of the footer
-
-*   **invoice.imprint**: Invoice - imprint
-
-*   **invoice.footer-bottom**: Invoice - at the bottom of the footer
-
-*   **invoice.information**: Invoice - at the bottom of information area
-
-*   **invoice.after-information**: Invoice - after the information area
-
-*   **invoice.delivery-address**: Invoice - delivery address
-
-*   **invoice.after-addresses**: Invoice - after addresse area
-
-*   **invoice.after-products**: Invoice - after product listing
-
-*   **invoice.after-payment-module**: Invoice - after-payment-module
-
-*   **invoice.after-delivery-module**: Invoice - after-delivery-module
-
-*   **invoice.after-summary**: Invoice - after the order summary
-
-*   **invoice.css**: Invoice - CSS
+### Backoffice
+
+#### Thème: Default
+
+##### admin-logs.html
+
+<details>
+
+* **admin-logs.top**
+	* location:admin\_logs\_top
+* **admin-logs.bottom**
+	* location:admin\_logs\_bottom
+* **admin-logs.js**
+	* location:admin-logs-js
+
+</details>
+
+##### administrators.html
+
+<details>
+
+* **administrators.top**
+	* location:administrators\_top
+* **administrators.header**
+	* location:administrator\_list\_header
+* **administrators.row**
+	* location:administrator\_list\_row
+	* admin\_id:{$ID}
+* **administrators.bottom**
+	* location:administrators\_bottom
+* **administrator.create-form**
+	* location:administrator\_create\_form
+* **administrator.update-form**
+	* location:administrator\_update\_form
+* **administrator.delete-form**
+	* location:administrator\_delete\_form
+* **administrators.js**
+	* location:administrators-js
+
+</details>
+
+##### advanced-configuration.html
+
+<details>
+
+* **advanced-configuration**
+	* location:advanced-configuration
+* **advanced-configuration.js**
+	* location:advanced-configuration-js
+
+</details>
+
+##### attribute-edit.html
+
+<details>
+
+* **attribute-edit.top**
+	* attribute\_id:$attribute\_id
+* **attributes-value.table-header**
+	* location:attributes\_value\_table\_header
+	* attribute\_id:$attribute\_id
+* **attributes-value.table-row**
+	* location:attributes\_value\_table\_row
+	* attribute\_id:$attribute\_id
+* **attribute-edit.bottom**
+	* attribute\_id:$attribute\_id
+* **attribute-value.create-form**
+	* location:attribute\_value\_create\_form
+* **attribute.id-delete-form**
+	* location:attribute\_id\_delete\_form
+	* attribute\_id:$attribute\_id
+* **attribute.edit-js**
+	* location:attribute-edit-js
+	* attribute\_id:$attribute\_id
+* **wysiwyg.js**
+	* location:wysiwyg-attribute-edit-js
+
+</details>
+
+##### attributes.html
+
+<details>
+
+* **attributes.top**
+	* location:attributes\_top
+* **attributes.table-header**
+	* location:attributes\_table\_header
+* **attributes.table-row**
+	* location:attributes\_table\_row
+	* attribute\_id:{$ID}
+* **attributes.bottom**
+	* location:attributes\_bottom
+* **attribute.create-form**
+	* location:attribute\_create\_form
+* **attribute.delete-form**
+	* location:attribute\_delete\_form
+* **attribute.add-to-all-form**
+	* location:attribute\_add\_to\_all\_form
+* **attribute.remove-to-all-form**
+	* location:attribute\_remove\_to\_all\_form
+* **attributes.js**
+	* location:attributes-js
+
+</details>
+
+##### brand-edit.html
+
+<details>
+
+* **brand-edit.top**
+	* brand\_id:$brand\_id
+* **brand.tab**
+	* brand\_id:{$brand\_id}
+	* fields:
+		* id
+		* title
+		* href
+		* content
+* **brand.modification.form-right.top**
+	* brand\_id:$brand\_id
+* **brand.modification.form-right.bottom**
+	* brand\_id:$brand\_id
+* **brand.update-form**
+	* location:'brand\_update\_form'
+* **item.edition.images**
+	* itemType:'brand'
+	* itemId:$ID
+	* resource:admin.brand
+* **brand-edit.bottom**
+	* brand\_id:$brand\_id
+* **'brand.edit-js'**
+	* location:'brand-edit-js'
+	* brand\_id:{$brand\_id}
+* **wysiwyg.js**
+	* location:wysiwyg-brand-edit-js
+
+</details>
+
+##### brands.html
+
+<details>
+
+* **'brands.top'**
+	* location:'brands\_top'
+* **'brands.table-header'**
+	* location:'brands\_table\_header'
+* **'brands.table-row'**
+	* location:'brands\_table\_row'
+	* brand\_id:{$ID}
+* **'brands.bottom'**
+	* location:'brands\_bottom'
+* **'brand.create-form'**
+	* location:'brand\_create\_form'
+* **'brand.delete-form'**
+	* location:'brand\_delete\_form'
+* **'brand.js'**
+	* location:'brand\_js'
+
+</details>
+
+##### categories.html
+
+<details>
+
+* **categories.top**
+	* location:categories\_top
+* **categories.caption**
+	* location:category\_list\_caption
+* **categories.header**
+	* location:category\_list\_header
+* **categories.row**
+	* location:category\_list\_row
+	* category\_id:{$ID}
+* **products.caption**
+	* location:product\_list\_caption
+* **products.header**
+	* location:product\_list\_header
+* **products.row**
+	* location:product\_list\_row
+	* product\_id:{$ID}
+* **categories.bottom**
+	* location:categories\_bottom
+* **categories.catalog-bottom**
+	* location:catalog\_bottom
+* **category.create-form**
+	* location:category\_create\_form
+* **product.create-form**
+	* location:product\_create\_form
+* **category.delete-form**
+	* location:category\_delete\_form
+* **product.delete-form**
+	* location:product\_delete\_form
+* **categories.js**
+	* location:categories-js
+
+</details>
+
+##### category-edit.html
+
+<details>
+
+* **category.tab-content**
+	* category\_id:$category\_id
+	* id:$category\_id
+	* view:category
+* **category-edit.top**
+	* category\_id:$category\_id
+* **category.tab**
+	* id:{$category\_id}
+	* fields:
+		* id
+		* title
+		* href
+		* content
+* **category.modification.form-right.top**
+	* category\_id:$category\_id
+* **category.modification.form-right.bottom**
+	* category\_id:$category\_id
+* **category.contents-table-header**
+	* location:category\_contents\_table\_header
+* **category.contents-table-row**
+	* location:category\_contents\_table\_row
+* **item.edition.images**
+	* itemType:'category'
+	* itemId:$ID
+	* resource:admin.category
+* **category-edit.bottom**
+	* category\_id:$category\_id
+* **category.edit-js**
+	* location:category-edit-js
+	* category\_id:$category\_id
+* **wysiwyg.js**
+	* location:wysiwyg-category-edit-js
+
+</details>
+
+##### config-store.html
+
+<details>
+
+* **config-store.js**
+	* location:config-store-js
+
+</details>
+
+##### configuration.html
+
+<details>
+
+* **configuration.top**
+	* location:configuration\_top
+* **configuration.catalog-top**
+	* location:configuration\_catalog\_top
+* **configuration.catalog-bottom**
+	* location:configuration\_catalog\_bottom
+* **configuration.shipping-top**
+	* location:configuration\_shipping\_top
+* **configuration.shipping-bottom**
+	* location:configuration\_shipping\_bottom
+* **configuration.order-path.top**
+* **configuration.order-path.bottom**
+* **configuration.system-top**
+	* location:configuration\_system\_top
+* **configuration.system-bottom**
+	* location:configuration\_system\_bottom
+* **configuration.bottom**
+	* location:configuration\_bottom
+* **configuration.js**
+	* location:configuration-js
+
+</details>
+
+##### content-edit.html
+
+<details>
+
+* **content-edit.top**
+	* content\_id:$content\_id
+* **content.tab**
+	* id:{$content\_id}
+	* fields:
+		* id
+		* title
+		* href
+		* content
+* **content.modification.form-right.top**
+	* content\_id:$content\_id
+* **content.modification.form-right.bottom**
+	* content\_id:$content\_id
+* **item.edition.images**
+	* itemType:'content'
+	* itemId:$ID
+	* resource:admin.content
+* **content-edit.bottom**
+	* content\_id:$content\_id
+* **content.edit-js**
+	* location:content-edit-js
+	* content\_id:{$content\_id}
+* **wysiwyg.js**
+	* location:wysiwyg-content-edit-js
+
+</details>
+
+##### content-folder-management.html
+
+<details>
+
+* **product.folders-table-header**
+	* location:product\_folders\_table\_header
+* **product.folders-table-row**
+	* location:product\_folders\_table\_row
+
+</details>
+
+##### countries-migrate.html
+
+<details>
+
+* **wysiwyg.js**
+	* location:wysiwyg-country-edit-js
+
+</details>
+
+##### countries.html
+
+<details>
+
+* **countries.top**
+	* location:countries\_top
+* **countries.table-header**
+	* location:countries\_table\_header
+* **countries.table-row**
+	* location:countries\_table\_row
+	* country\_id:{$ID}
+* **countries.bottom**
+	* location:countries\_bottom
+* **country.create-form**
+	* location:country\_create\_form
+* **country.delete-form**
+	* location:country\_delete\_form
+* **countries.js**
+	* location:countries-js
+
+</details>
+
+##### country-edit.html
+
+<details>
+
+* **country-edit.top**
+	* country\_id:$country\_id
+* **country-edit.bottom**
+	* country\_id:$country\_id
+* **country.edit-js**
+	* location:country-edit-js
+	* country\_id:$country\_id
+* **wysiwyg.js**
+	* location:wysiwyg-country-edit-js
+
+</details>
+
+##### coupon-create.html
+
+<details>
+
+* **coupon.create-js**
+	* location:coupon-create-js
+* **wysiwyg.js**
+	* location:wysiwyg-coupon-create-js
+
+</details>
+
+##### coupon-list.html
+
+<details>
+
+* **coupon.top**
+	* location:coupon\_top
+* **coupon.list-caption**
+	* location:coupon\_list\_caption
+* **coupon.table-header**
+	* location:coupon\_table\_header
+* **coupon.table-row**
+	* location:coupon\_table\_row
+	* coupon\_id:{$ID}
+* **coupon.bottom**
+	* location:coupon\_bottom
+* **coupon.delete-form**
+* **coupon.list-js**
+	* location:coupon-list-js
+
+</details>
+
+##### coupon-update.html
+
+<details>
+
+* **coupon.update-js**
+	* location:coupon-update-js
+	* coupon\_id:{$couponId}
+* **wysiwyg.js**
+	* location:wysiwyg-coupon-update-js
+
+</details>
+
+##### currencies.html
+
+<details>
+
+* **currencies.top**
+	* location:currencies\_top
+* **currencies.table-header**
+	* location:currencies\_table\_header
+* **currencies.table-row**
+	* location:currencies\_table\_row
+	* currency\_id:{$ID}
+* **currencies.bottom**
+	* location:currencies\_bottom
+* **currency.create-form**
+	* location:currency\_create\_form
+* **currency.delete-form**
+	* location:currency\_delete\_form
+* **currencies.js**
+	* location:currencies-js
+
+</details>
+
+##### currency-edit.html
+
+<details>
+
+* **currency-edit.top**
+	* currency\_id:$currency\_id
+* **currency-edit.bottom**
+	* currency\_id:$currency\_id
+* **currency.edit-js**
+	* location:currency-edit-js
+	* currency\_id:{$currency\_id}
+
+</details>
+
+##### customer-edit.html
+
+<details>
+
+* **customer-edit.top**
+	* customer\_id:$customer\_id
+* **customer.orders-table-header**
+	* location:orders\_table\_header
+	* customer\_id:$customer\_id
+* **customer.orders-table-row**
+	* location:orders\_table\_row
+	* customer\_id:$customer\_id
+	* order\_id:$ID
+* **customer.edit**
+	* location:customer-edit
+	* customer\_id:$customer\_id
+* **customer-edit.bottom**
+	* customer\_id:$customer\_id
+* **customer.address-create-form**
+	* location:customer\_address\_create\_form
+	* customer\_id:$customer\_id
+	* page:$page
+* **customer.address-update-form**
+	* location:customer\_address\_update\_form
+	* customer\_id:$customer\_id
+	* page:$page
+* **customer.address-delete-form**
+	* location:customer\_address\_delete\_form
+	* customer\_id:$customer\_id
+	* page:$page
+* **customer.edit-js**
+	* location:customer-edit-js
+	* customer\_id:$customer\_id
+
+</details>
+
+##### customers.html
+
+<details>
+
+* **customer.top**
+	* location:customer\_top
+* **customers.caption**
+	* location:customer\_list\_caption
+* **customers.header**
+	* location:customer\_list\_header
+* **customers.row**
+	* location:customer\_list\_row
+	* customer\_id:{$ID}
+* **customer.bottom**
+	* location:customer\_bottom
+* **customer.create-form**
+	* location:customer\_create\_form
+* **customer.delete-form**
+	* location:customer\_delete\_form
+* **customers.js**
+	* location:customers-js
+
+</details>
+
+##### document-edit.html
+
+<details>
+
+* **document-edit.top**
+	* document\_id:$documentId
+* **document-edit.bottom**
+	* document\_id:$documentId
+* **document.edit-js**
+	* location:document-edit-js
+	* document\_id:{$documentId}
+* **wysiwyg.js**
+	* location:wysiwyg-document-edit-js
+
+</details>
+
+##### document-upload-form.html
+
+<details>
+
+* **tab-document.top**
+	* id:$parentId
+	* type:$documentType
+* **tab-document.bottom**
+	* id:$parentId
+	* type:$documentType
+
+</details>
+
+##### export-modal.html
+
+<details>
+
+* **export.top**
+	* type:modal
+	* id:$ID
+* **export.bottom**
+	* type:modal
+	* id:$ID
+
+</details>
+
+##### export-page.html
+
+<details>
+
+* **export.top**
+	* type:page
+	* id:$ID
+* **export.bottom**
+	* type:page
+	* id:$ID
+* **export.js**
+	* location:export-js
+
+</details>
+
+##### export.html
+
+<details>
+
+* **exports.top**
+	* location:exports\_top
+* **export.table-header**
+* **export.table-row**
+	* export\_id:$ID
+* **exports.row**
+	* category:$ID
+* **exports.bottom**
+	* location:exports\_bottom
+* **exports.js**
+	* location:exports-js
+
+</details>
+
+##### feature-edit.html
+
+<details>
+
+* **feature-edit.top**
+	* feature\_id:$feature\_id
+* **features-value.table-header**
+	* location:features\_value\_table\_header
+* **features-value.table-row**
+	* location:features\_value\_table\_row
+	* feature\_id:{$feature\_id}
+* **feature-edit.bottom**
+	* feature\_id:$feature\_id
+* **feature.value-create-form**
+	* location:feature\_value\_create\_form
+	* feature\_id:{$feature\_id}
+* **feature.edit-js**
+	* location:feature-edit-js
+	* feature\_id:{$feature\_id}
+* **wysiwyg.js**
+	* location:wysiwyg-feature-edit-js
+
+</details>
+
+##### features.html
+
+<details>
+
+* **features.top**
+	* location:features\_top
+* **features.table-header**
+	* location:features\_table\_header
+* **features.table-row**
+	* location:features\_table\_row
+	* feature\_id:{$ID}
+* **features.bottom**
+	* location:features\_bottom
+* **feature.create-form**
+	* location:feature\_create\_form
+* **feature.delete-form**
+	* location:feature\_delete\_form
+* **feature.add-to-all-form**
+	* location:feature\_add\_to\_all\_form
+* **feature.remove-to-all-form**
+	* location:feature\_remove\_to\_all\_form
+* **features.js**
+	* location:features-js
+
+</details>
+
+##### folder-edit.html
+
+<details>
+
+* **folder-edit.top**
+	* folder\_id:$folder\_id
+* **folder.tab**
+	* id:{$folder\_id}
+	* fields:
+		* id
+		* title
+		* href
+		* content
+* **folder.modification.form-right.top**
+	* folder\_id:$folder\_id
+* **folder.modification.form-right.bottom**
+	* folder\_id:$folder\_id
+* **item.edition.images**
+	* itemType:'folder'
+	* itemId:$ID
+	* resource:admin.folder
+* **folder-edit.bottom**
+	* folder\_id:$folder\_id
+* **folder.edit-js**
+	* location:folder-edit-js
+	* folder\_id:{$folder\_id}
+* **wysiwyg.js**
+	* location:wysiwyg-folder-edit-js
+
+</details>
+
+##### folders.html
+
+<details>
+
+* **folders.top**
+	* location:folders\_top
+* **folders.caption**
+	* location:folder\_list\_caption
+* **folders.header**
+	* location:folder\_list\_header
+* **folders.row**
+	* location:folder\_list\_row
+	* folder\_id:{$ID}
+* **contents.caption**
+	* location:content\_list\_caption
+* **contents.header**
+	* location:content\_list\_header
+* **contents.row**
+	* location:content\_list\_row
+* **folders.bottom**
+	* location:folders\_bottom
+* **folder.create-form**
+	* location:folder\_create\_form
+* **content.create-form**
+	* location:content\_create\_form
+* **folder.delete-form**
+	* location:folder\_delete\_form
+* **content.delete-form**
+	* location:content\_delete\_form
+* **folders.js**
+	* location:folders-js
+
+</details>
+
+##### home.html
+
+<details>
+
+* **home.top**
+	* location:home\_top
+* **home.block**
+	* fields:
+		* id
+		* title
+		* content
+		* class
+* **home.bottom**
+	* location:home\_bottom
+* **home.js**
+	* location:home-js
+
+</details>
+
+##### hook-admin-home-config.html
+
+<details>
+
+* **hook\_home\_stats**
+	* location:hook\_home\_stats
+
+</details>
+
+##### hook-edit.html
+
+<details>
+
+* **hook-edit.top**
+	* hook\_id:$hook\_id
+* **hook-edit.bottom**
+	* hook\_id:$hook\_id
+* **hook.edit-js**
+	* location:hook-edit-js
+	* hook\_id:{$hook\_id}
+* **wysiwyg.js**
+	* location:wysiwyg-hook-edit-js
+
+</details>
+
+##### hooks.html
+
+<details>
+
+* **hooks.top**
+	* location:hooks\_top
+* **hooks.table-header**
+	* location:hooks\_table\_header
+* **hooks.table-row**
+	* location:hooks\_table\_row
+	* hook\_id:{$ID}
+* **hooks.bottom**
+	* location:hooks\_bottom
+* **hook.create-form**
+	* location:hook\_create\_form
+* **hook.delete-form**
+	* location:hook\_delete\_form
+* **hooks.js**
+	* location:hooks-js
+
+</details>
+
+##### image-edit.html
+
+<details>
+
+* **image-edit.top**
+	* image\_id:$imageId
+* **image-edit.bottom**
+	* image\_id:$imageId
+* **image.edit-js**
+	* location:image-edit-js
+	* source:{$imageType}
+	* image\_id:{$imageId}
+* **wysiwyg.js**
+	* location:wysiwyg-image-edit-js
+
+</details>
+
+##### image-upload-form.html
+
+<details>
+
+* **tab-image.top**
+	* id:$parentId
+	* type:$imageType
+* **tab-image.bottom**
+	* id:$parentId
+	* type:$imageType
+
+</details>
+
+##### import-page.html
+
+<details>
+
+* **import.js**
+	* location:import-js
+
+</details>
+
+##### import.html
+
+<details>
+
+* **imports.top**
+	* location:imports-top
+* **import.table-header**
+* **import.table-row**
+	* import\_id:$ID
+* **imports.row**
+	* category:$ID
+* **imports.bottom**
+	* location:imports-bottom
+* **imports.js**
+	* location:imports-js
+
+</details>
+
+##### languages.html
+
+<details>
+
+* **languages.top**
+	* location:languages\_top
+* **languages.bottom**
+	* location:languages\_bottom
+* **language.create-form**
+	* location:language\_create\_form
+* **languages.delete-form**
+	* location:languages\_delete\_form
+* **languages.js**
+	* location:languages-js
+
+</details>
+
+##### login.html
+
+<details>
+
+* **index.top**
+	* location:index\_top
+* **index.middle**
+	* location:index\_middle
+* **index.bottom**
+	* location:index\_bottom
+
+</details>
+
+##### mailing-system.html
+
+<details>
+
+* **mailing-system.top**
+	* location:mailing\_system\_top
+* **mailing-system.bottom**
+	* location:mailing\_system\_bottom
+* **mailing-system.js**
+	* location:mainling-system-js
+
+</details>
+
+##### main-menu.html
+
+<details>
+
+* **main.before-top-menu**
+	* location:before\_top\_menu
+* **main.top-menu-customer**
+	* fields:
+		* id
+		* class
+		* url
+		* title
+* **main.top-menu-order**
+	* fields:
+		* id
+		* class
+		* url
+		* title
+* **main.top-menu-catalog**
+	* fields:
+		* id
+		* class
+		* url
+		* title
+* **main.top-menu-content**
+	* fields:
+		* id
+		* class
+		* url
+		* title
+* **main.top-menu-tools**
+	* fields:
+		* id
+		* class
+		* url
+		* title
+* **main.top-menu-modules**
+	* fields:
+		* id
+		* class
+		* url
+		* title
+* **main.top-menu-configuration**
+	* fields:
+		* id
+		* class
+		* url
+		* title
+* **main.in-top-menu-items**
+	* location:in\_top\_menu\_items
+	* admin\_current\_location:$admin\_current\_location
+* **main.topbar-bottom**
+* **main.after-top-menu**
+	* location:after\_top\_menu
+
+</details>
+
+##### message-edit.html
+
+<details>
+
+* **message-edit.top**
+	* message\_id:$message\_id
+* **message-edit.bottom**
+	* message\_id:$message\_id
+* **message.edit-js**
+	* location:message-edit-js
+	* message\_id:{$message\_id}
+
+</details>
+
+##### messages.html
+
+<details>
+
+* **messages.top**
+	* location:messages\_top
+* **messages.table-header**
+	* location:messages\_table\_header
+* **messages.table-row**
+	* location:messages\_table\_row
+	* message\_id:{$ID}
+* **messages.bottom**
+	* location:messages\_bottom
+* **message.create-form**
+	* location:message\_create\_form
+* **message.delete-form**
+	* location:message\_delete\_form
+* **messages.js**
+	* location:messages-js
+
+</details>
+
+##### module-block.html
+
+<details>
+
+* **modules.table-header**
+	* location:modules\_table\_header
+* **modules.table-row**
+	* location:modules\_table\_row
+	* module\_code:{$CODE}
+
+</details>
+
+##### module-configure.html
+
+<details>
+
+* **module.configuration**
+	* location:module\_configuration
+	* modulecode:$module\_code
+* **module.config-js**
+	* location:module-config-js
+	* modulecode:$module\_code
+* **wysiwyg.js**
+	* location:wysiwyg-module-config-js
+
+</details>
+
+##### module-edit.html
+
+<details>
+
+* **module-edit.top**
+	* module\_id:$module\_id
+* **module-edit.bottom**
+	* module\_id:$module\_id
+* **module.edit-js**
+	* location:module-edit-js
+	* module\_id:{$module\_id}
+* **wysiwyg.js**
+	* location:wysiwyg-module-edit-js
+
+</details>
+
+##### module-hook-edit.html
+
+<details>
+
+* **module-hook-edit.top**
+	* module\_hook\_id:$module\_hook\_id
+* **module-hook-edit.bottom**
+	* module\_hook\_id:$module\_hook\_id
+* **module-hook.edit-js**
+	* location:module-hook-edit-js
+	* module\_hook\_id:{$module\_hook\_id}
+
+</details>
+
+##### module-hooks.html
+
+<details>
+
+* **module-hook.create-form**
+	* location:module\_hook\_create\_form
+* **module-hook.delete-form**
+	* location:module\_hook\_delete\_form
+* **module-hook.js**
+	* location:module-hook-js
+
+</details>
+
+##### module-tab-content.html
+
+<details>
+
+* **$hook**
+	* location:$location
+	* id:$id
+	* view:$view
+	* countvar:module\_count
+* **$hook**
+	* id:$id
+	* view:$view
+	* countvar:module\_count
+
+</details>
+
+##### modules.html
+
+<details>
+
+* **modules.top**
+	* location:modules\_top
+* **modules.bottom**
+	* location:modules\_bottom
+* **modules.js**
+	* location:modules-js
+
+</details>
+
+##### order-edit.html
+
+<details>
+
+* **order-edit.top**
+	* order\_id:$order\_id
+* **order.tab**
+	* id:{$order\_id}
+	* fields:
+		* id
+		* title
+		* href
+		* content
+* **order-edit.cart-top**
+	* location:order-edit-cart-top
+	* order\_id:$order\_id
+* **order-edit.before-order-product-list**
+	* location:before-order-product-list
+	* order\_id:$order\_id
+* **order-edit.order-product-table-header**
+	* location:order\_edit\_table\_header
+* **order-edit.before-order-product-row**
+	* location:before-order-product-row
+	* order\_id:$order\_id
+	* order\_product\_id:$ID
+* **order-edit.product-list**
+	* location:order-product-list
+	* order\_id:$order\_id
+	* order\_product\_id:$ID
+* **order-edit.order-product-table-row**
+	* location:order\_edit\_table\_row
+	* order\_product\_id:{$ID}
+* **order-edit.after-order-product-row**
+	* location:after-order-product-row
+	* order\_id:$order\_id
+	* order\_product\_id:$ID
+* **order-edit.after-order-product-list**
+	* location:after-order-product-list
+	* order\_id:$order\_id
+* **order-edit.customer-information-bottom**
+	* order\_id:$order\_id
+	* customer\_id:$CUSTOMER
+* **order-edit.payment-module-bottom**
+	* order\_id:$order\_id
+	* module\_id:$PAYMENT\_MODULE
+* **order-edit.cart-bottom**
+	* location:order-edit-cart-bottom
+	* order\_id:$order\_id
+* **order-edit.bill-top**
+	* location:order-edit-bill-top
+	* order\_id:$order\_id
+* **order-edit.delivery-module-bottom**
+	* order\_id:$order\_id
+	* module\_id:$DELIVERY\_MODULE
+* **order-edit.bill-delivery-address**
+	* module:$DELIVERY\_MODULE
+	* order\_id:{$order\_id}
+* **order-edit.bill-bottom**
+	* location:order-edit-bill-bottom
+	* order\_id:$order\_id
+* **order-edit.bottom**
+	* order\_id:$order\_id
+* **order.edit-js**
+	* location:order-edit-js
+	* order\_id:{$order\_id}
+
+</details>
+
+##### order-status-edit.html
+
+<details>
+
+* **order-status-edit.top**
+	* order\_status\_id:$order\_status\_id
+* **order-status.tab**
+	* order\_status\_id:{$order\_status\_id}
+	* fields:
+		* id
+		* title
+		* href
+		* content
+* **order-status.update-form**
+	* order\_status\_id:$order\_status\_id
+* **order-status-edit.bottom**
+	* order\_status\_id:$order\_status\_id
+* **'order-status.edit-js'**
+	* order\_status\_id:$order\_status\_id
+* **wysiwyg.js**
+
+</details>
+
+##### order-status.html
+
+<details>
+
+* **order-status.top**
+* **order-status.table-header**
+* **order-status.table-row**
+	* order\_status\_id:{$ID}
+* **order-status.bottom**
+* **'brand.create-form'**
+	* location:'brand\_create\_form'
+* **order-status.js**
+
+</details>
+
+##### orders.html
+
+<details>
+
+* **orders.top**
+	* location:orders\_top
+* **orders.table-header**
+	* location:orders\_table\_header
+* **orders.table-row**
+	* location:orders\_table\_row
+	* order\_id:{$ID}
+* **orders.bottom**
+	* location:orders\_bottom
+* **orders.js**
+	* location:orders-js
+
+</details>
+
+##### product-attributes-tab.html
+
+<details>
+
+* **product.attributes-table-header**
+	* location:product\_attributes\_table\_header
+* **product.attributes-table-row**
+	* location:product\_attributes\_table\_row
+* **product.features-table-header**
+	* location:product\_features\_table\_header
+* **product.features-table-row**
+	* location:product\_features\_table\_row
+
+</details>
+
+##### product-edit.html
+
+<details>
+
+* **product-edit.top**
+	* product\_id:$product\_id
+* **product.tab**
+	* id:{$product\_id}
+	* fields:
+		* id
+		* title
+		* href
+		* content
+* **item.edition.images**
+	* itemType:'product'
+	* itemId:$ID
+	* resource:admin.product
+* **product-edit.bottom**
+	* product\_id:$product\_id
+* **product.edit-js**
+	* location:product-edit-js
+	* product\_id:{$product\_id}
+* **wysiwyg.js**
+	* location:wysiwyg-product-edit-js
+
+</details>
+
+##### product-general-tab.html
+
+<details>
+
+* **product.modification.form\_top**
+	* product\_id:$ID
+* **product.modification.form-right.top**
+	* product\_id:$ID
+* **product.modification.form-right.bottom**
+	* product\_id:$ID
+* **product.modification.form\_bottom**
+	* product\_id:$ID
+
+</details>
+
+##### product-prices-tab.html
+
+<details>
+
+* **product.details-pricing-form**
+	* location:product\_details\_pricing\_form
+* **product.details-details-form**
+	* location:product\_details\_details\_form
+* **product.details-promotion-form**
+	* location:product\_details\_promotion\_form
+* **product.before-combinations**
+	* location:product\_before\_combinations
+* **product.combinations-list-caption**
+	* location:product\_combinations\_list\_caption
+* **product.combinations-row**
+	* pse:$current\_pse\_id
+	* idx:$idx
+* **product.after-combinations**
+	* location:product\_after\_combinations
+* **product.combination-delete-form**
+	* location:product\_combination\_delete\_form
+
+</details>
+
+##### product-related-tab.html
+
+<details>
+
+* **product.contents-table-header**
+	* location:product\_contents\_table\_header
+* **product.contents-table-row**
+	* location:product\_contents\_table\_row-bottom
+* **product.accessories-table-header**
+	* location:product\_accessories\_table\_header-bottom
+* **product.accessories-table-row**
+	* location:product\_accessories\_table\_row-bottom
+* **product.categories-table-header**
+	* location:product\_categories\_table\_header
+* **product.categories-table-row**
+	* location:product\_categories\_table\_row
+
+</details>
+
+##### profile-edit.html
+
+<details>
+
+* **profile-edit.top**
+	* profile\_id:$profile\_id
+* **profile-edit.bottom**
+	* profile\_id:$profile\_id
+* **profile.edit-js**
+	* location:profile-edit-js
+	* profile\_id:{$profile\_id}
+* **wysiwyg.js**
+	* location:wysiwyg-profile-edit-js
+
+</details>
+
+##### profiles.html
+
+<details>
+
+* **profiles.top**
+	* location:profiles\_top
+* **profile.table-header**
+* **profile.table-row**
+	* profile\_id:$ID
+* **profiles.bottom**
+	* location:profiles\_bottom
+* **profile.create-form**
+	* location:profile\_create\_form
+* **profile.delete-form**
+	* location:profile\_delete\_form
+* **profiles.js**
+	* location:profiles-js
+* **wysiwyg.js**
+	* location:wysiwyg-profiles-js
+
+</details>
+
+##### sale-edit.html
+
+<details>
+
+* **sale-edit.top**
+	* sale\_id:$sale\_id
+* **sale-edit.bottom**
+	* sale\_id:$sale\_id
+* **sale.edit-js**
+	* location:'sale-edit-js'
+	* sale\_id:{$sale\_id}
+* **wysiwyg.js**
+	* location:wysiwyg-sale-edit-js
+
+</details>
+
+##### sales.html
+
+<details>
+
+* **sales.top**
+	* location:sales\_top
+* **sales.table-header**
+	* location:sales\_table\_header
+* **sales.table-row**
+	* location:sales\_table\_row
+	* sale\_id:{$ID}
+* **sales.bottom**
+	* location:sales\_bottom
+* **sale.create-form**
+	* location:sale\_create\_form
+* **sale.delete-form**
+	* location:sale\_delete\_form
+* **sales.js**
+	* location:sales-js
+
+</details>
+
+##### search.html
+
+<details>
+
+* **search.top**
+	* location:search\_top
+* **customers.header**
+	* location:customer\_list\_header
+* **customers.row**
+	* location:customer\_list\_row
+	* customer\_id:{$ID}
+* **orders.table-header**
+	* location:orders\_table\_header
+* **orders.table-row**
+	* location:orders\_table\_row
+	* order\_id:{$ID}
+* **categories.header**
+	* location:category\_list\_header
+* **categories.row**
+	* location:category\_list\_row
+	* category\_id:{$ID}
+* **products.row**
+	* location:product\_list\_row
+	* product\_id:{$ID}
+* **folders.header**
+	* location:folder\_list\_header
+* **folders.row**
+	* location:folder\_list\_row
+	* folder\_id:{$ID}
+* **contents.header**
+	* location:content\_list\_header
+* **contents.row**
+	* location:content\_list\_row
+* **brands.table-header**
+* **brands.table-row**
+	* brand\_id:$ID
+* **search.bottom**
+	* location:search\_bottom
+* **category.delete-form**
+	* location:category\_delete\_form
+* **product.delete-form**
+	* location:product\_delete\_form
+* **folder.delete-form**
+	* location:folder\_delete\_form
+* **content.delete-form**
+	* location:folder\_content\_form
+* **customer.delete-form**
+	* location:customer\_delete\_form
+* **brand.delete-form**
+* **search.js**
+	* location:search-js
+
+</details>
+
+##### seo-tab.html
+
+<details>
+
+* **tab-seo.top**
+	* id:$current\_id
+	* type:$seoType
+* **tab-seo.update-form**
+	* id:$current\_id
+	* type:$seoType
+* **tab-seo.bottom**
+	* id:$current\_id
+	* type:$seoType
+
+</details>
+
+##### shipping-configuration-edit.html
+
+<details>
+
+* **shipping-configuration-edit.top**
+	* area\_id:$area\_id
+* **shipping-configuration.edit**
+	* location:shipping-configuration-edit
+	* area\_id:{$area\_id}
+* **shipping-configuration-edit.bottom**
+	* area\_id:$area\_id
+* **shipping-configuration.country-delete-form**
+	* location:shipping\_configuration\_country\_delete\_form
+* **shipping-configuration.edit-js**
+	* location:shipping-configuration-edit-js
+	* area\_id:{$area\_id}
+
+</details>
+
+##### shipping-configuration.html
+
+<details>
+
+* **shipping-configuration.top**
+	* location:shipping\_configuration\_top
+* **shipping-configuration.table-header**
+	* location:shipping\_configuration\_table\_header
+* **shipping-configuration.table-row**
+	* location:shipping\_configuration\_table\_row
+	* area\_id:{$ID}
+* **shipping-configuration.bottom**
+	* location:shipping\_configuration\_bottom
+* **shipping-configuration.create-form**
+	* location:shipping\_configuration\_create\_form
+* **shipping-configuration.delete-form**
+	* location:shipping\_configuration\_delete\_form
+* **shipping-configuration.js**
+	* location:shipping-configuration-js
+
+</details>
+
+##### shipping-zones-edit.html
+
+<details>
+
+* **shipping-zones-edit.top**
+	* delivery\_module\_id:$delivery\_module\_id
+* **shipping-zones-edit.bottom**
+	* delivery\_module\_id:$delivery\_module\_id
+* **zone.delete-form**
+	* location:zone\_delete\_form
+	* module\_id:{$delivery\_module\_id}
+* **shipping-zones.edit-js**
+	* location:shipping-zones-edit-js
+	* module\_id:{$delivery\_module\_id}
+
+</details>
+
+##### shipping-zones.html
+
+<details>
+
+* **shipping-zones.top**
+	* location:shipping\_zones\_top
+* **shipping-zones.table-header**
+	* location:shipping\_zones\_table\_header
+* **shipping-zones.table-row**
+	* location:shipping\_zones\_table\_row
+	* module\_id:{$ID}
+* **shipping-zones.bottom**
+	* location:shipping\_zones\_bottom
+* **shipping-zones.js**
+	* location:shipping-zones-js
+
+</details>
+
+##### state-edit.html
+
+<details>
+
+* **state-edit.top**
+	* state\_id:$state\_id
+* **state-edit.bottom**
+	* state\_id:$state\_id
+* **state.edit-js**
+	* location:state-edit-js
+	* state\_id:$state\_id
+* **wysiwyg.js**
+	* location:wysiwyg-state-edit-js
+
+</details>
+
+##### states.html
+
+<details>
+
+* **states.top**
+	* location:states\_top
+* **states.table-header**
+	* location:states\_table\_header
+* **states.table-row**
+	* location:states\_table\_row
+	* state\_id:{$ID}
+* **states.bottom**
+	* location:states\_bottom
+* **state.create-form**
+	* location:state\_create\_form
+* **state.delete-form**
+	* location:state\_delete\_form
+* **states.js**
+	* location:states-js
+
+</details>
+
+##### system-logs.html
+
+<details>
+
+* **system.logs-js**
+	* location:system-logs-js
+
+</details>
+
+##### tax-edit.html
+
+<details>
+
+* **tax-edit.top**
+	* tax\_id:$tax\_id
+* **tax-edit.bottom**
+	* tax\_id:$tax\_id
+* **tax.edit-js**
+	* location:tax-edit-js
+* **wysiwyg.js**
+	* location:wysiwyg-tax-edit-js
+
+</details>
+
+##### tax-rule-edit.html
+
+<details>
+
+* **tax-rule-edit.top**
+	* tax\_rule\_id:$tax\_rule\_id
+* **tax-rule-edit.bottom**
+	* tax\_rule\_id:$tax\_rule\_id
+* **taxes.update-form**
+	* location:tax\_list\_update\_form
+	* tax\_rule\_id:{$tax\_rule\_id}
+* **tax-rule.edit-js**
+	* location:tax-rule-edit-js
+	* tax\_rule\_id:{$tax\_rule\_id}
+* **wysiwyg.js**
+	* location:wysiwyg-tax-rule-edit-js
+
+</details>
+
+##### taxes-rules.html
+
+<details>
+
+* **taxes-rules.top**
+	* location:taxes\_rules\_top
+* **taxes-rules.bottom**
+	* location:taxes\_rules\_bottom
+* **tax.create-form**
+	* location:tax\_create\_form
+* **tax.delete-form**
+	* location:tax\_delete\_form
+* **tax-rule.create-form**
+	* location:tax\_rule\_create\_form
+* **tax-rule.delete-form**
+	* location:tax\_rule\_delete\_form
+* **taxes-rules.js**
+	* location:taxes-rules-js
+* **wysiwyg.js**
+	* location:wysiwyg-tax-rules-js
+
+</details>
+
+##### template-attribute-list.html
+
+<details>
+
+* **template.attributes-table-header**
+	* location:template\_attributes\_table\_header
+* **template.attributes-table-row**
+	* location:template\_attributes\_table\_row
+
+</details>
+
+##### template-edit.html
+
+<details>
+
+* **template-edit.bottom**
+	* template\_id:
+		* $template\_id
+		* default
+* **template-edit.top**
+	* template\_id:$template\_id
+* **template-edit.bottom**
+	* template\_id:$template\_id
+* **template.edit-js**
+	* location:template-edit-js
+
+</details>
+
+##### template-feature-list.html
+
+<details>
+
+* **template.features-table-header**
+	* location:template\_features\_table\_header
+* **template.features-table-row**
+	* location:template\_features\_table\_row
+
+</details>
+
+##### templates.html
+
+<details>
+
+* **templates.top**
+	* location:templates\_top
+* **templates.table-header**
+	* location:templates\_table\_header
+* **templates.table-row**
+	* location:templates\_table\_row
+	* template\_id:$ID
+* **templates.bottom**
+	* location:templates\_bottom
+* **template.create-form**
+	* location:template\_create\_form
+* **template.delete-form**
+	* location:template\_delete\_form
+* **templates.js**
+	* location:templates-js
+
+</details>
+
+##### thelia-blocks-css.html
+
+<details>
+
+* **thelia.blocks.plugincss**
+
+</details>
+
+##### thelia-blocks-item-configuration.html
+
+<details>
+
+* **thelia.blocks.plugins**
+
+</details>
+
+##### thelia-blocks-js.html
+
+<details>
+
+* **thelia.blocks.variables**
+* **thelia.blocks.plugins**
+
+</details>
+
+##### tools.html
+
+<details>
+
+* **tools.top**
+	* location:tools\_top
+* **tools.col1-top**
+	* location:tools\_col1\_top
+* **tools.col1-bottom**
+	* location:tools\_col1\_bottom
+* **tools.bottom**
+	* location:tools\_bottom
+* **tools.js**
+	* location:tools-js
+
+</details>
+
+##### translations.html
+
+<details>
+
+* **translations.js**
+	* location:translations-js
+
+</details>
+
+##### variable-edit.html
+
+<details>
+
+* **variables-edit.top**
+	* variable\_id:$variable\_id
+* **variables-edit.bottom**
+	* variable\_id:$variable\_id
+* **variable.edit-js**
+	* location:variable-edit-js
+* **wysiwyg.js**
+	* location:wysiwyg-variable-edit-js
+
+</details>
+
+##### variables.html
+
+<details>
+
+* **variables.top**
+	* location:variables\_top
+* **variables.table-header**
+	* location:variables\_table\_header
+* **variables.table-row**
+	* location:variables\_table\_row
+	* config\_id:{$ID}
+* **variables.bottom**
+	* location:variables\_bottom
+* **variable.create-form**
+	* location:variable\_create\_form
+* **variable.delete-form**
+	* location:variable\_delete\_form
+* **variables.js**
+	* location:variables-js
+
+</details>
+
+### Frontoffice
+
+#### Thème: Default
+
+##### 404.html
+
+<details>
+
+* **404.content**
+* **404.stylesheet**
+* **404.after-javascript-include**
+* **404.javascript-initialization**
+
+</details>
+
+##### account-order.html
+
+<details>
+
+* **account-order.top**
+	* order:{$order\_id}
+* **account-order.information**
+	* order:{$order\_id}
+	* fields:
+		* title
+		* value
+* **account-order.after-information**
+	* order:{$order\_id}
+* **account-order.delivery-information**
+	* module:{$delivery\_id}
+	* order:{$order\_id}
+* **account-order.delivery-address**
+	* module:{$delivery\_id}
+	* order:{$order\_id}
+* **account-order.delivery-address-bottom**
+	* module:{$delivery\_id}
+	* order:{$order\_id}
+* **account-order.invoice-information**
+	* module:{$payment\_id}
+	* order:{$order\_id}
+* **account-order.invoice-address**
+	* module:{$payment\_id}
+	* order:{$order\_id}
+* **account-order.invoice-address-bottom**
+	* module:{$payment\_id}
+	* order:{$order\_id}
+* **account-order.after-addresses**
+	* order:{$order\_id}
+* **account-order.products-top**
+	* order:{$order\_id}
+* **account-order.product-list**
+	* order\_id:{$order\_id}
+	* order\_product\_id:{$ID}
+	* product:{$PRODUCT\_ID}
+* **account-order.product-extra**
+	* order:{$order\_id}
+	* order\_product:{$ID}
+	* product:{$PRODUCT\_ID}
+* **account-order.products-bottom**
+	* order:{$order\_id}
+* **account-order.after-products**
+	* order:{$order\_id}
+* **account-order.bottom**
+	* order:{$order\_id}
+* **account-order.stylesheet**
+* **account-order.after-javascript-include**
+	* order:$order\_id
+* **account-order.javascript-initialization**
+	* order:$order\_id
+
+</details>
+
+##### account-password.html
+
+<details>
+
+* **account-password.top**
+* **account-password.bottom**
+* **account-password.stylesheet**
+* **account-password.after-javascript-include**
+* **account-password.javascript-initialization**
+
+</details>
+
+##### account-update.html
+
+<details>
+
+* **account-update.top**
+* **account-update.form-top**
+* **account-update.form-bottom**
+* **account-update.bottom**
+* **account-update.stylesheet**
+* **account-update.after-javascript-include**
+* **account-update.javascript-initialization**
+
+</details>
+
+##### account.html
+
+<details>
+
+* **account.top**
+* **account.additional**
+	* fields:
+		* id
+		* title
+		* content
+* **account.bottom**
+* **account.stylesheet**
+* **account.after-javascript-include**
+* **account.javascript-initialization**
+
+</details>
+
+##### address-update.html
+
+<details>
+
+* **address-update.top**
+* **address-update.form-top**
+	* address:$address\_id
+* **address-update.form-bottom**
+	* address:$address\_id
+* **address-update.bottom**
+	* address:$address\_id
+* **address-update.stylesheet**
+* **address-update.after-javascript-include**
+	* address:$address\_id
+* **address-update.javascript-initialization**
+	* address:$address\_id
+
+</details>
+
+##### address.html
+
+<details>
+
+* **address-create.top**
+* **address-create.form-top**
+* **address-create.form-bottom**
+* **address-create.bottom**
+* **address-create.stylesheet**
+* **address-create.after-javascript-include**
+* **address-create.javascript-initialization**
+
+</details>
+
+##### articles.html
+
+<details>
+
+* **content.sidebar-top**
+* **content.sidebar-body**
+* **content.sidebar-bottom**
+
+</details>
+
+##### badresponse.html
+
+<details>
+
+* **badresponseorder.stylesheet**
+* **badresponseorder.after-javascript-include**
+* **badresponseorder.javascript-initialization**
+
+</details>
+
+##### brand-menu.html
+
+<details>
+
+* **brand.sidebar-top**
+	* brand:$brand\_id
+* **brand.sidebar-body**
+	* brand:$brand\_id
+* **brand.sidebar-bottom**
+	* brand:$brand\_id
+
+</details>
+
+##### brand.html
+
+<details>
+
+* **brand.top**
+	* brand:$brand\_id
+* **brand.main-top**
+	* brand:$brand\_id
+* **brand.content-top**
+	* brand:$brand\_id
+* **brand.content-bottom**
+	* brand:$brand\_id
+* **brand.main-bottom**
+	* brand:$brand\_id
+* **brand.main-top**
+* **brand.content-top**
+* **brand.content-bottom**
+* **brand.main-bottom**
+* **brand.bottom**
+	* brand:$brand\_id
+* **brand.stylesheet**
+* **brand.after-javascript-include**
+* **brand.javascript-initialization**
+
+</details>
+
+##### cart.html
+
+<details>
+
+* **cart.top**
+* **cart.bottom**
+* **cart.after-javascript-include**
+* **cart.stylesheet**
+* **cart.javascript-initialization**
+
+</details>
+
+##### category.html
+
+<details>
+
+* **category.top**
+	* category:$category\_id
+* **category.main-top**
+	* category:$category\_id
+* **category.content-top**
+	* category:$category\_id
+* **category.content-bottom**
+	* category:$category\_id
+* **category.main-bottom**
+	* category:$category\_id
+* **category.bottom**
+	* category:$category\_id
+* **category.stylesheet**
+* **category.after-javascript-include**
+* **category.javascript-initialization**
+
+</details>
+
+##### contact-success.html
+
+<details>
+
+* **contact.success**
+
+</details>
+
+##### contact.html
+
+<details>
+
+* **contact.top**
+* **contact.form-top**
+* **contact.form-bottom**
+* **contact.bottom**
+* **contact.stylesheet**
+* **contact.after-javascript-include**
+* **contact.javascript-initialization**
+
+</details>
+
+##### content.html
+
+<details>
+
+* **content.top**
+	* content:$content\_id
+* **content.main-top**
+	* content:$content\_id
+* **content.content-top**
+	* content:$content\_id
+* **content.content-bottom**
+	* content:$content\_id
+* **content.main-bottom**
+	* content:$content\_id
+* **content.bottom**
+	* content:$content\_id
+* **content.stylesheet**
+* **content.after-javascript-include**
+* **content.javascript-initialization**
+
+</details>
+
+##### currency.html
+
+<details>
+
+* **currency.top**
+* **currency.bottom**
+* **currency.stylesheet**
+* **currency.after-javascript-include**
+* **currency.javascript-initialization**
+
+</details>
+
+##### folder.html
+
+<details>
+
+* **folder.top**
+	* folder:$folder\_id
+* **folder.main-top**
+	* folder:$folder\_id
+* **folder.content-top**
+	* folder:$folder\_id
+* **folder.content-bottom**
+	* folder:$folder\_id
+* **folder.main-bottom**
+	* folder:$folder\_id
+* **folder.bottom**
+	* folder:$folder\_id
+* **folder.stylesheet**
+* **folder.after-javascript-include**
+* **folder.javascript-initialization**
+
+</details>
+
+##### index.html
+
+<details>
+
+* **home.body**
+* **home.stylesheet**
+* **home.after-javascript-include**
+* **home.javascript-initialization**
+
+</details>
+
+##### language.html
+
+<details>
+
+* **language.top**
+* **language.bottom**
+* **language.stylesheet**
+* **language.after-javascript-include**
+* **language.javascript-initialization**
+
+</details>
+
+##### login.html
+
+<details>
+
+* **login.top**
+* **login.main-top**
+* **login.form-top**
+* **login.form-bottom**
+* **login.main-bottom**
+* **login.bottom**
+* **login.stylesheet**
+* **login.after-javascript-include**
+* **login.javascript-initialization**
+
+</details>
+
+##### main-navbar-secondary.html
+
+<details>
+
+* **mini-cart**
+
+</details>
+
+##### menu.html
+
+<details>
+
+* **category.sidebar-top**
+	* category:$category\_id
+* **category.sidebar-body**
+	* category:$category\_id
+* **category.sidebar-bottom**
+	* category:$category\_id
+
+</details>
+
+##### mini-cart.html
+
+<details>
+
+* **mini-cart**
+
+</details>
+
+##### newsletter-unsubscribe.html
+
+<details>
+
+* **newsletter-unsubscribe.top**
+* **newsletter-unsubscribe.bottom**
+* **newsletter-unsubscribe.stylesheet**
+* **newsletter-unsubscribe.after-javascript-include**
+* **newsletter-unsubscribe.javascript-initialization**
+
+</details>
+
+##### newsletter.html
+
+<details>
+
+* **newsletter.top**
+* **newsletter.bottom**
+* **newsletter.stylesheet**
+* **newsletter.after-javascript-include**
+* **newsletter.javascript-initialization**
+
+</details>
+
+##### order-delivery-module-list.html
+
+<details>
+
+* **order-delivery.extra**
+	* module:$ID
+* **order-delivery.javascript**
+	* module:$ID
+
+</details>
+
+##### order-delivery.html
+
+<details>
+
+* **order-delivery.top**
+* **order-delivery.form-top**
+* **order-delivery.form-bottom**
+* **order-delivery.bottom**
+* **order-delivery.javascript-initialization**
+* **order-delivery.stylesheet**
+* **order-delivery.after-javascript-include**
+
+</details>
+
+##### order-failed.html
+
+<details>
+
+* **order-failed.top**
+* **order-failed.bottom**
+* **order-failed.stylesheet**
+* **order-failed.after-javascript-include**
+* **order-failed.javascript-initialization**
+
+</details>
+
+##### order-invoice.html
+
+<details>
+
+* **order-invoice.top**
+* **order-invoice.coupon-form**
+* **order-invoice.delivery-address**
+	* module:{order
+	* attr:delivery\_module}
+* **order-invoice.payment-extra**
+	* module:{$paymentModuleId}
+* **order-invoice.payment-form**
+* **order-invoice.bottom**
+* **order-invoice.javascript-initialization**
+* **order-invoice.stylesheet**
+* **order-invoice.after-javascript-include**
+
+</details>
+
+##### order-payment-gateway.html
+
+<details>
+
+* **order-payment-gateway.body**
+	* module:$PAYMENT\_MODULE
+* **order-payment-gateway.javascript**
+	* module:$PAYMENT\_MODULE
+* **order-payment-gateway.javascript-initialization**
+* **order-payment-gateway.stylesheet**
+* **order-payment-gateway.after-javascript-include**
+
+</details>
+
+##### order-placed.html
+
+<details>
+
+* **order-placed.body**
+	* module:$PAYMENT\_MODULE
+* **order-placed.additional-payment-info**
+	* module:$PAYMENT\_MODULE
+	* placed\_order\_id:$placed\_order\_id
+* **order-placed.stylesheet**
+* **order-placed.after-javascript-include**
+* **order-placed.javascript-initialization**
+
+</details>
+
+##### password.html
+
+<details>
+
+* **password.top**
+* **password.form-top**
+* **password.form-bottom**
+* **password.bottom**
+* **password.stylesheet**
+* **password.after-javascript-include**
+* **password.javascript-initialization**
+
+</details>
+
+##### product.html
+
+<details>
+
+* **product.top**
+	* product:{$ID}
+* **product.gallery**
+	* product:{$ID}
+* **product.details-top**
+	* product:{$ID}
+* **product.details-bottom**
+	* product:{$ID}
+* **product.additional**
+	* product:$product\_id
+	* fields:
+		* id
+		* class
+		* title
+		* content
+* **product.bottom**
+	* product:{$ID}
+* **product.stylesheet**
+* **product.after-javascript-include**
+* **product.javascript-initialization**
+
+</details>
+
+##### register.html
+
+<details>
+
+* **register.top**
+* **register.form-top**
+* **register.form-bottom**
+* **register.bottom**
+* **register.stylesheet**
+* **register.after-javascript-include**
+* **register.javascript-initialization**
+
+</details>
+
+##### sale.html
+
+<details>
+
+* **sale.top**
+	* sale:{$product\_sale}
+* **sale.main-top**
+	* sale:{$product\_sale}
+* **sale.content-top**
+	* sale:{$product\_sale}
+* **sale.content-bottom**
+	* sale:{$product\_sale}
+* **sale.main-bottom**
+	* sale:{$product\_sale}
+* **sale.bottom**
+	* sale:{$product\_sale}
+* **sale.stylesheet**
+* **sale.after-javascript-include**
+* **sale.javascript-initialization**
+
+</details>
+
+##### search.html
+
+<details>
+
+* **search.stylesheet**
+* **search.after-javascript-include**
+* **search.javascript-initialization**
+
+</details>
+
+##### single-product.html
+
+<details>
+
+* **singleproduct.top**
+	* product:{$product\_id}
+* **singleproduct.bottom**
+	* product:{$product\_id}
+
+</details>
+
+##### sitemap.html
+
+<details>
+
+* **sitemap.bottom**
+	* lang:$\_lang\_
+	* context:$\_context\_
+
+</details>
+
+##### view_all.html
+
+<details>
+
+* **viewall.top**
+* **viewall.bottom**
+* **viewall.stylesheet**
+* **viewall.after-javascript-include**
+* **viewall.javascript-initialization**
+
+</details>
+
+#### Thème: Modern
+
+##### 404.html
+
+<details>
+
+* **404.content**
+* **404.stylesheet**
+* **404.after-javascript-include**
+* **404.javascript-initialization**
+
+</details>
+
+##### account-address.html
+
+<details>
+
+* **address-create.stylesheet**
+* **address-create.after-javascript-include**
+* **address-create.javascript-initialization**
+
+</details>
+
+##### account-order.html
+
+<details>
+
+* **account-order.top**
+	* order:{$order\_id}
+* **account-order.information**
+	* order:{$order\_id}
+	* fields:
+		* title
+		* value
+* **account-order.after-information**
+	* order:{$order\_id}
+* **account-order.delivery-information**
+	* module:{$delivery\_id}
+	* order:{$order\_id}
+* **account-order.delivery-address**
+	* module:{$delivery\_id}
+	* order:{$order\_id}
+* **account-order.delivery-address-bottom**
+	* module:{$delivery\_id}
+	* order:{$order\_id}
+* **account-order.invoice-information**
+	* module:{$payment\_id}
+	* order:{$order\_id}
+* **account-order.invoice-address**
+	* module:{$payment\_id}
+	* order:{$order\_id}
+* **account-order.invoice-address-bottom**
+	* module:{$payment\_id}
+	* order:{$order\_id}
+* **account-order.after-addresses**
+	* order:{$order\_id}
+* **account-order.products-top**
+	* order:{$order\_id}
+* **account-order.product-list**
+	* order\_id:{$order\_id}
+	* order\_product\_id:{$ID}
+	* product:{$PRODUCT\_ID}
+* **account-order.product-extra**
+	* order:{$order\_id}
+	* order\_product:{$ID}
+	* product:{$PRODUCT\_ID}
+* **account-order.products-bottom**
+	* order:{$order\_id}
+* **account-order.after-products**
+	* order:{$order\_id}
+* **account-order.bottom**
+	* order:{$order\_id}
+* **account-order.stylesheet**
+* **account-order.after-javascript-include**
+	* order:$order\_id
+* **account-order.javascript-initialization**
+	* order:$order\_id
+
+</details>
+
+##### account-orders.html
+
+<details>
+
+* **account-order.top**
+	* order:
+		* {$order\_id
+		* default
+* **login.after-javascript-include**
+* **login.javascript-initialization**
+
+</details>
+
+##### account-password.html
+
+<details>
+
+* **account-password.top**
+* **account-password.bottom**
+* **account-password.stylesheet**
+* **account-password.after-javascript-include**
+* **account-password.javascript-initialization**
+
+</details>
+
+##### account-update.html
+
+<details>
+
+* **account-update.top**
+* **account-update.form-top**
+* **account-update.form-bottom**
+* **account-update.bottom**
+* **account-update.stylesheet**
+* **account-update.after-javascript-include**
+* **account-update.javascript-initialization**
+
+</details>
+
+##### account.html
+
+<details>
+
+* **account.top**
+* **account.stylesheet**
+* **account.after-javascript-include**
+* **account.javascript-initialization**
+
+</details>
+
+##### address-update.html
+
+<details>
+
+* **address-update.top**
+* **address-update.form-top**
+	* address:$address\_id
+* **address-update.form-bottom**
+	* address:$address\_id
+* **address-update.bottom**
+	* address:$address\_id
+* **address-update.stylesheet**
+* **address-update.after-javascript-include**
+	* address:$address\_id
+* **address-update.javascript-initialization**
+	* address:$address\_id
+
+</details>
+
+##### address.html
+
+<details>
+
+* **address-create.top**
+* **address-create.form-top**
+* **address-create.form-bottom**
+* **address-create.bottom**
+* **address-create.stylesheet**
+* **address-create.after-javascript-include**
+* **address-create.javascript-initialization**
+
+</details>
+
+##### badresponse.html
+
+<details>
+
+* **badresponseorder.stylesheet**
+* **badresponseorder.after-javascript-include**
+* **badresponseorder.javascript-initialization**
+
+</details>
+
+##### brand.html
+
+<details>
+
+* **brand.top**
+	* brand:$brand\_id
+* **brand.main-top**
+	* brand:$brand\_id
+* **brand.content-top**
+	* brand:$brand\_id
+* **brand.content-bottom**
+	* brand:$brand\_id
+* **brand.main-bottom**
+	* brand:$brand\_id
+* **brand.bottom**
+	* brand:$brand\_id
+* **brand.stylesheet**
+* **brand.after-javascript-include**
+* **brand.javascript-initialization**
+
+</details>
+
+##### cart.html
+
+<details>
+
+* **cart.after-javascript-include**
+* **cart.stylesheet**
+* **cart.javascript-initialization**
+
+</details>
+
+##### category.html
+
+<details>
+
+* **category.bottom**
+	* category:$category\_id
+
+</details>
+
+##### category_lite.html
+
+<details>
+
+* **category.bottom**
+	* category:$category\_id
+
+</details>
+
+##### contact-success.html
+
+<details>
+
+* **contact.success**
+
+</details>
+
+##### contact.html
+
+<details>
+
+* **recaptcha.check**
+	* id:ContactRecaptcha
+* **contact.form-top**
+* **contact.form-bottom**
+* **contact.top**
+* **contact.bottom**
+* **contact.stylesheet**
+* **contact.after-javascript-include**
+* **contact.javascript-initialization**
+
+</details>
+
+##### content.html
+
+<details>
+
+* **content.top**
+	* content:$content\_id
+* **content.main-top**
+	* content:$content\_id
+* **content.main-bottom**
+	* content:$content\_id
+* **content.bottom**
+	* content:$content\_id
+* **content.stylesheet**
+* **content.after-javascript-include**
+* **content.javascript-initialization**
+
+</details>
+
+##### currency.html
+
+<details>
+
+* **currency.top**
+* **currency.bottom**
+* **currency.stylesheet**
+* **currency.after-javascript-include**
+* **currency.javascript-initialization**
+
+</details>
+
+##### folder.html
+
+<details>
+
+* **folder.main-top**
+	* folder:$folder\_id
+* **folder.content-top**
+	* folder:$folder\_id
+* **folder.stylesheet**
+* **folder.after-javascript-include**
+* **folder.javascript-initialization**
+
+</details>
+
+##### language.html
+
+<details>
+
+* **language.top**
+* **language.bottom**
+* **language.stylesheet**
+* **language.after-javascript-include**
+* **language.javascript-initialization**
+
+</details>
+
+##### newsletter.html
+
+<details>
+
+* **recaptcha.check**
+* **recaptcha.js**
+
+</details>
+
+##### order-delivery.html
+
+<details>
+
+* **order-delivery.top**
+* **order-delivery.bottom**
+
+</details>
+
+##### order-failed.html
+
+<details>
+
+* **order-failed.top**
+* **order-failed.bottom**
+* **order-failed.stylesheet**
+* **order-failed.after-javascript-include**
+* **order-failed.javascript-initialization**
+
+</details>
+
+##### order-payment-gateway.html
+
+<details>
+
+* **order-payment-gateway.body**
+	* module:$PAYMENT\_MODULE
+* **order-payment-gateway.javascript**
+	* module:$PAYMENT\_MODULE
+* **order-payment-gateway.javascript-initialization**
+* **order-payment-gateway.stylesheet**
+* **order-payment-gateway.after-javascript-include**
+
+</details>
+
+##### order-placed.html
+
+<details>
+
+* **order-placed.body**
+	* module:$PAYMENT\_MODULE
+* **order-placed.additional-payment-info**
+	* module:$PAYMENT\_MODULE
+	* placed\_order\_id:$placed\_order\_id
+* **order-placed.stylesheet**
+* **order-placed.after-javascript-include**
+* **order-placed.javascript-initialization**
+
+</details>
+
+##### password.html
+
+<details>
+
+* **password.top**
+* **password.form-top**
+* **password.form-bottom**
+* **password.bottom**
+* **password.stylesheet**
+* **password.after-javascript-include**
+* **password.javascript-initialization**
+
+</details>
+
+##### product.html
+
+<details>
+
+* **product.top**
+	* product:{$ID}
+* **product.bottom**
+	* product:{$ID}
+* **product.stylesheet**
+* **product.after-javascript-include**
+* **product.javascript-initialization**
+
+</details>
+
+##### register.html
+
+<details>
+
+* **register.top**
+* **recaptcha.check**
+	* id:RegisterRecaptcha
+* **register.form-top**
+* **register.form-bottom**
+* **register.bottom**
+
+</details>
+
+##### sale.html
+
+<details>
+
+* **sale.top**
+	* sale:{$product\_sale}
+* **sale.main-top**
+	* sale:{$product\_sale}
+* **sale.content-top**
+	* sale:{$product\_sale}
+* **sale.content-bottom**
+	* sale:{$product\_sale}
+* **sale.main-bottom**
+	* sale:{$product\_sale}
+* **sale.bottom**
+	* sale:{$product\_sale}
+* **sale.stylesheet**
+* **sale.after-javascript-include**
+* **sale.javascript-initialization**
+
+</details>
+
+##### search.html
+
+<details>
+
+* **search.stylesheet**
+* **search.after-javascript-include**
+* **search.javascript-initialization**
+
+</details>
+
+##### sitemap.html
+
+<details>
+
+* **sitemap.bottom**
+	* lang:$\_lang\_
+	* context:$\_context\_
+
+</details>
+
+##### view_all.html
+
+<details>
+
+* **viewall.stylesheet**
+* **viewall.after-javascript-include**
+* **viewall.javascript-initialization**
+
+</details>
+
+### Pdf
+
+#### Thème: Default
+
+##### delivery.html
+
+<details>
+
+* **delivery.css**
+* **delivery.header**
+	* order:$order\_id
+* **delivery.footer-top**
+	* order:$order\_id
+* **invoice.imprint**
+	* order:$order\_id
+* **delivery.footer-bottom**
+	* order:$order\_id
+* **delivery.information**
+	* order:$order\_id
+	* fields:
+		* title
+		* value
+* **delivery.after-information**
+	* order:$order\_id
+* **delivery.delivery-address**
+	* module:{$DELIVERY\_MODULE}
+	* order:$order\_id
+* **delivery.after-addresses**
+	* order:$order\_id
+* **delivery.product-list**
+	* order\_product:$ID
+	* order:$order\_id
+* **delivery.order-product**
+	* order:{$order\_id}
+	* order\_product:{$ID}
+* **delivery.after-delivery-module**
+	* order:$order\_id
+	* module\_id:$DELIVERY\_MODULE
+* **delivery.after-summary**
+	* order:$order\_id
+
+</details>
+
+##### invoice.html
+
+<details>
+
+* **invoice.css**
+* **invoice.header**
+	* order:$order\_id
+* **invoice.footer-top**
+	* order:$order\_id
+* **invoice.imprint**
+	* order:$order\_id
+* **invoice.information**
+	* order:$order\_id
+	* fields:
+		* title
+		* value
+* **invoice.after-information**
+	* order:$order\_id
+* **invoice.delivery-address**
+	* module:{$DELIVERY\_MODULE}
+	* order:$order\_id
+* **invoice.after-addresses**
+	* order:$order\_id
+* **invoice.product-list**
+	* order\_product:$ID
+	* order:$order\_id
+* **invoice.order-product**
+	* order:{$order\_id}
+	* order\_product:{$ID}
+* **invoice.after-products**
+	* order:$order\_id
+* **invoice.after-payment-module**
+	* order:$order\_id
+	* module\_id:$PAYMENT\_MODULE
+* **invoice.after-delivery-module**
+	* order:$order\_id
+	* module\_id:$DELIVERY\_MODULE
+* **invoice.after-summary**
+	* order:$order\_id
+
+</details>
+
+### Email
+
+#### Thème: Default
+
+##### order_confirmation.html
+
+<details>
+
+* **email-html.order-confirmation.before-address**
+	* order:$order\_id
+* **email-html.order-confirmation.delivery-address**
+	* module:{$DELIVERY\_MODULE}
+	* order:$order\_id
+* **email-html.order-confirmation.after-address**
+	* order:$order\_id
+* **email-html.order-confirmation.before-products**
+	* order:$order\_id
+* **email-html.order-confirmation.product-list**
+	* order:$order\_id
+	* order\_product:$ID
+* **email-html.order-confirmation.order-product**
+	* order:{$order\_id}
+	* order\_product:{$ID}
+* **email-html.order-confirmation.after-products**
+	* order:$order\_id
+* **email-html.order-confirmation.footer**
+	* order:$order\_id
+
+</details>
+
+##### order_notification.html
+
+<details>
+
+* **email-html.order-notification.before-address**
+	* order:$order\_id
+* **email-html.order-notification.delivery-address**
+	* module:{$DELIVERY\_MODULE}
+	* order:$order\_id
+* **email-html.order-notification.after-address**
+	* order:$order\_id
+* **email-html.order-notification.before-products**
+	* order:$order\_id
+* **email-html.order-notification.order-product**
+	* order:{$order\_id}
+	* order\_product:{$ID}
+* **email-html.order-notification.after-products**
+	* order:$order\_id
+
+</details>
