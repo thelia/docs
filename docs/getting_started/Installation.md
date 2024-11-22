@@ -46,3 +46,5 @@ php Thelia admin:create
 ### Require existing modules
 If you want to add a module made by our community you can browse [this](../../modules) list and execute the `composer require` command attached to it to download it.
 After that you can enable and disable the module in the modules pages in your store back-office.
+
+-----
