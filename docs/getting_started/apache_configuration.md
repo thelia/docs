@@ -1,6 +1,6 @@
 ---
 title: Apache configuration
-sidebar_position: 4
+sidebar_position: 3
 ---
 
 Only the ```web``` directory has to be accessible with apache, you can configure your vhost like this :

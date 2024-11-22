@@ -1,6 +1,6 @@
 ---
 title: Dockerize your Thelia
-sidebar_position: 6
+sidebar_position: 4
 ---
 
 A docker configuration is provided in the repository of Thelia. It uses docker-compose. 
