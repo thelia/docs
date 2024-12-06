@@ -15,10 +15,10 @@ If you want to use **docker** please follow [this](./docker) way.
 
 ### Download the project
 
-Rename `YourPorject` with the name of your project. Be aware of the version you want to install (here `2.5.4`) :
+Rename `YourProject` with the name of your project. Be aware of the version you want to install (here `2.5.4`) :
 
 ```bash
-composer create-project thelia/thelia-project YourProject 2.5.4
+composer create-project thelia/thelia-project YourProject 2.5.5
 ```
 
 You can say `yes` for the recipes.
@@ -124,7 +124,7 @@ yarn build
 Clear the cache to ensure all changes are applied.
 
 ```bash
-rm -rf ./cache
+rm -rf ./var/cache
 php Thelia assets:install web
 ```
 

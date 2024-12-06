@@ -3,9 +3,9 @@ title: Dockerize your Thelia
 sidebar_position: 6
 ---
 
-A docker configuration is provided in the repository of Thelia. It uses docker-compose.
+A docker configuration is provided in the repository of Thelia. It uses docker compose.
 
-It requires obviously [docker](https://docker.com/) and [docker-compose](http://docs.docker.com/compose/)
+It requires obviously [docker](https://docker.com/) and [docker compose](http://docs.docker.com/compose/)
 
 ## Get the project
 
@@ -21,6 +21,13 @@ You can download the archive from official [releases pages](https://github.com/t
 
 > ⚠️ **Important** : First, copy and paste content from file `.env.docker` to `.env` file.
 Change default values if needed, but default values should work. You should overrides default values with a `.env.local` file.
+> Then, add the following line to your `.env` file :
+> ```
+> MYSQL_DATABASE=thelia
+> MYSQL_ROOT_PASSWORD=root
+> MYSQL_USER=thelia
+> MYSQL_PASSWORD=thelia
+> ```
 
 
 Then execute this command from the root path of the project :
@@ -36,7 +43,7 @@ Your website should be accessible here, but not yet installed : [http://localhos
 To be able to run PHP command, you first need to execute this if you need :
 
 ``` 
-docker-compose exec php-fpm bash
+docker compose exec php-fpm bash
 ```
 
 You will be inside the php docker container. From here, you have to follow the classic installation process of Thelia ( cf: [installation page](/docs/getting_started/Installation) )
@@ -90,4 +97,4 @@ docker compose down --remove-orphans
 All the configuration can be customize for your own project. It uses the official [php image](https://hub.docker.com/_/php/) provided by docker so you can change the php version as you want.
 You can also install all the extension you want.
 
-Each time you modify the configuration, you have to rebuild the containers : ```docker-composer build --no-cache```
+Each time you modify the configuration, you have to rebuild the containers : ```docker composer build --no-cache```
