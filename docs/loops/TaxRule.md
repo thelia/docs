@@ -2,8 +2,8 @@
 title: Tax rule
 ---
 
-loop displaying taxes rules created.   
-`{loop type="tax-rule" name="the-loop-name" [argument="value"], [...]}`
+loop displaying taxes rules created.  
+`{loop type="tax_rule" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#tax-arguments}
 
@@ -13,7 +13,7 @@ loop displaying taxes rules created.
 | id       | A single or list of tax rule ids.                                          |         | id="2", id="1,4"           |
 | order    | A list of values see [sorting possible values](#tax-order-possible-values) |  alpha  | order="random"             |
 
-Plus the [global arguments](./global_arguments) 
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 
@@ -29,6 +29,7 @@ Plus the [global arguments](./global_arguments)
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#tax-order-possible-values}
+
 [Arguments](#tax-arguments)
 
 | Ascending value | Descending value | Sorted fields       |

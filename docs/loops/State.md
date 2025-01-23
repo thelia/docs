@@ -2,7 +2,7 @@
 title: State
 ---
 
-State loop lists states.   
+State loop lists states.  
 `{loop type="state" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#sale-arguments}
@@ -12,11 +12,10 @@ State loop lists states.
 | country  | A single or a list of country ids.                                                         |         | country="10,9", country: "500" |
 | exclude  | A single or a list of state ids to exclude from the results.                               |         | exclude="2", exclude="1,4,7"   |
 | id       | A single or a list of state ids.                                                           |         | id="2", id="1,4,7"             |
-| lang     | A lang id                                                                                  |         | lang="1"                       |
 | order    | A list of values see [sorting possible values](#sale-order-possible-values)                |   id    | order="alpha_reverse"          |
 | visible  | A boolean value to return visible or not visible states (possible values : yes, no or *).  |   yes   | visible="no"                   |
 
-Plus the [global arguments](./global_arguments) 
+Plus the [global arguments](./global_arguments)
 
 ## Outputs
 
@@ -33,6 +32,7 @@ Plus the [global arguments](./global_arguments)
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#sale-order-possible-values}
+
 [Arguments](#sale-arguments)
 
 | Ascending value | Descending value | Sorted fields       |

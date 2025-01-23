@@ -2,17 +2,16 @@
 title: Feature availability
 ---
 
-Feature availability loop lists feature availabilities.   
-`{loop type="feature-availability" name="the-loop-name" [argument="value"], [...]}`
+Feature availability loop lists feature availabilities.  
+`{loop type="feature_availability" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#feature-arguments}
 
 | Argument | Description                                                                    | Default | Example               |
 |----------|:-------------------------------------------------------------------------------|:-------:|:----------------------|
 | exclude  | A single or a list of feature availability ids to exclude.                     |         | exclude="456,123"     |
-| feature  | A single or a list of feature ids.                                             |         | id="2", id="1,4,7"    |
+| feature  | A single or a list of feature ids.                                             |         | feature="2,5"         |
 | id       | A single or a list of feature availability ids.                                |         | id="2", id="1,4,7"    |
-| lang     | A lang id                                                                      |         | lang="1"              |
 | order    | A list of values see [sorting possible values](#feature-order-possible-values) | manual  | order="alpha_reverse" |
 
 Plus the [global arguments](./global_arguments)
@@ -34,9 +33,11 @@ Plus the [global arguments](./global_arguments)
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#feature-order-possible-values}
+
 [Arguments](#feature-arguments)
 
-| Ascending value | Descending value | Sorted fields |
-|-----------------|------------------|:--------------|
-| alpha           | alpha-reverse    | title         |
-| manual          | manual_reverse   | position      |
+| Ascending value | Descending value              | Sorted fields |
+|-----------------|-------------------------------|:--------------|
+| alpha           | alpha-reverse , alpha_reverse | title         |
+| id              | id_reverse                    | id            |
+| manual          | manual_reverse                | position      |

@@ -2,8 +2,8 @@
 title: Export Category
 ---
 
-Export category loop lists all defined export categories.   
-`{loop type="export-category" name="the-loop-name" [argument="value"], [...]}`
+Export category loop lists all defined export categories.  
+`{loop type="export_category" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#export-arguments}
 
@@ -12,6 +12,7 @@ Export category loop lists all defined export categories.
 | id       | A single or a list of export category ids.                                    |         | id="2", id="1,4,7"                                                               |
 | order    | A list of values see [sorting possible values](#export-order-possible-values) | manual  | order="alpha"                                                                    |
 | ref      | A single or a list of export category references.                             |         | ref="thelia.export.customer", id="thelia.export.customer,thelia.export.products" |
+|          | And the [Import export category arguments](./ImportExportCategory)            |         |                                                                                  |
 
 Plus the [global arguments](./global_arguments)
 
@@ -27,6 +28,7 @@ Plus the [global arguments](./global_arguments)
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#export-order-possible-values}
+
 [Arguments](#export-arguments)
 
 | Ascending value | Descending value | Sorted fields |

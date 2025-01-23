@@ -2,19 +2,18 @@
 title: Country
 ---
 
-Country loop lists countries.   
+Country loop lists countries.  
 `{loop type="country" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#country-arguments}
 
 | Argument     | Description                                                                                        | Default | Example                                   |
 |--------------|:---------------------------------------------------------------------------------------------------|:-------:|:------------------------------------------|
-| area         | A single or a list of area ids.                                                                    |         | area="10,9", area: "500"                  |                                                    |           | product="2"                 |
+| area         | A single or a list of area ids.                                                                    |         | area="10,9", area: "500"                  |
 | exclude      | A single or a list of country ids to exclude from the results.                                     |         | exclude="2", exclude="1,4,7"              |
 | exclude_area | A single or list of area IDs. Countries which belongs to these areas are excluded from the results |         | exclude_area="7", exclude_area="3,102,14" |
 | has_states   | A boolean value to return countries that have states or not (possible values : yes, no or *).      |    *    | has_states="no"                           |
 | id           | A single or a list of country ids.                                                                 |         | id="2", id="1,4,7"                        |
-| lang         | A lang id                                                                                          |         | lang="1"                                  |
 | order        | A list of values see [sorting possible values](#country-order-possible-values)                     |   id    | order="alpha_reverse"                     |
 | visible      | A boolean value to return visible or not visible countries (possible values : yes, no or *).       |   yes   | visible="no"                              |
 | with_area    | A boolean value to return either countries whose area is defined either all the others.            |         | with_area="true"                          |
@@ -25,7 +24,6 @@ Plus the [global arguments](./global_arguments)
 
 | Variable         | Value                                                                                              |
 |:-----------------|:---------------------------------------------------------------------------------------------------|
-| $AREA            | the area the country belongs                                                                       |
 | $CHAPO           | the country chapo                                                                                  |
 | $DESCRIPTION     | the country description                                                                            |
 | $HAS_STATES      | 1 if the country has states, 0 otherwise                                                           |
@@ -46,6 +44,7 @@ Plus the [global arguments](./global_arguments)
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#country-order-possible-values}
+
 [Arguments](#country-arguments)
 
 | Ascending value | Descending value | Sorted fields                    |

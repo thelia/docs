@@ -2,15 +2,15 @@
 title: Customer
 ---
 
-Customer loop displays customers information.   
+Customer loop displays customers information.  
 `{loop type="customer" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#customer-arguments}
 
 | Argument            | Description                                                                                                                                         | Default  | Example                               |
 |---------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------|:--------:|:--------------------------------------|
-| current             | A boolean value which must be set to false if you need to display not authenticated customers information, typically if `sponsor` parameter is set. |   yes    | current="false"                       |                                                    |           | product="2"                 |
-| id                  | A single or a list of customers ids.                                                                                                                |          | id="2", id="1,4,7"                    |                                                                |         | is_enabled="true"                               |
+| current             | A boolean value which must be set to false if you need to display not authenticated customers information, typically if `sponsor` parameter is set. |   yes    | current="false"                       |
+| Newsletter          | A boolean that represents whether the customer is subscribed to the newsletter                                                                      |          |                                       |
 | order               | A list of values see [sorting possible values](#customer-order-possible-values)                                                                     | lastname | order="firstname, lastname"           |
 | ref                 | A single or a list of customer references.                                                                                                          |          | ref="1231231241", ref="123123,789789" |
 | reseller            | A boolean value.                                                                                                                                    |          | reseller="yes"                        |
@@ -42,6 +42,7 @@ Plus the [global arguments](./global_arguments) and [search arguments](./search_
 Plus the [global outputs](./global_outputs)
 
 ## Order possible values {#customer-order-possible-values}
+
 [Arguments](#customer-arguments)
 
 | Ascending value            | Descending value           | Sorted fields     |
@@ -50,7 +51,7 @@ Plus the [global outputs](./global_outputs)
 | id                         | id_reverse                 | ID                |
 | last_order                 | last_order_reverse         | last order        |
 | lastname                   | lastname_reverse           | lastname          |
-| lregistration_date_reverse | lregistration_date_reverse | registration date |
+| registration_date          | registration_date_reverse  | registration date |
 | order_amount               | order_amount_reverse       | last order        |
 | reference                  | reference_reverse          | reference         |
 | registration_date          |                            | registration date |

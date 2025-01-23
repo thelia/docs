@@ -2,14 +2,13 @@
 title: Attribute combination
 ---
 
-Attribute combination loop lists attribute combinations.     
+Attribute combination loop lists attribute combinations.  
 `{loop type="attribute_combination" name="the-loop-name" [argument="value"], [...]}`
 
 ## Arguments {#pse-arguments}
 
 | Argument                 | Description                                                                | Default | Example               |
 | ------------------------ |:---------------------------------------------------------------------------| :-----: | :---------------------|
-| lang                     | A lang id                                                                  |         | lang="1"              |
 | order                    | A list of values <br/> [Expected values](#accessory-order-possible-values) | alpha   | order="alpha_reverse" |
 | product_sale_elements \* | A single product sale elements id.                                         |         |  product="2"          |
 
@@ -17,22 +16,22 @@ Attribute combination loop lists attribute combinations.
 
 | Variable                                                  | Value                                   |
 | :-------------------------------------------------------  | :-------------------------------------- |
-| $ATTRIBUTE_AVAILABILITY_CHAPO	                            | the attribute availability chapo        |
-| $ATTRIBUTE_AVAILABILITY_DESCRIPTION	                    | the attribute availability description  |
-| $ATTRIBUTE_AVAILABILITY_ID	                            | the attribute availability id           |
-| $ATTRIBUTE_AVAILABILITY_POSTSCRIPTUM	                    | the attribute availability postscriptum |
-| $ATTRIBUTE_AVAILABILITY_TITLE	                            | the attribute availability title        |
-| $ATTRIBUTE_CHAPO	                                        | the attribute chapo                     |
-| $ATTRIBUTE_DESCRIPTION	                                | the attribute description               |
-| $ATTRIBUTE_ID	                                            | the attribute id                        |
-| $ATTRIBUTE_POSTSCRIPTUM	                                | the attribute postscriptum              |
-| $ATTRIBUTE_TITLE	                                        | the attribute title                     |
-| $LOCALE	                                                | the locale used for this loop           |
-
+| $ATTRIBUTE_AVAILABILITY_CHAPO                             | the attribute availability chapo        |
+| $ATTRIBUTE_AVAILABILITY_DESCRIPTION                       | the attribute availability description  |
+| $ATTRIBUTE_AVAILABILITY_ID                                | the attribute availability id           |
+| $ATTRIBUTE_AVAILABILITY_POSTSCRIPTUM                      | the attribute availability postscriptum |
+| $ATTRIBUTE_AVAILABILITY_TITLE                             | the attribute availability title        |
+| $ATTRIBUTE_CHAPO                                          | the attribute chapo                     |
+| $ATTRIBUTE_DESCRIPTION                                    | the attribute description               |
+| $ATTRIBUTE_ID                                             | the attribute id                        |
+| $ATTRIBUTE_POSTSCRIPTUM                                   | the attribute postscriptum              |
+| $ATTRIBUTE_TITLE                                          | the attribute title                     |
+| $LOCALE                                                   | the locale used for this loop           |
 
 ## Examples
 
 I want to display all products sale elements for current product and show all the attribute combinations which matched it.
+
 ```smarty
 <ul>
 {loop name="pse" type="product_sale_elements" product="$PRODUCT_ID"}
@@ -56,6 +55,7 @@ I want to display all products sale elements for current product and show all th
 ```
 
 ## Order possible values {#accessory-order-possible-values}
+
 [Arguments](#pse-arguments)
 
 | Ascending value                  | Descending value  | Sorted fields     |
