@@ -15,10 +15,10 @@ If you want to use **docker** please follow [this](./docker) way.
 
 ### Download the project
 
-Rename `YourProject` with the name of your project. Be aware of the version you want to install (here `2.5.5`) :
+Rename `YourProject` with the name of your project. Be aware of the version you want to install (here `2.6.0`) :
 
 ```bash
-composer create-project thelia/thelia-project YourProject 2.5.5
+composer create-project thelia/thelia-project YourProject 2.6.0
 ```
 
 You can say `yes` for the recipes.
