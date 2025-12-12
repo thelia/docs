@@ -21,19 +21,19 @@ patch but there are some rules to follow.
 First of all, fork [Thelia](https://github.com/thelia/thelia) repo and create
 a new branch, never work on the `main` branch, use it only for syncing with [Thelia](https://github.com/thelia/thelia) repo
 
-```
-$ git checkout -b new-branch main
+```bash
+git checkout -b new-branch main
 ```
 
 After finishing your modification you have to rebase your branch and push it to your repo
 
-```
-$ git remote add upstream https://github.com/thelia/thelia.git
-$ git checkout main
-$ git pull --ff-only upstream main
-$ git checkout new-branch
-$ git rebase main
-$ git push origin new-branch
+```bash
+git remote add upstream https://github.com/thelia/thelia.git
+git checkout main
+git pull --ff-only upstream main
+git checkout new-branch
+git rebase main
+git push origin new-branch
 ```
 
 Next and last step, submit a Pull Request as indicated in the [GitHub documentation](https://help.github.com/articles/creating-a-pull-request)
@@ -109,9 +109,9 @@ php Thelia generate:sql --locales='de_DE,en_US,es_ES,fr_FR'
 ## How to contribute new or update Thelia translations
 
 Translations are contributed by Thelia users worldwide. The translation work is coordinated at [Crowdin](http://crowdin.com).  
-The Thelia project is located at <http://translate.thelia.net/>.
+The Thelia project is located at [http://translate.thelia.net/](http://translate.thelia.net/).
 
-Translations for **non english** languages should only be done on <http://translate.thelia.net/>, not in a Thelia development website and submitted to us with a pull request on GitHub.  
+Translations for **non english** languages should only be done on [http://translate.thelia.net/](http://translate.thelia.net/), not in a Thelia development website and submitted to us with a pull request on GitHub.  
 During the development stage, only english strings should be used inside Thelia and submitted with a pull request.  
 Prior to any release, Thelia maintainers will make an announcement and we'll have a couple of weeks
 of string freeze in order to give people time to complete the translations.

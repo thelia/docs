@@ -17,8 +17,8 @@ Then update you can update your database with this script
 php local/setup/update.php
 ```
 
-## Migrate from Thelia < 2.4 to 2.5
-Module made for Thelia <= 2.4 are not compatible with the new version of Thelia, but there is no lot of change to make it compatible.
+## Migrate from Thelia `< 2.4` to 2.5
+Module made for Thelia `<= 2.4` are not compatible with the new version of Thelia, but there is no lot of change to make it compatible.
 
 ### Module
 - Some functions in BaseModule had their return type set, because you are overwriting them you need to set their return type as well

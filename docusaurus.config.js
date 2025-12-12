@@ -1,15 +1,18 @@
-const remarkTooltip = require('remark-tooltip');
-
 module.exports = {
   title: 'Thelia documentation',
   tagline: 'Your OpenSource E-commerce tool',
   url: 'https://thelia.github.io',
   baseUrl: '/',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.png',
   organizationName: 'thelia', // Usually your GitHub org/user name.
   projectName: 'docs', // Usually your repo name.
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
+
   plugins: [
     'docusaurus-plugin-sass'
   ],
@@ -59,39 +62,18 @@ module.exports = {
         {
           title: 'Community',
           items: [
-            {
-              label: 'Discord',
-              href: 'https://discord.gg/YgwpYEE3y3',
-            },
-            {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/thelia',
-            },
-            {
-              label: 'Forum',
-              href: 'https://forum.thelia.net/',
-            },
-            {
-              label: 'Twitter',
-              href: 'https://twitter.com/theliaecommerce',
-            },
+            { label: 'Discord', href: 'https://discord.gg/YgwpYEE3y3' },
+            { label: 'Stack Overflow', href: 'https://stackoverflow.com/questions/tagged/thelia' },
+            { label: 'Forum', href: 'https://forum.thelia.net/' },
+            { label: 'Twitter', href: 'https://twitter.com/theliaecommerce' },
           ],
         },
         {
           title: 'Github',
           items: [
-            {
-              label: 'Thelia',
-              href: 'https://github.com/thelia/thelia',
-            },
-            {
-              label: 'Thelia project',
-              href: 'https://github.com/thelia/thelia-project',
-            },
-            {
-              label: 'Modules',
-              href: 'https://github.com/thelia-modules/',
-            },
+            { label: 'Thelia', href: 'https://github.com/thelia/thelia' },
+            { label: 'Thelia project', href: 'https://github.com/thelia/thelia-project' },
+            { label: 'Modules', href: 'https://github.com/thelia-modules/' },
           ],
         }
       ],
@@ -106,11 +88,9 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          // Please change this to your repo.
-          editUrl:
-            'https://github.com/thelia/docs/edit/main/',
-          remarkPlugins: [remarkTooltip]
+          editUrl: 'https://github.com/thelia/docs/edit/main/',
         },
+        blog: false,
         theme: {
           customCss: [require.resolve('./src/css/custom.scss')]
         },

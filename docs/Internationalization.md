@@ -13,10 +13,10 @@ If you want to create multilingual compatible templates, you have to pay a speci
 
 Thelia provides several Smarty functions to help you.
 
-### {intl}
+### `{intl}`
 
-The {intl} function translates a string into the current language.
-
+The `{intl}` function translates a string into the current language.
+```
     {intl l="This is a string to translate"}
 
     or
@@ -26,8 +26,8 @@ The {intl} function translates a string into the current language.
     or
 
     {intl l="Hello, %name, how do you do ?" name={$name}}
-
-We have here three typical uses of {intl}
+```
+We have here three typical uses of `{intl}`
 
 #### `l`
 
@@ -59,39 +59,40 @@ For examples, in the `layout.tpl` file of the default front-office template, you
 When using `{intl}` in a Javascript string, the translated string may contain simple and/or double quotes, that should be escaped to prevent a syntax error.
 
 To do so, use the `js` parameter, that will escape single and double quotes :
-
+```js
     var myString = '{intl l="A string with 'simple' and \"double\" quotes" js=1}';
-
+```
 The result will be :
-
+```js
     var myString = 'A string \'simple\' and \"double\" quotes';
-
+```
 You may also use the escape:'html' Smarty modifier :
-
+```js
     var myString = '{intl l="A string with 'simple' and \"double\" quotes"|escape:'html'}';
+```
 
 The result will be in this case :
-
+```js
     var myString = 'A string with &#039;simple&#039; and &quot;double&quot; quotes';
-
+```
 The 'quotes' modifier could also be used, with some care as it escapes only simple quotes :
-
+```js
     var myString = '{intl l="A string with 'simple' and \"double\" quotes"|escape:'quotes'}';
-
+```
 will gives :
-
+```js
     var myString = 'A string with \'simple\' and "double" quotes';
-
+```
 #### Translating your templates
 
 Translations is done through the back-office -> Configuration -> Translation. The string are automatically collected in your template, and you'll be able to enter the translation for any language defined in your store (see Configuration, -> Languages & URLs).
 
-### {format_date}
+### `{format_date}`
 
 Use this function to format a date according to the current locale standards.
 
 #### Examples
-
+```
     Return the given date using the locale date format as date and time
     {format_date date=$dateTimeObject}
 
@@ -103,6 +104,7 @@ Use this function to format a date according to the current locale standards.
 
     Return the given date as a time string, using the locale date
     {format_date date=$dateTimeObject output="time"}
+```
 
 #### Parameters
 
@@ -114,18 +116,19 @@ Use this function to format a date according to the current locale standards.
     - `datetime`: the date and the time (default)
 
 
-### {format_number}
+### `{format_number}`
 
 Use this function to format a number according to the current locale standards, or a specific format.
 
 #### Examples
 
+```
     Outputs "1 246,1"
     {format_number number="1246.12" decimals="1" dec_point="," thousands_sep=" "}
 
     Outputs "1246,12" if locale is fr_FR, 1 246.12 if locale is en_US
     {format_number number="1246.12"}
-
+```
 
 #### Parameters
 
@@ -135,17 +138,19 @@ Use this function to format a number according to the current locale standards, 
 - `thousands_sep`: thousands separator
 
 
-### {format_money}
+### `{format_money}`
 
 Use this function to format an amount of money according to the current locale standards, or a specific format.
 
 #### Examples
 
+```
     Outputs "1 246,1 €"
     {format_money number="1246.12" decimals="1" dec_point="," thousands_sep=" " symbol="€"}
 
     Outputs "1246,12 €" if locale is fr_FR, "€ 1 246.12" if locale is en_US
     {format_money number="1246.12"}
+```
 
 #### Parameters
 
@@ -156,7 +161,7 @@ Use this function to format an amount of money according to the current locale s
 - `symbol`: Currency symbol
 - `remove_zero_decimal` (since 2.4.0) : Do not show decimals if they are zero. example: 1234.00 € will become 1234 €
 
-### {format_address}
+### `{format_address}`
 
 Use this function to format an address according to the current country standards.
 
