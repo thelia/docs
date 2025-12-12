@@ -92,30 +92,31 @@ class ProductListener implements EventSubscriberInterface
 
 ## Every event list
 
-### Address 
+### Address
 
-<details><summary>Detail</summary>
+<details>
+  <summary>Detail</summary>
 
 sent for address creation.  
-**ADDRESS_CREATE** = 'action.createAddress'  
+**ADDRESS_CREATE** = 'action.createAddress'
 
-**ADDRESS_UPDATE** = 'action.updateAddress'  
+**ADDRESS_UPDATE** = 'action.updateAddress'
 
-**ADDRESS_DELETE** = 'action.deleteAddress'  
+**ADDRESS_DELETE** = 'action.deleteAddress'
 
 sent when an address is tag as default.  
-**ADDRESS_DEFAULT** = 'action.defaultAddress'  
+**ADDRESS_DEFAULT** = 'action.defaultAddress'
 
 __________________
 
--  AddressCreateOrUpdateEvent -> $address1 $address2 $address3 $cellphone $city $company $country $firstname $isDefault $label $lastname $phone $state $title $zipcode   
-
+-  AddressCreateOrUpdateEvent -> $address1 $address2 $address3 $cellphone $city $company $country $firstname $isDefault $label $lastname $phone $state $title $zipcode
 
 </details>
 
-### Admin 
+### Admin
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 Sent before the logout of the administrator.  
 **ADMIN_LOGOUT** = 'action.admin_logout'  
@@ -129,7 +130,8 @@ __________________
 
 ### Administrator 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **ADMINISTRATOR_CREATE** = 'action.createAdministrator'  
 
@@ -151,7 +153,8 @@ __________________
 
 ### Area 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **AREA_CREATE** = 'action.createArea'  
 
@@ -175,7 +178,8 @@ __________________
 
 ### Attributes 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **ATTRIBUTE_CREATE** = 'action.createAttribute'  
 
@@ -207,7 +211,8 @@ __________________
 
 ### Attributes values 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **ATTRIBUTE_AV_CREATE** = 'action.createAttributeAv'  
 
@@ -235,7 +240,8 @@ __________________
 
 ### Brands 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **BRAND_CREATE** = 'action.createBrand'  
 
@@ -265,7 +271,8 @@ __________________
 
 ### Cache 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 sent for clearing cache.  
 **CACHE_CLEAR** = 'thelia.cache.clear'  
@@ -279,7 +286,8 @@ __________________
 
 ### Cart 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **CART_PERSIST** = 'cart.persist'  
 
@@ -335,7 +343,8 @@ __________________
 
 ### Categories 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **CATEGORY_CREATE** = 'action.createCategory'  
 
@@ -373,7 +382,8 @@ __________________
 
 ### Clone 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **PRODUCT_CLONE** = 'action.cloneProduct'  
 
@@ -387,7 +397,8 @@ __________________
 
 ### Configuration 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **CONFIG_CREATE** = 'action.createConfig'  
 
@@ -410,7 +421,8 @@ __________________
 
 ### Contact 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 sent for submit contact form.  
 since 2.4  
@@ -425,7 +437,8 @@ __________________
 
 ### Content 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **CONTENT_CREATE** = 'action.createContent'  
 
@@ -461,7 +474,8 @@ __________________
 
 ### Core 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 sent at the beginning.  
 **BOOT** = 'thelia.boot'  
@@ -475,7 +489,8 @@ __________________
 
 ### Country 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **COUNTRY_CREATE** = 'action.state.create'  
 
@@ -502,7 +517,8 @@ __________________
 
 ### Coupon 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 Sent when creating a Coupon.  
 **COUPON_CREATE** = 'action.create_coupon'  
@@ -533,7 +549,8 @@ __________________
 
 ### Currencies 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **CURRENCY_CREATE** = 'action.createCurrency'  
 
@@ -566,7 +583,8 @@ __________________
 
 ### Customer 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 Sent before the logout of the customer.  
 **CUSTOMER_LOGOUT** = 'action.customer_logout'  
@@ -604,7 +622,8 @@ __________________
 
 ### Customer title 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **CUSTOMER_TITLE_CREATE** = 'action.title.create'  
 
@@ -627,7 +646,8 @@ __________________
 
 ### Delivery 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **MODULE_DELIVERY_GET_POSTAGE** = 'thelia.module.delivery.postage'  
 
@@ -643,7 +663,8 @@ __________________
 
 ### Document 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 Sent on document processing.  
 **DOCUMENT_PROCESS** = 'action.processDocument'  
@@ -673,7 +694,8 @@ __________________
 
 ### Export 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **EXPORT_CHANGE_POSITION** = 'export.change.position'  
 
@@ -691,7 +713,8 @@ __________________
 
 ### Features 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **FEATURE_CREATE** = 'action.createFeature'  
 
@@ -723,7 +746,8 @@ __________________
 
 ### Features values 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **FEATURE_AV_CREATE** = 'action.createFeatureAv'  
 
@@ -756,7 +780,8 @@ __________________
 
 ### Folder 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **FOLDER_CREATE** = 'action.createFolder'  
 
@@ -786,7 +811,8 @@ __________________
 
 ### Form 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **FORM_BEFORE_BUILD** = 'thelia.form.before_build'  
 
@@ -798,7 +824,8 @@ __________________
 
 ### Hook 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 Hook.  
 **HOOK_CREATE** = 'thelia.hook.action.create'  
@@ -849,7 +876,8 @@ __________________
 
 ### Image 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 Sent on image processing.  
 **IMAGE_PROCESS** = 'action.processImage'  
@@ -885,7 +913,8 @@ __________________
 
 ### Import 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **IMPORT_CHANGE_POSITION** = 'import.change.position'  
 
@@ -903,7 +932,8 @@ __________________
 
 ### Lang 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **LANG_UPDATE** = 'action.lang.update'  
 
@@ -938,7 +968,8 @@ __________________
 
 ### Loop 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **LOOP_EXTENDS_ARG_DEFINITIONS** = 'loop.extends.arg_definitions'  
 
@@ -964,7 +995,8 @@ __________________
 
 ### Mailing system 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **MAILING_SYSTEM_UPDATE** = 'action.updateMailingSystem'  
 
@@ -977,7 +1009,8 @@ __________________
 
 ### Messages 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **MESSAGE_CREATE** = 'action.createMessage'  
 
@@ -998,7 +1031,8 @@ __________________
 
 ### Meta data 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **META_DATA_CREATE** = 'thelia.metadata.create'  
 
@@ -1017,7 +1051,8 @@ __________________
 
 ### Module 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 sent when a module is activated or deactivated.  
 **MODULE_TOGGLE_ACTIVATION** = 'thelia.module.toggleActivation'  
@@ -1046,7 +1081,8 @@ __________________
 
 ### Newsletter 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 sent for subscribing to the newsletter.  
 **NEWSLETTER_SUBSCRIBE** = 'thelia.newsletter.subscribe'  
@@ -1066,7 +1102,8 @@ __________________
 
 ### Order 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 Order linked event.  
 **ORDER_SET_DELIVERY_ADDRESS** = 'action.order.setDeliveryAddress'  
@@ -1122,7 +1159,8 @@ __________________
 
 ### Order status 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **ORDER_STATUS_CREATE** = 'action.createOrderStatus'  
 
@@ -1153,7 +1191,8 @@ __________________
 
 ### Payment 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **MODULE_PAY** = 'thelia.module.pay'  
 
@@ -1172,7 +1211,8 @@ __________________
 
 ### Product 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **PRODUCT_CREATE** = 'action.createProduct'  
 
@@ -1255,7 +1295,8 @@ __________________
 
 ### Product templates 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **TEMPLATE_CREATE** = 'action.createTemplate'  
 
@@ -1322,7 +1363,8 @@ __________________
 
 ### Profile 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **PROFILE_CREATE** = 'action.createProfile'  
 
@@ -1348,7 +1390,8 @@ __________________
 
 ### Sales 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **SALE_CREATE** = 'action.createSale'  
 
@@ -1381,7 +1424,8 @@ __________________
 
 ### Shipping zone 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **SHIPPING_ZONE_ADD_AREA** = 'action.shippingZone.addArea'  
 
@@ -1397,7 +1441,8 @@ __________________
 
 ### State 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **STATE_CREATE** = 'action.createState'  
 
@@ -1421,7 +1466,8 @@ __________________
 
 ### Tax 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **TAX_CREATE** = 'action.createTax'  
 
@@ -1441,7 +1487,8 @@ __________________
 
 ### Tax rules 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **TAX_RULE_CREATE** = 'action.createTaxRule'  
 
@@ -1463,7 +1510,8 @@ __________________
 
 ### Translation 
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **TRANSLATION_GET_STRINGS** = 'action.translation.get_strings'  
 
@@ -1478,7 +1526,8 @@ __________________
 
 ### No classified
 
-<details><summary>Detail</summary>
+<details>
+<summary>Detail</summary>
 
 **noCategory** : 
 - **⚠️ Warning**

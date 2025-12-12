@@ -11,7 +11,7 @@ Retrieves a list of archivers, sorts them and returns its information.
 | ------------- |:------------------------------------------------------| :-----: | :-------------------------------------------|
 | archiver      | generic type which represents the ID of the archiver  |         |                                             |
 | availble      | specifies whether the archiver should be available    |         |  available ='true'                          |
-| order         | specifies the sort order of archivers (alphabetical)  | alpha   | enum sort{ case alpha; case alpha_reverse; }|
+| order         | specifies the sort order of archivers (alphabetical)  | alpha   | `enum sort{ case alpha; case alpha_reverse; }` |
 
 Plus the [global arguments](./global_arguments)
 

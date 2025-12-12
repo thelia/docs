@@ -45,8 +45,8 @@ class FrontHook extends BaseHook
                 ]               
             ]
         ];
-    }
-}
+    
+
 ```
 
 Then the function associated with the listener depend if you listen a [Hook function](#hook-function) or a [Hook block](#hook-block)
@@ -66,7 +66,7 @@ Notice: you can add arguments to the smarty function (or block) to help identify
 ```smarty
 ...
 <section id="product-details">
-    {hook name="product.details.top" product="{$ID}"}
+    {hook name="product.details.top" product="$ID}"
 ...
 </section>
 ```
@@ -86,7 +86,7 @@ class FrontHook extends BaseHook
     {
         $content = $this->render('my-main-footer-bottom.html');
         $event->add($content);
-    }
+    
     
     public static function getSubscribedHooks()
     {
@@ -98,8 +98,8 @@ class FrontHook extends BaseHook
                 ]               
             ]
         ];
-    }
-}
+    
+
 ```
 
 ## Hook block
@@ -117,28 +117,28 @@ Example of a hook block:
 
 ```smarty
 <section id="product-tabs">
-    {hookblock name="product.additional" product="{product attr="id"}"}
+    {hookblock name="product.additional" product="{product attr="id"}"
         <ul class="nav nav-tabs" role="tablist">
             <li class="active" role="presentation"><a id="tab1" href="#description" data-toggle="tab" role="tab">{intl l="Description"}</a></li>
     
-            {forhook rel="product.additional"}
-                <li role="presentation"><a id="tab{$id}" href="#{$id}" data-toggle="tab" role="tab">{$title}</a></li>
-            {/forhook}
+            {forhook rel="product.additional"
+                <li role="presentation"><a id="tab$id}" href="#$id}" data-toggle="tab" role="tab">$title}</a></li>
+            {/forhook
     
         </ul>
         <div class="tab-content">
             <div class="tab-pane active in" id="description" itemprop="description" role="tabpanel" aria-labelledby="tab1">
-                <p>{$DESCRIPTION|default:'N/A' nofilter}</p>
+                <p>$DESCRIPTION|default:'N/A' nofilter}</p>
             </div>
     
-            {forhook rel="product.additional"}
-                <div class="tab-pane" id="{$id}" role="tabpanel" aria-labelledby="tab{$id}">
-                    {$content nofilter}
+            {forhook rel="product.additional"
+                <div class="tab-pane" id="$id}" role="tabpanel" aria-labelledby="tab$id}">
+                    $content nofilter
                 </div>
-            {/forhook}
+            {/forhook
     
         </div>
-    {/hookblock}
+    {/hookblock
 </section>
 ```
 
@@ -170,7 +170,7 @@ class FrontHook extends BaseHook
         
         // ...
         // As many block as you want
-    }
+    
     
     public static function getSubscribedHooks()
     {
@@ -182,14 +182,14 @@ class FrontHook extends BaseHook
                 ]
             ],
         ];
-    }
-}
+    
+
 ```
 
 ## Create you own hook
 To define a hook in a module template, you have to use the smarty function “hook” with a paramater “name”.
 ```smarty
-{hook name="my_hook_name"}
+{hook name="my_hook_name"
 ``` 
 
 But to inform Thelia that this hook exists you must declare it in the base class of your module.    
@@ -246,8 +246,8 @@ class MyModule extends BaseModule
               "active" => true
           )
      );
-  }
-}
+  
+
 ```
 
 ## Default hook list
@@ -279,7 +279,7 @@ class MyModule extends BaseModule
 	* location:administrator\_list\_header
 * **administrators.row**
 	* location:administrator\_list\_row
-	* admin\_id:{$ID}
+	* admin\_id:$ID
 * **administrators.bottom**
 	* location:administrators\_bottom
 * **administrator.create-form**
@@ -341,7 +341,7 @@ class MyModule extends BaseModule
 	* location:attributes\_table\_header
 * **attributes.table-row**
 	* location:attributes\_table\_row
-	* attribute\_id:{$ID}
+	* attribute\_id:$ID
 * **attributes.bottom**
 	* location:attributes\_bottom
 * **attribute.create-form**
@@ -364,7 +364,7 @@ class MyModule extends BaseModule
 * **brand-edit.top**
 	* brand\_id:$brand\_id
 * **brand.tab**
-	* brand\_id:{$brand\_id}
+	* brand\_id:$brand\_id
 	* fields:
 		* id
 		* title
@@ -384,7 +384,7 @@ class MyModule extends BaseModule
 	* brand\_id:$brand\_id
 * **'brand.edit-js'**
 	* location:'brand-edit-js'
-	* brand\_id:{$brand\_id}
+	* brand\_id:$brand\_id
 * **wysiwyg.js**
 	* location:wysiwyg-brand-edit-js
 
@@ -400,7 +400,7 @@ class MyModule extends BaseModule
 	* location:'brands\_table\_header'
 * **'brands.table-row'**
 	* location:'brands\_table\_row'
-	* brand\_id:{$ID}
+	* brand\_id:$ID
 * **'brands.bottom'**
 	* location:'brands\_bottom'
 * **'brand.create-form'**
@@ -424,14 +424,14 @@ class MyModule extends BaseModule
 	* location:category\_list\_header
 * **categories.row**
 	* location:category\_list\_row
-	* category\_id:{$ID}
+	* category\_id:$ID
 * **products.caption**
 	* location:product\_list\_caption
 * **products.header**
 	* location:product\_list\_header
 * **products.row**
 	* location:product\_list\_row
-	* product\_id:{$ID}
+	* product\_id:$ID
 * **categories.bottom**
 	* location:categories\_bottom
 * **categories.catalog-bottom**
@@ -460,7 +460,7 @@ class MyModule extends BaseModule
 * **category-edit.top**
 	* category\_id:$category\_id
 * **category.tab**
-	* id:{$category\_id}
+	* id:$category\_id
 	* fields:
 		* id
 		* title
@@ -531,7 +531,7 @@ class MyModule extends BaseModule
 * **content-edit.top**
 	* content\_id:$content\_id
 * **content.tab**
-	* id:{$content\_id}
+	* id:$content\_id
 	* fields:
 		* id
 		* title
@@ -549,7 +549,7 @@ class MyModule extends BaseModule
 	* content\_id:$content\_id
 * **content.edit-js**
 	* location:content-edit-js
-	* content\_id:{$content\_id}
+	* content\_id:$content\_id
 * **wysiwyg.js**
 	* location:wysiwyg-content-edit-js
 
@@ -585,7 +585,7 @@ class MyModule extends BaseModule
 	* location:countries\_table\_header
 * **countries.table-row**
 	* location:countries\_table\_row
-	* country\_id:{$ID}
+	* country\_id:$ID
 * **countries.bottom**
 	* location:countries\_bottom
 * **country.create-form**
@@ -636,7 +636,7 @@ class MyModule extends BaseModule
 	* location:coupon\_table\_header
 * **coupon.table-row**
 	* location:coupon\_table\_row
-	* coupon\_id:{$ID}
+	* coupon\_id:$ID
 * **coupon.bottom**
 	* location:coupon\_bottom
 * **coupon.delete-form**
@@ -651,7 +651,7 @@ class MyModule extends BaseModule
 
 * **coupon.update-js**
 	* location:coupon-update-js
-	* coupon\_id:{$couponId}
+	* coupon\_id:$couponId
 * **wysiwyg.js**
 	* location:wysiwyg-coupon-update-js
 
@@ -667,7 +667,7 @@ class MyModule extends BaseModule
 	* location:currencies\_table\_header
 * **currencies.table-row**
 	* location:currencies\_table\_row
-	* currency\_id:{$ID}
+	* currency\_id:$ID
 * **currencies.bottom**
 	* location:currencies\_bottom
 * **currency.create-form**
@@ -689,7 +689,7 @@ class MyModule extends BaseModule
 	* currency\_id:$currency\_id
 * **currency.edit-js**
 	* location:currency-edit-js
-	* currency\_id:{$currency\_id}
+	* currency\_id:$currency\_id
 
 </details>
 
@@ -741,7 +741,7 @@ class MyModule extends BaseModule
 	* location:customer\_list\_header
 * **customers.row**
 	* location:customer\_list\_row
-	* customer\_id:{$ID}
+	* customer\_id:$ID
 * **customer.bottom**
 	* location:customer\_bottom
 * **customer.create-form**
@@ -763,7 +763,7 @@ class MyModule extends BaseModule
 	* document\_id:$documentId
 * **document.edit-js**
 	* location:document-edit-js
-	* document\_id:{$documentId}
+	* document\_id:$documentId
 * **wysiwyg.js**
 	* location:wysiwyg-document-edit-js
 
@@ -838,15 +838,15 @@ class MyModule extends BaseModule
 	* location:features\_value\_table\_header
 * **features-value.table-row**
 	* location:features\_value\_table\_row
-	* feature\_id:{$feature\_id}
+	* feature\_id:$feature\_id
 * **feature-edit.bottom**
 	* feature\_id:$feature\_id
 * **feature.value-create-form**
 	* location:feature\_value\_create\_form
-	* feature\_id:{$feature\_id}
+	* feature\_id:$feature\_id
 * **feature.edit-js**
 	* location:feature-edit-js
-	* feature\_id:{$feature\_id}
+	* feature\_id:$feature\_id
 * **wysiwyg.js**
 	* location:wysiwyg-feature-edit-js
 
@@ -862,7 +862,7 @@ class MyModule extends BaseModule
 	* location:features\_table\_header
 * **features.table-row**
 	* location:features\_table\_row
-	* feature\_id:{$ID}
+	* feature\_id:$ID
 * **features.bottom**
 	* location:features\_bottom
 * **feature.create-form**
@@ -885,7 +885,7 @@ class MyModule extends BaseModule
 * **folder-edit.top**
 	* folder\_id:$folder\_id
 * **folder.tab**
-	* id:{$folder\_id}
+	* id:$folder\_id
 	* fields:
 		* id
 		* title
@@ -903,7 +903,7 @@ class MyModule extends BaseModule
 	* folder\_id:$folder\_id
 * **folder.edit-js**
 	* location:folder-edit-js
-	* folder\_id:{$folder\_id}
+	* folder\_id:$folder\_id
 * **wysiwyg.js**
 	* location:wysiwyg-folder-edit-js
 
@@ -921,7 +921,7 @@ class MyModule extends BaseModule
 	* location:folder\_list\_header
 * **folders.row**
 	* location:folder\_list\_row
-	* folder\_id:{$ID}
+	* folder\_id:$ID
 * **contents.caption**
 	* location:content\_list\_caption
 * **contents.header**
@@ -981,7 +981,7 @@ class MyModule extends BaseModule
 	* hook\_id:$hook\_id
 * **hook.edit-js**
 	* location:hook-edit-js
-	* hook\_id:{$hook\_id}
+	* hook\_id:$hook\_id
 * **wysiwyg.js**
 	* location:wysiwyg-hook-edit-js
 
@@ -997,7 +997,7 @@ class MyModule extends BaseModule
 	* location:hooks\_table\_header
 * **hooks.table-row**
 	* location:hooks\_table\_row
-	* hook\_id:{$ID}
+	* hook\_id:$ID
 * **hooks.bottom**
 	* location:hooks\_bottom
 * **hook.create-form**
@@ -1019,8 +1019,8 @@ class MyModule extends BaseModule
 	* image\_id:$imageId
 * **image.edit-js**
 	* location:image-edit-js
-	* source:{$imageType}
-	* image\_id:{$imageId}
+	* source:$imageType
+	* image\_id:$imageId
 * **wysiwyg.js**
 	* location:wysiwyg-image-edit-js
 
@@ -1176,7 +1176,7 @@ class MyModule extends BaseModule
 	* message\_id:$message\_id
 * **message.edit-js**
 	* location:message-edit-js
-	* message\_id:{$message\_id}
+	* message\_id:$message\_id
 
 </details>
 
@@ -1190,7 +1190,7 @@ class MyModule extends BaseModule
 	* location:messages\_table\_header
 * **messages.table-row**
 	* location:messages\_table\_row
-	* message\_id:{$ID}
+	* message\_id:$ID
 * **messages.bottom**
 	* location:messages\_bottom
 * **message.create-form**
@@ -1210,7 +1210,7 @@ class MyModule extends BaseModule
 	* location:modules\_table\_header
 * **modules.table-row**
 	* location:modules\_table\_row
-	* module\_code:{$CODE}
+	* module\_code:$CODE
 
 </details>
 
@@ -1239,7 +1239,7 @@ class MyModule extends BaseModule
 	* module\_id:$module\_id
 * **module.edit-js**
 	* location:module-edit-js
-	* module\_id:{$module\_id}
+	* module\_id:$module\_id
 * **wysiwyg.js**
 	* location:wysiwyg-module-edit-js
 
@@ -1255,7 +1255,7 @@ class MyModule extends BaseModule
 	* module\_hook\_id:$module\_hook\_id
 * **module-hook.edit-js**
 	* location:module-hook-edit-js
-	* module\_hook\_id:{$module\_hook\_id}
+	* module\_hook\_id:$module\_hook\_id
 
 </details>
 
@@ -1308,7 +1308,7 @@ class MyModule extends BaseModule
 * **order-edit.top**
 	* order\_id:$order\_id
 * **order.tab**
-	* id:{$order\_id}
+	* id:$order\_id
 	* fields:
 		* id
 		* title
@@ -1332,7 +1332,7 @@ class MyModule extends BaseModule
 	* order\_product\_id:$ID
 * **order-edit.order-product-table-row**
 	* location:order\_edit\_table\_row
-	* order\_product\_id:{$ID}
+	* order\_product\_id:$ID
 * **order-edit.after-order-product-row**
 	* location:after-order-product-row
 	* order\_id:$order\_id
@@ -1357,7 +1357,7 @@ class MyModule extends BaseModule
 	* module\_id:$DELIVERY\_MODULE
 * **order-edit.bill-delivery-address**
 	* module:$DELIVERY\_MODULE
-	* order\_id:{$order\_id}
+	* order\_id:$order\_id
 * **order-edit.bill-bottom**
 	* location:order-edit-bill-bottom
 	* order\_id:$order\_id
@@ -1365,7 +1365,7 @@ class MyModule extends BaseModule
 	* order\_id:$order\_id
 * **order.edit-js**
 	* location:order-edit-js
-	* order\_id:{$order\_id}
+	* order\_id:$order\_id
 
 </details>
 
@@ -1376,7 +1376,7 @@ class MyModule extends BaseModule
 * **order-status-edit.top**
 	* order\_status\_id:$order\_status\_id
 * **order-status.tab**
-	* order\_status\_id:{$order\_status\_id}
+	* order\_status\_id:$order\_status\_id
 	* fields:
 		* id
 		* title
@@ -1399,7 +1399,7 @@ class MyModule extends BaseModule
 * **order-status.top**
 * **order-status.table-header**
 * **order-status.table-row**
-	* order\_status\_id:{$ID}
+	* order\_status\_id:$ID
 * **order-status.bottom**
 * **'brand.create-form'**
 	* location:'brand\_create\_form'
@@ -1417,7 +1417,7 @@ class MyModule extends BaseModule
 	* location:orders\_table\_header
 * **orders.table-row**
 	* location:orders\_table\_row
-	* order\_id:{$ID}
+	* order\_id:$ID
 * **orders.bottom**
 	* location:orders\_bottom
 * **orders.js**
@@ -1447,7 +1447,7 @@ class MyModule extends BaseModule
 * **product-edit.top**
 	* product\_id:$product\_id
 * **product.tab**
-	* id:{$product\_id}
+	* id:$product\_id
 	* fields:
 		* id
 		* title
@@ -1461,7 +1461,7 @@ class MyModule extends BaseModule
 	* product\_id:$product\_id
 * **product.edit-js**
 	* location:product-edit-js
-	* product\_id:{$product\_id}
+	* product\_id:$product\_id
 * **wysiwyg.js**
 	* location:wysiwyg-product-edit-js
 
@@ -1535,7 +1535,7 @@ class MyModule extends BaseModule
 	* profile\_id:$profile\_id
 * **profile.edit-js**
 	* location:profile-edit-js
-	* profile\_id:{$profile\_id}
+	* profile\_id:$profile\_id
 * **wysiwyg.js**
 	* location:wysiwyg-profile-edit-js
 
@@ -1573,7 +1573,7 @@ class MyModule extends BaseModule
 	* sale\_id:$sale\_id
 * **sale.edit-js**
 	* location:'sale-edit-js'
-	* sale\_id:{$sale\_id}
+	* sale\_id:$sale\_id
 * **wysiwyg.js**
 	* location:wysiwyg-sale-edit-js
 
@@ -1589,7 +1589,7 @@ class MyModule extends BaseModule
 	* location:sales\_table\_header
 * **sales.table-row**
 	* location:sales\_table\_row
-	* sale\_id:{$ID}
+	* sale\_id:$ID
 * **sales.bottom**
 	* location:sales\_bottom
 * **sale.create-form**
@@ -1611,25 +1611,25 @@ class MyModule extends BaseModule
 	* location:customer\_list\_header
 * **customers.row**
 	* location:customer\_list\_row
-	* customer\_id:{$ID}
+	* customer\_id:$ID
 * **orders.table-header**
 	* location:orders\_table\_header
 * **orders.table-row**
 	* location:orders\_table\_row
-	* order\_id:{$ID}
+	* order\_id:$ID
 * **categories.header**
 	* location:category\_list\_header
 * **categories.row**
 	* location:category\_list\_row
-	* category\_id:{$ID}
+	* category\_id:$ID
 * **products.row**
 	* location:product\_list\_row
-	* product\_id:{$ID}
+	* product\_id:$ID
 * **folders.header**
 	* location:folder\_list\_header
 * **folders.row**
 	* location:folder\_list\_row
-	* folder\_id:{$ID}
+	* folder\_id:$ID
 * **contents.header**
 	* location:content\_list\_header
 * **contents.row**
@@ -1679,14 +1679,14 @@ class MyModule extends BaseModule
 	* area\_id:$area\_id
 * **shipping-configuration.edit**
 	* location:shipping-configuration-edit
-	* area\_id:{$area\_id}
+	* area\_id:$area\_id
 * **shipping-configuration-edit.bottom**
 	* area\_id:$area\_id
 * **shipping-configuration.country-delete-form**
 	* location:shipping\_configuration\_country\_delete\_form
 * **shipping-configuration.edit-js**
 	* location:shipping-configuration-edit-js
-	* area\_id:{$area\_id}
+	* area\_id:$area\_id
 
 </details>
 
@@ -1700,7 +1700,7 @@ class MyModule extends BaseModule
 	* location:shipping\_configuration\_table\_header
 * **shipping-configuration.table-row**
 	* location:shipping\_configuration\_table\_row
-	* area\_id:{$ID}
+	* area\_id:$ID
 * **shipping-configuration.bottom**
 	* location:shipping\_configuration\_bottom
 * **shipping-configuration.create-form**
@@ -1722,10 +1722,10 @@ class MyModule extends BaseModule
 	* delivery\_module\_id:$delivery\_module\_id
 * **zone.delete-form**
 	* location:zone\_delete\_form
-	* module\_id:{$delivery\_module\_id}
+	* module\_id:$delivery\_module\_id
 * **shipping-zones.edit-js**
 	* location:shipping-zones-edit-js
-	* module\_id:{$delivery\_module\_id}
+	* module\_id:$delivery\_module\_id
 
 </details>
 
@@ -1739,7 +1739,7 @@ class MyModule extends BaseModule
 	* location:shipping\_zones\_table\_header
 * **shipping-zones.table-row**
 	* location:shipping\_zones\_table\_row
-	* module\_id:{$ID}
+	* module\_id:$ID
 * **shipping-zones.bottom**
 	* location:shipping\_zones\_bottom
 * **shipping-zones.js**
@@ -1773,7 +1773,7 @@ class MyModule extends BaseModule
 	* location:states\_table\_header
 * **states.table-row**
 	* location:states\_table\_row
-	* state\_id:{$ID}
+	* state\_id:$ID
 * **states.bottom**
 	* location:states\_bottom
 * **state.create-form**
@@ -1819,10 +1819,10 @@ class MyModule extends BaseModule
 	* tax\_rule\_id:$tax\_rule\_id
 * **taxes.update-form**
 	* location:tax\_list\_update\_form
-	* tax\_rule\_id:{$tax\_rule\_id}
+	* tax\_rule\_id:$tax\_rule\_id
 * **tax-rule.edit-js**
 	* location:tax-rule-edit-js
-	* tax\_rule\_id:{$tax\_rule\_id}
+	* tax\_rule\_id:$tax\_rule\_id
 * **wysiwyg.js**
 	* location:wysiwyg-tax-rule-edit-js
 
@@ -1988,7 +1988,7 @@ class MyModule extends BaseModule
 	* location:variables\_table\_header
 * **variables.table-row**
 	* location:variables\_table\_row
-	* config\_id:{$ID}
+	* config\_id:$ID
 * **variables.bottom**
 	* location:variables\_bottom
 * **variable.create-form**
@@ -2020,50 +2020,50 @@ class MyModule extends BaseModule
 <details>
 
 * **account-order.top**
-	* order:{$order\_id}
+	* order:$order\_id
 * **account-order.information**
-	* order:{$order\_id}
+	* order:$order\_id
 	* fields:
 		* title
 		* value
 * **account-order.after-information**
-	* order:{$order\_id}
+	* order:$order\_id
 * **account-order.delivery-information**
-	* module:{$delivery\_id}
-	* order:{$order\_id}
+	* module:$delivery\_id
+	* order:$order\_id
 * **account-order.delivery-address**
-	* module:{$delivery\_id}
-	* order:{$order\_id}
+	* module:$delivery\_id
+	* order:$order\_id
 * **account-order.delivery-address-bottom**
-	* module:{$delivery\_id}
-	* order:{$order\_id}
+	* module:$delivery\_id
+	* order:$order\_id
 * **account-order.invoice-information**
-	* module:{$payment\_id}
-	* order:{$order\_id}
+	* module:$payment\_id
+	* order:$order\_id
 * **account-order.invoice-address**
-	* module:{$payment\_id}
-	* order:{$order\_id}
+	* module:$payment\_id
+	* order:$order\_id
 * **account-order.invoice-address-bottom**
-	* module:{$payment\_id}
-	* order:{$order\_id}
+	* module:$payment\_id
+	* order:$order\_id
 * **account-order.after-addresses**
-	* order:{$order\_id}
+	* order:$order\_id
 * **account-order.products-top**
-	* order:{$order\_id}
+	* order:$order\_id
 * **account-order.product-list**
-	* order\_id:{$order\_id}
-	* order\_product\_id:{$ID}
-	* product:{$PRODUCT\_ID}
+	* order\_id:$order\_id
+	* order\_product\_id:$ID
+	* product:$PRODUCT\_ID
 * **account-order.product-extra**
-	* order:{$order\_id}
-	* order\_product:{$ID}
-	* product:{$PRODUCT\_ID}
+	* order:$order\_id
+	* order\_product:$ID
+	* product:$PRODUCT\_ID
 * **account-order.products-bottom**
-	* order:{$order\_id}
+	* order:$order\_id
 * **account-order.after-products**
-	* order:{$order\_id}
+	* order:$order\_id
 * **account-order.bottom**
-	* order:{$order\_id}
+	* order:$order\_id
 * **account-order.stylesheet**
 * **account-order.after-javascript-include**
 	* order:$order\_id
@@ -2455,10 +2455,10 @@ class MyModule extends BaseModule
 * **order-invoice.top**
 * **order-invoice.coupon-form**
 * **order-invoice.delivery-address**
-	* module:{order
-	* attr:delivery\_module}
+	* module:order
+	* attr:delivery\_module
 * **order-invoice.payment-extra**
-	* module:{$paymentModuleId}
+	* module:$paymentModuleId
 * **order-invoice.payment-form**
 * **order-invoice.bottom**
 * **order-invoice.javascript-initialization**
@@ -2515,13 +2515,13 @@ class MyModule extends BaseModule
 <details>
 
 * **product.top**
-	* product:{$ID}
+	* product:$ID
 * **product.gallery**
-	* product:{$ID}
+	* product:$ID
 * **product.details-top**
-	* product:{$ID}
+	* product:$ID
 * **product.details-bottom**
-	* product:{$ID}
+	* product:$ID
 * **product.additional**
 	* product:$product\_id
 	* fields:
@@ -2530,7 +2530,7 @@ class MyModule extends BaseModule
 		* title
 		* content
 * **product.bottom**
-	* product:{$ID}
+	* product:$ID
 * **product.stylesheet**
 * **product.after-javascript-include**
 * **product.javascript-initialization**
@@ -2556,17 +2556,17 @@ class MyModule extends BaseModule
 <details>
 
 * **sale.top**
-	* sale:{$product\_sale}
+	* sale:$product\_sale
 * **sale.main-top**
-	* sale:{$product\_sale}
+	* sale:$product\_sale
 * **sale.content-top**
-	* sale:{$product\_sale}
+	* sale:$product\_sale
 * **sale.content-bottom**
-	* sale:{$product\_sale}
+	* sale:$product\_sale
 * **sale.main-bottom**
-	* sale:{$product\_sale}
+	* sale:$product\_sale
 * **sale.bottom**
-	* sale:{$product\_sale}
+	* sale:$product\_sale
 * **sale.stylesheet**
 * **sale.after-javascript-include**
 * **sale.javascript-initialization**
@@ -2588,9 +2588,9 @@ class MyModule extends BaseModule
 <details>
 
 * **singleproduct.top**
-	* product:{$product\_id}
+	* product:$product\_id
 * **singleproduct.bottom**
-	* product:{$product\_id}
+	* product:$product\_id
 
 </details>
 
@@ -2644,50 +2644,50 @@ class MyModule extends BaseModule
 <details>
 
 * **account-order.top**
-	* order:{$order\_id}
+	* order:$order\_id
 * **account-order.information**
-	* order:{$order\_id}
+	* order:$order\_id
 	* fields:
 		* title
 		* value
 * **account-order.after-information**
-	* order:{$order\_id}
+	* order:$order\_id
 * **account-order.delivery-information**
-	* module:{$delivery\_id}
-	* order:{$order\_id}
+	* module:$delivery\_id
+	* order:$order\_id
 * **account-order.delivery-address**
-	* module:{$delivery\_id}
-	* order:{$order\_id}
+	* module:$delivery\_id
+	* order:$order\_id
 * **account-order.delivery-address-bottom**
-	* module:{$delivery\_id}
-	* order:{$order\_id}
+	* module:$delivery\_id
+	* order:$order\_id
 * **account-order.invoice-information**
-	* module:{$payment\_id}
-	* order:{$order\_id}
+	* module:$payment\_id
+	* order:$order\_id
 * **account-order.invoice-address**
-	* module:{$payment\_id}
-	* order:{$order\_id}
+	* module:$payment\_id
+	* order:$order\_id
 * **account-order.invoice-address-bottom**
-	* module:{$payment\_id}
-	* order:{$order\_id}
+	* module:$payment\_id
+	* order:$order\_id
 * **account-order.after-addresses**
-	* order:{$order\_id}
+	* order:$order\_id
 * **account-order.products-top**
-	* order:{$order\_id}
+	* order:$order\_id
 * **account-order.product-list**
-	* order\_id:{$order\_id}
-	* order\_product\_id:{$ID}
-	* product:{$PRODUCT\_ID}
+	* order\_id:$order\_id
+	* order\_product\_id:$ID
+	* product:$PRODUCT\_ID
 * **account-order.product-extra**
-	* order:{$order\_id}
-	* order\_product:{$ID}
-	* product:{$PRODUCT\_ID}
+	* order:$order\_id
+	* order\_product:$ID
+	* product:$PRODUCT\_ID
 * **account-order.products-bottom**
-	* order:{$order\_id}
+	* order:$order\_id
 * **account-order.after-products**
-	* order:{$order\_id}
+	* order:$order\_id
 * **account-order.bottom**
-	* order:{$order\_id}
+	* order:$order\_id
 * **account-order.stylesheet**
 * **account-order.after-javascript-include**
 	* order:$order\_id
@@ -2702,7 +2702,7 @@ class MyModule extends BaseModule
 
 * **account-order.top**
 	* order:
-		* {$order\_id
+		* $order\_id
 		* default
 * **login.after-javascript-include**
 * **login.javascript-initialization**
@@ -2997,9 +2997,9 @@ class MyModule extends BaseModule
 <details>
 
 * **product.top**
-	* product:{$ID}
+	* product:$ID
 * **product.bottom**
-	* product:{$ID}
+	* product:$ID
 * **product.stylesheet**
 * **product.after-javascript-include**
 * **product.javascript-initialization**
@@ -3024,17 +3024,17 @@ class MyModule extends BaseModule
 <details>
 
 * **sale.top**
-	* sale:{$product\_sale}
+	* sale:$product\_sale
 * **sale.main-top**
-	* sale:{$product\_sale}
+	* sale:$product\_sale
 * **sale.content-top**
-	* sale:{$product\_sale}
+	* sale:$product\_sale
 * **sale.content-bottom**
-	* sale:{$product\_sale}
+	* sale:$product\_sale
 * **sale.main-bottom**
-	* sale:{$product\_sale}
+	* sale:$product\_sale
 * **sale.bottom**
-	* sale:{$product\_sale}
+	* sale:$product\_sale
 * **sale.stylesheet**
 * **sale.after-javascript-include**
 * **sale.javascript-initialization**
@@ -3096,7 +3096,7 @@ class MyModule extends BaseModule
 * **delivery.after-information**
 	* order:$order\_id
 * **delivery.delivery-address**
-	* module:{$DELIVERY\_MODULE}
+	* module:$DELIVERY\_MODULE
 	* order:$order\_id
 * **delivery.after-addresses**
 	* order:$order\_id
@@ -3104,8 +3104,8 @@ class MyModule extends BaseModule
 	* order\_product:$ID
 	* order:$order\_id
 * **delivery.order-product**
-	* order:{$order\_id}
-	* order\_product:{$ID}
+	* order:$order\_id
+	* order\_product:$ID
 * **delivery.after-delivery-module**
 	* order:$order\_id
 	* module\_id:$DELIVERY\_MODULE
@@ -3133,7 +3133,7 @@ class MyModule extends BaseModule
 * **invoice.after-information**
 	* order:$order\_id
 * **invoice.delivery-address**
-	* module:{$DELIVERY\_MODULE}
+	* module:$DELIVERY\_MODULE
 	* order:$order\_id
 * **invoice.after-addresses**
 	* order:$order\_id
@@ -3141,8 +3141,8 @@ class MyModule extends BaseModule
 	* order\_product:$ID
 	* order:$order\_id
 * **invoice.order-product**
-	* order:{$order\_id}
-	* order\_product:{$ID}
+	* order:$order\_id
+	* order\_product:$ID
 * **invoice.after-products**
 	* order:$order\_id
 * **invoice.after-payment-module**
@@ -3167,7 +3167,7 @@ class MyModule extends BaseModule
 * **email-html.order-confirmation.before-address**
 	* order:$order\_id
 * **email-html.order-confirmation.delivery-address**
-	* module:{$DELIVERY\_MODULE}
+	* module:$DELIVERY\_MODULE
 	* order:$order\_id
 * **email-html.order-confirmation.after-address**
 	* order:$order\_id
@@ -3177,8 +3177,8 @@ class MyModule extends BaseModule
 	* order:$order\_id
 	* order\_product:$ID
 * **email-html.order-confirmation.order-product**
-	* order:{$order\_id}
-	* order\_product:{$ID}
+	* order:$order\_id
+	* order\_product:$ID
 * **email-html.order-confirmation.after-products**
 	* order:$order\_id
 * **email-html.order-confirmation.footer**
@@ -3193,15 +3193,15 @@ class MyModule extends BaseModule
 * **email-html.order-notification.before-address**
 	* order:$order\_id
 * **email-html.order-notification.delivery-address**
-	* module:{$DELIVERY\_MODULE}
+	* module:$DELIVERY\_MODULE
 	* order:$order\_id
 * **email-html.order-notification.after-address**
 	* order:$order\_id
 * **email-html.order-notification.before-products**
 	* order:$order\_id
 * **email-html.order-notification.order-product**
-	* order:{$order\_id}
-	* order\_product:{$ID}
+	* order:$order\_id
+	* order\_product:$ID
 * **email-html.order-notification.after-products**
 	* order:$order\_id
 
