@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkthelia=globalThis.webpackChunkthelia||[]).push([[2634],{192:(a,t,e)=>{e.r(t),e.d(t,{default:()=>s});e(6540);var h=e(6347),l=e(4848);function s(){return(0,l.jsx)(h.rd,{to:"/docs"})}}}]);
