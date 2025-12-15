@@ -35,3 +35,4 @@ If you are using GitHub pages for hosting, this command is a convenient way to b
 ## Automatic generation
 
 The hooks, events and commands doc can be generated with the open source script: [AutoDocThelia](https://github.com/mathisdlg/AutoDocThelia/).
+
