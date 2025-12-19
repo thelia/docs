@@ -1,8 +1,8 @@
 module.exports = {
   title: 'Thelia documentation',
   tagline: 'Your OpenSource E-commerce tool',
-  url: 'https://thelia.github.io/',
-  baseUrl: '/',
+  url: 'https://thelia.github.io',
+  baseUrl: '/docs/',
   onBrokenLinks: 'warn',
   favicon: 'img/favicon.png',
   organizationName: 'thelia', // Usually your GitHub org/user name.
@@ -35,8 +35,7 @@ module.exports = {
       },
       items: [
         {
-          to: 'docs/',
-          activeBasePath: 'docs',
+          to: '/',
           label: 'Docs',
           position: 'left',
         },
@@ -87,6 +86,7 @@ module.exports = {
       '@docusaurus/preset-classic',
       {
         docs: {
+          routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: 'https://github.com/thelia/docs/edit/main/',
         },
