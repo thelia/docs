@@ -4,8 +4,8 @@
   <ShortName>Thelia documentation</ShortName>
   <Description>Search Thelia documentation</Description>
   <InputEncoding>UTF-8</InputEncoding>
-  <Image width="16" height="16" type="image/x-icon">https://thelia.github.io/docs/img/favicon.png</Image>
-  <Url type="text/html" method="get" template="https://thelia.github.io/docs/search?q={searchTerms}"/>
-  <Url type="application/opensearchdescription+xml" rel="self" template="https://thelia.github.io/docs/opensearch.xml" />
-  <moz:SearchForm>https://thelia.github.io/docs/</moz:SearchForm>
+  <Image width="16" height="16" type="image/x-icon">https://thelia.github.io/img/favicon.png</Image>
+  <Url type="text/html" method="get" template="https://thelia.github.io/search?q={searchTerms}"/>
+  <Url type="application/opensearchdescription+xml" rel="self" template="https://thelia.github.io/opensearch.xml" />
+  <moz:SearchForm>https://thelia.github.io/</moz:SearchForm>
 </OpenSearchDescription>
