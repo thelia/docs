@@ -2,7 +2,7 @@ module.exports = {
   title: 'Thelia documentation',
   tagline: 'Your OpenSource E-commerce tool',
   url: 'https://thelia.github.io',
-  baseUrl: '/docs/',
+  baseUrl: '/',
   onBrokenLinks: 'warn',
   favicon: 'img/favicon.png',
   organizationName: 'thelia', // Usually your GitHub org/user name.
