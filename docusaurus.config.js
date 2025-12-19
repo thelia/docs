@@ -3,6 +3,8 @@ module.exports = {
   tagline: 'Your OpenSource E-commerce tool',
   url: 'https://thelia.github.io',
   baseUrl: '/',
+  deploymentBranch: 'gh-pages',
+  trailingSlash: false,
   onBrokenLinks: 'warn',
   favicon: 'img/favicon.png',
   organizationName: 'thelia', // Usually your GitHub org/user name.
@@ -86,7 +88,6 @@ module.exports = {
       '@docusaurus/preset-classic',
       {
         docs: {
-          routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: 'https://github.com/thelia/docs/edit/main/',
         },
