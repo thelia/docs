@@ -43,13 +43,6 @@ module.exports = {
         },
         {to: 'modules', label: 'Modules', position: 'left'},
         {
-          href: 'http://doc.thelia.net/',
-          className: 'header-link',
-          'aria-label': 'Legacy doc',
-          label: 'Legacy doc',
-          position: 'right',
-        },
-        {
           href: 'https://github.com/thelia/thelia',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
