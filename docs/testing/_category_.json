@@ -1,0 +1,11 @@
+{
+  "label": "Testing",
+  "position": 12,
+  "link": {
+    "type": "doc",
+    "id": "testing/index"
+  },
+  "customProps": {
+    "description": "Testing strategies for Thelia applications"
+  }
+}

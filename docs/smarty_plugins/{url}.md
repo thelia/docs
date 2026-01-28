@@ -20,7 +20,7 @@ Setting noamp=1 will escape all & as &amp; that may be present in the generated 
 
 
 ## file
-The value of the file parameter is the absolute path (from /web) of a real file, that will be served by your web server, and not processed by Thelia.
+The value of the file parameter is the absolute path (from `/public`) of a real file, that will be served by your web server, and not processed by Thelia.
 
-For example, if you put a guide.pdf file in the /web directory, the URL of this file is :    
+For example, if you put a guide.pdf file in the `/public` directory, the URL of this file is :
 `{url file="/guide.pdf"}` => `http://www.yourshop.com/guide.pdf`

@@ -1,9 +1,15 @@
 ---
-title: Smarty plugins
---- 
+title: Smarty Plugins
+sidebar_position: 3
+---
 
-To create plugin Smarty in Thelia, just create a new class that extend `TheliaSmarty\Template\AbstractSmartyPlugin`, then create function called `getPluginDescriptors`
-that lists and describes all the plugin you want to create (you can create as many plugins as you want in one class).     
+# Smarty Plugins
+
+:::info Thelia 3 - Back-Office Only
+In **Thelia 3**, Smarty plugins are used exclusively in the **back-office**. The front-office uses **Twig** with [Twig Extensions](/docs/front-office/twig-basics) instead.
+:::
+
+Smarty plugins extend the Smarty template engine with custom functions, modifiers, and blocks. To create a Smarty plugin in Thelia, create a class that extends `TheliaSmarty\Template\AbstractSmartyPlugin` and implement the `getPluginDescriptors()` method.     
 A smarty plugin is described like this :
 ```php
 new SmartyPluginDescriptor(

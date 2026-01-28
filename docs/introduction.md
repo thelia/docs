@@ -4,48 +4,174 @@ slug: /
 sidebar_position: 1
 ---
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/thelia/thelia/test.yml?branch=main&style=flat-square)
+# Thelia 3
+
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/thelia/thelia/test.yml?branch=twig&style=flat-square)
 ![Scrutinizer code quality (GitHub/Bitbucket)](https://img.shields.io/scrutinizer/quality/g/thelia/thelia?style=flat-square)
 ![GitHub](https://img.shields.io/github/license/thelia/thelia?style=flat-square)
 ![Last commit](https://img.shields.io/github/last-commit/thelia/thelia.svg?style=flat-square)
 ![GitHub Repo stars](https://img.shields.io/github/stars/thelia/thelia?style=flat-square)
-![GitHub forks](https://img.shields.io/github/forks/thelia/thelia?style=flat-square)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/thelia/thelia?label=latest%20release&style=flat-square)
 
-Thelia is an open source tool for creating e-business websites and managing online content. This software is published under LGPL.
+Thelia is a powerful open-source e-commerce platform built on modern PHP technologies. It provides a complete solution for creating online stores with advanced customization capabilities.
 
-:::caution
+## Key Features
 
-This is the documentaion for Thelia version >= 2.5.0.
+### Modern Technology Stack
 
-:::
+- **PHP 8.3+** with strict typing
+- **Symfony 6.4+** framework foundation
+- **API Platform 3+** for RESTful APIs
+- **Propel ORM** for database operations
 
-Compatibility
-------------
+### API-First Architecture
 
+Thelia 3 embraces an API-first approach with full API Platform integration:
 
-| Thelia version |          2.3          |          2.4          |          2.5          |
-|----------------|:---------------------:|:---------------------:|:---------------------:|
-| PHP            | 5.5 / 5.6 / 7.0 / 7.1 | 7.0 / 7.1 / 7.2 / 7.3 | 8.0.2       /     8.1 / 8.2 |
-| MySQL          |       5.5 / 5.6       |    5.5 / 5.6 / 5.7    |    5.6 / 5.7 / 8.0    |
-| Symfony        |          2.8          |          2.8          |      6.0  / 6.3       |
- | Maintained     |          No           |  Security fixes only  |          Yes          |
+- RESTful endpoints for all core entities (products, categories, customers, orders)
+- Separate `/admin/` and `/front/` API routes with different access levels
+- JSON-LD and Hydra support for semantic web standards
+- Built-in filtering, pagination, and sorting
 
+### Dual Templating System
 
-Requirements
-------------
+Thelia 3 uses different templating engines optimized for each use case:
 
-* PHP
-  * Required extensions :
-    * PDO_Mysql
-    * openssl
-    * intl
-    * gd
-    * curl
-    * dom
-  * safe_mode off
-  * memory_limit at least 128M, preferably 256M.
-  * post\_max\_size 20M
-  * upload\_max\_filesize 2M
-  * date.timezone must be defined
-* Web Server Apache 2 or Nginx
+| Area | Engine | Purpose |
+|------|--------|---------|
+| **Front-Office** | Twig + Symfony UX | Customer-facing pages with reactive components |
+| **Back-Office** | Smarty | Admin interface (legacy, stable) |
+
+### Symfony UX Integration
+
+The front-office leverages the full power of Symfony UX:
+
+- **LiveComponents** for reactive UI without writing JavaScript
+- **Stimulus** controllers for JavaScript interactivity
+- **Turbo** for SPA-like navigation without page reloads
+
+### Flexy Theme
+
+The default front-office theme **Flexy** is built as a Symfony bundle with:
+
+- 38+ pre-built LiveComponents
+- Responsive design
+- Easy customization through template inheritance
+
+## System Requirements
+
+### PHP 8.3+
+
+**Required extensions:**
+- PDO_MySQL
+- openssl
+- intl
+- gd
+- curl
+- dom
+
+**PHP configuration:**
+- `memory_limit`: 256M minimum
+- `post_max_size`: 20M
+- `upload_max_filesize`: 2M
+- `date.timezone`: must be defined
+
+### Database
+
+- **MySQL 8.0+** or **MariaDB 10.6+**
+
+### Web Server
+
+- Apache 2.4+ with mod_rewrite
+- Nginx 1.18+
+
+### Additional Tools
+
+- **Composer 2+** for dependency management
+- **Node.js 20+** for asset compilation (optional, for theme development)
+
+## Compatibility Matrix
+
+| Thelia Version | PHP | MySQL/MariaDB | Symfony |
+|----------------|-----|---------------|---------|
+| 3.x | 8.3+ | 8.0+ / 10.6+ | 6.4+ |
+| 2.5 | 8.0 - 8.2 | 5.6 - 8.0 | 6.0 - 6.3 |
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      Front-Office                           │
+│                  (Twig + Symfony UX)                        │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    │
+│  │    Twig     │    │    Live     │    │  Stimulus   │    │
+│  │  Templates  │    │ Components  │    │ Controllers │    │
+│  └─────────────┘    └─────────────┘    └─────────────┘    │
+│                            │                               │
+│                            ▼                               │
+│              ┌─────────────────────────┐                   │
+│              │   DataAccessService     │                   │
+│              │   (API calls in PHP)    │                   │
+│              └─────────────────────────┘                   │
+│                            │                               │
+├────────────────────────────┼───────────────────────────────┤
+│                            ▼                               │
+│              ┌─────────────────────────┐                   │
+│              │      API Platform       │                   │
+│              │  /admin/  &  /front/    │                   │
+│              └─────────────────────────┘                   │
+│                            │                               │
+├────────────────────────────┼───────────────────────────────┤
+│                            ▼                               │
+│              ┌─────────────────────────┐                   │
+│              │     Domain Layer        │                   │
+│              │  (Facades & Services)   │                   │
+│              └─────────────────────────┘                   │
+│                            │                               │
+│                            ▼                               │
+│              ┌─────────────────────────┐                   │
+│              │      Propel ORM         │                   │
+│              │   (Database Access)     │                   │
+│              └─────────────────────────┘                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/thelia/thelia.git
+cd thelia
+
+# Install dependencies
+composer install
+
+# Run the installer
+php Thelia thelia:install
+
+# Start development server
+php -S localhost:8000 -t public
+```
+
+For detailed installation instructions, see [Getting Started](/docs/getting_started).
+
+## Documentation Sections
+
+- **[Getting Started](/docs/getting_started)** - Installation and initial setup
+- **[Architecture](/docs/architecture)** - System design and patterns
+- **[API](/docs/api)** - API Platform integration and endpoints
+- **[Front-Office](/docs/front-office)** - Twig templates and Symfony UX
+- **[Back-Office](/docs/back-office)** - Admin interface and Smarty
+- **[Module Development](/docs/modules)** - Creating custom modules
+- **[Migration](/docs/migration)** - Upgrading from Thelia 2.5
+
+## Community & Support
+
+- **GitHub**: [github.com/thelia/thelia](https://github.com/thelia/thelia)
+- **Forum**: [forum.thelia.net](https://forum.thelia.net)
+- **Discord**: Join our community chat
+
+## License
+
+Thelia is open-source software licensed under the [LGPL v3](https://www.gnu.org/licenses/lgpl-3.0.en.html).

@@ -3,7 +3,11 @@ title: Template
 sidebar_position: 5
 ---
 
-The template engine used in Thelia is [Smarty](https://smarty-php.github.io/smarty/).
+:::info Thelia 3 - Dual Templating
+In **Thelia 3**, Smarty is used only for the **back-office**, PDF, and mail templates. The **front-office** uses **Twig** with the Flexy theme. See [Front-Office Development](/docs/front-office) for Twig documentation.
+:::
+
+The template engine used in Thelia back-office is [Smarty](https://smarty-php.github.io/smarty/).
 There is 4 types of templates :
 - frontOffice : for templates rendered from a controller that extend `BaseFrontController`
 - backOffice : for templates rendered from a controller that extend `BaseAdminController`

@@ -3,6 +3,12 @@ title: Forms
 sidebar_position: 10
 ---
 
+:::info Thelia 3 - Dual Usage
+Form **classes** (extending `BaseForm`) are still used in both front-office and back-office for validation and processing. However, form **rendering in templates** differs:
+- **Back-Office**: Use **Smarty** plugins (`{form}`, `{form_field}`) as shown below
+- **Front-Office**: Use **Twig** with Symfony forms in [LiveComponents](/docs/front-office/live-components), or access forms via controller logic
+:::
+
 ## Form definitions
 To create a new form create a new class that extend `BaseForm` then implement the method `buildForm` to describe your form.
 

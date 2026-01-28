@@ -1,0 +1,8 @@
+{
+  "label": "Front-Office",
+  "position": 5,
+  "link": {
+    "type": "doc",
+    "id": "front-office/index"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "label": "Migration Guide",
+  "position": 11,
+  "link": {
+    "type": "doc",
+    "id": "migration/index"
+  },
+  "customProps": {
+    "description": "Upgrade from Thelia 2 to Thelia 3"
+  }
+}

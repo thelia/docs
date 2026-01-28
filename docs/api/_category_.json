@@ -1,0 +1,8 @@
+{
+  "label": "API",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Thelia 3 API documentation: API Platform integration, resources, addons, authentication, and endpoint references."
+  }
+}

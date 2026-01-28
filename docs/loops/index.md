@@ -1,9 +1,15 @@
 ---
 title: Loops
+sidebar_position: 1
 ---
 
-Loops are the most convenient feature in Thelia for front developers.  
-Loops allow to get data from your shop back-end and display them in your front view. In Thelia loops are a Smarty plugin.
+# Loops
+
+:::info Thelia 3 - Back-Office Only
+In **Thelia 3**, Loops are used exclusively in the **back-office** (Smarty templates). For the **front-office**, use the [DataAccessService](/docs/front-office/data-access) to fetch data via API calls in Twig templates.
+:::
+
+Loops are Smarty plugins that query the database and iterate over results. They provide a convenient way to fetch and display data in Smarty templates.
 
 ### Classic loop
 

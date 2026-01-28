@@ -1,10 +1,16 @@
 ---
 title: Hooks
-sidebar_position: 8
+sidebar_position: 2
 toc_max_heading_level: 5
 ---
 
-The Hooks are an entry points in the templates at which modules can insert their own code, add new features and change the appearance of the site.   
+# Hooks
+
+:::info Thelia 3 - Back-Office Only
+In **Thelia 3**, Hooks are used exclusively in the **back-office** (Smarty templates). For the **front-office**, use [LiveComponents](/docs/front-office/live-components) to create interactive elements, or override Twig templates directly.
+:::
+
+Hooks are entry points in templates where modules can insert their own code, add new features, and change the appearance of the site.   
 
 
 ## How hooks work
