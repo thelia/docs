@@ -154,17 +154,17 @@ php Thelia thelia:install
 php -S localhost:8000 -t public
 ```
 
-For detailed installation instructions, see [Getting Started](/docs/getting_started).
+For detailed installation instructions, see [Getting Started](/docs/getting-started).
 
 ## Documentation Sections
 
-- **[Getting Started](/docs/getting_started)** - Installation and initial setup
+- **[Getting Started](/docs/getting-started)** - Installation and initial setup
 - **[Architecture](/docs/architecture)** - System design and patterns
 - **[API](/docs/api)** - API Platform integration and endpoints
 - **[Front-Office](/docs/front-office)** - Twig templates and Symfony UX
 - **[Back-Office](/docs/back-office)** - Admin interface and Smarty
 - **[Module Development](/docs/modules)** - Creating custom modules
-- **[Migration](/docs/migration)** - Upgrading from Thelia 2.5
+- **[Reference](/docs/reference)** - Events, forms, i18n, CLI commands
 
 ## Community & Support
 

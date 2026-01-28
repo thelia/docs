@@ -214,14 +214,6 @@ Error responses use the Hydra format regardless of the `Accept` header you send.
 | JSON | `application/json` | Default, plain JSON arrays |
 | JSON-LD | `application/ld+json` | With Hydra metadata (pagination info) |
 
-## Detailed Endpoint Documentation
-
-- [Products API](./products) - Complete products endpoint reference
-- [Categories API](./categories) - Category management
-- [Customers API](./customers) - Customer management
-- [Orders API](./orders) - Order management
-- [Cart API](./cart) - Shopping cart operations
-
 ## OpenAPI Documentation
 
 Thelia's API is fully documented with OpenAPI. Access the interactive documentation at:

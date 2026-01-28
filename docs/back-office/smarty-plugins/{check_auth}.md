@@ -16,7 +16,7 @@ A user can only have one of these two roles:
 This argument is the name of the view name (the login page is “login”). If the user is not granted and this argument is defined, it redirects to this view.
 
 ## resource
-The resource argument may be useful in the back office. There is the list of the available resources in Thelia 2:
+The resource argument may be useful in the back office. Available resources:
 - admin.address
 - admin.configuration.administrator
 - admin.configuration.advanced

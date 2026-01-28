@@ -24,7 +24,31 @@ interface PropelResourceInterface
 
 ## Creating a Basic Resource
 
-### 1. Define the Resource Class
+### 1. Define the Propel Schema
+
+First, create your Propel model in `Config/schema.xml`:
+
+```xml
+<table name="my_project_item" namespace="MyProject\Model">
+    <column name="id" primaryKey="true" required="true" type="INTEGER" autoIncrement="true"/>
+    <column name="code" type="VARCHAR" size="50" required="true"/>
+    <column name="price" type="DECIMAL" scale="2"/>
+    <column name="is_active" type="BOOLEAN" default="1"/>
+    <column name="created_at" type="TIMESTAMP"/>
+    <column name="updated_at" type="TIMESTAMP"/>
+
+    <behavior name="timestampable"/>
+</table>
+```
+
+Generate the Propel models:
+
+```bash
+php Thelia module:generate:model MyProject
+php Thelia module:generate:sql MyProject
+```
+
+### 2. Create the Resource Class
 
 ```php
 <?php
@@ -121,7 +145,7 @@ class ProductReview implements PropelResourceInterface
 }
 ```
 
-### 2. PropelResourceTrait
+### 3. PropelResourceTrait
 
 The `PropelResourceTrait` provides default implementations:
 
@@ -159,16 +183,21 @@ public string $ref;
 Add validation constraints:
 
 ```php
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\Range;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[NotBlank(groups: [self::GROUP_ADMIN_WRITE])]
-#[Length(min: 3, max: 255, groups: [self::GROUP_ADMIN_WRITE])]
+#[Assert\NotBlank(groups: [self::GROUP_ADMIN_WRITE])]
+#[Assert\Length(min: 3, max: 255, groups: [self::GROUP_ADMIN_WRITE])]
 public string $title;
 
-#[Range(min: 1, max: 5, groups: [self::GROUP_FRONT_WRITE])]
+#[Assert\Range(min: 1, max: 5, groups: [self::GROUP_FRONT_WRITE])]
 public int $rating;
+
+#[Assert\NotNull(groups: [self::GROUP_ADMIN_WRITE])]
+#[Assert\Positive(groups: [self::GROUP_ADMIN_WRITE])]
+public float $price;
+
+#[Assert\Email(groups: [self::GROUP_ADMIN_WRITE])]
+public ?string $email = null;
 ```
 
 ### Relations
@@ -320,6 +349,30 @@ Thelia uses custom state providers to bridge API Platform with Propel:
 | `PropelRemoveProcessor` | Handles Delete |
 
 These are configured automatically for resources implementing `PropelResourceInterface`.
+
+## Adding Filters
+
+Add API Platform filters for searching and filtering:
+
+```php
+use ApiPlatform\Metadata\ApiFilter;
+use Thelia\Api\Bridge\Propel\Filter\SearchFilter;
+use Thelia\Api\Bridge\Propel\Filter\BooleanFilter;
+
+#[ApiResource(/* ... */)]
+#[ApiFilter(SearchFilter::class, properties: ['code' => 'partial'])]
+#[ApiFilter(BooleanFilter::class, properties: ['isActive'])]
+class MyProjectItem implements PropelResourceInterface
+{
+    // ...
+}
+```
+
+Query examples:
+```
+GET /api/admin/my_project_items?code=test
+GET /api/admin/my_project_items?isActive=true
+```
 
 ## Best Practices
 

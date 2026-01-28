@@ -27,8 +27,6 @@ The `DataAccessExtension` provides these functions:
 |----------|-------------|
 | `resources(path, params)` | Fetch data from an API endpoint |
 | `attr(type, name)` | Get URL attributes (product id, category id, etc.) |
-| `loop()` | **Deprecated** - Use `resources()` instead |
-| `loopCount()` | **Deprecated** - Use `resources()` instead |
 
 ## The `resources()` Function
 
@@ -438,18 +436,6 @@ if ($product === null) {
 ### Cache Considerations
 
 DataAccessService calls go through API Platform's caching layer. The responses benefit from HTTP caching when properly configured.
-
-## Migration from Loops
-
-If migrating from Thelia 2 loops:
-
-| Thelia 2 Loop | Thelia 3 DataAccess |
-|---------------|---------------------|
-| `{loop type="product" ...}` | `resources('/api/front/products', {...})` |
-| `{loop type="category" ...}` | `resources('/api/front/categories', {...})` |
-| `{loop type="content" ...}` | `resources('/api/front/contents', {...})` |
-
-See [Migration Guide](/docs/migration) for detailed examples.
 
 ## Next Steps
 

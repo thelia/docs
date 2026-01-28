@@ -252,17 +252,6 @@ Extend back-office templates without modifying core files:
 {/if}
 ```
 
-## Migration Considerations
-
-When migrating front-office templates from Thelia 2 (Smarty) to Thelia 3 (Twig):
-
-1. **Loops** become `resources()` API calls
-2. **Hooks** become LiveComponents or Stimulus controllers
-3. **Smarty plugins** become Twig extensions or filters
-4. **Form handling** uses Symfony Forms with LiveComponents
-
-See the [Migration Guide](/docs/migration) for detailed instructions.
-
 ## Next Steps
 
 - [Front-Office Development](/docs/front-office) - Complete Twig guide

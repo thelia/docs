@@ -345,4 +345,4 @@ A resource can have multiple addons. Each addon's properties are merged into the
 
 - [Resources](./resources) - Creating standalone resources
 - [Serialization Groups](./serialization-groups) - Controlling field visibility
-- [Module API Resources](/docs/modules/api-resources) - Module-specific patterns
+- [Module Development](/docs/modules) - Creating modules with API resources

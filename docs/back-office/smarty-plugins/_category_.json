@@ -1,9 +1,9 @@
 {
   "label": "Smarty Plugins",
-  "position": 8,
+  "position": 3,
   "link": {
     "type": "doc",
-    "id": "smarty_plugins/index"
+    "id": "back-office/smarty-plugins/index"
   },
   "customProps": {
     "description": "Smarty plugins for back-office templates"

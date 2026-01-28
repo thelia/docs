@@ -23,5 +23,5 @@ thelia:install [options]
 
 Example to install Thelia in one line
 ```shell
-php Thelia thelia:install --db_host localhost --db_username thelia2 --db_password StRoNgPaSsWoRd --db_name thelia --db_port 3306
+php Thelia thelia:install --db_host localhost --db_username myuser --db_password StRoNgPaSsWoRd --db_name thelia --db_port 3306
 ```

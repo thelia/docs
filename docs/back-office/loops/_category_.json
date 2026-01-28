@@ -1,9 +1,9 @@
 {
   "label": "Loops Reference",
-  "position": 7,
+  "position": 2,
   "link": {
     "type": "doc",
-    "id": "loops/index"
+    "id": "back-office/loops/index"
   },
   "customProps": {
     "description": "Data fetching loops for back-office Smarty templates"

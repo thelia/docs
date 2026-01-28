@@ -5,7 +5,7 @@ sidebar_position: 1
 
 # Back-Office Development
 
-The back-office (admin panel) in Thelia 3 uses **Smarty templates** with **Loops** and **Hooks** - the same approach as Thelia 2. This section covers tools and techniques specific to back-office development.
+The back-office (admin panel) in Thelia uses **Smarty templates** with **Loops** and **Hooks**. This section covers tools and techniques specific to back-office development.
 
 ## Back-Office vs Front-Office
 
@@ -45,7 +45,7 @@ Loops are Smarty plugins that query the database and iterate over results. They 
 {/loop}
 ```
 
-See the [Loops Reference](/docs/loops) for all available loops.
+See the [Loops Reference](/docs/back-office/loops) for all available loops.
 
 ### Hooks
 
@@ -254,13 +254,13 @@ Render in template:
 
 ## Reference Documentation
 
-- [Loops Reference](/docs/loops) - All available loops
-- [Hooks Reference](/docs/back-office/hooks) - All back-office hooks
-- [Smarty Plugins](/docs/back-office/smarty-plugins) - Built-in Smarty functions
-- [Forms](/docs/forms) - Form handling
+- [Loops Reference](./loops/) - All available loops
+- [Hooks Reference](./hooks) - All back-office hooks
+- [Smarty Plugins](./smarty-plugins/) - Built-in Smarty functions
+- [Forms](/docs/reference/forms) - Form handling
 
 ## Next Steps
 
-- [Loops](/docs/loops) - Learn about data fetching with Loops
-- [Hooks](/docs/back-office/hooks) - Extend the admin interface
+- [Loops](./loops/) - Learn about data fetching with Loops
+- [Hooks](./hooks) - Extend the admin interface
 - [Module Development](/docs/modules) - Create back-office modules

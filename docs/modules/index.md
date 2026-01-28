@@ -180,11 +180,18 @@ After creating your module:
 
 ## Next Steps
 
+### Module Development
 - [Module Structure](./structure) - Detailed file and directory explanations
 - [Module Lifecycle](./lifecycle) - Installation, activation, and updates
-- [API Resources](./api-resources) - Creating API endpoints
-- [API Addons](./api-addons) - Enriching existing resources
-- [LiveComponents](./live-components) - Interactive front-office components
 - [Controllers](./controllers) - Handling HTTP requests
 - [Delivery Modules](./delivery-modules) - Shipping integrations
 - [Payment Modules](./payment-modules) - Payment gateway integrations
+
+### API Development
+- [API Resources](/docs/api/resources) - Creating API endpoints
+- [API Addons](/docs/api/addons) - Enriching existing resources
+- [Translatable Resources](/docs/api/translatable-resources) - i18n support
+
+### Front-Office Development
+- [LiveComponents](/docs/front-office/live-components) - Interactive front-office components
+- [Twig Basics](/docs/front-office/twig-basics) - Template development

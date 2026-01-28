@@ -1,0 +1,11 @@
+{
+  "label": "Reference",
+  "position": 8,
+  "link": {
+    "type": "doc",
+    "id": "reference/index"
+  },
+  "customProps": {
+    "description": "Technical reference documentation"
+  }
+}

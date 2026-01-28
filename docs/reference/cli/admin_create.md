@@ -21,5 +21,5 @@ Create a new administrator user
 ## Example
 Create an admin in one line
 ```shell
-php Thelia admin:create --login_name thelia2 --password StRoNgPaSsWoRd --last_name thelia2 --first_name thelia2 --email thelia2@example.com
+php Thelia admin:create --login_name admin --password StRoNgPaSsWoRd --last_name Admin --first_name Shop --email admin@example.com
 ```
