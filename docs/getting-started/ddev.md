@@ -27,6 +27,9 @@ git clone https://github.com/thelia/thelia.git
 cd thelia
 git checkout twig
 
+# Config DDEV
+ddev config --project-type=symfony --php-version=8.3
+
 # Start DDEV
 ddev start
 
