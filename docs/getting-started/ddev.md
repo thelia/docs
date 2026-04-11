@@ -33,7 +33,7 @@ ddev exec php bin/install
 ddev launch
 ```
 
-Your site is now accessible at **https://thelia.ddev.site**
+Your site is now accessible at **https://thelia-3.ddev.site**
 
 :::tip
 `bin/install` reads database credentials from DDEV's environment automatically (`DATABASE_HOST=db`, `DATABASE_NAME=db`, etc.). No options needed for the database.
@@ -50,31 +50,7 @@ ddev exec php bin/install \
     --admin_email=admin@example.com
 ```
 
-### Available Options
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `--frontoffice_theme` | `flexy` | Front-office template |
-| `--backoffice_theme` | `default` | Back-office template |
-| `--pdf_theme` | `default` | PDF template |
-| `--email_theme` | `default` | Email template |
-| `--with-demo` | — | Import demo catalog |
-| `--with-admin` | — | Create an admin user |
-| `--admin_login` | `thelia` | Admin username |
-| `--admin_password` | `thelia` | Admin password |
-| `--admin_first_name` | `Admin` | Admin first name |
-| `--admin_last_name` | `Thelia` | Admin last name |
-| `--admin_email` | `admin@thelia.net` | Admin email |
-
-Database credentials are passed via environment variables (set automatically by DDEV):
-
-| Variable | DDEV Value |
-|----------|-----------|
-| `DATABASE_HOST` | `db` |
-| `DATABASE_PORT` | `3306` |
-| `DATABASE_NAME` | `db` |
-| `DATABASE_USER` | `db` |
-| `DATABASE_PASSWORD` | `db` |
+See [Install Reference](./install-reference) for all available options and environment variables.
 
 ## DDEV Commands Reference
 
@@ -128,9 +104,9 @@ ddev logs -s db             # Database logs
 
 | Service | URL |
 |---------|-----|
-| Front-office | https://thelia.ddev.site |
-| Back-office | https://thelia.ddev.site/admin |
-| MailHog | https://thelia.ddev.site:8026 |
+| Front-office | https://thelia-3.ddev.site |
+| Back-office | https://thelia-3.ddev.site/admin |
+| Mailpit | https://thelia-3.ddev.site:8026 |
 
 ## Theme Development
 
