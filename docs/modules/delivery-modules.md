@@ -33,7 +33,7 @@ final class MyCarrier extends AbstractDeliveryModule
     /**
      * Check if this delivery method is available for the given country.
      */
-    public function isValidDelivery(Country $country, State $state = null): bool
+    public function isValidDelivery(Country $country): bool
     {
         // Check if delivery is available for this country
         $allowedCountries = $this->getAllowedCountries();
@@ -58,9 +58,9 @@ final class MyCarrier extends AbstractDeliveryModule
      *
      * @throws DeliveryException If price cannot be calculated
      */
-    public function getPostage(Country $country, State $state = null): float
+    public function getPostage(Country $country): OrderPostage|float
     {
-        if (!$this->isValidDelivery($country, $state)) {
+        if (!$this->isValidDelivery($country)) {
             throw new DeliveryException(
                 $this->trans('This delivery method is not available for your location.')
             );
@@ -128,7 +128,7 @@ final class MyCarrier extends AbstractDeliveryModule
 This method determines if the delivery option appears in checkout:
 
 ```php
-public function isValidDelivery(Country $country, State $state = null): bool
+public function isValidDelivery(Country $country): bool
 {
     // Check country
     if (!$this->isCountryAllowed($country)) {
@@ -167,9 +167,9 @@ public function isValidDelivery(Country $country, State $state = null): bool
 Calculate the delivery price:
 
 ```php
-public function getPostage(Country $country, State $state = null): float
+public function getPostage(Country $country): OrderPostage|float
 {
-    if (!$this->isValidDelivery($country, $state)) {
+    if (!$this->isValidDelivery($country)) {
         throw new DeliveryException(
             $this->trans('Delivery not available')
         );
@@ -182,7 +182,7 @@ public function getPostage(Country $country, State $state = null): float
         'flat' => $this->getFlatRate($country),
         'weight' => $this->getWeightBasedPrice($cart, $country),
         'price' => $this->getPriceBasedRate($cart, $country),
-        'zones' => $this->getZoneBasedPrice($cart, $country, $state),
+        'zones' => $this->getZoneBasedPrice($cart, $country),
         default => throw new DeliveryException('Invalid pricing strategy'),
     };
 }
@@ -250,7 +250,7 @@ private function getWeightBasedPrice($cart, Country $country): float
 Handle free shipping thresholds:
 
 ```php
-public function getPostage(Country $country, State $state = null): float
+public function getPostage(Country $country): OrderPostage|float
 {
     $cart = $this->getCart();
     $cartTotal = $cart->getTaxedAmount();
@@ -295,7 +295,7 @@ namespace MyCarrier\Controller\Front;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Thelia\Controller\Front\BaseFrontController;
 
 final class PickupController extends BaseFrontController
@@ -396,7 +396,7 @@ final readonly class CarrierApiService
 
 Use in module:
 ```php
-public function getPostage(Country $country, State $state = null): float
+public function getPostage(Country $country): OrderPostage|float
 {
     $cart = $this->getCart();
 

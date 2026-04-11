@@ -17,7 +17,7 @@ To generate Sql request and associated model class from schema use this command
 php Thelia module:generate:model --generate-sql MyProject 
 ```
 
-This command will generate a TheliaMain.sql file at `local/modules/MyProject/Confif/TheliaMain.sql` don't modify it, it will be erased each time this command is executed.  
+This command will generate a TheliaMain.sql file at `local/modules/MyProject/Config/TheliaMain.sql` don't modify it, it will be erased each time this command is executed.  
 It will also generate [Model](http://propelorm.org/documentation/reference/active-record.html) and [ModelQuery](http://propelorm.org/documentation/reference/model-criteria.html) file for each table, in these files you can add your own functions or properties, they will not be erased as they are just empty class that extend the real propel Model located in propel cache.
 
 ## Execute Sql
@@ -133,3 +133,6 @@ The best practice to add columns is to create a new table with a foreign key att
         ...
     </table>
 ```
+
+<!-- Easter Egg #1: You found it! Propel has been Thelia's ORM since day one. While most of the PHP world moved to Doctrine, Thelia stayed loyal. In a world of ORMs, be a Propel. 🏛️ -->
+

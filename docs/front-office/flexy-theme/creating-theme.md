@@ -307,7 +307,7 @@ templates/frontOffice/my-theme/
             <div class="product-info">
                 <h1>{{ product.i18ns.title }}</h1>
 
-                <p class="price">{{ product.defaultPse.price|format_money }}</p>
+                <p class="price">{{ product.defaultPse.price|format_currency('EUR') }}</p>
 
                 {# Use Flexy component for add to cart or create your own #}
                 {{ component('Flexy:Pages:Product', {product: product}) }}
@@ -377,14 +377,14 @@ templates/frontOffice/my-theme/
             <div class="product-card-price">
                 {% if product.promo and product.defaultPse.promoPrice %}
                     <span class="price-original">
-                        {{ product.defaultPse.price|format_money }}
+                        {{ product.defaultPse.price|format_currency('EUR') }}
                     </span>
                     <span class="price-sale">
-                        {{ product.defaultPse.promoPrice|format_money }}
+                        {{ product.defaultPse.promoPrice|format_currency('EUR') }}
                     </span>
                 {% else %}
                     <span class="price">
-                        {{ product.defaultPse.price|format_money }}
+                        {{ product.defaultPse.price|format_currency('EUR') }}
                     </span>
                 {% endif %}
             </div>
@@ -517,11 +517,8 @@ export const app = startStimulusApp(
     )
 );
 
-// Turbo
-import * as Turbo from '@hotwired/turbo';
-
 // Your custom JS
-document.addEventListener('turbo:load', () => {
+document.addEventListener('DOMContentLoaded', () => {
     console.log('Page loaded');
 });
 ```

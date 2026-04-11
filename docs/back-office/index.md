@@ -24,16 +24,20 @@ The back-office uses Smarty as its template engine, located in:
 
 ```
 templates/backOffice/default/
-├── admin-home.html
-├── categories.html
-├── products.html
-├── orders.html
+├── home.html
+├── category-edit.html
+├── product-edit.html
+├── order-edit.html
 └── ...
 ```
 
 ### Loops
 
-Loops are Smarty plugins that query the database and iterate over results. They remain the primary way to fetch and display data in the back-office.
+:::caution Deprecation Notice
+`BaseLoop` is deprecated in Thelia 3. New code should prefer the API resources. Loops remain available for backward compatibility with existing back-office templates.
+:::
+
+Loops are Smarty plugins that query the database and iterate over results. They are still used in the current back-office templates.
 
 ```smarty
 {loop type="product" name="products" category="3" visible="1"}
@@ -81,11 +85,13 @@ See [Smarty Plugins](/docs/back-office/smarty-plugins) for the complete referenc
 Modules can add their own admin pages:
 
 ```php
-<?php
-// Config/routing.xml
-<route id="mymodule.admin.config" path="/admin/module/MyModule">
-    <default key="_controller">MyModule\Controller\AdminController::configAction</default>
-</route>
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/admin/module/MyModule', name: 'mymodule.admin.config')]
+public function configAction(): Response
+{
+    return $this->render('module-config');
+}
 ```
 
 ### Adding to Admin Menu
@@ -141,14 +147,10 @@ public function onProductEditJs(HookRenderEvent $event): void
 
 ```
 templates/backOffice/default/
-├── admin-home.html           # Dashboard
-├── categories.html           # Category management
+├── home.html                 # Dashboard
 ├── category-edit.html        # Category editor
-├── products.html             # Product list
 ├── product-edit.html         # Product editor
-├── orders.html               # Order list
 ├── order-edit.html           # Order details
-├── customers.html            # Customer list
 ├── customer-edit.html        # Customer details
 ├── modules.html              # Module management
 ├── configuration.html        # Configuration pages
@@ -156,9 +158,8 @@ templates/backOffice/default/
 │   ├── css/
 │   └── js/
 ├── includes/
-│   ├── header.html
-│   ├── footer.html
-│   └── sidebar.html
+│   ├── main-menu.html
+│   └── notifications.html
 └── forms/
     └── standard/
 ```

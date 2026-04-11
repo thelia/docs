@@ -58,8 +58,8 @@ local/modules/MyModule/
 ```
 vendor/thelia/modules/
 ├── CustomerFamily/
-├── Carousel/
 ├── HookAdminHome/
+├── ChoiceFilter/
 └── ...
 ```
 
@@ -125,20 +125,17 @@ The Flexy theme is implemented as a Symfony bundle, not a Thelia module:
 ```
 vendor/thelia/flexy/
 ├── src/
-│   ├── Flexy.php                    # Bundle class
+│   ├── FlexyBundle.php              # Bundle class
+│   ├── Controller/
+│   ├── DTO/
+│   ├── EventListener/
+│   ├── Form/
+│   ├── Service/
 │   ├── UiComponents/                # LiveComponents
-│   │   ├── Pages/
-│   │   │   ├── Product/
-│   │   │   ├── Category/
-│   │   │   └── Checkout/
-│   │   ├── CartWidget/
-│   │   └── Navigation/
 │   └── Twig/
-│       └── Extension/
 ├── assets/
 │   └── controllers/                 # Stimulus controllers
-├── templates/
-│   └── components/                  # Component templates
+├── components/                      # Twig component templates
 └── composer.json
 ```
 
@@ -159,7 +156,7 @@ return [
     Symfony\Bundle\FrameworkBundle\FrameworkBundle::class => ['all' => true],
 
     // Thelia bundles
-    Thelia\Flexy\Flexy::class => ['all' => true],
+    FlexyBundle\FlexyBundle::class => ['all' => true],
 ];
 ```
 

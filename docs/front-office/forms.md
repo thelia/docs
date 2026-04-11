@@ -16,7 +16,6 @@ For complete Symfony Forms documentation, see [symfony.com/doc/current/forms.htm
 | Approach | Best For |
 |----------|----------|
 | LiveComponent + Form | Real-time validation, multi-step forms |
-| Turbo Frame | Simple forms, inline editing |
 | Standard Symfony | Full-page form submissions |
 
 ## LiveComponent Forms
@@ -115,8 +114,8 @@ protected function instantiateForm(): FormInterface
 |-----------|---------|
 | `FrontForm::CUSTOMER_LOGIN` | Customer login |
 | `FrontForm::CUSTOMER_CREATE` | Customer registration |
-| `FrontForm::CUSTOMER_UPDATE` | Profile update |
-| `FrontForm::CUSTOMER_PASSWORD` | Password change |
+| `FrontForm::CUSTOMER_PROFILE_UPDATE` | Profile update |
+| `FrontForm::CUSTOMER_PASSWORD_UPDATE` | Password change |
 | `FrontForm::ADDRESS_CREATE` | Create address |
 | `FrontForm::ADDRESS_UPDATE` | Update address |
 | `FrontForm::CART_ADD` | Add to cart |
@@ -210,4 +209,4 @@ public function save(): void
 
 - [LiveComponents](./live-components) - Component details
 - [Flexy Theme](./flexy-theme/) - Form examples
-- [Turbo](./turbo) - Form submissions with Turbo
+- [Stimulus](./stimulus) - JavaScript controllers

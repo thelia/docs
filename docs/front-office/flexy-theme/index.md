@@ -11,7 +11,7 @@ sidebar_position: 1
 
 Flexy provides:
 - **Modern UI** with Tailwind CSS
-- **40+ LiveComponents** for reactive interfaces
+- **47 components** (23 LiveComponents + 24 TwigComponents)
 - **Responsive design** out of the box
 - **Complete e-commerce flow** (catalog, cart, checkout, account)
 - **SEO optimizations** built-in

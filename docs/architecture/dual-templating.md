@@ -14,7 +14,7 @@ Thelia 3 uses two templating engines: **Twig** for the front-office and **Smarty
 | **Engine** | Twig 3.x | Smarty 4.x |
 | **Data Access** | DataAccessService | Loops (Propel) |
 | **Components** | Symfony LiveComponents | Template includes |
-| **JavaScript** | Stimulus + Turbo | jQuery |
+| **JavaScript** | Stimulus | jQuery |
 | **Theme** | Flexy (Symfony Bundle) | Default (Thelia templates) |
 
 ## Front-Office: Twig + Symfony UX
@@ -26,7 +26,7 @@ The front-office provides a modern, reactive user experience using Twig template
 ```
 templates/frontOffice/flexy/
 ├── base.html.twig           # Base layout
-├── home.html.twig           # Homepage
+├── index.html.twig          # Homepage
 ├── product.html.twig        # Product page
 ├── category.html.twig       # Category page
 ├── checkout.html.twig       # Checkout process
@@ -100,27 +100,6 @@ For custom JavaScript behavior:
         >
     {% endfor %}
 </div>
-```
-
-### Turbo Navigation
-
-SPA-like navigation with Turbo Drive:
-
-```twig
-{# Automatic: all links use Turbo by default #}
-<a href="{{ path('category', { id: category.id }) }}">
-    {{ category.title }}
-</a>
-
-{# Disable Turbo for specific links #}
-<a href="/external-site" data-turbo="false">External</a>
-
-{# Turbo Frame for partial updates #}
-<turbo-frame id="product-list">
-    {% for product in products %}
-        {{ include('partials/product-card.html.twig') }}
-    {% endfor %}
-</turbo-frame>
 ```
 
 ## Back-Office: Smarty

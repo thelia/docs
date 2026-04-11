@@ -99,10 +99,6 @@ local/modules/MyProject/
 
 See [Module Structure](./structure) for detailed explanations of each component.
 
-## Quick Start Example
-
-Here's a minimal module that adds an API endpoint:
-
 ## PHP Best Practices
 
 :::important Strict Types
@@ -125,11 +121,20 @@ declare(strict_types=1);
 
 namespace MyProject;
 
+use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
 use Thelia\Module\BaseModule;
 
 final class MyProject extends BaseModule
 {
     public const DOMAIN_NAME = 'myproject';
+
+    public static function configureServices(ServicesConfigurator $servicesConfigurator): void
+    {
+        $servicesConfigurator->load(self::getModuleCode().'\\', __DIR__)
+            ->exclude([__DIR__.'/I18n/*'])
+            ->autowire()
+            ->autoconfigure();
+    }
 }
 ```
 

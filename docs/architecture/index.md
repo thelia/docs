@@ -28,7 +28,7 @@ thelia/
 │       ├── Api/                    # API Platform integration
 │       │   ├── Resource/           # API resources
 │       │   ├── Bridge/Propel/      # Propel state providers
-│       │   └── Service/            # DataAccessService
+│       │   └── Service/DataAccess/  # DataAccessService
 │       ├── Domain/                 # Business logic facades
 │       │   ├── Cart/
 │       │   ├── Customer/
@@ -99,7 +99,7 @@ Thelia 3 uses two templating engines optimized for different purposes:
 | Modern, reactive UI | Stable, battle-tested |
 | LiveComponents | Template loops |
 | DataAccessService | Direct Propel queries |
-| Stimulus/Turbo | jQuery |
+| Stimulus | jQuery |
 
 See [Dual Templating](./dual-templating) for details.
 

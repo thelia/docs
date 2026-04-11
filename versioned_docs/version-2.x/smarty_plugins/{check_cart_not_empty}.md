@@ -1,0 +1,1 @@
+This function checks if the customer’s cart is empty, and redirects to the route “cart.view” if it is.

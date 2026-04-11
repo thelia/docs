@@ -1,14 +1,14 @@
 module.exports = {
-  title: 'Thelia documentation',
-  tagline: 'Your OpenSource E-commerce tool',
+  title: 'Thelia Documentation',
+  tagline: 'Open-source e-commerce platform',
   url: 'https://thelia.github.io',
   baseUrl: '/',
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
   onBrokenLinks: 'warn',
   favicon: 'img/favicon.png',
-  organizationName: 'thelia', // Usually your GitHub org/user name.
-  projectName: 'docs', // Usually your repo name.
+  organizationName: 'thelia',
+  projectName: 'docs',
   markdown: {
     hooks: {
       onBrokenMarkdownLinks: 'warn',
@@ -43,6 +43,11 @@ module.exports = {
         },
         {to: 'modules', label: 'Modules', position: 'left'},
         {
+          type: 'docsVersionDropdown',
+          position: 'right',
+          dropdownActiveClassDisabled: true,
+        },
+        {
           href: 'https://github.com/thelia/thelia',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
@@ -73,7 +78,7 @@ module.exports = {
       ],
     },
     prism: {
-      additionalLanguages: ['bash', 'php', 'smarty', 'sql'],
+      additionalLanguages: ['bash', 'php', 'json', 'sql', 'yaml', 'ini', 'nginx', 'docker'],
     }
   },
   presets: [
@@ -83,6 +88,19 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: 'https://github.com/thelia/docs/edit/main/',
+          lastVersion: 'current',
+          versions: {
+            current: {
+              label: 'Thelia 3',
+              path: '',
+              banner: 'none',
+            },
+            '2.x': {
+              label: 'Thelia 2',
+              path: '2.x',
+              banner: 'unmaintained',
+            },
+          },
         },
         blog: false,
         theme: {

@@ -1,11 +1,11 @@
 {
   "label": "Reference",
-  "position": 8,
+  "position": 9,
   "link": {
     "type": "doc",
     "id": "reference/index"
   },
   "customProps": {
-    "description": "Technical reference documentation"
+    "description": "Events, forms, i18n, CLI commands"
   }
 }

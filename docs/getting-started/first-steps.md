@@ -148,7 +148,7 @@ The default theme **Flexy** uses:
 - **Twig** templates
 - **LiveComponents** for reactivity
 - **Stimulus** for JavaScript
-- **Turbo** for navigation
+- **Stimulus** for JavaScript behavior
 
 ### Override a Template
 
@@ -256,7 +256,7 @@ php Thelia admin:create
 ### Import Demo Data
 
 ```bash
-php Thelia thelia:install-demo
+php Thelia thelia:demo:import
 ```
 
 ## Understanding the Front-Office Flow

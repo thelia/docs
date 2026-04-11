@@ -147,9 +147,34 @@ Module metadata for the back-office and dependency management:
 </module>
 ```
 
+### Service Registration (configureServices)
+
+The recommended way to register services is **autowiring** via the `configureServices()` static method in your module's main class. This is what all modern Thelia modules use:
+
+```php
+// MyProject.php
+public static function configureServices(ServicesConfigurator $servicesConfigurator): void
+{
+    $servicesConfigurator->load(self::getModuleCode().'\\', __DIR__)
+        ->exclude([__DIR__.'/I18n/*'])
+        ->autowire()
+        ->autoconfigure();
+}
+```
+
+This single method handles:
+- **Controllers** — automatically registered as services
+- **Event subscribers** — `EventSubscriberInterface` implementors are auto-tagged
+- **Services** — all classes under the module directory are available for injection
+- **Commands** — `#[AsCommand]` classes are auto-discovered
+
+:::tip
+With `configureServices()`, you do **not** need to declare `<services>`, `<commands>`, or `<event_listeners>` in `config.xml`. Symfony's autoconfigure handles it.
+:::
+
 ### Config/config.xml
 
-Service container configuration. With autowiring, this file is often minimal:
+With autowiring enabled, `config.xml` is only needed for **Thelia-specific constructs** that Symfony cannot auto-discover:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -157,7 +182,7 @@ Service container configuration. With autowiring, this file is often minimal:
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-config.xsd">
 
-    <!-- Hooks (back-office only) -->
+    <!-- Hooks — required, not handled by autoconfigure -->
     <hooks>
         <hook id="myproject.hook.back" class="MyProject\Hook\BackHook">
             <tag name="hook.event_listener"
@@ -167,68 +192,56 @@ Service container configuration. With autowiring, this file is often minimal:
         </hook>
     </hooks>
 
-    <!-- Loops (back-office only) -->
+    <!-- Loops — required, not handled by autoconfigure -->
     <loops>
         <loop name="my_loop" class="MyProject\Loop\MyLoop"/>
     </loops>
 
-    <!-- Forms -->
+    <!-- Forms — required, not handled by autoconfigure -->
     <forms>
         <form name="myproject.configuration" class="MyProject\Form\ConfigurationForm"/>
     </forms>
-
-    <!-- Console commands -->
-    <commands>
-        <command class="MyProject\Command\MyCommand"/>
-    </commands>
-
-    <!-- Services (if not using autowiring) -->
-    <services>
-        <service id="myproject.my_service" class="MyProject\Service\MyService">
-            <argument type="service" id="thelia.securityContext"/>
-        </service>
-    </services>
-
-    <!-- Event listeners -->
-    <event_listeners>
-        <event_listener class="MyProject\EventListeners\OrderEventListener">
-            <tag name="kernel.event_subscriber"/>
-        </event_listener>
-    </event_listeners>
 </config>
 ```
 
+| What | Where to declare |
+|------|-----------------|
+| Services, controllers, commands, event subscribers | `configureServices()` (autowiring) |
+| Hooks | `config.xml` `<hooks>` |
+| Loops | `config.xml` `<loops>` |
+| Forms | `config.xml` `<forms>` |
+
 ## Optional Configuration Files
 
-### Config/routing.xml
+### Routing
 
-Define routes for your controllers:
+The recommended approach is **PHP attributes** directly on controller methods. With `configureServices()`, controllers are automatically registered as services and their routes are discovered:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<routes xmlns="http://symfony.com/schema/routing"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://symfony.com/schema/routing
-        http://symfony.com/schema/routing/routing-1.0.xsd">
+```php
+use Symfony\Component\Routing\Attribute\Route;
 
-    <!-- Admin routes -->
-    <route id="myproject.admin.config" path="/admin/module/MyProject">
-        <default key="_controller">MyProject\Controller\Admin\ConfigController::indexAction</default>
-    </route>
+#[Route('/admin/module/MyProject', name: 'myproject.admin.config')]
+public function indexAction(): Response
+{
+    return $this->render('module-config');
+}
 
-    <!-- Front routes -->
-    <route id="myproject.front.page" path="/my-feature/{id}">
-        <default key="_controller">MyProject\Controller\Front\PageController::showAction</default>
-        <requirement key="id">\d+</requirement>
-    </route>
-</routes>
+#[Route('/my-feature/{id}', name: 'myproject.front.show', requirements: ['id' => '\d+'])]
+public function showAction(int $id): Response
+{
+    return $this->render('my-page', ['item_id' => $id]);
+}
 ```
+
+:::note Legacy: routing.xml
+A `Config/routing.xml` file is still supported but no longer recommended. All modern Thelia modules use `#[Route]` attributes instead.
+:::
 
 :::tip Attribute Routing
 You can also define routes directly in controllers using PHP attributes:
 
 ```php
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/my-feature/{id}', name: 'myproject.front.page')]
 public function showAction(int $id): Response

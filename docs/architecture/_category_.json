@@ -2,7 +2,10 @@
   "label": "Architecture",
   "position": 3,
   "link": {
-    "type": "generated-index",
-    "description": "Learn about Thelia 3's architecture, including the dual templating system, domain facades, and the difference between modules and bundles."
+    "type": "doc",
+    "id": "architecture/index"
+  },
+  "customProps": {
+    "description": "Understand how Thelia works under the hood"
   }
 }

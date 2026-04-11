@@ -18,7 +18,9 @@ interface PropelResourceInterface
     public function getPropelModel(): ?ActiveRecordInterface;
     public function getResourceAddons(): array;
     public function getResourceAddon(string $addonName): ?ResourceAddonInterface;
+    public function setResourceAddon(string $addonName, ?ResourceAddonInterface $addon): self;
     public static function getPropelRelatedTableMap(): ?TableMap;
+    public function __get(string $property);
 }
 ```
 
@@ -329,13 +331,14 @@ public function getPublicUrl(): string
 
 ## Auto-Discovery
 
-Resources are auto-discovered when placed in:
+Resources are auto-discovered from:
 
 - `core/lib/Thelia/Api/Resource/` (core resources)
-- `local/modules/*/Api/Resource/` (module resources)
-- `vendor/thelia/modules/*/Api/Resource/` (vendor module resources)
+- `Api/Resource/` inside any **activated** module's directory
 
-No additional configuration is required.
+Discovery is driven by the database: Thelia queries activated modules via `ModuleQuery::getActivated()`, resolves each module's base directory (whether in `local/modules/` or `vendor/`), and registers any `Api/Resource/` subdirectory found. Only activated modules are scanned — placing a resource file in a deactivated module has no effect.
+
+No additional configuration is required beyond activating the module.
 
 ## State Providers
 

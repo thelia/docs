@@ -3,25 +3,26 @@ title: thelia:install
 ---
 
 ## Description
-Install thelia using cli tools.
+Install Thelia using the Symfony console command.
+
+:::tip Preferred Method
+For fresh installations, use `php bin/install` instead — it works without a booted kernel. See [Getting Started](/docs/getting-started).
+:::
 
 ## Usage
 ```shell 
-thelia:install [options]
+php Thelia thelia:install [options]
 ```
 
 ## Options
--   `--db_host[=DB_HOST]`          host for your database [default: "localhost"]
--   `--db_username[=DB_USERNAME]`  username for your database
--   `--db_password[=DB_PASSWORD]`  password for your database
--   `--db_name[=DB_NAME]`          database name
--   `--db_port[=DB_PORT]`          database port [default: "3306"]
-
-
+-   `--database_host[=DATABASE_HOST]`          Database host [default: "localhost"]
+-   `--database_username[=DATABASE_USERNAME]`  Database username
+-   `--database_password[=DATABASE_PASSWORD]`  Database password
+-   `--database_name[=DATABASE_NAME]`          Database name
+-   `--database_port[=DATABASE_PORT]`          Database port [default: "3306"]
 
 ## Example
 
-Example to install Thelia in one line
 ```shell
-php Thelia thelia:install --db_host localhost --db_username myuser --db_password StRoNgPaSsWoRd --db_name thelia --db_port 3306
+php Thelia thelia:install --database_host localhost --database_username myuser --database_password secret --database_name thelia
 ```
