@@ -1,0 +1,1 @@
+Check if the delivery module and address are valid, redirects to the route “order.delivery” if not.
