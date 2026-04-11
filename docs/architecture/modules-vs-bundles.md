@@ -58,8 +58,8 @@ local/modules/MyModule/
 ```
 vendor/thelia/modules/
 ├── CustomerFamily/
-├── Carousel/
 ├── HookAdminHome/
+├── ChoiceFilter/
 └── ...
 ```
 
@@ -135,8 +135,7 @@ vendor/thelia/flexy/
 │   └── Twig/
 ├── assets/
 │   └── controllers/                 # Stimulus controllers
-├── templates/
-│   └── components/                  # Component templates
+├── components/                      # Twig component templates
 └── composer.json
 ```
 

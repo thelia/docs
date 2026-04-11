@@ -148,7 +148,7 @@ The default theme **Flexy** uses:
 - **Twig** templates
 - **LiveComponents** for reactivity
 - **Stimulus** for JavaScript
-- **Turbo** for navigation
+- **Stimulus** for JavaScript behavior
 
 ### Override a Template
 

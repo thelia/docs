@@ -136,9 +136,6 @@ Filter by numeric ranges.
 **Usage:**
 
 ```http
-# Between (inclusive)
-GET /api/front/products?productSaleElements.productPrices.price[between]=10..100
-
 # Greater than
 GET /api/front/products?productSaleElements.productPrices.price[gt]=50
 
@@ -150,6 +147,9 @@ GET /api/front/products?productSaleElements.productPrices.price[gte]=10
 
 # Less than or equal
 GET /api/front/products?productSaleElements.productPrices.price[lte]=100
+
+# Between (combine gte and lte)
+GET /api/front/products?productSaleElements.productPrices.price[gte]=10&productSaleElements.productPrices.price[lte]=100
 ```
 
 ### NotInFilter
@@ -293,7 +293,7 @@ For pagination with total item count, use `DataAccessService` with `'jsonld'` fo
 Filters can be combined:
 
 ```http
-GET /api/front/products?visible=true&productCategories.category.id=5&productSaleElements.promo=true&productSaleElements.productPrices.price[between]=10..100&order[position]=asc&itemsPerPage=20
+GET /api/front/products?visible=true&productCategories.category.id=5&productSaleElements.promo=true&productSaleElements.productPrices.price[gte]=10&productSaleElements.productPrices.price[lte]=100&order[position]=asc&itemsPerPage=20
 ```
 
 In Twig:
@@ -303,7 +303,8 @@ In Twig:
     'visible': true,
     'productCategories.category.id': categoryId,
     'productSaleElements.promo': true,
-    'productSaleElements.productPrices.price[between]': '10..100',
+    'productSaleElements.productPrices.price[gte]': '10',
+    'productSaleElements.productPrices.price[lte]': '100',
     'order[position]': 'asc',
     'itemsPerPage': 20
 }) %}

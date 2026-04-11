@@ -60,7 +60,7 @@ final class MyCarrier extends AbstractDeliveryModule
      */
     public function getPostage(Country $country): OrderPostage|float
     {
-        if (!$this->isValidDelivery($country, $state)) {
+        if (!$this->isValidDelivery($country)) {
             throw new DeliveryException(
                 $this->trans('This delivery method is not available for your location.')
             );
@@ -169,7 +169,7 @@ Calculate the delivery price:
 ```php
 public function getPostage(Country $country): OrderPostage|float
 {
-    if (!$this->isValidDelivery($country, $state)) {
+    if (!$this->isValidDelivery($country)) {
         throw new DeliveryException(
             $this->trans('Delivery not available')
         );
@@ -182,7 +182,7 @@ public function getPostage(Country $country): OrderPostage|float
         'flat' => $this->getFlatRate($country),
         'weight' => $this->getWeightBasedPrice($cart, $country),
         'price' => $this->getPriceBasedRate($cart, $country),
-        'zones' => $this->getZoneBasedPrice($cart, $country, $state),
+        'zones' => $this->getZoneBasedPrice($cart, $country),
         default => throw new DeliveryException('Invalid pricing strategy'),
     };
 }

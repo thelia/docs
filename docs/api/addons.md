@@ -195,20 +195,16 @@ The trait uses Propel virtual columns for automatic mapping:
 
 Override these methods when you need custom logic.
 
-## Important Annotations
+## Static Methods
 
-### #[Ignore]
-
-Static methods must be annotated with `#[Ignore]` to prevent serialization errors:
+Static methods like `getResourceParent()` and `getPropelRelatedTableMap()` are not introspected by the serializer, so they do not need `#[Ignore]`:
 
 ```php
-#[Ignore]
 public static function getResourceParent(): string
 {
     return Customer::class;
 }
 
-#[Ignore]
 public static function getPropelRelatedTableMap(): ?TableMap
 {
     return new MyAddonTableMap();
@@ -245,7 +241,7 @@ public static function extendQuery(
 
 ## Computed Data (No Database)
 
-For computed properties without a database table:
+For computed properties without a database table, return `null` from `getPropelRelatedTableMap()` and **override `extendQuery()`** (the trait's default throws an exception when the table map is null):
 
 ```php
 class ProductStockAddon implements ResourceAddonInterface
@@ -255,16 +251,22 @@ class ProductStockAddon implements ResourceAddonInterface
     #[Groups([Product::GROUP_ADMIN_READ, Product::GROUP_FRONT_READ])]
     public ?int $totalStock = null;
 
-    #[Ignore]
     public static function getResourceParent(): string
     {
         return Product::class;
     }
 
-    #[Ignore]
     public static function getPropelRelatedTableMap(): ?TableMap
     {
         return null; // No related table
+    }
+
+    public static function extendQuery(
+        ModelCriteria $query,
+        ?Operation $operation = null,
+        array $context = []
+    ): void {
+        // Nothing to join — computed from buildFromModel
     }
 
     public function buildFromModel(

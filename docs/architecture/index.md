@@ -99,7 +99,7 @@ Thelia 3 uses two templating engines optimized for different purposes:
 | Modern, reactive UI | Stable, battle-tested |
 | LiveComponents | Template loops |
 | DataAccessService | Direct Propel queries |
-| Stimulus/Turbo | jQuery |
+| Stimulus | jQuery |
 
 See [Dual Templating](./dual-templating) for details.
 
