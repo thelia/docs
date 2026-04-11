@@ -78,7 +78,7 @@ module.exports = {
       ],
     },
     prism: {
-      additionalLanguages: ['bash', 'php', 'json', 'sql', 'yaml', 'ini', 'nginx', 'docker', 'twig', 'smarty'],
+      additionalLanguages: ['bash', 'php', 'json', 'sql', 'yaml', 'ini', 'nginx', 'docker'],
     }
   },
   presets: [
