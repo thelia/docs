@@ -28,7 +28,7 @@ final class MyProject extends BaseModule
     /**
      * Called when the module is installed for the first time.
      */
-    public function install(ConnectionInterface $con = null): void
+    public function install(?ConnectionInterface $con = null): void
     {
         // Create database tables
         // Set default configuration
@@ -38,7 +38,7 @@ final class MyProject extends BaseModule
     /**
      * Called before activation. Return false to cancel.
      */
-    public function preActivation(ConnectionInterface $con = null): bool
+    public function preActivation(?ConnectionInterface $con = null): bool
     {
         // Check requirements
         // Validate dependencies
@@ -48,7 +48,7 @@ final class MyProject extends BaseModule
     /**
      * Called after successful activation.
      */
-    public function postActivation(ConnectionInterface $con = null): void
+    public function postActivation(?ConnectionInterface $con = null): void
     {
         // Initialize module state
         // Register hooks
@@ -58,7 +58,7 @@ final class MyProject extends BaseModule
     /**
      * Called before deactivation. Return false to cancel.
      */
-    public function preDeactivation(ConnectionInterface $con = null): bool
+    public function preDeactivation(?ConnectionInterface $con = null): bool
     {
         // Check if module can be safely deactivated
         // Warn about dependent modules
@@ -68,7 +68,7 @@ final class MyProject extends BaseModule
     /**
      * Called after successful deactivation.
      */
-    public function postDeactivation(ConnectionInterface $con = null): void
+    public function postDeactivation(?ConnectionInterface $con = null): void
     {
         // Clean up temporary data
         // Unregister services
@@ -77,7 +77,7 @@ final class MyProject extends BaseModule
     /**
      * Called when module version changes (module refresh).
      */
-    public function update($currentVersion, $newVersion, ConnectionInterface $con = null): void
+    public function update($currentVersion, $newVersion, ?ConnectionInterface $con = null): void
     {
         // Run migrations
         // Update configuration
@@ -93,7 +93,7 @@ The `install()` method runs once when the module is first installed.
 ### Creating Database Tables
 
 ```php
-public function install(ConnectionInterface $con = null): void
+public function install(?ConnectionInterface $con = null): void
 {
     // Method 1: Execute SQL file
     $this->executeSqlFile(
@@ -114,7 +114,7 @@ public function install(ConnectionInterface $con = null): void
 ```php
 use Thelia\Model\ConfigQuery;
 
-public function install(ConnectionInterface $con = null): void
+public function install(?ConnectionInterface $con = null): void
 {
     // Set default configuration values
     if (null === ConfigQuery::read('myproject_api_key')) {
@@ -130,7 +130,7 @@ public function install(ConnectionInterface $con = null): void
 ### Creating Required Directories
 
 ```php
-public function install(ConnectionInterface $con = null): void
+public function install(?ConnectionInterface $con = null): void
 {
     $uploadDir = THELIA_LOCAL_DIR . 'media/myproject';
 
@@ -147,7 +147,7 @@ public function install(ConnectionInterface $con = null): void
 Use `preActivation()` to verify requirements before the module activates:
 
 ```php
-public function preActivation(ConnectionInterface $con = null): bool
+public function preActivation(?ConnectionInterface $con = null): bool
 {
     // Check PHP extensions
     if (!extension_loaded('curl')) {
@@ -184,7 +184,7 @@ private function isModuleActive(string $moduleCode): bool
 Use `postActivation()` for initialization that requires the module to be active:
 
 ```php
-public function postActivation(ConnectionInterface $con = null): void
+public function postActivation(?ConnectionInterface $con = null): void
 {
     // Register default hook positions
     $this->registerHookPositions();
@@ -225,7 +225,7 @@ private function registerHookPositions(): void
 Prevent deactivation if the module is in use:
 
 ```php
-public function preDeactivation(ConnectionInterface $con = null): bool
+public function preDeactivation(?ConnectionInterface $con = null): bool
 {
     // Check for pending orders using this payment module
     $pendingOrders = \Thelia\Model\OrderQuery::create()
@@ -246,7 +246,7 @@ public function preDeactivation(ConnectionInterface $con = null): bool
 ### Post-Deactivation Cleanup
 
 ```php
-public function postDeactivation(ConnectionInterface $con = null): void
+public function postDeactivation(?ConnectionInterface $con = null): void
 {
     // Clear module cache
     $cacheDir = THELIA_CACHE_DIR . 'myproject/';
@@ -281,7 +281,7 @@ private function deleteDirectory(string $dir): void
 The `update()` method handles version migrations:
 
 ```php
-public function update($currentVersion, $newVersion, ConnectionInterface $con = null): void
+public function update($currentVersion, $newVersion, ?ConnectionInterface $con = null): void
 {
     // Run migrations based on version
     if (version_compare($currentVersion, '1.1.0', '<')) {

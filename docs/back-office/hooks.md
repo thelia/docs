@@ -31,7 +31,7 @@ use Thelia\Core\Hook\BaseHook;
 
 class FrontHook extends BaseHook
 {
-    public static function getSubscribedHooks()
+    public static function getSubscribedHooks(): array
     {
         return [
             "main.footer-body" => [
@@ -51,8 +51,8 @@ class FrontHook extends BaseHook
                 ]               
             ]
         ];
-    
-
+    }
+}
 ```
 
 Then the function associated with the listener depend if you listen a [Hook function](#hook-function) or a [Hook block](#hook-block)
@@ -92,9 +92,9 @@ class FrontHook extends BaseHook
     {
         $content = $this->render('my-main-footer-bottom.html');
         $event->add($content);
-    
-    
-    public static function getSubscribedHooks()
+    }
+
+    public static function getSubscribedHooks(): array
     {
         return [
             "main.footer-bottom" => [
@@ -104,8 +104,8 @@ class FrontHook extends BaseHook
                 ]               
             ]
         ];
-    
-
+    }
+}
 ```
 
 ## Hook block
@@ -123,28 +123,28 @@ Example of a hook block:
 
 ```smarty
 <section id="product-tabs">
-    {hookblock name="product.additional" product="{product attr="id"}"
+    {hookblock name="product.additional" product="{product attr='id'}"}
         <ul class="nav nav-tabs" role="tablist">
             <li class="active" role="presentation"><a id="tab1" href="#description" data-toggle="tab" role="tab">{intl l="Description"}</a></li>
-    
-            {forhook rel="product.additional"
-                <li role="presentation"><a id="tab$id}" href="#$id}" data-toggle="tab" role="tab">$title}</a></li>
-            {/forhook
-    
+
+            {forhook rel="product.additional"}
+                <li role="presentation"><a id="tab{$id}" href="#{$id}" data-toggle="tab" role="tab">{$title}</a></li>
+            {/forhook}
+
         </ul>
         <div class="tab-content">
             <div class="tab-pane active in" id="description" itemprop="description" role="tabpanel" aria-labelledby="tab1">
-                <p>$DESCRIPTION|default:'N/A' nofilter}</p>
+                <p>{$DESCRIPTION|default:'N/A' nofilter}</p>
             </div>
-    
-            {forhook rel="product.additional"
-                <div class="tab-pane" id="$id}" role="tabpanel" aria-labelledby="tab$id}">
-                    $content nofilter
+
+            {forhook rel="product.additional"}
+                <div class="tab-pane" id="{$id}" role="tabpanel" aria-labelledby="tab{$id}">
+                    {$content nofilter}
                 </div>
-            {/forhook
-    
+            {/forhook}
+
         </div>
-    {/hookblock
+    {/hookblock}
 </section>
 ```
 
@@ -165,20 +165,17 @@ class FrontHook extends BaseHook
             'id' => 'article-footer-body',
             'class' => 'article-links',
             'title' => $this->trans('Latest articles', [], HookNavigation::MESSAGE_DOMAIN),
-            'content' => $this->render('article-links.html');
+            'content' => $this->render('article-links.html'),
         ]);
         $event->add([
             'id' => 'contact-footer-body',
             'class' => 'contact-links',
             'title' => $this->trans('Contact', [], HookNavigation::MESSAGE_DOMAIN),
-            'content' => $this->render('contact-links.html');
+            'content' => $this->render('contact-links.html'),
         ]);
-        
-        // ...
-        // As many block as you want
-    
-    
-    public static function getSubscribedHooks()
+    }
+
+    public static function getSubscribedHooks(): array
     {
         return [
             "main.footer-body" => [
@@ -188,8 +185,8 @@ class FrontHook extends BaseHook
                 ]
             ],
         ];
-    
-
+    }
+}
 ```
 
 ## Create you own hook

@@ -41,6 +41,10 @@ interface ResourceAddonInterface
 
     // Delete addon data
     public function doDelete(ActiveRecordInterface $activeRecord, PropelResourceInterface $resource): void;
+
+    // Context management (set by the framework before build)
+    public function setContext(array $context = []): self;
+    public function getContext(): array;
 }
 ```
 
@@ -297,10 +301,7 @@ class ProductStockAddon implements ResourceAddonInterface
 
 ## Auto-Discovery
 
-Addons are auto-discovered from:
-
-- `local/modules/*/Api/Resource/` (or `Api/Addon/`)
-- `vendor/thelia/modules/*/Api/Resource/`
+Addons are auto-discovered from `Api/Resource/` (or `Api/Addon/`) inside any **activated** module's directory. Discovery is driven by the database — only modules registered and activated via `ModuleQuery::getActivated()` are scanned.
 
 They are registered via the `thelia.api.resource.addon` tag.
 

@@ -189,12 +189,12 @@ Service container configuration. With autowiring, this file is often minimal:
         </service>
     </services>
 
-    <!-- Event listeners -->
-    <event_listeners>
-        <event_listener class="MyProject\EventListeners\OrderEventListener">
+    <!-- Event listeners (registered as services with subscriber tag) -->
+    <services>
+        <service id="MyProject\EventListeners\OrderEventListener">
             <tag name="kernel.event_subscriber"/>
-        </event_listener>
-    </event_listeners>
+        </service>
+    </services>
 </config>
 ```
 

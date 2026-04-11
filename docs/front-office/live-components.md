@@ -22,12 +22,16 @@ For complete LiveComponents documentation, see [symfony.com/bundles/ux-live-comp
 
 ### PHP Component
 
+:::info TwigComponent vs LiveComponent
+Flexy uses both `AsTwigComponent` (static, no server interaction) and `AsLiveComponent` (reactive, AJAX-powered). ProductCard is a **TwigComponent**. For reactive behavior (add-to-cart, filters), Flexy uses LiveComponents like `CategoryFilters` and `Checkout:Cart`.
+:::
+
 ```php
 <?php
 
 declare(strict_types=1);
 
-namespace FlexyBundle\UiComponents\ProductCard;
+namespace FlexyBundle\UiComponents\CategoryFilters;
 
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
@@ -35,24 +39,22 @@ use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 
 #[AsLiveComponent(
-    name: 'Flexy:ProductCard',
-    template: '@UiComponents/ProductCard/ProductCard.html.twig'
+    name: 'Flexy:CategoryFilters',
+    template: '@UiComponents/CategoryFilters/CategoryFilters.html.twig'
 )]
-class ProductCard
+class CategoryFilters
 {
     use DefaultActionTrait;
 
     #[LiveProp]
-    public array $product;
+    public ?int $categoryId = null;
 
     #[LiveProp(writable: true)]
-    public int $quantity = 1;
+    public int $page = 1;
 
-    #[LiveAction]
-    public function addToCart(): void
-    {
-        // Add to cart logic
-    }
+    public ?array $products = [];
+
+    // ...
 }
 ```
 
@@ -181,13 +183,14 @@ class Product
 ```php
 use Symfony\UX\LiveComponent\Attribute\LiveListener;
 
-#[AsLiveComponent(name: 'Flexy:CartWidget')]
-class CartWidget
+#[AsLiveComponent(name: 'Flexy:Checkout:Cart')]
+class Cart
 {
     #[LiveListener('addToCart')]
     public function onAddToCart(): void
     {
-        $this->itemCount = $this->cartFacade->getItemCount();
+        // Re-fetch cart data when an item is added
+        $this->loadCart();
     }
 }
 ```
