@@ -247,8 +247,8 @@ if (null !== $response = $this->checkAuth([], [], AccessManager::DELETE)) {
 
 // Check for module-specific permission
 if (null !== $response = $this->checkAuth(
-    ['MyProject'],           // Modules
     ['MYPROJECT_ADMIN'],     // Resources
+    ['MyProject'],           // Modules
     AccessManager::UPDATE    // Access type
 )) {
     return $response;
@@ -360,8 +360,8 @@ public function showAction(int $id): Response
 // Render a template
 $this->render('template-name', ['var' => 'value']);
 
-// Generate URL
-$url = $this->getRouteUrl('route.name', ['param' => 'value']);
+// Generate URL from route ID
+$url = $this->getRoute('route.name', ['param' => 'value']);
 
 // Redirect
 $this->generateRedirect($url);
@@ -381,8 +381,8 @@ $request = $this->getRequest();
 ```php
 // All BaseFrontController methods, plus:
 
-// Check authorization
-$this->checkAuth($modules, $resources, $accessType);
+// Check authorization (note: order is resources, modules, access)
+$this->checkAuth($resources, $modules, $accessType);
 
 // Create a form
 $form = $this->createForm(FormName::getName());

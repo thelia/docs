@@ -28,7 +28,7 @@ thelia/
 │       ├── Api/                    # API Platform integration
 │       │   ├── Resource/           # API resources
 │       │   ├── Bridge/Propel/      # Propel state providers
-│       │   └── Service/            # DataAccessService
+│       │   └── Service/DataAccess/  # DataAccessService
 │       ├── Domain/                 # Business logic facades
 │       │   ├── Cart/
 │       │   ├── Customer/

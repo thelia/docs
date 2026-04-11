@@ -66,7 +66,7 @@ final class MyPayment extends AbstractPaymentModule
     /**
      * Process the payment.
      */
-    public function pay(Order $order): Response
+    public function pay(Order $order): ?Response
     {
         // Option 1: Redirect to payment gateway
         return $this->redirectToGateway($order);
@@ -223,7 +223,7 @@ public function pay(Order $order): Response
 }
 ```
 
-This uses the standard `order-payment-gateway.html` template to submit the form.
+This renders the `checkout-gateway` template to auto-submit the form to the payment gateway.
 
 ### Pattern 2: Direct API Payment
 
@@ -243,7 +243,7 @@ public function pay(Order $order): Response
 
         if ($result['status'] === 'success') {
             // Payment successful
-            $this->confirmPayment($order->getId());
+            $this->confirmPayment($this->getDispatcher(), $order->getId());
             return $this->generateRedirect($this->getPaymentSuccessPageUrl($order->getId()));
         }
 
@@ -329,13 +329,13 @@ final class CallbackController extends BasePaymentModuleController
         switch ($status) {
             case 'paid':
             case 'captured':
-                $this->confirmPayment($order->getId());
+                $this->confirmPayment($this->getDispatcher(), $order->getId());
                 $this->getLog()->info('Payment confirmed for order: ' . $orderRef);
                 break;
 
             case 'cancelled':
             case 'failed':
-                $this->cancelPayment($order->getId());
+                $this->cancelPayment($this->getDispatcher(), $order->getId());
                 $this->getLog()->info('Payment cancelled for order: ' . $orderRef);
                 break;
 

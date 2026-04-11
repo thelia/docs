@@ -58,7 +58,7 @@ final class MyCarrier extends AbstractDeliveryModule
      *
      * @throws DeliveryException If price cannot be calculated
      */
-    public function getPostage(Country $country, State $state = null): float
+    public function getPostage(Country $country, State $state = null): OrderPostage|float
     {
         if (!$this->isValidDelivery($country, $state)) {
             throw new DeliveryException(

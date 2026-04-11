@@ -63,15 +63,16 @@ final readonly class CartController
         $cartItem = $this->cartFacade->addItem($dto);
     }
 
-    public function removeFromCart(int $cartItemId): void
+    public function removeFromCart(Cart $cart, int $cartItemId): void
     {
-        $dto = new CartItemDeleteDTO(cartItemId: $cartItemId);
+        $dto = new CartItemDeleteDTO(cart: $cart, cartItemId: $cartItemId);
         $this->cartFacade->removeItem($dto);
     }
 
-    public function updateQuantity(int $cartItemId, int $newQuantity): void
+    public function updateQuantity(Cart $cart, int $cartItemId, int $newQuantity): void
     {
         $dto = new CartItemUpdateQuantityDTO(
+            cart: $cart,
             cartItemId: $cartItemId,
             quantity: $newQuantity,
         );
@@ -242,10 +243,11 @@ readonly class CartItemAddDTO
 ### CartItemDeleteDTO
 
 ```php
-final readonly class CartItemDeleteDTO
+readonly class CartItemDeleteDTO
 {
     public function __construct(
-        public int $cartItemId,
+        private Cart $cart,
+        private int $cartItemId,
     ) {}
 }
 ```
@@ -253,11 +255,12 @@ final readonly class CartItemDeleteDTO
 ### CartItemUpdateQuantityDTO
 
 ```php
-final readonly class CartItemUpdateQuantityDTO
+readonly class CartItemUpdateQuantityDTO
 {
     public function __construct(
-        public int $cartItemId,
-        public int $quantity,
+        private Cart $cart,
+        private int $cartItemId,
+        private int $quantity,
     ) {}
 }
 ```
