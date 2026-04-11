@@ -1,6 +1,6 @@
 ---
 title: Standard Installation
-sidebar_position: 5
+sidebar_position: 2
 ---
 
 # Standard Installation
