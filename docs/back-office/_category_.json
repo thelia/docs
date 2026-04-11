@@ -1,8 +1,11 @@
 {
-  "label": "Back-Office Development",
+  "label": "Back-Office",
   "position": 6,
   "link": {
     "type": "doc",
     "id": "back-office/index"
+  },
+  "customProps": {
+    "description": "Admin interface with Smarty templates"
   }
 }

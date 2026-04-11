@@ -1,8 +1,11 @@
 {
   "label": "Front-Office",
-  "position": 5,
+  "position": 4,
   "link": {
     "type": "doc",
     "id": "front-office/index"
+  },
+  "customProps": {
+    "description": "Build customer-facing pages with Twig and Symfony UX"
   }
 }

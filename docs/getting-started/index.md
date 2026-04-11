@@ -5,104 +5,114 @@ sidebar_position: 1
 
 # Getting Started
 
-This guide will help you install and configure Thelia 3 for local development.
+This guide takes you from zero to a working Thelia 3 store in under 10 minutes.
 
 ## Prerequisites
-
-Before installing Thelia 3, ensure you have:
-
-### Required
 
 - **PHP 8.3+** with extensions: PDO_MySQL, openssl, intl, gd, curl, dom
 - **Composer 2+**
 - **MySQL 8.0+** or **MariaDB 10.6+**
+- **DDEV** (recommended) or any local PHP environment
 
-### Recommended
-
-- **DDEV** (local development environment)
-- **Node.js 20+** (for theme development)
-- **Git**
-
-## Installation Methods
-
-Choose your preferred installation method:
-
-| Method | Description | Best For |
-|--------|-------------|----------|
-| [DDEV (Recommended)](./ddev) | Containerized development with pre-configured environment | Fast setup, consistent environments |
-| [Standard Installation](./Installation) | Manual PHP/MySQL setup | Production servers, custom setups |
-
-## Quick Start with DDEV
-
-The fastest way to get started:
+## Install with DDEV (Recommended)
 
 ```bash
-# Clone Thelia 3
 git clone https://github.com/thelia/thelia.git
 cd thelia
 git checkout twig
 
-# Start DDEV
 ddev start
-
-# Install dependencies
 ddev composer install
-
-# Install Thelia
-ddev php Thelia thelia:install \
-    --database_host=db \
-    --database_username=db \
-    --database_password=db \
-    --database_name=db \
-    --database_port=3306 \
-    --frontoffice_theme=flexy \
-    --backoffice_theme=default \
-    --pdf_theme=default \
-    --email_theme=default
-
-# Open in browser
-ddev launch
+ddev exec php bin/install
 ```
 
-Your site is now accessible at **https://thelia.ddev.site**
+Open **https://thelia.ddev.site** — your store is running.
 
-## Installation Command Reference
+## Install Without DDEV
 
-The `thelia:install` command supports many options:
+```bash
+git clone https://github.com/thelia/thelia.git
+cd thelia && git checkout twig
+composer install
 
-| Option | Description |
-|--------|-------------|
-| `--database_host` | Database hostname |
-| `--database_username` | Database user |
-| `--database_password` | Database password |
-| `--database_name` | Database name |
-| `--database_port` | Database port (default: 3306) |
-| `--frontoffice_theme` | Front theme (default: flexy) |
-| `--backoffice_theme` | Admin theme (default: default) |
-| `--pdf_theme` | PDF theme (default: default) |
-| `--email_theme` | Email theme (default: default) |
-| `--with-demo` | Import demo data |
-| `--with-admin` | Create admin user |
+DATABASE_HOST=localhost DATABASE_NAME=thelia \
+DATABASE_USER=root DATABASE_PASSWORD=secret \
+php bin/install --with-demo --with-admin
+```
 
-See [DDEV Installation](./ddev) or [Standard Installation](./Installation) for complete examples.
+Then start a development server:
+
+```bash
+php -S localhost:8000 -t public
+```
+
+## The `bin/install` Command
+
+`bin/install` is a standalone script that sets up Thelia without requiring the Symfony kernel to be bootable first. It solves the chicken-and-egg problem: you need a database to boot the kernel, but you need the kernel to create the database.
+
+### What It Does
+
+1. **Checks permissions** on `var/`, `public/`, `local/` directories
+2. **Creates the database** if it does not exist
+3. **Applies the schema** (`thelia.sql` + `insert.sql`)
+4. **Generates a form secret** for CSRF protection
+5. **Writes `.env.local`** with database credentials
+6. **Registers all modules** and applies their SQL schemas
+7. **Configures templates** (boots the kernel only for this step)
+8. **Imports demo data** and **creates admin user** (if requested)
+
+### Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--frontoffice_theme` | `flexy` | Front-office template |
+| `--backoffice_theme` | `default` | Back-office template |
+| `--pdf_theme` | `default` | PDF template |
+| `--email_theme` | `default` | Email template |
+| `--with-demo` | — | Import demo catalog data |
+| `--with-admin` | — | Create an admin user |
+| `--admin_login` | `thelia` | Admin username |
+| `--admin_password` | `thelia` | Admin password |
+| `--admin_first_name` | `Admin` | Admin first name |
+| `--admin_last_name` | `Thelia` | Admin last name |
+| `--admin_email` | `admin@thelia.net` | Admin email |
+
+### Required Environment Variables
+
+| Variable | DDEV Value | Description |
+|----------|-----------|-------------|
+| `DATABASE_HOST` | `db` | Database hostname |
+| `DATABASE_PORT` | `3306` | Database port |
+| `DATABASE_NAME` | `db` | Database name |
+| `DATABASE_USER` | `db` | Database user |
+| `DATABASE_PASSWORD` | `db` | Database password |
+
+### Full Example
+
+```bash
+DATABASE_HOST=db DATABASE_PORT=3306 DATABASE_NAME=db \
+DATABASE_USER=db DATABASE_PASSWORD=db \
+php bin/install \
+  --frontoffice_theme=flexy \
+  --backoffice_theme=default \
+  --with-demo \
+  --with-admin \
+  --admin_login=admin \
+  --admin_password=admin123 \
+  --admin_email=admin@example.com
+```
+
+### Dual Layout Support
+
+`bin/install` auto-detects whether it runs in:
+
+- **Development layout** (`thelia/thelia`): `core/` is at the project root
+- **Project layout** (`thelia/thelia-project`): core is in `vendor/thelia/core/`
+
+No configuration needed — the script adapts automatically.
 
 ## Next Steps
 
-After installation:
-
-1. **[Configuration](./configuration)** - Configure environment variables and parameters
-2. **[First Steps](./first_steps)** - Create your first product and customize the theme
-3. **[Architecture Overview](/docs/architecture)** - Understand how Thelia 3 works
-
-## Troubleshooting
-
-If you encounter issues during installation, check:
-
-- [Common Issues](./troubleshooting) - Solutions to frequent problems
-- [DDEV Installation](./ddev#troubleshooting) - DDEV-specific issues
-- [Standard Installation](./Installation#troubleshooting) - Manual setup issues
-
-## Support
-
-- **GitHub Issues**: [github.com/thelia/thelia/issues](https://github.com/thelia/thelia/issues)
-- **Forum**: [forum.thelia.net](https://forum.thelia.net)
+- [DDEV Installation](./ddev) — Detailed DDEV setup and commands
+- [Configuration](./configuration) — Environment variables and settings
+- [First Steps](./first-steps) — Create your first product

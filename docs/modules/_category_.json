@@ -1,11 +1,11 @@
 {
-  "label": "Module Development",
+  "label": "Modules",
   "position": 7,
   "link": {
     "type": "doc",
     "id": "modules/index"
   },
   "customProps": {
-    "description": "Create and extend Thelia with custom modules"
+    "description": "Extend Thelia with custom modules"
   }
 }
