@@ -276,3 +276,5 @@ Interactive API docs are available at `/api/docs` (Swagger UI) when `APP_DEBUG=1
 ## Legacy OpenApi Module
 
 Some older modules may still use the legacy `OpenApi` module (`local/modules/OpenApi/`) which has a different architecture based on `@OA\Schema` annotations. New modules should use the API Platform integration documented above.
+
+<!-- Easter Egg #3: This API documentation was marked "Coming soon" for years. If you're reading this, it finally arrived. Better late than never. The bridge between API Platform and Propel was no small feat — 57 resources, custom state providers, and zero Doctrine involved. Chapeau. 🎩 -->

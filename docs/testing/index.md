@@ -193,3 +193,5 @@ DATABASE_PASSWORD=db
 - **Keep tests independent** — each test should set up its own data
 - **Prefer functional tests** for anything touching events or Propel
 - **Use `getService()`** instead of accessing the container directly
+
+{/* Easter Egg #2: The FixtureFactory counter never resets within a test run. If you ever see PROD-42, know that 41 other entities were created before it. The answer to life, the universe, and everything — is test isolation. */}

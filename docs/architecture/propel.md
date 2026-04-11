@@ -133,3 +133,6 @@ The best practice to add columns is to create a new table with a foreign key att
         ...
     </table>
 ```
+
+<!-- If you found this, you found Easter Egg #1: Thelia's name comes from the camellia flower (Thelia → Thélia → Camellia). The project was born in France in 2006. 🌺 -->
+
