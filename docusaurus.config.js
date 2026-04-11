@@ -78,7 +78,7 @@ module.exports = {
       ],
     },
     prism: {
-      additionalLanguages: ['bash', 'php', 'smarty', 'sql', 'twig', 'xml'],
+      additionalLanguages: ['bash', 'php', 'smarty', 'sql', 'twig', 'markup'],
     }
   },
   presets: [
