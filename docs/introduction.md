@@ -17,9 +17,9 @@ Version 3 introduces a modern front-office powered by Twig and Symfony UX, a ful
 | Framework | Symfony 6.4+ |
 | ORM | Propel 2 (not Doctrine) |
 | API | API Platform 3, JWT authentication |
-| Front-office | Twig, LiveComponents, Stimulus, Turbo |
+| Front-office | Twig, LiveComponents, TwigComponent, Stimulus |
 | Back-office | Smarty, Loops, Hooks |
-| Default theme | Flexy (Tailwind CSS, 40+ LiveComponents) |
+| Default theme | Flexy (Tailwind CSS, 46 components) |
 
 ## How Data Flows
 

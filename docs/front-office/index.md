@@ -13,8 +13,8 @@ Thelia 3 introduces a modern front-office architecture built on **Twig** templat
 |------------|---------|
 | **Twig** | Template engine |
 | **Symfony UX LiveComponents** | Reactive UI components |
+| **Symfony UX TwigComponent** | Static reusable components |
 | **Stimulus** | JavaScript controllers |
-| **Turbo** | SPA-like navigation |
 | **Webpack Encore** | Asset management |
 | **DataAccessService** | API data fetching |
 
@@ -126,7 +126,6 @@ templates/frontOffice/flexy/
 | [Flexy Theme](./flexy-theme/) | Default theme structure |
 | [LiveComponents](./live-components) | Creating reactive components |
 | [Stimulus](./stimulus) | JavaScript controllers |
-| [Turbo](./turbo) | SPA-like navigation |
 | [Forms](./forms) | Front-office forms |
 
 ## Quick Example

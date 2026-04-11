@@ -40,11 +40,13 @@ The Flexy theme includes ready-to-use Stimulus controllers:
 | Controller | Purpose |
 |------------|---------|
 | `drawer` | Sidebar/modal panels |
-| `dropdown` | Dropdown menus |
-| `tabs` | Tab navigation |
-| `accordion` | Collapsible sections |
-| `gallery` | Image galleries |
+| `modal` | Modal dialogs |
 | `quantity` | Quantity input +/- |
+| `header` | Header behavior |
+| `filters` | Filter UI interactions |
+| `product` | Product page interactions |
+| `simple_slider` | Image slider |
+| `tooltip` | Tooltip display |
 
 Location: `vendor/thelia/flexy/assets/controllers/`
 

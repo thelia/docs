@@ -115,8 +115,8 @@ protected function instantiateForm(): FormInterface
 |-----------|---------|
 | `FrontForm::CUSTOMER_LOGIN` | Customer login |
 | `FrontForm::CUSTOMER_CREATE` | Customer registration |
-| `FrontForm::CUSTOMER_UPDATE` | Profile update |
-| `FrontForm::CUSTOMER_PASSWORD` | Password change |
+| `FrontForm::CUSTOMER_PROFILE_UPDATE` | Profile update |
+| `FrontForm::CUSTOMER_PASSWORD_UPDATE` | Password change |
 | `FrontForm::ADDRESS_CREATE` | Create address |
 | `FrontForm::ADDRESS_UPDATE` | Update address |
 | `FrontForm::CART_ADD` | Add to cart |

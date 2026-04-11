@@ -104,7 +104,7 @@ Get URL parameters using `attr()`:
 ### Price Formatting
 
 ```twig
-{{ product.price|format_money }}
+{{ product.price|format_currency('EUR', locale=lang_code) }}
 ```
 
 ## Components
