@@ -301,7 +301,7 @@ class ProductStockAddon implements ResourceAddonInterface
 
 ## Auto-Discovery
 
-Addons are auto-discovered from `Api/Resource/` (or `Api/Addon/`) inside any **activated** module's directory. Discovery is driven by the database — only modules registered and activated via `ModuleQuery::getActivated()` are scanned.
+Addons are auto-discovered from `Api/Resource/` inside any **activated** module's directory. Discovery is driven by the database — only modules registered and activated via `ModuleQuery::getActivated()` are scanned.
 
 They are registered via the `thelia.api.resource.addon` tag.
 

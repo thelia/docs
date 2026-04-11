@@ -134,6 +134,5 @@ Stimulus automatically discovers controllers from `assets/controllers/` using na
 
 ## Next Steps
 
-- [Turbo](./turbo) - SPA-like navigation
 - [LiveComponents](./live-components) - Server-side reactivity
 - [Flexy Theme](./flexy-theme/) - See controllers in action

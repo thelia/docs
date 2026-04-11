@@ -17,7 +17,7 @@ To generate Sql request and associated model class from schema use this command
 php Thelia module:generate:model --generate-sql MyProject 
 ```
 
-This command will generate a TheliaMain.sql file at `local/modules/MyProject/Confif/TheliaMain.sql` don't modify it, it will be erased each time this command is executed.  
+This command will generate a TheliaMain.sql file at `local/modules/MyProject/Config/TheliaMain.sql` don't modify it, it will be erased each time this command is executed.  
 It will also generate [Model](http://propelorm.org/documentation/reference/active-record.html) and [ModelQuery](http://propelorm.org/documentation/reference/model-criteria.html) file for each table, in these files you can add your own functions or properties, they will not be erased as they are just empty class that extend the real propel Model located in propel cache.
 
 ## Execute Sql

@@ -16,7 +16,6 @@ For complete Symfony Forms documentation, see [symfony.com/doc/current/forms.htm
 | Approach | Best For |
 |----------|----------|
 | LiveComponent + Form | Real-time validation, multi-step forms |
-| Turbo Frame | Simple forms, inline editing |
 | Standard Symfony | Full-page form submissions |
 
 ## LiveComponent Forms
@@ -210,4 +209,4 @@ public function save(): void
 
 - [LiveComponents](./live-components) - Component details
 - [Flexy Theme](./flexy-theme/) - Form examples
-- [Turbo](./turbo) - Form submissions with Turbo
+- [Stimulus](./stimulus) - JavaScript controllers

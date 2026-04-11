@@ -65,7 +65,7 @@ final class ProductWorkflowTest extends IntegrationTestCase
         $product = $this->factory->product($category, $taxRule, $currency);
 
         self::assertNotNull($product->getId());
-        self::assertEquals('PROD-' . $product->getId(), $product->getRef());
+        self::assertStringStartsWith('PROD-', $product->getRef());
     }
 }
 ```

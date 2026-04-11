@@ -72,7 +72,7 @@ Notice: you can add arguments to the smarty function (or block) to help identify
 ```smarty
 ...
 <section id="product-details">
-    {hook name="product.details.top" product="$ID}"
+    {hook name="product.details.top" product="{$ID}"}
 ...
 </section>
 ```
@@ -192,7 +192,7 @@ class FrontHook extends BaseHook
 ## Create you own hook
 To define a hook in a module template, you have to use the smarty function “hook” with a paramater “name”.
 ```smarty
-{hook name="my_hook_name"
+{hook name="my_hook_name"}
 ``` 
 
 But to inform Thelia that this hook exists you must declare it in the base class of your module.    
@@ -249,8 +249,8 @@ class MyModule extends BaseModule
               "active" => true
           )
      );
-  
-
+  }
+}
 ```
 
 ## Default hook list

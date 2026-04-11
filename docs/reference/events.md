@@ -27,7 +27,7 @@ class LogoutListener implements EventSubscriberInterface
     }
 
 
-    public static function getSubscribedEvents($event)
+    public static function getSubscribedEvents(): array
     {
         // return the subscribed events, their methods and priorities
         return [
@@ -74,7 +74,7 @@ use Thelia\Model\Event\ProductEvent;
 
 class ProductListener implements EventSubscriberInterface
 {
-    public static function getSubscribedEvents($event)
+    public static function getSubscribedEvents(): array
     {
         // return the subscribed events, their methods and priorities
         return [

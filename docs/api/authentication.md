@@ -114,26 +114,25 @@ JWT_PASSPHRASE=your-passphrase
 
 ## CORS Configuration
 
-Thelia includes `nelmio/cors-bundle` for CORS support. Configure it in `config/packages/nelmio_cors.yaml`:
+Thelia ships with `nelmio/cors-bundle` pre-configured in `config/packages/nelmio_cors.yaml`. The default configuration allows origins matching `CORS_ALLOW_ORIGIN` (set in `.env`):
 
 ```yaml
 nelmio_cors:
     defaults:
         origin_regex: true
         allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
-        allow_methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+        allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
         allow_headers: ['Content-Type', 'Authorization']
         max_age: 3600
     paths:
-        '^/api/':
-            allow_origin: ['*']
-            allow_headers: ['*']
-            allow_methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
+        '^/': null
 ```
 
-:::note
-CORS configuration is not included by default. You need to create this file if you need cross-origin API access.
-:::
+To allow all origins during development, set in `.env.local`:
+
+```bash
+CORS_ALLOW_ORIGIN='^https?://.*$'
+```
 
 ## Error Responses
 
