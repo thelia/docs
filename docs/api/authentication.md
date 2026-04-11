@@ -101,7 +101,7 @@ JWT keys are configured in your environment. The default configuration uses RSA 
 
 ```bash
 # Generate keys (one-time setup)
-php bin/console lexik:jwt:generate-keypair
+php Thelia lexik:jwt:generate-keypair
 ```
 
 Configure in `.env`:
@@ -123,6 +123,7 @@ nelmio_cors:
         allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
         allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
         allow_headers: ['Content-Type', 'Authorization']
+        expose_headers: ['Link']
         max_age: 3600
     paths:
         '^/': null

@@ -28,7 +28,7 @@ declare(strict_types=1);
 namespace MyProject\Controller\Front;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Thelia\Controller\Front\BaseFrontController;
 
 final class PageController extends BaseFrontController
@@ -66,7 +66,7 @@ namespace MyProject\Controller\Front;
 
 use MyProject\Service\ProductService;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Thelia\Controller\Front\BaseFrontController;
 
 final class ProductController extends BaseFrontController
@@ -154,7 +154,7 @@ declare(strict_types=1);
 namespace MyProject\Controller\Admin;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Thelia\Controller\Admin\BaseAdminController;
 
 final class ConfigController extends BaseAdminController
@@ -184,7 +184,7 @@ namespace MyProject\Controller\Admin;
 
 use MyProject\Form\ConfigurationForm;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Model\ConfigQuery;
@@ -346,7 +346,7 @@ $this->getSession()->getFlashBag()->add(
 ### Using PHP Attributes
 
 ```php
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/my-feature/{id}', name: 'myproject.front.show', requirements: ['id' => '\d+'], methods: ['GET'])]
 public function showAction(int $id): Response

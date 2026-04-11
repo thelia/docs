@@ -68,10 +68,10 @@ ddev launch                 # Open in browser
 ### Running PHP Commands
 
 ```bash
-ddev exec php bin/console cache:clear
-ddev exec php bin/console module:list
-ddev exec php bin/console module:activate ModuleName
-ddev exec php bin/console admin:create
+ddev exec php Thelia cache:clear
+ddev exec php Thelia module:list
+ddev exec php Thelia module:activate ModuleName
+ddev exec php Thelia admin:create
 ```
 
 ### Composer

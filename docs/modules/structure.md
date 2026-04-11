@@ -218,7 +218,7 @@ With autowiring enabled, `config.xml` is only needed for **Thelia-specific const
 The recommended approach is **PHP attributes** directly on controller methods. With `configureServices()`, controllers are automatically registered as services and their routes are discovered:
 
 ```php
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/admin/module/MyProject', name: 'myproject.admin.config')]
 public function indexAction(): Response
@@ -241,7 +241,7 @@ A `Config/routing.xml` file is still supported but no longer recommended. All mo
 You can also define routes directly in controllers using PHP attributes:
 
 ```php
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/my-feature/{id}', name: 'myproject.front.page')]
 public function showAction(int $id): Response

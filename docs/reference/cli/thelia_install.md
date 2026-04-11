@@ -11,7 +11,7 @@ For fresh installations, use `php bin/install` instead — it works without a bo
 
 ## Usage
 ```shell 
-php bin/console thelia:install [options]
+php Thelia thelia:install [options]
 ```
 
 ## Options
@@ -24,5 +24,5 @@ php bin/console thelia:install [options]
 ## Example
 
 ```shell
-php bin/console thelia:install --database_host localhost --database_username myuser --database_password secret --database_name thelia
+php Thelia thelia:install --database_host localhost --database_username myuser --database_password secret --database_name thelia
 ```

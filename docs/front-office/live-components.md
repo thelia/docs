@@ -62,10 +62,13 @@ class CategoryFilters
 
 ```twig
 <div {{ attributes }}>
-    <h3>{{ product.i18ns.title }}</h3>
-    <input type="number" data-model="quantity" value="{{ quantity }}" min="1">
-    <button data-action="live#action" data-live-action-param="addToCart">
-        Add to Cart
+    <div class="product-grid">
+        {% for product in products %}
+            <div class="product-card">{{ product.i18ns.title }}</div>
+        {% endfor %}
+    </div>
+    <button data-action="live#action" data-live-action-param="loadMore">
+        Load More
     </button>
 </div>
 ```
@@ -73,7 +76,7 @@ class CategoryFilters
 ### Usage
 
 ```twig
-{{ component('Flexy:ProductCard', {product: myProduct}) }}
+{{ component('Flexy:CategoryFilters', {initialCategoryId: categoryId, initialPage: 1}) }}
 ```
 
 ## Key Concepts

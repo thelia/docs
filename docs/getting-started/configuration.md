@@ -157,8 +157,8 @@ Access in back-office: **Configuration > Store**
 ### Theme Configuration
 
 ```bash
-php bin/console template:set frontOffice flexy
-php bin/console template:set backOffice default
+php Thelia template:set frontOffice flexy
+php Thelia template:set backOffice default
 ```
 
 ## Caching
@@ -167,13 +167,13 @@ php bin/console template:set backOffice default
 
 ```bash
 # Development
-php bin/console cache:clear
+php Thelia cache:clear
 
 # Production
-php bin/console cache:clear --env=prod
+php Thelia cache:clear --env=prod
 
 # DDEV
-ddev exec php bin/console cache:clear
+ddev exec php Thelia cache:clear
 ```
 
 Cache is stored in `var/cache/`. Configuration in `config/packages/cache.yaml` defaults to filesystem adapter.

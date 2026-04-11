@@ -85,11 +85,13 @@ See [Smarty Plugins](/docs/back-office/smarty-plugins) for the complete referenc
 Modules can add their own admin pages:
 
 ```php
-<?php
-// Config/routing.xml
-<route id="mymodule.admin.config" path="/admin/module/MyModule">
-    <default key="_controller">MyModule\Controller\AdminController::configAction</default>
-</route>
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/admin/module/MyModule', name: 'mymodule.admin.config')]
+public function configAction(): Response
+{
+    return $this->render('module-config');
+}
 ```
 
 ### Adding to Admin Menu

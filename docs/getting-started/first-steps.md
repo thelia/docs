@@ -256,7 +256,7 @@ php Thelia admin:create
 ### Import Demo Data
 
 ```bash
-php Thelia thelia:install-demo
+php Thelia thelia:demo:import
 ```
 
 ## Understanding the Front-Office Flow

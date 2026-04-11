@@ -159,7 +159,7 @@ $admin = $factory->admin(['login' => 'superadmin']);
 
 | Method | Generated Values |
 |--------|-----------------|
-| `product()` | ref: `PROD-N`, price: 10.0, weight: 0.0, quantity: 0 |
+| `product()` | ref: `PROD-N`, basePrice: 10.0, baseWeight: 0.0, baseQuantity: 0 |
 | `customer()` | email: `customer-N@test.com`, password: `password` |
 | `admin()` | login: `admin-N`, email: `admin-N@test.com` |
 | `category()` | position: auto-incremented |

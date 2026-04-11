@@ -211,7 +211,7 @@ public function isValidPayment(): bool
 Submit form data to external gateway:
 
 ```php
-public function pay(Order $order): Response
+public function pay(Order $order): ?Response
 {
     $params = $this->buildGatewayParams($order);
 
@@ -230,7 +230,7 @@ This renders the `checkout-gateway` template to auto-submit the form to the paym
 Process payment directly with API:
 
 ```php
-public function pay(Order $order): Response
+public function pay(Order $order): ?Response
 {
     try {
         $result = $this->paymentApi->createPayment([
@@ -262,7 +262,7 @@ public function pay(Order $order): Response
 Redirect to gateway's hosted page:
 
 ```php
-public function pay(Order $order): Response
+public function pay(Order $order): ?Response
 {
     $session = $this->paymentApi->createCheckoutSession([
         'amount' => $order->getTotalAmount(),
@@ -290,7 +290,7 @@ namespace MyPayment\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Thelia\Module\BasePaymentModuleController;
 
 final class CallbackController extends BasePaymentModuleController

@@ -48,7 +48,7 @@ Front-Office Request Flow
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                     HTML Response                               │
-│         (with Stimulus controllers + Turbo)                     │
+│              (with Stimulus controllers)                        │
 └─────────────────────────────────────────────────────────────────┘
 ```
 

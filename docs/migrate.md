@@ -43,7 +43,6 @@ This guide covers the key differences between Thelia 2 and Thelia 3 to help you 
 |----------|----------|
 | `php Thelia thelia:install` (needs kernel) | `php bin/install` (standalone, no kernel needed) |
 | Interactive prompts | Environment variables + CLI options |
-| `php Thelia` console | `php bin/console` (standard Symfony) |
 
 ## What Stayed the Same
 

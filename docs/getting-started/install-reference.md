@@ -110,7 +110,7 @@ No configuration needed.
 
 ## bin/test-prepare
 
-A stripped-down variant for CI/test environments. Runs only the standalone phase (steps 1–6) — no templates, no admin, no demo. Accepts no CLI options.
+A stripped-down variant for CI/test environments. Creates the database, applies the schema, and registers modules — skipping permission checks, form secret generation, templates, admin, and demo data. Accepts no CLI options.
 
 ```bash
 APP_ENV=test php bin/test-prepare

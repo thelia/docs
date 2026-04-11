@@ -146,13 +146,13 @@ php -S localhost:8000 -t public
 ### Create Admin User (if not created during install)
 
 ```bash
-php bin/console admin:create
+php Thelia admin:create
 ```
 
 ### Clear Cache
 
 ```bash
-php bin/console cache:clear
+php Thelia cache:clear
 ```
 
 ## Production Setup
@@ -174,19 +174,19 @@ APP_DEBUG=0
 ### Cache and Assets
 
 ```bash
-php bin/console cache:clear --env=prod
-php bin/console cache:warmup --env=prod
+php Thelia cache:clear --env=prod
+php Thelia cache:warmup --env=prod
 ```
 
 ## Useful Commands
 
 ```bash
-php bin/console cache:clear
-php bin/console admin:create
-php bin/console module:list
-php bin/console module:activate ModuleName
-php bin/console module:deactivate ModuleName
-php bin/console module:refresh
+php Thelia cache:clear
+php Thelia admin:create
+php Thelia module:list
+php Thelia module:activate ModuleName
+php Thelia module:deactivate ModuleName
+php Thelia module:refresh
 ```
 
 ## Troubleshooting
