@@ -9,7 +9,7 @@ This guide takes you from zero to a working Thelia 3 store in under 10 minutes.
 
 ## Prerequisites
 
-- **PHP 8.3+** with extensions: PDO_MySQL, openssl, intl, gd, curl, dom
+- **PHP 8.2+** with extensions: PDO_MySQL, openssl, intl, gd, curl, dom
 - **Composer 2+**
 - **MySQL 8.0+** or **MariaDB 10.6+**
 - **DDEV** (recommended) or any local PHP environment

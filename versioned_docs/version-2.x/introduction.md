@@ -22,7 +22,7 @@ Thelia 3 introduces Twig front-office, full API Platform integration, LiveCompon
 
 :::caution
 
-This documentation covers Thelia **2.5.x** (branch `main`). Earlier versions (2.3, 2.4) are no longer maintained.
+This documentation covers Thelia **2.6** (branch `main`). Earlier versions (2.3, 2.4) are no longer maintained.
 
 :::
 
@@ -30,12 +30,12 @@ Compatibility
 ------------
 
 
-| Thelia version |          2.3          |          2.4          |          2.5          |
+| Thelia version |          2.4          |          2.5          |          2.6          |
 |----------------|:---------------------:|:---------------------:|:---------------------:|
-| PHP            | 5.5 / 5.6 / 7.0 / 7.1 | 7.0 / 7.1 / 7.2 / 7.3 | 8.0.2       /     8.1 / 8.2 |
-| MySQL          |       5.5 / 5.6       |    5.5 / 5.6 / 5.7    |    5.6 / 5.7 / 8.0    |
-| Symfony        |          2.8          |          2.8          |      6.0  / 6.3       |
- | Maintained     |          No           |  Security fixes only  |          Yes          |
+| PHP            | 7.0 / 7.1 / 7.2 / 7.3 | 8.0.2 / 8.1 / 8.2    | 8.2+                  |
+| MySQL          |    5.5 / 5.6 / 5.7    |    5.6 / 5.7 / 8.0    |    5.7 / 8.0+         |
+| Symfony        |          2.8          |      6.0 / 6.3        |          6.4          |
+| Maintained     |          No           |          No           |          Yes          |
 
 
 Requirements

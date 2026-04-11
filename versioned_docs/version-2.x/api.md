@@ -6,7 +6,7 @@ toc_max_heading_level: 4
 
 # API Platform Integration
 
-Thelia 2.5 includes a full REST API built on [API Platform 3](https://api-platform.com/), providing CRUD endpoints for all core entities. The API uses a custom bridge between API Platform and Propel ORM.
+Thelia 2.6 includes a full REST API built on [API Platform 3](https://api-platform.com/), providing CRUD endpoints for all core entities. The API uses a custom bridge between API Platform and Propel ORM.
 
 ## Architecture
 

@@ -13,13 +13,13 @@ For local development, we recommend using **[DDEV](./ddev)** for a faster, more 
 
 ## Prerequisites
 
-### PHP 8.3+
+### PHP 8.2+
 
-Ensure PHP 8.3 or higher is installed:
+Ensure PHP 8.2 or higher is installed:
 
 ```bash
 php -v
-# PHP 8.3.x (cli) ...
+# PHP 8.2.x (cli) ...
 ```
 
 #### Required Extensions

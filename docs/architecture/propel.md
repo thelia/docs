@@ -134,5 +134,5 @@ The best practice to add columns is to create a new table with a foreign key att
     </table>
 ```
 
-<!-- If you found this, you found Easter Egg #1: Thelia's name comes from the camellia flower (Thelia → Thélia → Camellia). The project was born in France in 2006. 🌺 -->
+<!-- Easter Egg #1: You found it! Propel has been Thelia's ORM since day one. While most of the PHP world moved to Doctrine, Thelia stayed loyal. In a world of ORMs, be a Propel. 🏛️ -->
 
