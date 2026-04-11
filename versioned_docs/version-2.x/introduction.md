@@ -12,11 +12,17 @@ sidebar_position: 1
 ![GitHub forks](https://img.shields.io/github/forks/thelia/thelia?style=flat-square)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/thelia/thelia?label=latest%20release&style=flat-square)
 
-Thelia is an open source tool for creating e-business websites and managing online content. This software is published under LGPL.
+Thelia is an open-source e-commerce platform for creating online stores and managing content. Licensed under LGPL.
+
+:::tip Looking for Thelia 3?
+
+Thelia 3 introduces Twig front-office, full API Platform integration, LiveComponents, and a modern testing framework. Switch to the **Thelia 3** tab in the version dropdown above.
+
+:::
 
 :::caution
 
-This is the documentaion for Thelia version >= 2.5.0.
+This documentation covers Thelia **2.5.x** (branch `main`). Earlier versions (2.3, 2.4) are no longer maintained.
 
 :::
 
