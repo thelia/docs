@@ -70,7 +70,7 @@ server {
 
 Replace `/var/www/thelia/public` with the full path to the `public` directory of your project.
 
-## Required Writable Directories
+## Required writable directories
 
 Ensure Nginx (www-data) has write access to:
 

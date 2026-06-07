@@ -24,7 +24,7 @@ Only the `public` directory has to be accessible with Apache. Configure your vho
 
 Replace `/var/www/thelia/public` with the full path to the `public` directory of your project.
 
-## Required Writable Directories
+## Required writable directories
 
 Apache needs write access to these directories:
 

@@ -23,7 +23,7 @@ List every available command and its description with `php Thelia list`. Add `--
 
 ## Available commands
 
-All commands below live in `Thelia\Command\` (core: `core/lib/Thelia/Command/`). Most are declared with the PHP 8 `#[AsCommand(name: ..., description: ...)]` attribute (the Symfony 7 idiom). A few legacy ones still declare their name with `setName()` in `configure()` — this is noted where relevant.
+All commands below live in `Thelia\Command\` (core: `core/lib/Thelia/Command/`). Most are declared with the PHP 8 `#[AsCommand(name: ..., description: ...)]` attribute (the Symfony 7 idiom). A few legacy ones still declare their name with `setName()` in `configure()`; this is noted where relevant.
 
 ### Modules
 
@@ -63,7 +63,7 @@ All commands below live in `Thelia\Command\` (core: `core/lib/Thelia/Command/`).
 | `thelia:dev:reloadDB` | Erase the current database and recreate it. |
 
 :::caution
-`thelia:dev:db:diff` and `thelia:dev:reloadDB` are development helpers. `thelia:dev:reloadDB` drops your data — never run it against a production database.
+`thelia:dev:db:diff` and `thelia:dev:reloadDB` are development helpers. `thelia:dev:reloadDB` drops your data, so never run it against a production database.
 :::
 
 ### Administrators
@@ -158,7 +158,7 @@ See `core/lib/Thelia/Command/ModuleListCommand.php` for a complete, real-world r
 Use native return and parameter types on every method you override (`protected function configure(): void`, `protected function execute(InputInterface $input, OutputInterface $output): int`). Symfony 7 interfaces require them.
 :::
 
-## `thelia:demo:import` — load demo data
+## `thelia:demo:import`: load demo data
 
 `thelia:demo:import` populates a fresh store with a realistic demo dataset: catalog (categories, products, features, attributes, brands), content folders, customers, sales, coupons, orders and carts. It also copies the matching demo images into `local/media/images/` unless you pass `--skip-images`.
 
@@ -182,7 +182,7 @@ This is what `bin/install --with-demo` runs after activating the modules (it pas
 
 ### The demo importer is extensible
 
-`thelia:demo:import` is a good illustration of the Thelia editorial line: **no central registry, work units are auto-discovered**. The command does not hard-code its steps. It injects every importer through `#[AutowireIterator('thelia.demo_importer')]` (not `#[TaggedIterator]`, which is deprecated in Symfony 7.1):
+`thelia:demo:import` follows the Thelia convention of auto-discovering its work units instead of registering them in a central place. The command does not hard-code its steps. It injects every importer through `#[AutowireIterator('thelia.demo_importer')]` (not `#[TaggedIterator]`, which is deprecated in Symfony 7.1):
 
 ```php
 // core/lib/Thelia/Command/Import/DemoImportCommand.php (excerpt)
@@ -228,8 +228,8 @@ php Thelia module:post-activate-all
 
 This is the step that lets modules create their own tables and seed their data. It is run automatically by:
 
-- `bin/install` — after the modules are activated, before the demo import (see the [install reference](../../getting-started/install-reference.md)).
-- `bin/test-prepare` — so module tables exist in the isolated test database (see [Testing](../../testing/index.md)).
+- `bin/install`, after the modules are activated and before the demo import (see the [install reference](../../getting-started/install-reference.md)).
+- `bin/test-prepare`, so module tables exist in the isolated test database (see [Testing](../../testing/index.md)).
 
 If you activate a module manually and its tables are missing, run this command (or reactivate the module) to trigger its `postActivation()`.
 

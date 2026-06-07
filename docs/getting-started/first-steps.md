@@ -5,18 +5,18 @@ sidebar_position: 5
 
 # First Steps
 
-After installing Thelia 3, this guide will help you create your first content and understand the basic workflows.
+Once Thelia 3 is installed, you can create your first content and learn the basic workflows.
 
-## Access the Back-Office
+## Access the back-office
 
-Navigate to your admin panel:
+Open your admin panel:
 
-- **URL**: `https://your-site.ddev.site/admin` (DDEV) or `http://localhost:8000/admin`
-- **Login**: Use the credentials created during installation
+- URL: `https://your-site.ddev.site/admin` (DDEV) or `http://localhost:8000/admin`
+- Login: use the credentials created during installation
 
-## Create Your First Category
+## Create your first category
 
-Categories organize your products. Let's create one:
+Categories organize your products. To create one:
 
 1. Go to **Catalog > Categories**
 2. Click **Add a category**
@@ -45,7 +45,7 @@ Authorization: Bearer {token}
 }
 ```
 
-### In Twig (Front-Office)
+### In Twig (front-office)
 
 ```twig
 {% set categories = resources('/api/front/categories', {
@@ -62,7 +62,7 @@ Authorization: Bearer {token}
 </nav>
 ```
 
-## Create Your First Product
+## Create your first product
 
 1. Go to **Catalog > Products**
 2. Click **Add a product**
@@ -140,19 +140,18 @@ Authorization: Bearer {token}
 </article>
 ```
 
-## Customize the Theme
+## Customize the theme
 
 ### Understanding Flexy
 
-The default theme **Flexy** uses:
-- **Twig** templates
-- **LiveComponents** for reactivity
-- **Stimulus** for JavaScript
-- **Stimulus** for JavaScript behavior
+The default Flexy theme uses:
+- Twig templates
+- LiveComponents for reactivity
+- Stimulus for JavaScript behavior
 
-### Override a Template
+### Override a template
 
-To customize without modifying the original:
+To customize a file without modifying the original:
 
 1. Create your theme directory:
    ```bash
@@ -171,7 +170,7 @@ To customize without modifying the original:
    php Thelia template:set frontOffice myTheme
    ```
 
-### Modify Styles
+### Modify styles
 
 For Flexy theme customization:
 
@@ -183,9 +182,9 @@ npm run dev  # Watch mode for development
 
 Edit files in `assets/` directory.
 
-## Add a Simple Page
+## Add a simple page
 
-### Create Content
+### Create content
 
 1. Go to **Content > Folders**
 2. Create a folder "Information"
@@ -193,7 +192,7 @@ Edit files in `assets/` directory.
 4. Create content "About Us" in the "Information" folder
 5. Add your content and save
 
-### Display Content
+### Display content
 
 ```twig
 {% set content = resources('/api/front/contents/1') %}
@@ -204,7 +203,7 @@ Edit files in `assets/` directory.
 </article>
 ```
 
-## Configure Shipping
+## Configure shipping
 
 1. Go to **Configuration > Shipping zones**
 2. Create zones (e.g., "Domestic", "Europe", "International")
@@ -212,22 +211,22 @@ Edit files in `assets/` directory.
 4. Activate a shipping module (e.g., "Flat Rate")
 5. Configure the module with prices per zone
 
-## Configure Payment
+## Configure payment
 
 1. Go to **Modules**
 2. Activate a payment module (e.g., "PayPal", "Stripe")
 3. Configure the module with your credentials
 
-## Test the Checkout
+## Test the checkout
 
 1. Visit your front-office
 2. Add a product to cart
 3. Proceed to checkout
 4. Complete the order flow
 
-## Common Tasks
+## Common tasks
 
-### Clear Cache
+### Clear cache
 
 ```bash
 # DDEV
@@ -237,7 +236,7 @@ ddev exec php Thelia cache:clear
 php Thelia cache:clear
 ```
 
-### View Logs
+### View logs
 
 ```bash
 # DDEV
@@ -247,19 +246,19 @@ ddev logs
 tail -f var/log/dev.log
 ```
 
-### Create Admin User
+### Create admin user
 
 ```bash
 php Thelia admin:create
 ```
 
-### Import Demo Data
+### Import demo data
 
 ```bash
 php Thelia thelia:demo:import
 ```
 
-## Understanding the Front-Office Flow
+## Understanding the front-office flow
 
 ```
 1. User visits /category/1
@@ -286,9 +285,9 @@ php Thelia thelia:demo:import
 8. LiveComponents update via AJAX
 ```
 
-## Next Steps
+## Next steps
 
-- [Architecture](/docs/architecture) - Understand the full system
-- [Front-Office Development](/docs/front-office) - Build custom UIs
-- [API Documentation](/docs/api) - Master the API
-- [Module Development](/docs/modules) - Extend functionality
+- [Architecture](/docs/architecture) - understand the full system
+- [Front-Office Development](/docs/front-office) - build custom UIs
+- [API Documentation](/docs/api) - work with the API
+- [Module Development](/docs/modules) - extend functionality

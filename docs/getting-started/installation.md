@@ -7,8 +7,8 @@ sidebar_position: 2
 
 This guide covers installing Thelia 3 on a standard PHP/MySQL environment without Docker.
 
-:::tip Recommended for Development
-For local development, we recommend using **[DDEV](./ddev)** for a faster, more consistent setup.
+:::tip Recommended for development
+For local development, use **[DDEV](./ddev)**. It gives a faster and more consistent setup.
 :::
 
 ## Prerequisites
@@ -54,9 +54,9 @@ GRANT ALL PRIVILEGES ON thelia.* TO 'thelia'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-## Installation Steps
+## Installation steps
 
-### 1. Get the Code
+### 1. Get the code
 
 **From GitHub (development):**
 
@@ -73,7 +73,7 @@ composer create-project thelia/thelia-project my-shop
 cd my-shop
 ```
 
-### 2. Install Dependencies
+### 2. Install dependencies
 
 ```bash
 composer install
@@ -89,7 +89,7 @@ DATABASE_USER=thelia DATABASE_PASSWORD=your_password \
 php bin/install
 ```
 
-#### With Demo Data and Admin User
+#### With demo data and admin user
 
 ```bash
 DATABASE_HOST=localhost DATABASE_NAME=thelia \
@@ -102,17 +102,17 @@ php bin/install \
     --admin_email=admin@example.com
 ```
 
-#### All Options
+#### All options
 
 **Environment variables (database):**
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `DATABASE_HOST` | — | Database hostname |
+| `DATABASE_HOST` | - | Database hostname |
 | `DATABASE_PORT` | `3306` | Database port |
-| `DATABASE_NAME` | — | Database name |
-| `DATABASE_USER` | — | Database user |
-| `DATABASE_PASSWORD` | — | Database password |
+| `DATABASE_NAME` | - | Database name |
+| `DATABASE_USER` | - | Database user |
+| `DATABASE_PASSWORD` | - | Database password |
 
 **CLI options (themes and setup):**
 
@@ -122,47 +122,47 @@ php bin/install \
 | `--backoffice_theme` | `default` | Back-office template |
 | `--pdf_theme` | `default` | PDF template |
 | `--email_theme` | `default` | Email template |
-| `--with-demo` | — | Import demo catalog |
-| `--with-admin` | — | Create admin user |
+| `--with-demo` | - | Import demo catalog |
+| `--with-admin` | - | Create admin user |
 | `--admin_login` | `thelia` | Admin username |
 | `--admin_password` | `thelia` | Admin password |
 | `--admin_first_name` | `Admin` | Admin first name |
 | `--admin_last_name` | `Thelia` | Admin last name |
 | `--admin_email` | `admin@thelia.net` | Admin email |
 
-### 4. Start Development Server
+### 4. Start the development server
 
 ```bash
 php -S localhost:8000 -t public
 ```
 
-### 5. Access Your Site
+### 5. Access your site
 
 - **Front-office**: http://localhost:8000
 - **Back-office**: http://localhost:8000/admin
 
 ## Post-Installation
 
-### Create Admin User (if not created during install)
+### Create admin user (if not created during install)
 
 ```bash
 php Thelia admin:create
 ```
 
-### Clear Cache
+### Clear cache
 
 ```bash
 php Thelia cache:clear
 ```
 
-## Production Setup
+## Production setup
 
-### Web Server Configuration
+### Web server configuration
 
 - [Apache Configuration](./apache-configuration)
 - [Nginx Configuration](./nginx-configuration)
 
-### Environment Mode
+### Environment mode
 
 Set production mode in `.env.local`:
 
@@ -171,14 +171,14 @@ APP_ENV=prod
 APP_DEBUG=0
 ```
 
-### Cache and Assets
+### Cache and assets
 
 ```bash
 php Thelia cache:clear --env=prod
 php Thelia cache:warmup --env=prod
 ```
 
-## Useful Commands
+## Useful commands
 
 ```bash
 php Thelia cache:clear
@@ -191,20 +191,20 @@ php Thelia module:refresh
 
 ## Troubleshooting
 
-### Memory Limit Error
+### Memory limit error
 
 ```bash
 php -d memory_limit=512M bin/install
 ```
 
-### Permission Denied
+### Permission denied
 
 ```bash
 sudo chown -R www-data:www-data var/
 chmod -R 755 var/cache var/log
 ```
 
-### Database Connection Error
+### Database connection error
 
 Verify credentials and ensure the MySQL user has proper permissions:
 
@@ -213,8 +213,8 @@ GRANT ALL PRIVILEGES ON thelia.* TO 'thelia'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-## Next Steps
+## Next steps
 
-- [Configuration](./configuration) — Configure your store
-- [First Steps](./first-steps) — Create products and customize
-- [Architecture](/docs/architecture) — Understand Thelia 3 internals
+- [Configuration](./configuration): configure your store
+- [First steps](./first-steps): create products and customize
+- [Architecture](/docs/architecture): understand Thelia 3 internals

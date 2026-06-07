@@ -5,24 +5,24 @@ sidebar_position: 2
 
 # API Authentication
 
-Thelia 3 API uses **JWT (JSON Web Token)** authentication via the `lexik/jwt-authentication-bundle`.
+The Thelia 3 API uses JWT (JSON Web Token) authentication via the `lexik/jwt-authentication-bundle`.
 
-The API layer relies on the standalone API Platform distribution rather than the full metapackage. The relevant packages declared in `core/composer.json` are:
+The API layer relies on the standalone API Platform distribution rather than the full metapackage. The packages declared in `core/composer.json` are:
 
 - `api-platform/symfony` `^4.3` (standalone, not `api-platform/api-platform`)
 - `lexik/jwt-authentication-bundle` `^3.0`
 - `nelmio/cors-bundle` `^2.2`
 
-## Authentication Methods
+## Authentication methods
 
 | Method | Use Case | Routes |
 |--------|----------|--------|
 | JWT Token | All authenticated API access | `/api/admin/*`, `/api/front/*` (protected) |
 | None (public) | Front-office public data | `/api/front/*` (public endpoints) |
 
-## JWT Authentication
+## JWT authentication
 
-### Login Endpoints
+### Login endpoints
 
 Thelia provides two login endpoints:
 
@@ -56,7 +56,7 @@ On successful authentication:
 }
 ```
 
-### Using the Token
+### Using the token
 
 Include the JWT token in the `Authorization` header for authenticated requests:
 
@@ -65,7 +65,7 @@ GET /api/admin/products
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...
 ```
 
-### Token Payload
+### Token payload
 
 The JWT token contains:
 
@@ -78,9 +78,9 @@ The JWT token contains:
 }
 ```
 
-The `type` field indicates whether it's an Admin or Customer user.
+The `type` field indicates whether the user is an Admin or a Customer.
 
-## Front Routes (Public)
+## Front routes (public)
 
 Public front routes (`/api/front/*`) do not require authentication:
 
@@ -92,16 +92,16 @@ GET /api/front/brands
 
 These routes only expose publicly visible data (e.g., `visible=true` products).
 
-### Customer-Authenticated Routes
+### Customer-authenticated routes
 
-Some front routes require customer authentication for personalized data:
+Some front routes require customer authentication to return personalized data:
 
 ```http
 GET /api/front/carts/current
 Authorization: Bearer {customer-jwt-token}
 ```
 
-## JWT Configuration
+## JWT configuration
 
 JWT keys are configured in your environment. The default configuration uses RSA keys:
 
@@ -124,7 +124,7 @@ JWT_TOKEN_TTL=3600
 The bundle configuration (`config/packages/lexik_jwt_authentication.yaml`) maps these variables directly: `secret_key`, `public_key`, `pass_phrase` and `token_ttl: '%env(int:JWT_TOKEN_TTL)%'`. Tokens expire after `JWT_TOKEN_TTL` seconds (default `3600`, i.e. one hour).
 :::
 
-## CORS Configuration
+## CORS configuration
 
 Thelia ships with `nelmio/cors-bundle` pre-configured in `config/packages/nelmio_cors.yaml`. The default configuration allows origins matching `CORS_ALLOW_ORIGIN` (set in `.env`):
 
@@ -147,7 +147,7 @@ To allow all origins during development, set in `.env.local`:
 CORS_ALLOW_ORIGIN='^https?://.*$'
 ```
 
-## Error Responses
+## Error responses
 
 ### 401 Unauthorized
 
@@ -176,18 +176,18 @@ Or for invalid/expired tokens:
 }
 ```
 
-## Best Practices
+## Best practices
 
-1. **Use HTTPS** - Always use HTTPS in production to protect tokens
-2. **Short token lifetime** - Configure appropriate token expiration
-3. **Secure key storage** - Protect JWT private keys
-4. **Validate on server** - Never trust client-side token validation
+1. Always use HTTPS in production to protect tokens in transit.
+2. Configure a token lifetime suited to your use case.
+3. Keep the JWT private keys out of version control and restrict access to them.
+4. Validate tokens on the server. Never trust client-side validation.
 
-## OpenAPI Documentation
+## OpenAPI documentation
 
-The `/api/docs` endpoint includes JWT authentication documentation with "Authorize" button for testing authenticated endpoints.
+The `/api/docs` endpoint documents JWT authentication and provides an "Authorize" button for testing authenticated endpoints.
 
-## Next Steps
+## Next steps
 
 - [Resources](./resources) - Creating API resources
 - [Endpoints Reference](./endpoints) - Available endpoints

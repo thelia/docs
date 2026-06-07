@@ -5,13 +5,13 @@ sidebar_position: 3
 
 ## In templates
 
-If you want to create multilingual compatible templates, you have to pay a special attention to :
+To create multilingual templates, pay attention to:
 - static text
 - date formatting
 - number formatting
 - money formatting
 
-Thelia provides several Smarty functions to help you.
+Thelia provides several Smarty functions for this.
 
 ### `{intl}`
 
@@ -27,17 +27,17 @@ The `{intl}` function translates a string into the current language.
 
     {intl l="Hello, %name, how do you do ?" name={$name}}
 ```
-We have here three typical uses of `{intl}`
+These are three typical uses of `{intl}`.
 
 #### `l`
 
-The `l` parameter contains the string that will be translated. This string should not contains any variable, such as `{intl l="Hello, $name, how do you do ?"}`, internal variables should be used instead. Every `%varname` found in the string will be replaced by the value of the `varname` parameter. For example: `{intl l="Hello, %user, how do you do ?" user={$name}}` is fine.
+The `l` parameter contains the string that will be translated. This string should not contain any variable, such as `{intl l="Hello, $name, how do you do ?"}`; use internal variables instead. Every `%varname` found in the string is replaced by the value of the `varname` parameter. For example, `{intl l="Hello, %user, how do you do ?" user={$name}}` is fine.
 
 If no translation can be found for a given string, the translator will return either the value of the `l` parameter, or an empty string, depending on the "Languages & URLs" parameters.
 
 #### `d`
 
-The `d` parameter is the message domain, a set of internationalized messages. Thelia contains the following domains :
+The `d` parameter is the message domain, a set of internationalized messages. Thelia defines the following domains:
 
 - `core` => for thelia core translations
 - bo.*template_name* (eg : `bo.default`) => for each back-office template
@@ -45,20 +45,20 @@ The `d` parameter is the message domain, a set of internationalized messages. Th
 - pdf.*template_name* (eg : `pdf.default`) => for each PDF template
 - email.*template_name* (eg : `email.default`) => for each email template
 - In Modules :
-    - *module_code* (eg : `paypal`) => fore module core translations
+    - *module_code* (eg : `paypal`) => for module core translations
     - *module_code*.ai (eg : `paypal.ai`) => used in AdminIncludes templates (Note: AdminIncludes are now deprecated)
     - *module_code*.bo.*template_name* (eg : `paypal.bo.default`) => used in back office template
     - *module_code*.fo.*template_name* (eg : `paypal.fo.default`) => used in front office template
 
 This parameter is mostly used in modules. Other templates (front-office, back-office, PDF and email) may use the `{default_translation_domain}` function to define a template-wide message domain, and the `d` parameter could then be omitted.
 
-For examples, in the `layout.tpl` file of the default front-office template, you'll find `{default_translation_domain domain='fo.default'}`.
+For example, the `layout.tpl` file of the default front-office template contains `{default_translation_domain domain='fo.default'}`.
 
 #### `js`
 
-When using `{intl}` in a Javascript string, the translated string may contain simple and/or double quotes, that should be escaped to prevent a syntax error.
+When using `{intl}` in a JavaScript string, the translated string may contain single or double quotes that must be escaped to prevent a syntax error.
 
-To do so, use the `js` parameter, that will escape single and double quotes :
+To do so, use the `js` parameter, which escapes single and double quotes:
 ```js
     var myString = '{intl l="A string with 'simple' and \"double\" quotes" js=1}';
 ```
@@ -75,17 +75,17 @@ The result will be in this case :
 ```js
     var myString = 'A string with &#039;simple&#039; and &quot;double&quot; quotes';
 ```
-The 'quotes' modifier could also be used, with some care as it escapes only simple quotes :
+The 'quotes' modifier can also be used, with some care, as it escapes only single quotes:
 ```js
     var myString = '{intl l="A string with 'simple' and \"double\" quotes"|escape:'quotes'}';
 ```
-will gives :
+which gives:
 ```js
     var myString = 'A string with \'simple\' and "double" quotes';
 ```
 #### Translating your templates
 
-Translations is done through the back-office -> Configuration -> Translation. The string are automatically collected in your template, and you'll be able to enter the translation for any language defined in your store (see Configuration, -> Languages & URLs).
+Translation is done through the back-office, under Configuration -> Translation. The strings are automatically collected from your template, and you can enter a translation for any language defined in your store (see Configuration -> Languages & URLs).
 
 ### `{format_date}`
 
@@ -230,22 +230,22 @@ Formatting options:
 
 ## In php files
 
-If you have string to translate in your php classes like error messages you have to use the translator.
-Translator is a singleton class that help you to register your string as translatable like this :
+To translate strings in your PHP classes, such as error messages, use the translator.
+`Translator` is a singleton class that lets you register a string as translatable, like this:
 
 ```php
 Translator::getInstance()
     ->trans("A string that need to be translated");
 ```
 
-If you want to insert dynamic value that can change and that don't need to be translated you can pass it in the second parameter :
+To insert a dynamic value that changes and does not need to be translated, pass it as the second parameter:
 
 ```php
 Translator::getInstance()
     ->trans("A string that need to be translated with %variable", ['%variable' => $myVariable]);
 ```
 
-Third parameter of the tans function is the domain so if you are in a module file the best is to take the global module domain present in a constant of base class :
+The third parameter of the `trans` function is the domain. In a module file, the best practice is to use the global module domain, which is stored in a constant of the base class:
 ```php
 Translator::getInstance()
     ->trans(

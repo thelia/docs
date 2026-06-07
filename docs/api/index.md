@@ -5,7 +5,7 @@ sidebar_position: 1
 
 # API Platform Integration
 
-Thelia 3 uses [API Platform](https://api-platform.com/) to provide a powerful, fully-featured REST API. The API exposes all core e-commerce entities and can be extended by modules.
+Thelia 3 uses [API Platform](https://api-platform.com/) for its REST API. The API exposes all core e-commerce entities, and modules can extend it.
 
 ## Architecture
 
@@ -36,7 +36,7 @@ Thelia 3 uses [API Platform](https://api-platform.com/) to provide a powerful, f
                     └─────────────────────────────────┘
 ```
 
-## Key Concepts
+## Key concepts
 
 ### Resources
 
@@ -62,7 +62,7 @@ class Product extends AbstractTranslatableResource
 }
 ```
 
-See [Resources](./resources.md) for complete documentation.
+See [Resources](./resources.md) for full documentation.
 
 ### Addons
 
@@ -82,11 +82,11 @@ class CustomerCustomerFamily implements ResourceAddonInterface
 }
 ```
 
-See [Addons](./addons.md) for complete documentation.
+See [Addons](./addons.md) for full documentation.
 
-### Serialization Groups
+### Serialization groups
 
-Control which fields are visible in different contexts:
+Control which fields are visible in each context:
 
 | Group Pattern | Description |
 |---------------|-------------|
@@ -107,9 +107,9 @@ GET /api/front/products?visible=true&brand.id=5&order[position]=asc
 
 See [Filters](./filters.md) for available filters.
 
-## Route Namespaces
+## Route namespaces
 
-### Admin Routes (`/api/admin/`)
+### Admin routes (`/api/admin/`)
 
 Full CRUD operations for authenticated administrators:
 
@@ -121,7 +121,7 @@ PUT    /api/admin/products/{id}      # Update product
 DELETE /api/admin/products/{id}      # Delete product
 ```
 
-### Front Routes (`/api/front/`)
+### Front routes (`/api/front/`)
 
 Read-only access for public consumption:
 
@@ -139,9 +139,9 @@ See [Authentication](./authentication.md) for details on:
 - Login endpoints (`/api/admin/login`, `/api/front/login`)
 - CORS configuration
 
-## Internal Access: DataAccessService
+## Internal access: DataAccessService
 
-Templates and components can call the API internally without HTTP overhead:
+Templates and components can call the API internally, without HTTP overhead:
 
 ```twig
 {% set products = resources('/api/front/products', {
@@ -157,9 +157,9 @@ $products = $this->dataAccessService->resources('/api/front/products', [
 ]);
 ```
 
-## Response Format
+## Response format
 
-### Default Format (JSON)
+### Default format (JSON)
 
 API responses return simple JSON arrays by default. Translatable fields are nested under `i18ns`, keyed by locale:
 
@@ -199,14 +199,14 @@ API responses return simple JSON arrays by default. Translatable fields are nest
 ```
 
 :::note i18ns shape: HTTP vs internal
-Over HTTP, the API **always** returns `i18ns` keyed by locale (`"i18ns": { "en_US": {...}, "fr_FR": {...} }`). The HTTP response is never flattened to a single locale.
+Over HTTP, the API always returns `i18ns` keyed by locale (`"i18ns": { "en_US": {...}, "fr_FR": {...} }`). The HTTP response is never flattened to a single locale.
 
-The flattened single-locale shape (`"i18ns": { "title": ... }`) only appears when you consume the API **internally** through `DataAccessService::resources()` or the `resources()` Twig function. In that path, `ResourceService::resources()` always finishes by calling `formatI18ns()`, which collapses `i18ns` down to the current locale's sub-array (this happens for both the JSON and `jsonld` formats). The locale used is the one resolved by `LocaleService`; pass an explicit `locale` parameter to change which locale is kept.
+The flattened single-locale shape (`"i18ns": { "title": ... }`) only appears when you consume the API internally, through `DataAccessService::resources()` or the `resources()` Twig function. On that path, `ResourceService::resources()` finishes by calling `formatI18ns()`, which collapses `i18ns` down to the current locale's sub-array. This happens for both the JSON and `jsonld` formats. The locale used is the one resolved by `LocaleService`; pass an explicit `locale` parameter to change which locale is kept.
 :::
 
-### JSON-LD Format (with Hydra Metadata)
+### JSON-LD format (with Hydra metadata)
 
-To get pagination metadata (total items, page info), request JSON-LD format with `Accept: application/ld+json` header:
+To get pagination metadata (total items, page info), request the JSON-LD format with the `Accept: application/ld+json` header:
 
 ```json
 {
@@ -233,7 +233,7 @@ To get pagination metadata (total items, page info), request JSON-LD format with
 
 ### DataAccessService (PHP/Twig)
 
-When using `DataAccessService::resources()` internally, the **default format is JSON** (simple arrays):
+When using `DataAccessService::resources()` internally, the default format is JSON (simple arrays):
 
 ```php
 // Default: returns simple array
@@ -247,9 +247,9 @@ $response = $this->dataAccessService->resources('/api/front/products', [], 'json
 
 Use `'jsonld'` format only when you need pagination metadata (total items, page info).
 
-## Available Endpoints
+## Available endpoints
 
-A short summary of the most common resources. The front routes for `Customers` and `Orders` require customer authentication (they only expose the authenticated customer's own data).
+A summary of the most common resources. The front routes for `Customers` and `Orders` require customer authentication; they only expose the authenticated customer's own data.
 
 | Entity | Admin Route | Front Route |
 |--------|-------------|-------------|
@@ -260,9 +260,9 @@ A short summary of the most common resources. The front routes for `Customers` a
 | Cart | `/api/admin/carts` | `/api/front/carts`, `/api/front/cart` |
 | Brands | `/api/admin/brands` | `/api/front/brands` |
 
-See [Endpoints Reference](./endpoints/index.md) for the complete, authoritative API documentation.
+See [Endpoints Reference](./endpoints/index.md) for the complete API documentation.
 
-## Creating Custom Resources
+## Creating custom resources
 
 Modules can add their own API resources:
 
@@ -289,9 +289,9 @@ class ProductReview implements PropelResourceInterface
 }
 ```
 
-See [Module Structure — API Components](/docs/modules/structure#api-components) for module-specific documentation.
+See [Module Structure: API Components](/docs/modules/structure#api-components) for module-specific documentation.
 
-## Next Steps
+## Next steps
 
 - [Authentication](./authentication.md) - Secure your API access
 - [Resources](./resources.md) - Create API resources

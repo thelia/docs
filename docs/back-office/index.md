@@ -5,36 +5,36 @@ sidebar_position: 1
 
 # Back-Office Development
 
-The Thelia 3 back-office (admin panel) is a **Symfony bundle** named `default-twig`. It renders
-**Twig** templates, fetches data through **Repositories**, displays lists with **Twig
-UiComponents** (a server-rendered DataTable), and stays extensible through **hooks** and **Symfony
-UX** (Stimulus + LiveComponent/TwigComponent).
+The Thelia 3 back-office (admin panel) is a Symfony bundle named `default-twig`. It renders Twig
+templates, fetches data through Repositories, and displays lists with Twig UiComponents (a
+server-rendered DataTable). Modules extend it through hooks and Symfony UX (Stimulus plus
+LiveComponent/TwigComponent).
 
-The bundle lives at `templates/backOffice/default-twig/` and is autonomous: it declares its own
-routes with PHP 8 `#[Route]` attributes, its own hooks, its own templates, forms, and assets.
+The bundle lives at `templates/backOffice/default-twig/`. It declares its own routes with PHP 8
+`#[Route]` attributes, along with its own hooks, templates, forms, and assets.
 
 :::caution The Smarty back-office is legacy
-The previous Smarty `default` back-office theme is **no longer recommended** and will likely be
-**dropped in Thelia 3.1**. New development targets the `default-twig` bundle. The two themes can run
-side by side during the transition, but you should build any new admin screen on the Twig bundle.
+The previous Smarty `default` back-office theme is no longer recommended and will likely be dropped
+in Thelia 3.1. New development targets the `default-twig` bundle. The two themes can run side by
+side during the transition, but build any new admin screen on the Twig bundle.
 :::
 
-## Back-Office vs Front-Office
+## Back-office vs front-office
 
-| Aspect | Back-Office (`default-twig`) | Front-Office (Flexy) |
+| Aspect | Back-office (`default-twig`) | Front-office (Flexy) |
 |--------|------------------------------|----------------------|
-| Template engine | **Twig** | **Twig** |
-| Data access | **Repositories** + **Twig UiComponents** (DataTable) | **DataAccessService** (API) |
-| Extensibility | **Hooks** (`safe_hook`, `hook_block`, `has_hook` Twig functions) + `#[AsHook]` | **Hooks** + Twig overrides |
-| Interactivity | **Stimulus** + **Symfony UX** (LiveComponent / TwigComponent) | **Stimulus** + **Symfony UX** |
+| Template engine | Twig | Twig |
+| Data access | Repositories plus Twig UiComponents (DataTable) | `DataAccessService` (API) |
+| Extensibility | Hooks (`safe_hook`, `hook_block`, `has_hook` Twig functions) plus `#[AsHook]` | Hooks plus Twig overrides |
+| Interactivity | Stimulus plus Symfony UX (LiveComponent / TwigComponent) | Stimulus plus Symfony UX |
 
 ## Activating the Twig back-office
 
 The `default-twig` bundle is the back-office reference. Activate it at install time, or switch an
-existing installation to it.
+existing installation over to it.
 
 ```bash
-# fresh install — select the default-twig back-office theme
+# fresh install - select the default-twig back-office theme
 ddev exec php bin/install \
   --frontoffice_theme=flexy --backoffice_theme=default-twig \
   --pdf_theme=default --email_theme=default \
@@ -43,7 +43,7 @@ ddev exec php bin/install \
   --admin_first_name=thelia --admin_last_name=thelia \
   --admin_email=thelia@example.com
 
-# already installed — switch the active back-office template
+# already installed - switch the active back-office template
 ddev exec bin/console template:set backOffice default-twig
 ddev exec bin/console cache:warmup -e dev
 
@@ -99,8 +99,8 @@ templates/backOffice/default-twig/
 ```
 
 The bundle is registered as a standard Symfony bundle and only loads its services when it is the
-active back-office template. Services are autodiscovered and autoconfigured — no service XML to
-write:
+active back-office template. Services are autodiscovered and autoconfigured, so there is no service
+XML to write:
 
 ```php
 // templates/backOffice/default-twig/src/BackOfficeDefaultTwigBundle.php
@@ -119,8 +119,8 @@ $container->services()
 ## Adding an admin page from a module
 
 A module adds an admin page with a thin controller and a PHP 8 `#[Route]` attribute. The controller
-renders a Twig template; it never persists data itself (Thelia is event-driven —
-`Controller → dispatch(Event) → Action listener → Model::save()`).
+renders a Twig template; it never persists data itself. Thelia is event-driven:
+`Controller → dispatch(Event) → Action listener → Model::save()`.
 
 ```php
 // local/modules/MyModule/src/Controller/ConfigController.php
@@ -266,7 +266,7 @@ final class AdminHook extends BaseHook
 }
 ```
 
-:::tip Attribute alternative — `#[AsHook]`
+:::tip Attribute alternative: `#[AsHook]`
 The Twig back-office also ships a PHP 8 attribute,
 `BackOfficeDefaultTwigBundle\Hook\Attribute\AsHook`, registered for autoconfiguration by the bundle.
 You can annotate a listener method instead of returning a `getSubscribedHooks()` array:
@@ -293,44 +293,44 @@ extension points every screen emits.
 
 The back-office uses [Symfony UX](https://symfony.com/bundles/ux-stimulus/current/index.html):
 
-- **Stimulus controllers** live in `assets/controllers/` and wire behavior to markup with
+- Stimulus controllers live in `assets/controllers/` and wire behavior to markup with
   `data-controller` / `data-action` attributes.
-- **TwigComponent** and **LiveComponent** classes live in `src/UiComponents/` (annotated with
+- TwigComponent and LiveComponent classes live in `src/UiComponents/` (annotated with
   `#[AsTwigComponent]` / `#[AsLiveComponent]`). The list screens render through a server-side
   `DataTable` component.
 
-There is no bespoke jQuery layer to learn — the same UX stack powers both the front-office Flexy
+There is no separate jQuery layer to learn. The same UX stack powers both the front-office Flexy
 theme and the back-office bundle.
 
-## Best Practices
+## Best practices
 
 ### Do
 
-- Build new admin screens on the **`default-twig` bundle**, not the Smarty theme.
-- Keep controllers **thin**: dispatch an event and let an `Action` listener persist.
-- Fetch data through **Repositories** and present lists with the **DataTable** UiComponent.
-- Use **hooks** (`safe_hook` / `hook_block`) to extend existing screens instead of editing core
+- Build new admin screens on the `default-twig` bundle, not the Smarty theme.
+- Keep controllers thin: dispatch an event and let an `Action` listener persist.
+- Fetch data through Repositories and present lists with the DataTable UiComponent.
+- Use hooks (`safe_hook` / `hook_block`) to extend existing screens instead of editing core
   templates.
-- Render forms with the **`bo_form_theme`** so they match the rest of the admin.
+- Render forms with the `bo_form_theme` so they match the rest of the admin.
 - Translate every user-facing string with `|trans`.
 
 ### Don't
 
-- Don't edit core back-office templates directly — extend through hooks.
-- Don't use `@Route` annotations — use the PHP 8 `#[Route]` attribute.
-- Don't call `save()` from a controller — dispatch an event (Thelia is event-driven).
-- Don't hardcode URLs — use `path()` / `url()`.
+- Don't edit core back-office templates directly; extend through hooks.
+- Don't use `@Route` annotations; use the PHP 8 `#[Route]` attribute.
+- Don't call `save()` from a controller; dispatch an event instead, since Thelia is event-driven.
+- Don't hardcode URLs; use `path()` / `url()`.
 - Don't skip the CSRF token on form submissions.
 
-## Reference Documentation
+## Reference documentation
 
-- [Hooks Reference](./hooks.md) — all back-office hooks and conventional extension points
-- [Forms](/docs/reference/forms) — Thelia form handling
-- [Internationalization](/docs/reference/internationalization) — translating admin strings
-- [Module Development](/docs/modules) — creating modules
+- [Hooks Reference](./hooks.md): all back-office hooks and conventional extension points
+- [Forms](/docs/reference/forms): Thelia form handling
+- [Internationalization](/docs/reference/internationalization): translating admin strings
+- [Module Development](/docs/modules): creating modules
 
-## Next Steps
+## Next steps
 
-- [Hooks](./hooks.md) — extend the admin interface through hooks
-- [Modules — Controllers](/docs/modules/controllers) — add admin pages from a module
-- [Front-office LiveComponents](/docs/front-office/live-components) — the Symfony UX patterns reused by the back-office
+- [Hooks](./hooks.md): extend the admin interface through hooks
+- [Module controllers](/docs/modules/controllers): add admin pages from a module
+- [Front-office LiveComponents](/docs/front-office/live-components): the Symfony UX patterns reused by the back-office

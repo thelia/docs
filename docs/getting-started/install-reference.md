@@ -5,9 +5,9 @@ sidebar_position: 6
 
 # bin/install Reference
 
-`bin/install` is a standalone script that sets up Thelia without requiring the Symfony kernel. It solves the chicken-and-egg problem: you need a database to boot the kernel, but you need the kernel to create the database.
+`bin/install` is a standalone script that sets up Thelia without requiring the Symfony kernel. It works around a chicken-and-egg problem: you need a database to boot the kernel, but you need the kernel to create the database.
 
-## How It Works
+## How it works
 
 The script runs in two phases:
 
@@ -28,7 +28,7 @@ The script runs in two phases:
 
 ## Options
 
-### Theme Options
+### Theme options
 
 | Option | Default | Description |
 |--------|---------|-------------|
@@ -37,14 +37,14 @@ The script runs in two phases:
 | `--pdf_theme` | `default` | PDF template |
 | `--email_theme` | `default` | Email template |
 
-### Setup Options
+### Setup options
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `--with-demo` | — | Import demo catalog |
-| `--with-admin` | — | Create admin user |
+| `--with-demo` | - | Import demo catalog |
+| `--with-admin` | - | Create admin user |
 
-### Admin Options (requires `--with-admin`)
+### Admin options (requires `--with-admin`)
 
 | Option | Default | Description |
 |--------|---------|-------------|
@@ -54,17 +54,17 @@ The script runs in two phases:
 | `--admin_last_name` | `Thelia` | Admin last name |
 | `--admin_email` | `admin@thelia.net` | Admin email |
 
-## Environment Variables
+## Environment variables
 
 Database credentials are passed as environment variables, not CLI options:
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `DATABASE_HOST` | Yes | — | Database hostname |
+| `DATABASE_HOST` | Yes | - | Database hostname |
 | `DATABASE_PORT` | No | `3306` | Database port |
-| `DATABASE_NAME` | Yes | — | Database name |
-| `DATABASE_USER` | Yes | — | Database user |
-| `DATABASE_PASSWORD` | Yes | — | Database password |
+| `DATABASE_NAME` | Yes | - | Database name |
+| `DATABASE_USER` | Yes | - | Database user |
+| `DATABASE_PASSWORD` | Yes | - | Database password |
 
 With DDEV, these are injected automatically (all set to `db`).
 
@@ -97,7 +97,7 @@ php bin/install --with-demo --with-admin
 ddev exec php bin/install --frontoffice_theme=myTheme --backoffice_theme=default
 ```
 
-## Dual Layout Support
+## Dual layout support
 
 `bin/install` auto-detects the project layout:
 
@@ -106,11 +106,11 @@ ddev exec php bin/install --frontoffice_theme=myTheme --backoffice_theme=default
 | Development (`thelia/thelia`) | `core/` at project root | Contributing to Thelia |
 | Project (`thelia/thelia-project`) | `vendor/thelia/core/` | Building a store |
 
-No configuration needed.
+You do not need to configure anything.
 
 ## bin/test-prepare
 
-A stripped-down variant for CI/test environments. Creates the database, applies the schema, and registers modules — skipping permission checks, form secret generation, templates, admin, and demo data. Accepts no CLI options.
+A stripped-down variant for CI and test environments. It creates the database, applies the schema, and registers modules. It skips the permission checks, form secret generation, templates, admin, and demo data. It accepts no CLI options.
 
 ```bash
 APP_ENV=test php bin/test-prepare

@@ -7,9 +7,9 @@ sidebar_position: 8
 
 Delivery modules handle shipping calculations and integrate with carriers. They determine availability and pricing based on cart contents, customer location, and carrier rules.
 
-## Creating a Delivery Module
+## Creating a delivery module
 
-### Main Class
+### Main class
 
 Delivery modules extend `AbstractDeliveryModule`:
 
@@ -158,27 +158,27 @@ Two base classes are available, depending on how your carrier prices delivery.
 `AbstractDeliveryModule` implements `DeliveryModuleInterface`. You must implement
 three methods:
 
-- `isValidDelivery(Country $country): bool` — whether the method appears in checkout.
-- `getPostage(Country $country): OrderPostage|float` — the delivery price.
-- `handleVirtualProductDelivery(): bool` — return `true` if your carrier handles
+- `isValidDelivery(Country $country): bool`: whether the method appears in checkout.
+- `getPostage(Country $country): OrderPostage|float`: the delivery price.
+- `handleVirtualProductDelivery(): bool`: return `true` if your carrier handles
   virtual products (the base class returns `false`).
 
 It also provides two helpers you can use as is:
 
-- `getAreaForCountry(Country $country): ?Area` — the first geographic area matching
+- `getAreaForCountry(Country $country): ?Area`: the first geographic area that matches
   the country for this module.
-- `getDeliveryMode()` — returns the delivery mode string, defaults to `'delivery'`.
+- `getDeliveryMode()`: returns the delivery mode string, defaults to `'delivery'`.
 
 ### AbstractDeliveryModuleWithState
 
 For zone/area-based carriers that need state-level (region/province) resolution,
 extend `AbstractDeliveryModuleWithState` instead. It adds:
 
-- `getAreaForCountry(Country $country, ?State $state = null): ?Area` — area resolution
+- `getAreaForCountry(Country $country, ?State $state = null): ?Area`: area resolution
   that also accounts for the customer state.
-- `buildOrderPostage(float $untaxedPostage, Country $country, $locale, $taxRuleId = null)` —
+- `buildOrderPostage(float $untaxedPostage, Country $country, $locale, $taxRuleId = null)`:
   builds an `OrderPostage` from an untaxed amount and applies the delivery tax rule
-  (`taxrule_id_delivery_module` config, or the `$taxRuleId` you pass), filling the
+  (`taxrule_id_delivery_module` config, or the `$taxRuleId` you pass). It fills in the
   taxed amount, tax amount and tax rule title for you.
 
 ```php
@@ -277,9 +277,9 @@ private function getWeightBasedPrice($cart, Country $country): float
 }
 ```
 
-## Price Tables
+## Price tables
 
-Store pricing in database for admin configuration:
+Store pricing in the database for admin configuration:
 
 **Config/schema.xml**:
 ```xml
@@ -318,7 +318,7 @@ private function getWeightBasedPrice($cart, Country $country): float
 }
 ```
 
-## Free Shipping
+## Free shipping
 
 Handle free shipping thresholds:
 
@@ -339,7 +339,7 @@ public function getPostage(Country $country): OrderPostage|float
 }
 ```
 
-## Pickup Points
+## Pickup points
 
 For carriers with pickup locations:
 
@@ -404,7 +404,7 @@ final class PickupController extends BaseFrontController
 }
 ```
 
-## API Integration
+## API integration
 
 Integrate with carrier APIs:
 
@@ -496,7 +496,7 @@ public function getPostage(Country $country): OrderPostage|float
 
 Create shipments and track orders by listening to order status changes. The
 listener implements `EventSubscriberInterface`, so it is auto-tagged through
-`configureServices()` autoconfiguration — no XML service declaration is needed.
+`configureServices()` autoconfiguration. No XML service declaration is needed.
 
 ```php
 // MyCarrier/EventListener/OrderEventListener.php
@@ -543,7 +543,7 @@ class OrderEventListener implements EventSubscriberInterface
 }
 ```
 
-## Admin Configuration
+## Admin configuration
 
 Add a configuration page:
 
@@ -561,19 +561,19 @@ public function indexAction(): Response
 }
 ```
 
-## Best Practices
+## Best practices
 
 ### Do
 
-- **Cache API responses** to avoid rate limits and improve performance
-- **Log errors** with meaningful messages for debugging
-- **Validate all inputs** before API calls
-- **Handle API failures gracefully** with fallback pricing if possible
-- **Test with various cart scenarios** (empty, heavy, international)
+- Cache API responses to avoid rate limits and keep checkout fast.
+- Log errors with meaningful messages so you can debug them later.
+- Validate all inputs before API calls.
+- Handle API failures with fallback pricing when possible.
+- Test with various cart scenarios: empty, heavy, and international.
 
 ### Don't
 
-- **Don't hardcode prices** - use database or config files
-- **Don't skip validation** in `isValidDelivery()`
-- **Don't throw generic exceptions** - use `DeliveryException` with helpful messages
-- **Don't block checkout** for non-critical API failures
+- Hardcode prices. Use the database or config files instead.
+- Skip validation in `isValidDelivery()`.
+- Throw generic exceptions. Use `DeliveryException` with a helpful message.
+- Block checkout for non-critical API failures.

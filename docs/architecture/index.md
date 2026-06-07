@@ -5,11 +5,11 @@ sidebar_position: 1
 
 # Architecture Overview
 
-Thelia 3 is built on a modern architecture that combines the stability of Symfony with the flexibility needed for e-commerce applications.
+Thelia 3 runs on Symfony and adds the pieces an e-commerce application needs on top of it.
 
-## Core Components
+## Core components
 
-### Technology Stack
+### Technology stack
 
 | Layer | Technology | Purpose |
 |-------|------------|---------|
@@ -28,7 +28,7 @@ Propel is **not** Doctrine: there is no `EntityManager` and no `flush()`. Every 
 The Twig back-office (`default-twig` bundle) is the reference admin theme. The legacy Smarty `default` back-office still ships, but it is no longer recommended and is expected to be dropped in a later release. Build new admin features on the `default-twig` bundle.
 :::
 
-### Directory Structure
+### Directory structure
 
 ```
 thelia/
@@ -59,9 +59,9 @@ thelia/
 The front-office theme is a Symfony bundle: `templates/frontOffice/flexy/` exposes namespace `FlexyBundle` (class `src/FlexyBundle.php`). The back-office reference theme is the bundle in `templates/backOffice/default-twig/` (namespace `BackOfficeDefaultTwigBundle`, class `src/BackOfficeDefaultTwigBundle.php`). Both ship their own controllers, Twig/Live components, Stimulus controllers, form themes and assets inside the bundle.
 :::
 
-## Architectural Patterns
+## Architectural patterns
 
-### API-First Design
+### API-first design
 
 All data access in Thelia 3 goes through the API layer:
 
@@ -86,15 +86,16 @@ All data access in Thelia 3 goes through the API layer:
 └─────────────────────────────────────────┘
 ```
 
-**Benefits:**
+This gives you:
+
 - Single source of truth for data validation
 - Consistent serialization across all consumers
-- Built-in caching at API level
-- Easy integration with external systems
+- Caching at the API level
+- A direct path for integrating external systems
 
-### Domain Layer (Facades)
+### Domain layer (facades)
 
-Business logic is organized into **Facades** that orchestrate services:
+Business logic lives in facades that orchestrate services:
 
 ```php
 // CartFacade orchestrates cart operations
@@ -121,17 +122,17 @@ The legacy Smarty `default` back-office is still shipped for backward compatibil
 
 See [Dual Templating](./dual-templating.md) for details.
 
-### Module System
+### Module system
 
-Modules extend Thelia functionality. A modern Thelia 3 module is almost free of XML: routes are `#[Route]` PHP 8 attributes auto-scanned by `ModuleAttributeLoader`, services are declared in `configureServices()` with `autowire()` + `autoconfigure()`, and hooks and loops are auto-discovered from their base classes. The only XML the core still requires is `Config/module.xml` (metadata, XSD `module-2_2.xsd`) and `Config/schema.xml` when the module creates its own database tables.
+Modules extend Thelia. A modern Thelia 3 module is almost free of XML: routes are `#[Route]` PHP 8 attributes auto-scanned by `ModuleAttributeLoader`, services are declared in `configureServices()` with `autowire()` + `autoconfigure()`, and hooks and loops are auto-discovered from their base classes. The only XML the core still requires is `Config/module.xml` (metadata, XSD `module-2_2.xsd`), plus `Config/schema.xml` when the module creates its own database tables.
 
 ```
 local/modules/MyModule/
 ├── Config/
-│   ├── module.xml          # REQUIRED — metadata (XSD module-2_2.xsd)
+│   ├── module.xml          # REQUIRED - metadata (XSD module-2_2.xsd)
 │   ├── schema.xml          # REQUIRED only if the module has DB tables
 │   ├── TheliaMain.sql      # Generated SQL (applied by `module:schema:apply`)
-│   └── config.xml          # OPTIONAL — exports/imports/parameters/loop aliases only
+│   └── config.xml          # OPTIONAL - exports/imports/parameters/loop aliases only
 ├── Controller/             # #[Route] PHP 8 attributes (no routing.xml)
 ├── Api/
 │   ├── Resource/           # API resources (auto-discovered)
@@ -143,14 +144,14 @@ local/modules/MyModule/
 ```
 
 :::note No more service/route/hook XML
-There is no `routing.xml` (routes are PHP attributes), and `config.xml` is optional — it is only needed for exports, imports, parameters or loop aliases. Services, listeners, hooks and loops are registered through `configureServices()` and autoconfiguration. See the modules guide for the full skeleton.
+There is no `routing.xml` (routes are PHP attributes), and `config.xml` is optional: you only need it for exports, imports, parameters or loop aliases. Services, listeners, hooks and loops are registered through `configureServices()` and autoconfiguration. See the modules guide for the full skeleton.
 :::
 
 See [Modules vs Bundles](./modules-vs-bundles.md) for the difference between Thelia modules and Symfony bundles.
 
-## Data Flow
+## Data flow
 
-### Front-Office Request
+### Front-office request
 
 ```
 1. HTTP Request
@@ -182,7 +183,7 @@ See [Modules vs Bundles](./modules-vs-bundles.md) for the difference between The
 5. HTML Response
 ```
 
-### API Request (External)
+### API request (external)
 
 ```
 1. HTTP Request (JSON)
@@ -203,18 +204,18 @@ See [Modules vs Bundles](./modules-vs-bundles.md) for the difference between The
 6. JSON-LD Response
 ```
 
-## Key Concepts
+## Key concepts
 
-### Resources vs Addons
+### Resources vs addons
 
 | Concept | Purpose | Use Case |
 |---------|---------|----------|
 | **Resource** | Full API entity | New data model (e.g., `ProductReview`) |
 | **Addon** | Extend existing resource | Add fields to `Product`, `Customer` |
 
-### Serialization Groups
+### Serialization groups
 
-Control which fields are exposed:
+Groups control which fields are exposed:
 
 ```php
 #[Groups([self::GROUP_ADMIN_READ])]  // Admin only
@@ -232,7 +233,7 @@ Internal API calls without HTTP overhead:
 }) %}
 ```
 
-## Next Steps
+## Next steps
 
 - [Dual Templating](./dual-templating.md) - Understand Twig vs Smarty usage
 - [Facades](./facades.md) - Learn about the domain layer

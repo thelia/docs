@@ -3,7 +3,7 @@ title: hook:clean
 ---
 
 ## Description
-Clean hooks. It will delete all hooks, then recreate it.
+Clean hooks. It deletes all hooks, then recreates them.
 
 ## Usage
 ```shell 
@@ -18,7 +18,7 @@ hook:clean [options] [--] [<module>]
 
 
 ## Example
-To clean the hok of Carousel without asking for confirmation
+To clean the hooks of Carousel without asking for confirmation
 ```shell
 php Thelia hook:clean -y Carousel
 ```

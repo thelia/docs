@@ -5,26 +5,26 @@ sidebar_position: 5
 
 # LiveComponents
 
-Thelia 3 uses **Symfony UX LiveComponents** for reactive, server-rendered UI without writing JavaScript. They're ideal for product selectors, filters, forms, and shopping carts.
+Thelia 3 uses Symfony UX LiveComponents for reactive, server-rendered UI without writing JavaScript. They suit product selectors, filters, forms, and shopping carts.
 
 :::tip Official Documentation
 For complete LiveComponents documentation, see [symfony.com/bundles/ux-live-component](https://symfony.com/bundles/ux-live-component/current/index.html).
 :::
 
-## How It Works
+## How it works
 
 1. Component renders server-side on initial page load
 2. User interactions trigger AJAX requests
 3. Component re-renders with updated state
-4. DOM is automatically updated
+4. The DOM updates automatically
 
-## Basic Structure
+## Basic structure
 
 :::info TwigComponent vs LiveComponent
-The Flexy theme uses **both** kinds of component, roughly half and half: `#[AsTwigComponent]` for static, render-once UI (24 components, like `ProductCard`) and `#[AsLiveComponent]` for reactive, AJAX-powered UI (25 components, like `CategoryFilters`, `Pages:Product` and `Checkout:Cart`). Reach for a LiveComponent only when the UI must re-render after the initial load. See [Stimulus](./stimulus) and the [Flexy theme overview](./flexy-theme/) for the static side.
+The Flexy theme uses both kinds of component, roughly half and half: `#[AsTwigComponent]` for static, render-once UI (24 components, like `ProductCard`) and `#[AsLiveComponent]` for reactive, AJAX-powered UI (25 components, like `CategoryFilters`, `Pages:Product` and `Checkout:Cart`). Reach for a LiveComponent only when the UI must re-render after the initial load. See [Stimulus](./stimulus) and the [Flexy theme overview](./flexy-theme/) for the static side.
 :::
 
-Each component lives in its **own folder** holding both the PHP class and its Twig template:
+Each component lives in its own folder, which holds both the PHP class and its Twig template:
 
 ```
 templates/frontOffice/flexy/src/UiComponents/
@@ -41,7 +41,7 @@ templates/frontOffice/flexy/src/UiComponents/
 
 The PHP namespace mirrors that folder layout (`FlexyBundle\UiComponents\<Path>`), and the `template:` option points at the same folder through the `@UiComponents` Twig namespace registered by Flexy.
 
-### PHP Component
+### PHP component
 
 ```php
 <?php
@@ -76,7 +76,7 @@ class CategoryFilters
 }
 ```
 
-### Twig Template
+### Twig template
 
 ```twig
 {# templates/frontOffice/flexy/src/UiComponents/CategoryFilters/CategoryFilters.html.twig #}
@@ -102,7 +102,7 @@ LiveComponents need `{{ attributes }}` on the single root tag to wire up the AJA
 {{ component('Flexy:CategoryFilters', {categoryId: categoryId, page: 1}) }}
 ```
 
-## Key Concepts
+## Key concepts
 
 ### LiveProp
 
@@ -139,7 +139,7 @@ public function addItem(#[LiveArg] int $productId): void
 </button>
 ```
 
-### Data Binding
+### Data binding
 
 ```twig
 {# Immediate update #}
@@ -152,9 +152,9 @@ public function addItem(#[LiveArg] int $productId): void
 <input data-model="debounce(300)|searchQuery" type="text">
 ```
 
-## Forms Integration
+## Forms integration
 
-Use `ComponentWithFormTrait` to embed a Symfony Form. Build the Thelia form by name through `Thelia\Core\Form\FormServiceInterface`, which the core registers in the container (a no-op default implementation exists so the container builds even when no form renderer is active).
+Use `ComponentWithFormTrait` to embed a Symfony Form. Build the Thelia form by name through `Thelia\Core\Form\FormServiceInterface`, which the core registers in the container. A no-op default implementation exists so the container builds even when no form renderer is active.
 
 ```php
 <?php
@@ -221,11 +221,11 @@ See [Front-Office Forms](./forms) for detailed form handling.
 
 ## Events
 
-LiveComponents talk to each other with `emit()` / `#[LiveListener]`. This is how Flexy keeps independent components in sync without coupling them.
+LiveComponents talk to each other with `emit()` / `#[LiveListener]`. Flexy uses this to keep independent components in sync without coupling them.
 
-### Emitting Events
+### Emitting events
 
-The real product page (`Flexy:Pages:Product`) emits an `addToCart` event after adding the line to the cart:
+The product page (`Flexy:Pages:Product`) emits an `addToCart` event after adding the line to the cart:
 
 ```php
 // templates/frontOffice/flexy/src/UiComponents/Pages/Product/Product.php
@@ -251,7 +251,7 @@ class Product
 }
 ```
 
-### Listening to Events
+### Listening to events
 
 A separate component, `Flexy:AddToCartToast`, listens for that event and refreshes itself to show the confirmation toast:
 
@@ -280,7 +280,7 @@ class AddToCartToast
 The listener name must match the emitted name exactly (`'addToCart'` here). Flexy also uses constants for the checkout flow (see `FlexyBundle\UiComponents\Checkout\CheckoutEvents`) to avoid magic strings between many cooperating components.
 :::
 
-### Browser Events
+### Browser events
 
 To trigger client-side JavaScript (a [Stimulus](./stimulus) controller, for instance) rather than another component, dispatch a browser event. `Flexy:Pages:Product` does this when the selected product sale element changes:
 
@@ -288,7 +288,7 @@ To trigger client-side JavaScript (a [Stimulus](./stimulus) controller, for inst
 $this->dispatchBrowserEvent('change:pse', ['pseId' => $this->currentPse['id']]);
 ```
 
-## Loading States
+## Loading states
 
 ```twig
 <div {{ attributes }}>
@@ -320,11 +320,11 @@ public function mount(?int $categoryId): void
 
 See [Data Access](./data-access) for the full service API.
 
-## Creating a Component in a Module
+## Creating a component in a module
 
 A module can ship its own LiveComponent. There are two verified approaches.
 
-### Option A — Dedicated Twig namespace (canonical, theme-independent)
+### Option A: dedicated Twig namespace (canonical, theme-independent)
 
 Register a Twig namespace from the module bundle, then point the component template at it. This keeps the component decoupled from whichever front theme is active.
 
@@ -389,7 +389,7 @@ class NewsletterForm
 A Thelia 3 module must declare its service namespace via the static `configureServices()` method (`load()->autowire()->autoconfigure()`). Without it, no component class is discovered. See [Creating a Module](../modules/) for the full skeleton.
 :::
 
-### Option B — Drop into the Flexy theme (simple, theme-coupled)
+### Option B: drop into the Flexy theme (simple, theme-coupled)
 
 If you only target the Flexy theme, place the component directly under the theme's `UiComponents` folder so it resolves through the existing `@UiComponents` namespace:
 
@@ -399,7 +399,7 @@ templates/frontOffice/flexy/src/UiComponents/NewsletterForm/
     NewsletterForm.html.twig
 ```
 
-This is simpler but couples the component to the `flexy` theme. To override an existing Flexy template from a module instead, drop your file under `local/modules/MyModule/templates/frontOffice/flexy/` — the kernel scans that directory at boot and adds it after the active theme.
+This is simpler but couples the component to the `flexy` theme. To override an existing Flexy template from a module instead, drop your file under `local/modules/MyModule/templates/frontOffice/flexy/`. The kernel scans that directory at boot and adds it after the active theme.
 
 ### Usage
 
@@ -407,11 +407,11 @@ This is simpler but couples the component to the `flexy` theme. To override an e
 {{ component('MyModule:NewsletterForm') }}
 ```
 
-## Best Practices
+## Best practices
 
-### Use Facades for Business Logic
+### Use facades for business logic
 
-Delegate cart, customer, order and checkout operations to the core facades instead of touching models directly. The real cart component injects `Thelia\Domain\Cart\CartFacade`:
+Delegate cart, customer, order and checkout operations to the core facades instead of touching models directly. The cart component injects `Thelia\Domain\Cart\CartFacade`:
 
 ```php
 use Thelia\Domain\Cart\CartFacade;
@@ -431,7 +431,7 @@ public function remove(#[LiveArg] int $cartItemId): void
 }
 ```
 
-### Minimize LiveProp Data
+### Minimize LiveProp data
 
 ```php
 // Good - store only IDs
@@ -443,9 +443,9 @@ public int $productId;
 public array $fullProductWithAllRelations;
 ```
 
-## Next Steps
+## Next steps
 
-- [Stimulus](./stimulus) - JavaScript controllers
-- [Front-Office Forms](./forms) - Form handling
-- [Data Access](./data-access) - Reading data from the front API
-- [Flexy Theme](./flexy-theme/) - See all components
+- [Stimulus](./stimulus): JavaScript controllers
+- [Front-Office Forms](./forms): form handling
+- [Data Access](./data-access): reading data from the front API
+- [Flexy Theme](./flexy-theme/): see all components

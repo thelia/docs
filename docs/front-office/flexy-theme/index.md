@@ -5,20 +5,20 @@ sidebar_position: 1
 
 # Flexy Theme
 
-**Flexy** is the default front-office theme for Thelia 3. It is a Symfony bundle (`FlexyBundle`) that ships its PHP classes, Twig templates, components, form theme and front-end assets together. It showcases the modern Thelia stack: Twig, Symfony UX (Live/Twig Components, Stimulus) and Webpack Encore.
+Flexy is the default front-office theme for Thelia 3. It is a Symfony bundle (`FlexyBundle`) that ships its PHP classes, Twig templates, components, form theme and front-end assets together. It is built on the modern Thelia stack: Twig, Symfony UX (Live/Twig Components, Stimulus) and Webpack Encore.
 
 ## Overview
 
 Flexy provides:
 
-- **Modern UI** styled with Tailwind CSS
-- **Around 50 components** (25 LiveComponents + 24 TwigComponents), all auto-discovered from `src/UiComponents/`
-- **Complete e-commerce flow** (catalog, cart, checkout, account)
-- **Server-rendered reactivity** through Symfony UX LiveComponents and Stimulus
+- A UI styled with Tailwind CSS
+- Around 50 components (25 LiveComponents + 24 TwigComponents), all auto-discovered from `src/UiComponents/`
+- A full e-commerce flow (catalog, cart, checkout, account)
+- Server-rendered reactivity through Symfony UX LiveComponents and Stimulus
 
-## Theme Structure
+## Theme structure
 
-The whole theme is a single Composer package of type `thelia-frontoffice-template`, installed as a path repository. Everything — PHP and templates — lives under `templates/frontOffice/flexy/`:
+The whole theme is a single Composer package of type `thelia-frontoffice-template`, installed as a path repository. Everything, PHP and templates, lives under `templates/frontOffice/flexy/`:
 
 ```
 templates/frontOffice/flexy/
@@ -84,7 +84,7 @@ public function prependExtension(ContainerConfigurator $container, ContainerBuil
 
 No XML. Services, components, Twig paths and the form theme are all declared through PHP attributes and the bundle's `config/packages/*.yaml`.
 
-## Key Pages
+## Key pages
 
 ### Homepage (`index.html.twig`)
 
@@ -104,10 +104,10 @@ No XML. Services, components, Twig paths and the form theme are all declared thr
 ```
 
 :::caution
-`Flexy:CrossSelling` requires a `categoryId` — there is no default in the PHP class, so calling it without one throws an error. See [Cross-selling](#cross-selling) below.
+`Flexy:CrossSelling` requires a `categoryId`. There is no default in the PHP class, so calling it without one throws an error. See [Cross-selling](#cross-selling) below.
 :::
 
-### Category Page (`category.html.twig`)
+### Category page (`category.html.twig`)
 
 ```twig
 {# templates/frontOffice/flexy/category.html.twig #}
@@ -131,7 +131,7 @@ No XML. Services, components, Twig paths and the form theme are all declared thr
 {% endblock %}
 ```
 
-### Product Page (`product.html.twig`)
+### Product page (`product.html.twig`)
 
 ```twig
 {# templates/frontOffice/flexy/product.html.twig #}
@@ -162,10 +162,10 @@ No XML. Services, components, Twig paths and the form theme are all declared thr
 
 ## Components
 
-Flexy ships around 50 components in `src/UiComponents/`. The directory is the authoritative list — each PHP class carries either an `#[AsLiveComponent]` or an `#[AsTwigComponent]` attribute, and the component name is whatever that attribute declares.
+Flexy ships around 50 components in `src/UiComponents/`. The directory is the authoritative list: each PHP class carries either an `#[AsLiveComponent]` or an `#[AsTwigComponent]` attribute, and the component name is whatever that attribute declares.
 
-- **LiveComponents** (`#[AsLiveComponent]`) re-render on the server in response to user interaction (model binding, live actions). Use them for forms, filters, checkout steps.
-- **TwigComponents** (`#[AsTwigComponent]`) are stateless and render once. Use them for cards, layout pieces and presentational widgets.
+- LiveComponents (`#[AsLiveComponent]`) re-render on the server in response to user interaction (model binding, live actions). Use them for forms, filters and checkout steps.
+- TwigComponents (`#[AsTwigComponent]`) are stateless and render once. Use them for cards, layout pieces and presentational widgets.
 
 All names are prefixed with `Flexy` (configured in `config/packages/twig_component.yaml`). Call any component with the `component()` Twig function.
 
@@ -259,7 +259,7 @@ class CrossSelling
 ```
 
 :::caution
-`categoryId` is **required**. There is no `limit` property — the component always returns up to 3 products. `title` is a presentational prop read by the template, not by the PHP class.
+`categoryId` is required. There is no `limit` property: the component always returns up to 3 products. `title` is a presentational prop read by the template, not by the PHP class.
 :::
 
 ### Using components
@@ -301,7 +301,7 @@ Flexy is styled with Tailwind CSS, configured in `tailwind.config.js`:
 
 ### Custom CSS
 
-Per-page CSS is added as dedicated Webpack entries (see below). Add your stylesheets under `assets/css/` and reference them from an entry.
+Per-page CSS is added as dedicated Webpack entries (see below). Put your stylesheets under `assets/css/` and reference them from an entry.
 
 ## Assets
 
@@ -347,7 +347,7 @@ module.exports = Encore.getWebpackConfig();
 Output goes to `dist/` (not `public/build/`), and is served under `/templates-assets/frontOffice/flexy/dist`. Templates reference built assets with `encore_entry_link_tags('app')` / `encore_entry_script_tags('app')`, as in `base.html.twig`.
 :::
 
-### Building Assets
+### Building assets
 
 ```bash
 ddev exec bash -c "cd templates/frontOffice/flexy && npm install && npm run build"
@@ -355,9 +355,9 @@ ddev exec bash -c "cd templates/frontOffice/flexy && npm install && npm run buil
 
 For development you can also run `npm run dev` or `npm run watch` from the same directory.
 
-## Form Theme
+## Form theme
 
-Flexy ships a custom form theme at `form/flexy_form_theme.html.twig`. The `form/` directory is mapped to the `@formTwig` Twig namespace by the bundle's `config/packages/twig.yaml`, and the theme is applied **globally** in the same file:
+Flexy ships a custom form theme at `form/flexy_form_theme.html.twig`. The `form/` directory is mapped to the `@formTwig` Twig namespace by the bundle's `config/packages/twig.yaml`, and the theme is applied globally in the same file:
 
 ```yaml
 # templates/frontOffice/flexy/config/packages/twig.yaml
@@ -368,7 +368,7 @@ twig:
     - "frontOffice/%thelia_front_template%/form/flexy_form_theme.html.twig"
 ```
 
-Because the theme is registered globally, you usually do **not** need a per-form `{% form_theme %}` tag — every form rendered in the front office already uses it. If you do need to override it for a single form, reference the theme by its namespace:
+Because the theme is registered globally, you usually do not need a per-form `{% form_theme %}` tag: every form rendered in the front office already uses it. To override it for a single form, reference the theme by its namespace:
 
 ```twig
 {% form_theme myForm '@formTwig/flexy_form_theme.html.twig' %}
@@ -379,7 +379,7 @@ Because the theme is registered globally, you usually do **not** need a per-form
 The `@Flexy` Twig namespace does not exist in this bundle. Form-related templates use `@formTwig`, components use `@components` and `@UiComponents`.
 :::
 
-## SEO Features
+## SEO features
 
 The base layout uses functions from the SEOne module to render titles, meta and structured data:
 
@@ -408,7 +408,7 @@ If `--frontoffice_theme` is omitted, the installer falls back to the `ACTIVE_FRO
 
 ## Learn more
 
-- [Customizing Flexy](./customization.md) — adapt Flexy to your needs
-- [Creating a Theme](./creating-theme.md) — build a front-office theme from scratch
-- [LiveComponents](../live-components.md) — develop reactive components
-- [Twig basics](../twig-basics.md) — `resources()`, `attr()` and the Data Access layer
+- [Customizing Flexy](./customization.md): adapt Flexy to your needs
+- [Creating a Theme](./creating-theme.md): build a front-office theme from scratch
+- [LiveComponents](../live-components.md): develop reactive components
+- [Twig basics](../twig-basics.md): `resources()`, `attr()` and the Data Access layer

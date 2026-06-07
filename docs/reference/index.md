@@ -3,37 +3,37 @@ title: Reference
 sidebar_position: 1
 ---
 
-# Reference Documentation
+# Reference documentation
 
-Technical reference documentation for Thelia's core systems.
+Technical reference for Thelia's core systems.
 
-## Core Systems
+## Core systems
 
 ### Events
 
-Thelia uses Symfony's event dispatcher to allow modules to react to various actions throughout the system. Events enable decoupled communication between components.
+Thelia uses Symfony's event dispatcher so modules can react to actions across the system. Events keep components decoupled from each other.
 
-See [Events Reference](./events.md) for the complete list of available events.
+See the [Events reference](./events.md) for the complete list of available events.
 
 ### Forms
 
-Thelia's form system is built on Symfony Forms, providing validation, CSRF protection, and easy template rendering.
+Thelia's form system is built on Symfony Forms. It handles validation, CSRF protection, and template rendering.
 
-See [Forms Reference](./forms.md) for form creation and handling.
+See the [Forms reference](./forms.md) for form creation and handling.
 
 ### Internationalization
 
-Thelia supports multiple languages and locales out of the box. Learn how to translate your modules and templates.
+Thelia supports multiple languages and locales. This section covers how to translate your modules and templates.
 
-See [Internationalization](./internationalization.md) for i18n documentation.
+See [Internationalization](./internationalization.md) for the i18n documentation.
 
-## CLI Commands
+## CLI commands
 
-Thelia provides console commands for common operations like cache management, module handling, and database operations.
+Thelia provides console commands for common operations such as cache management, module handling, and database operations.
 
-See [CLI Reference](./cli/index.md) for all available commands.
+See the [CLI reference](./cli/index.md) for all available commands.
 
-## Quick Reference
+## Quick reference
 
 | Topic | Description |
 |-------|-------------|
@@ -42,7 +42,7 @@ See [CLI Reference](./cli/index.md) for all available commands.
 | [Internationalization](./internationalization.md) | Multi-language support |
 | [CLI Commands](./cli/index.md) | Console commands |
 
-## Legacy References
+## Legacy references
 
 These sections document the Smarty data layer kept for the transitional legacy back-office. Prefer [API resources](/docs/api/index.md) in new code.
 

@@ -139,8 +139,8 @@ twig:
     - "@BackOfficeDefaultTwigForm/bo_form_theme.html.twig"
 ```
 
-Because `form_themes` applies to **every** form rendered by the active Twig environment —
-including front-office Flexy templates — each block in `bo_form_theme.html.twig` is scoped
+Because `form_themes` applies to every form rendered by the active Twig environment,
+including front-office Flexy templates, each block in `bo_form_theme.html.twig` is scoped
 to admin requests. It applies the Bootstrap 5 markup only when the request path starts with
 `/admin`, and otherwise defers to the Flexy front-office theme:
 
@@ -159,7 +159,7 @@ to admin requests. It applies the Bootstrap 5 markup only when the request path 
 The Flexy front-office theme overrides several widgets (`password`, `textarea`, `money`,
 `percent`, `choice`, `radio`, `range`, `file`, `submit`). The back-office theme must mirror
 all of them with the same `/admin` short-circuit. Otherwise a back-office form picks up a
-Flexy wrapper — for example the `<div data-controller="password">` wrapper breaks the
+Flexy wrapper. For example, the `<div data-controller="password">` wrapper breaks the
 Bootstrap input-group layout on the login form.
 :::
 
@@ -242,12 +242,12 @@ supplies the Bootstrap 5 markup, so you only point each widget at the right fiel
 ```
 
 This replaces the old Smarty `{form}` / `{form_field}` pattern entirely. There is no
-manual loop over fields and no manual error block — Symfony renders labels, widgets and
+manual loop over fields and no manual error block: Symfony renders labels, widgets and
 errors through the theme.
 
 :::caution Custom widget markup needs `setRendered`
-When you render a field with raw HTML instead of `form_widget` — for instance a `<select>`
-built from a custom list — Symfony does not know the field has been rendered, and
+When you render a field with raw HTML instead of `form_widget`, for instance a `<select>`
+built from a custom list, Symfony does not know the field has been rendered, and
 `form_end(form)` will output it a second time. Mark it as rendered explicitly:
 
 ```twig
@@ -280,6 +280,6 @@ database values.
 
 ## Learn more
 
-- [Hooks](./hooks) — inject content into back-office screens
-- [Forms](/docs/reference/forms) — Thelia form handling reference
-- [Modules and bundles](/docs/architecture/modules-vs-bundles) — why themes are bundles
+- [Hooks](./hooks) - inject content into back-office screens
+- [Forms](/docs/reference/forms) - Thelia form handling reference
+- [Modules and bundles](/docs/architecture/modules-vs-bundles) - why themes are bundles

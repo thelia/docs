@@ -7,7 +7,7 @@ sidebar_position: 5
 
 Addons allow modules to enrich existing API resources with additional data without modifying the core resource classes.
 
-## When to Use Addons
+## When to use addons
 
 | Scenario | Use |
 |----------|-----|
@@ -48,9 +48,9 @@ interface ResourceAddonInterface
 }
 ```
 
-## Creating an Addon
+## Creating an addon
 
-### Example: Adding Customer Family to Customer
+### Example: adding a customer family to a customer
 
 ```php
 <?php
@@ -185,7 +185,7 @@ class MyAddon implements ResourceAddonInterface
 }
 ```
 
-### Default Behavior
+### Default behavior
 
 The trait uses Propel virtual columns for automatic mapping:
 
@@ -195,7 +195,7 @@ The trait uses Propel virtual columns for automatic mapping:
 
 Override these methods when you need custom logic.
 
-## Static Methods
+## Static methods
 
 Static methods like `getResourceParent()` and `getPropelRelatedTableMap()` are not introspected by the serializer, so they do not need `#[Ignore]`:
 
@@ -223,7 +223,7 @@ Use the **parent resource's groups** for addon properties:
 public ?string $customField = null;
 ```
 
-## Extending Queries
+## Extending queries
 
 For complex data retrieval, override `extendQuery()`:
 
@@ -239,7 +239,7 @@ public static function extendQuery(
 }
 ```
 
-## Computed Data (No Database)
+## Computed data (no database)
 
 For computed properties without a database table, return `null` from `getPropelRelatedTableMap()` and **override `extendQuery()`** (the trait's default throws an exception when the table map is null):
 
@@ -266,7 +266,7 @@ class ProductStockAddon implements ResourceAddonInterface
         ?Operation $operation = null,
         array $context = []
     ): void {
-        // Nothing to join — computed from buildFromModel
+        // Nothing to join - computed from buildFromModel
     }
 
     public function buildFromModel(
@@ -301,13 +301,13 @@ class ProductStockAddon implements ResourceAddonInterface
 }
 ```
 
-## Auto-Discovery
+## Auto-discovery
 
-Addons are auto-discovered from `Api/Resource/` inside any **activated** module's directory. Discovery is driven by the database — only modules registered and activated via `ModuleQuery::getActivated()` are scanned.
+Addons are auto-discovered from `Api/Resource/` inside any activated module's directory. Discovery is driven by the database: only modules registered and activated via `ModuleQuery::getActivated()` are scanned.
 
 They are registered via the `thelia.api.resource.addon` tag.
 
-## API Response
+## API response
 
 Addon fields appear at the root level of the resource:
 
@@ -321,7 +321,7 @@ Addon fields appear at the root level of the resource:
 }
 ```
 
-## Multiple Addons
+## Multiple addons
 
 A resource can have multiple addons. Each addon's properties are merged into the response:
 
@@ -336,7 +336,7 @@ A resource can have multiple addons. Each addon's properties are merged into the
 }
 ```
 
-## Best Practices
+## Best practices
 
 1. **Use parent's groups** - Addon properties should use the parent resource's groups
 2. **Mark static methods with #[Ignore]** - Prevents serialization errors
@@ -344,7 +344,7 @@ A resource can have multiple addons. Each addon's properties are merged into the
 4. **Keep addons focused** - One addon per concern
 5. **Override only what you need** - Use trait defaults when possible
 
-## Next Steps
+## Next steps
 
 - [Resources](./resources) - Creating standalone resources
 - [Serialization Groups](./serialization-groups) - Controlling field visibility

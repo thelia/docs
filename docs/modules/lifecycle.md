@@ -3,11 +3,11 @@ title: Module Lifecycle
 sidebar_position: 3
 ---
 
-# Module Lifecycle
+# Module lifecycle
 
-Thelia modules have a defined lifecycle with hooks at each stage, allowing you to run custom logic during installation, activation, updates, and deactivation.
+Thelia modules follow a defined lifecycle with hooks at each stage. You can run custom logic during installation, activation, updates, and deactivation.
 
-## Lifecycle Methods
+## Lifecycle methods
 
 Override these methods in your main module class:
 
@@ -102,11 +102,11 @@ final class MyProject extends BaseModule
 
 The `install()` method runs once when the module is first installed.
 
-### Creating Database Tables
+### Creating database tables
 
 Thelia ships a `Thelia\Core\Install\Database` helper that runs a `.sql` file against the Propel connection. Generate the file from your `Config/schema.xml` with `php Thelia module:generate:sql MyProject`, then load it.
 
-The recommended place to load the install SQL is `postActivation()`, guarded by a config flag so it runs only once. Activation runs inside a database transaction: if `postActivation()` throws, the transaction is rolled back and the module is left deactivated — so the next activation attempt re-runs the same code. The guard makes that re-run safe.
+Load the install SQL from `postActivation()`, guarded by a config flag so it runs only once. Activation runs inside a database transaction. If `postActivation()` throws, the transaction is rolled back and the module is left deactivated, so the next activation attempt re-runs the same code. The guard makes that re-run safe.
 
 ```php
 // local/modules/MyProject/MyProject.php
@@ -126,14 +126,14 @@ public function postActivation(?ConnectionInterface $con = null): void
 ```
 
 :::caution Pass the connection, not the wrapped PDO
-`Database::__construct()` accepts a `ConnectionInterface`, a `\PDO`, or `null` (it pulls the write connection from Propel). Pass `$con` directly — `new Database($con)`. Do not call `$con->getWrappedConnection()` yourself.
+`Database::__construct()` accepts a `ConnectionInterface`, a `\PDO`, or `null` (it pulls the write connection from Propel). Pass `$con` directly: `new Database($con)`. Do not call `$con->getWrappedConnection()` yourself.
 :::
 
 :::caution Use the `Thelia\Core\Install` namespace
 The legacy `Thelia\Install\Database` class was removed. The current class is `Thelia\Core\Install\Database`. There is no `executeSqlFile()` method on `BaseModule`; use `Database::insertSql()` instead.
 :::
 
-### Setting Default Configuration
+### Setting default configuration
 
 ```php
 use Thelia\Model\ConfigQuery;
@@ -151,7 +151,7 @@ public function install(?ConnectionInterface $con = null): void
 }
 ```
 
-### Creating Required Directories
+### Creating required directories
 
 ```php
 public function install(?ConnectionInterface $con = null): void
@@ -166,7 +166,7 @@ public function install(?ConnectionInterface $con = null): void
 
 ## Activation
 
-### Pre-Activation Checks
+### Pre-activation checks
 
 Use `preActivation()` to verify requirements before the module activates:
 
@@ -203,9 +203,9 @@ private function isModuleActive(string $moduleCode): bool
 }
 ```
 
-### Post-Activation Setup
+### Post-activation setup
 
-Use `postActivation()` for initialization that requires the module to be active. Wrap any one-time seeding (install SQL, default data) in the `is_initialized` guard shown in [Creating Database Tables](#creating-database-tables) so it does not re-run on every activation cycle:
+Use `postActivation()` for initialization that requires the module to be active. Wrap any one-time seeding (install SQL, default data) in the `is_initialized` guard shown in [Creating database tables](#creating-database-tables) so it does not re-run on every activation cycle:
 
 ```php
 public function postActivation(?ConnectionInterface $con = null): void
@@ -247,13 +247,13 @@ private function registerHookPositions(): void
 :::note New in Thelia 3: deactivation tolerates missing source files
 A module can stay registered in the database after its source files are removed from disk (for example, dropped from `composer.json` while still active). Thelia 3 stays operational in that situation:
 
-- The deactivation handler (`Thelia\Action\Module`) detects that the module class is missing (`class_exists()` on its full namespace fails) and deactivates the row cleanly, without running the lifecycle hooks. It logs a warning saying the module was deactivated without running its lifecycle hooks. Activation, on the other hand, is refused with a `ModuleException` — you cannot activate code that is not on disk.
+- The deactivation handler (`Thelia\Action\Module`) detects that the module class is missing (`class_exists()` on its full namespace fails) and deactivates the row cleanly, without running the lifecycle hooks. It logs a warning saying the module was deactivated without running its lifecycle hooks. Activation, on the other hand, is refused with a `ModuleException`: you cannot activate code that is not on disk.
 - At boot, the schema locator (`Thelia\Core\Propel\Schema\SchemaLocator`) skips the missing module's Propel schema instead of failing, and logs (via `error_log`, since Propel models are not generated yet) a message telling you to run `module:deactivate <Module>` to clean up. The application still boots, so you can run the cleanup.
 
-This is operational robustness, not an API you call — you do not need to handle it in your module code.
+This behavior keeps the application running. It is not an API you call, and you do not need to handle it in your module code.
 :::
 
-### Pre-Deactivation Checks
+### Pre-deactivation checks
 
 Prevent deactivation if the module is in use:
 
@@ -276,7 +276,7 @@ public function preDeactivation(?ConnectionInterface $con = null): bool
 }
 ```
 
-### Post-Deactivation Cleanup
+### Post-deactivation cleanup
 
 ```php
 public function postDeactivation(?ConnectionInterface $con = null): void
@@ -360,7 +360,7 @@ private function migrateToV200(ConnectionInterface $con): void
 }
 ```
 
-### Version Detection
+### Version detection
 
 The current version comes from the database, and the new version from `module.xml`. Thelia compares these when you run:
 
@@ -370,7 +370,7 @@ php Thelia module:refresh
 
 ## Uninstallation (destroy)
 
-When a module is deleted, Thelia calls the `destroy()` method. This is the cleanup hook — use it to drop tables, remove configuration, and delete files the module created.
+When a module is deleted, Thelia calls the `destroy()` method. This is the cleanup hook. Use it to drop tables, remove configuration, and delete files the module created.
 
 ```php
 // local/modules/MyProject/MyProject.php
@@ -400,12 +400,12 @@ public function destroy(?ConnectionInterface $con = null, $deleteModuleData = fa
 The second argument, `$deleteModuleData`, tells you whether the operator asked to drop the module's data. When it is `false`, leave user data untouched and only remove what is safe to recreate.
 
 :::caution `destroy()` runs inside a transaction
-The module deletion handler wraps `destroy()` in a database transaction and removes the module files afterwards. If `destroy()` throws, the whole deletion is rolled back. Keep it idempotent (`DROP TABLE IF EXISTS`, guarded deletes) — a module can be deleted more than once if a previous attempt failed.
+The module deletion handler wraps `destroy()` in a database transaction and removes the module files afterwards. If `destroy()` throws, the whole deletion is rolled back. Keep it idempotent (`DROP TABLE IF EXISTS`, guarded deletes), since a module can be deleted more than once if a previous attempt failed.
 :::
 
-## CLI Commands
+## CLI commands
 
-Manage modules via command line:
+Manage modules from the command line:
 
 ```bash
 # List all modules
@@ -436,18 +436,18 @@ php Thelia module:post-activate-all
 php Thelia module:schema:apply MyProject
 ```
 
-## Best Practices
+## Best practices
 
 ### Do
 
-- **Keep install idempotent**: Running `install()` twice should not cause errors
-- **Use version checks in updates**: Always compare versions before running migrations
-- **Log important operations**: Use Thelia's logging for debugging
-- **Test activation/deactivation cycles**: Ensure multiple cycles work correctly
+- Keep `install()` idempotent: running it twice should not cause errors.
+- Compare versions before running migrations in `update()`.
+- Log important operations through Thelia's logging so you can debug them later.
+- Test activation and deactivation across several cycles to confirm they stay correct.
 
 ### Don't
 
-- **Don't delete user data on deactivation**: Only delete on explicit uninstall
-- **Don't assume database state**: Always check before altering
-- **Don't block with long operations**: Use background jobs for heavy tasks
-- **Don't throw generic exceptions**: Provide helpful error messages
+- Don't delete user data on deactivation. Only delete it on an explicit uninstall.
+- Don't assume the database state. Check before altering it.
+- Don't block on long operations. Move heavy tasks to background jobs.
+- Don't throw generic exceptions. Give a message that explains what went wrong.

@@ -5,7 +5,7 @@ sidebar_position: 5
 
 # Modules vs Bundles
 
-Thelia 3 extends in two ways: **Thelia Modules** and **Symfony Bundles**. A module is the e-commerce extension unit (it lives in the database, can be activated/deactivated at runtime, and plugs into the checkout, hooks and API). A bundle is a standard Symfony bundle loaded at boot from `config/bundles.php` — that is how the front-office and back-office themes ship.
+Thelia 3 extends in two ways: **Thelia Modules** and **Symfony Bundles**. A module is the e-commerce extension unit. It lives in the database, can be activated or deactivated at runtime, and plugs into the checkout, hooks and API. A bundle is a standard Symfony bundle loaded at boot from `config/bundles.php`, which is how the front-office and back-office themes ship.
 
 This page explains when to reach for each, and what a Thelia 3 module actually contains now that almost all of the old XML wiring is gone.
 
@@ -26,18 +26,18 @@ Both reference themes are Symfony bundles, not Thelia modules: the Flexy front-o
 
 ## Thelia modules
 
-Modules are the primary way to extend Thelia's e-commerce functionality. A Thelia 3 module is mostly **plain PHP with attributes** — the XML wiring that older Thelia versions required for services, routes, hooks, loops and forms is gone. The framework discovers those automatically.
+Modules are the primary way to extend Thelia's e-commerce functionality. A Thelia 3 module is mostly **plain PHP with attributes**. The XML wiring that older Thelia versions required for services, routes, hooks, loops and forms is gone, because the framework discovers those automatically.
 
 ### Directory structure
 
 ```
 local/modules/MyModule/
 ├── Config/
-│   ├── module.xml          # REQUIRED — metadata, validated against module-2_2.xsd
+│   ├── module.xml          # REQUIRED - metadata, validated against module-2_2.xsd
 │   ├── schema.xml          # Only if the module has its own database tables
 │   ├── TheliaMain.sql      # SQL applied on first activation (postActivation)
 │   ├── update/             # Versioned migration SQL (1.0.1.sql, 1.1.0.sql, ...)
-│   └── config.xml          # OPTIONAL — see "What config.xml is still for"
+│   └── config.xml          # OPTIONAL - see "What config.xml is still for"
 ├── Controller/             # #[Route] PHP attributes, auto-scanned (no routing.xml)
 ├── Api/
 │   └── Resource/           # API Platform resources, auto-discovered
@@ -101,7 +101,7 @@ The `autoconfigure()` call is what makes auto-discovery work:
 - **Event listeners** implementing `EventSubscriberInterface` (or annotated `#[AsEventListener]`) are tagged automatically.
 
 :::caution `configureServices()` is mandatory
-Without `configureServices()`, **zero** classes in the module are scanned — no controllers, no hooks, no services. The auto-registration only happens through this method.
+Without `configureServices()`, **zero** classes in the module are scanned: no controllers, no hooks, no services. The auto-registration only happens through this method.
 :::
 
 ### `module.xml` (required)
@@ -145,10 +145,10 @@ A few rules enforced by the schema (`core/lib/Thelia/Module/schema/module/module
 - `<fullnamespace>` and at least one `<descriptive>` are mandatory.
 - `<type>` must be one of: `classic`, `delivery`, `payment`, `marketplace`, `price`, `accounting`, `seo`, `administration`, `statistic`.
 - `<thelia>` is the **minimum Thelia version** the module needs (dotted format).
-- `<required>` is **not** a version string — it is a container of `<module>` elements listing other modules this one depends on, each with an optional `version` attribute. Do not put the Thelia version there.
+- `<required>` is **not** a version string. It is a container of `<module>` elements listing other modules this one depends on, each with an optional `version` attribute. Do not put the Thelia version there.
 
 :::note Which XSD is accepted
-`ModuleDescriptorValidator` tries every bundled XSD (`module.xsd`, `module-2_1.xsd`, `module-2_2.xsd`) and accepts the file if it validates against any of them, so older descriptors still load. Use `module-2_2.xsd` for new modules — it is the current schema.
+`ModuleDescriptorValidator` tries every bundled XSD (`module.xsd`, `module-2_1.xsd`, `module-2_2.xsd`) and accepts the file if it validates against any of them, so older descriptors still load. Use `module-2_2.xsd` for new modules, since it is the current schema.
 :::
 
 ### `schema.xml` (only with database tables)
@@ -159,12 +159,12 @@ If your module needs its own tables, declare them in `Config/schema.xml` (Propel
 
 `config.xml` is **optional**. Services, routes, hooks, loops and forms are no longer declared there. Keep it only for the few things that have no PHP attribute equivalent:
 
-- `<exports>` / `<imports>` — registering back-office export/import profiles
-- `<parameters>` — container parameters
+- `<exports>` / `<imports>`: registering back-office export/import profiles
+- `<parameters>`: container parameters
 - A loop `<loop name="...">` alias when you need a name different from the auto-generated snake_case
 
 :::caution Do not re-declare what is auto-discovered
-The `config.xml` loader still parses `<services>`, `<hooks>`, `<loops>`, `<forms>` and `<commands>`, but declaring them there duplicates the auto-configuration and is discouraged — hand-declaring a hook or service that is also auto-discovered registers it twice. A module that only contains controllers, hooks, services and forms needs no `config.xml` at all.
+The `config.xml` loader still parses `<services>`, `<hooks>`, `<loops>`, `<forms>` and `<commands>`, but declaring them there duplicates the auto-configuration and is discouraged: hand-declaring a hook or service that is also auto-discovered registers it twice. A module that only contains controllers, hooks, services and forms needs no `config.xml` at all.
 :::
 
 ### Module locations
@@ -245,7 +245,7 @@ public function loadExtension(array $config, ContainerConfigurator $container, C
 
 ### The back-office theme: BackOfficeDefaultTwigBundle
 
-The Twig back-office is also a bundle. It lives at `templates/backOffice/default-twig/`, its class is `BackOfficeDefaultTwigBundle\BackOfficeDefaultTwigBundle`, and it carries its own `composer.json` (`"type": "thelia-backoffice-template"`). It owns its routes (`#[Route]` attributes on its controllers), hooks, Twig templates, forms and compiled assets — exactly the "themes are bundles" model.
+The Twig back-office is also a bundle. It lives at `templates/backOffice/default-twig/`, its class is `BackOfficeDefaultTwigBundle\BackOfficeDefaultTwigBundle`, and it carries its own `composer.json` (`"type": "thelia-backoffice-template"`). It owns its routes (`#[Route]` attributes on its controllers), hooks, Twig templates, forms and compiled assets, following the same "themes are bundles" model.
 
 ```
 templates/backOffice/default-twig/
@@ -283,7 +283,7 @@ return [
 ];
 ```
 
-Note the fully qualified class names: `FlexyBundle\FlexyBundle::class` and `BackOfficeDefaultTwigBundle\BackOfficeDefaultTwigBundle::class`. There is no `vendor/thelia/flexy/` path involved — the theme is referenced by its bundle class, and its sources live under `templates/`.
+Note the fully qualified class names: `FlexyBundle\FlexyBundle::class` and `BackOfficeDefaultTwigBundle\BackOfficeDefaultTwigBundle::class`. There is no `vendor/thelia/flexy/` path involved. The theme is referenced by its bundle class, and its sources live under `templates/`.
 
 ## When to use which
 
@@ -352,7 +352,7 @@ final class ReviewNotificationListener
 If a module is active and exposes a public service, you can inject it by type, like any Symfony service:
 
 ```php
-// Illustrative only — CustomerFamilyService is an example, not a guaranteed API.
+// Illustrative only - CustomerFamilyService is an example, not a guaranteed API.
 public function __construct(
     private readonly CustomerFamilyService $customerFamilyService,
 ) {}
@@ -364,8 +364,8 @@ A service from another module only exists when that module is active. Declare th
 
 ## Learn more
 
-- [Module structure](/docs/modules/structure) — full breakdown of a module's files
-- [Module lifecycle](/docs/modules/lifecycle) — install, activate, update, destroy
-- [API resources](/docs/api/resources) — exposing API endpoints from a module
-- [Live components](/docs/front-office/live-components) — building reactive UI inside a theme bundle
-- [Propel](./propel.md) — the ORM and `schema.xml` format
+- [Module structure](/docs/modules/structure): full breakdown of a module's files
+- [Module lifecycle](/docs/modules/lifecycle): install, activate, update, destroy
+- [API resources](/docs/api/resources): exposing API endpoints from a module
+- [Live components](/docs/front-office/live-components): building reactive UI inside a theme bundle
+- [Propel](./propel.md): the ORM and `schema.xml` format

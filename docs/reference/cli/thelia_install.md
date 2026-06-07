@@ -6,7 +6,7 @@ title: thelia:install
 Install Thelia using the Symfony console command.
 
 :::tip Preferred Method
-For fresh installations, use `php bin/install` instead — it works without a booted kernel. See [Getting Started](/docs/getting-started).
+For fresh installations, use `php bin/install` instead. It works without a booted kernel. See [Getting Started](/docs/getting-started).
 :::
 
 ## Usage

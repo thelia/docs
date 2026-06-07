@@ -42,7 +42,7 @@ The `I18nCollection` holds translations for all locales:
 public I18nCollection $i18ns;
 ```
 
-### JSON Structure
+### JSON structure
 
 ```json
 {
@@ -65,7 +65,7 @@ public I18nCollection $i18ns;
 }
 ```
 
-## Creating the I18n Resource
+## Creating the I18n resource
 
 Each translatable resource needs a corresponding I18n resource:
 
@@ -101,9 +101,9 @@ class ProductReviewI18n extends I18n
 }
 ```
 
-## Complete Example
+## Complete example
 
-### Main Resource
+### Main resource
 
 ```php
 <?php
@@ -179,7 +179,7 @@ class FaqItem extends AbstractTranslatableResource
 }
 ```
 
-### I18n Resource
+### I18n resource
 
 ```php
 <?php
@@ -225,7 +225,7 @@ public I18nCollection $i18ns;
 
 This ensures at least one locale has the required fields filled.
 
-## Accessing Translations via DataAccessService
+## Accessing translations via DataAccessService
 
 When using `DataAccessService::resources()` (in PHP or via the `resources()` Twig function), the `i18ns` property is **automatically flattened** to the current locale.
 
@@ -270,7 +270,7 @@ $title = $product['i18ns']['title'];
 $description = $product['i18ns']['description'];
 ```
 
-## Accessing All Locales (Raw API)
+## Accessing all locales (raw API)
 
 If you need access to all translations, use the HTTP API directly:
 
@@ -326,7 +326,7 @@ Your Propel schema should include an i18n table:
 </table>
 ```
 
-## Core Translatable Resources
+## Core translatable resources
 
 Thelia provides these translatable resources:
 
@@ -342,14 +342,14 @@ Thelia provides these translatable resources:
 | `Attribute` | title |
 | `AttributeAv` | title |
 
-## Best Practices
+## Best practices
 
-1. **Keep i18n fields in separate class** - Cleaner organization
-2. **Validate required locales** - Use `I18nConstraint`
-3. **Include i18ns in all read groups** - Users need translations
-4. **Handle missing translations** - Provide fallbacks
+1. Keep i18n fields in a separate class for cleaner organization.
+2. Validate required locales with `I18nConstraint`.
+3. Include `i18ns` in every read group, since clients need the translations.
+4. Handle missing translations by providing fallbacks.
 
-## Next Steps
+## Next steps
 
 - [Resources](./resources) - Basic resource creation
 - [Addons](./addons) - Extending resources

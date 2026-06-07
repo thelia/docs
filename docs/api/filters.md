@@ -5,9 +5,9 @@ sidebar_position: 7
 
 # Filters & Pagination
 
-Thelia's API supports powerful filtering, sorting, and pagination through API Platform's filter system with custom Propel adapters.
+Thelia's API supports filtering, sorting, and pagination through API Platform's filter system, with custom Propel adapters.
 
-## Basic Usage
+## Basic usage
 
 Filters are applied via query parameters:
 
@@ -15,7 +15,7 @@ Filters are applied via query parameters:
 GET /api/front/products?visible=true&brand.id=5&order[position]=asc&page=2&itemsPerPage=20
 ```
 
-## Available Filters
+## Available filters
 
 ### SearchFilter
 
@@ -235,7 +235,7 @@ Custom Thelia-specific filters (varies by resource).
 )]
 ```
 
-### Custom Filters
+### Custom filters
 
 #### ProductPriceOrderFilter
 
@@ -260,7 +260,7 @@ GET /api/front/products?depth=2&productCategories.category.id=5
 
 ## Pagination
 
-### Query Parameters
+### Query parameters
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
@@ -273,7 +273,7 @@ GET /api/front/products?depth=2&productCategories.category.id=5
 GET /api/front/products?page=2&itemsPerPage=20
 ```
 
-### Response Format
+### Response format
 
 By default, the API returns a simple JSON array:
 
@@ -304,7 +304,7 @@ To get pagination metadata (total items, page info), use JSON-LD format with `Ac
 }
 ```
 
-### Accessing Pagination in Twig
+### Accessing pagination in Twig
 
 The Twig `resources()` function returns a simple array by default. For pagination, use `itemsPerPage` and `page` parameters:
 
@@ -337,7 +337,7 @@ The Twig `resources()` function returns a simple array by default. For paginatio
 For pagination with total item count, use `DataAccessService` with `'jsonld'` format in a PHP service or LiveComponent, as the Twig function doesn't support JSON-LD format.
 :::
 
-## Combining Filters
+## Combining filters
 
 Filters can be combined:
 
@@ -359,9 +359,9 @@ In Twig:
 }) %}
 ```
 
-## Adding Filters to Resources
+## Adding filters to resources
 
-### On the Resource Class
+### On the resource class
 
 ```php
 use ApiPlatform\Metadata\ApiFilter;
@@ -387,7 +387,7 @@ class MyResource implements PropelResourceInterface
 }
 ```
 
-### Per Operation
+### Per operation
 
 ```php
 new GetCollection(
@@ -399,7 +399,7 @@ new GetCollection(
 )
 ```
 
-## Filter Classes Reference
+## Filter classes reference
 
 | Filter | Import |
 |--------|--------|
@@ -413,15 +413,15 @@ new GetCollection(
 | ProductPriceOrderFilter | `Thelia\Api\Bridge\Propel\Filter\CustomFilters\ProductFilter\ProductPriceOrderFilter` |
 | DepthProductFilter | `Thelia\Api\Bridge\Propel\Filter\CustomFilters\ProductFilter\DepthProductFilter` |
 
-## Best Practices
+## Best practices
 
-1. **Index filtered columns** - Ensure database indexes on filtered fields
-2. **Limit exposed filters** - Only expose necessary filters
-3. **Use appropriate strategies** - Choose the right search strategy for UX
-4. **Paginate collections** - Always paginate large collections
-5. **Cache when possible** - Cache frequent filter combinations
+1. Add database indexes on the columns you filter on.
+2. Expose only the filters a client actually needs.
+3. Pick the search strategy that fits how users will query the field.
+4. Paginate large collections.
+5. Cache frequent filter combinations.
 
-## Next Steps
+## Next steps
 
 - [Endpoints Reference](./endpoints) - Complete API endpoints
 - [Resources](./resources) - Creating API resources

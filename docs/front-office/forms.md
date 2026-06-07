@@ -5,7 +5,7 @@ sidebar_position: 8
 
 # Front-Office Forms
 
-Thelia 3 builds front-office forms with **Symfony Forms**, usually wrapped in a **LiveComponent** for interactive validation and submission. Instead of building forms inline, Flexy resolves predefined Thelia forms by name through the `FormServiceInterface`.
+Thelia 3 builds front-office forms with Symfony Forms, usually wrapped in a LiveComponent for interactive validation and submission. Instead of building forms inline, Flexy resolves predefined Thelia forms by name through the `FormServiceInterface`.
 
 :::tip Official Documentation
 For the underlying form component, see [symfony.com/doc/current/forms.html](https://symfony.com/doc/current/forms.html). For the LiveComponent integration, see [symfony.com/bundles/ux-live-component/current/index.html](https://symfony.com/bundles/ux-live-component/current/index.html).
@@ -47,7 +47,7 @@ Inject `Thelia\Core\Form\FormServiceInterface`. A no-op default implementation i
 
 ## A LiveComponent form
 
-The Flexy theme exposes its forms as LiveComponents. The reference is `AccountCustomerUpdate`, the "edit my profile" component:
+The Flexy theme exposes its forms as LiveComponents. A good example is `AccountCustomerUpdate`, the "edit my profile" component:
 
 ```php
 // templates/frontOffice/flexy/src/UiComponents/AccountCustomerUpdate/AccountCustomerUpdate.php
@@ -95,7 +95,7 @@ Three pieces make this a form component:
 `instantiateForm()` returns the form built by `$this->formService->getFormByName(...)`. Here the name comes from a Flexy form class constant (`CustomerUpdateForm::FORM_NAME`), but it can equally be a `FrontForm` constant.
 
 :::caution Prefer constructor injection over `extends BaseFrontController`
-Flexy components extend `Thelia\Controller\Front\BaseFrontController`. That base class exposes container helpers (a service-locator style), which is convenient but considered an anti-pattern: it hides dependencies. For your own components, prefer plain constructor injection of the exact services you need, as shown above with `FormServiceInterface`. Extending `BaseFrontController` is documented here only because it is what the current Flexy theme does.
+Flexy components extend `Thelia\Controller\Front\BaseFrontController`. That base class exposes container helpers (a service-locator style). It is convenient, but it hides dependencies, so treat it as an anti-pattern. For your own components, prefer plain constructor injection of the exact services you need, as shown above with `FormServiceInterface`. Extending `BaseFrontController` is documented here only because it is what the current Flexy theme does.
 :::
 
 ## Handling submission with a LiveAction
@@ -246,7 +246,7 @@ LiveComponents can validate fields as the user types, using `data-model` binding
 
 ## Flexy form theme
 
-The Flexy theme registers its form theme globally, so widgets are styled automatically — you do not need a `{% form_theme %}` tag in each template. This is configured in the bundle's `config/packages/twig.yaml`:
+The Flexy theme registers its form theme globally, so widgets are styled automatically. You do not need a `{% form_theme %}` tag in each template. This is configured in the bundle's `config/packages/twig.yaml`:
 
 ```yaml
 # templates/frontOffice/flexy/config/packages/twig.yaml
@@ -264,15 +264,15 @@ The `formTwig` Twig namespace points at the theme's `form/` directory, which is 
 ```
 
 :::note
-Because the theme is applied via `form_themes` in `twig.yaml`, every front-office form is rendered with the Flexy widgets out of the box. Only add an explicit `{% form_theme form '@formTwig/flexy_form_theme.html.twig' %}` when you render a form in a context where the global theme does not apply.
+Because the theme is applied via `form_themes` in `twig.yaml`, every front-office form is rendered with the Flexy widgets by default. Only add an explicit `{% form_theme form '@formTwig/flexy_form_theme.html.twig' %}` when you render a form in a context where the global theme does not apply.
 :::
 
 ## Plain Symfony fallback
 
-If you need a one-off form that has no Thelia definition, you can build it inline with Symfony's `createFormBuilder()`. This is standard Symfony, **not** the Thelia way — prefer a named Thelia form whenever one exists:
+If you need a one-off form that has no Thelia definition, you can build it inline with Symfony's `createFormBuilder()`. This is standard Symfony, not the Thelia way. Prefer a named Thelia form whenever one exists:
 
 :::caution `createFormBuilder()` requires `AbstractController`
-`createFormBuilder()` is a helper provided by Symfony's `Symfony\Bundle\FrameworkBundle\Controller\AbstractController`. Thelia's `BaseFrontController` (used by the components above) does **not** extend it, so the call below only works in a component that extends `AbstractController` — as the Flexy `CategoryFilters` component does. Otherwise, inject `Symfony\Component\Form\FormFactoryInterface` and call `$this->formFactory->createBuilder()`.
+`createFormBuilder()` is a helper provided by Symfony's `Symfony\Bundle\FrameworkBundle\Controller\AbstractController`. Thelia's `BaseFrontController` (used by the components above) does not extend it, so the call below only works in a component that extends `AbstractController`, as the Flexy `CategoryFilters` component does. Otherwise, inject `Symfony\Component\Form\FormFactoryInterface` and call `$this->formFactory->createBuilder()`.
 :::
 
 ```php
@@ -283,7 +283,7 @@ use Symfony\Component\Form\FormInterface;
 
 protected function instantiateForm(): FormInterface
 {
-    // Plain Symfony fallback — only when no Thelia FrontForm fits
+    // Plain Symfony fallback - only when no Thelia FrontForm fits
     return $this->createFormBuilder()
         ->add('name', TextType::class)
         ->add('email', EmailType::class)
@@ -301,6 +301,6 @@ protected function instantiateForm(): FormInterface
 
 ## Learn more
 
-- [LiveComponents](./live-components) — component lifecycle and LiveProps
-- [Flexy Theme](./flexy-theme/) — theme structure and assets
-- [Stimulus](./stimulus) — JavaScript controllers
+- [LiveComponents](./live-components): component lifecycle and LiveProps
+- [Flexy Theme](./flexy-theme/): theme structure and assets
+- [Stimulus](./stimulus): JavaScript controllers

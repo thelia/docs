@@ -5,10 +5,10 @@ sidebar_position: 1
 
 # Module Development
 
-Modules are the primary way to extend Thelia. They allow you to add new features, integrate third-party services, customize behavior, and build complete e-commerce solutions.
+Modules are the primary way to extend Thelia. Use them to add features, integrate third-party services, and customize behavior, up to building a complete e-commerce solution.
 
-:::tip One Module Per Project
-We recommend creating a single module for all your project-specific logic. Only create separate modules if you plan to share them with the community or need distinct functionality boundaries.
+:::tip One module per project
+Create a single module for all your project-specific logic. Only split into separate modules if you plan to share them with the community or need distinct functionality boundaries.
 :::
 
 ## Module Locations
@@ -105,7 +105,7 @@ The reference back-office theme in Thelia 3 is the **default-twig** bundle: a se
 
 ## PHP Best Practices
 
-:::important Strict Types
+:::important Strict types
 All PHP files in your module **must** use strict typing:
 
 ```php
@@ -114,7 +114,7 @@ All PHP files in your module **must** use strict typing:
 declare(strict_types=1);
 ```
 
-This is mandatory for Thelia 3 modules and ensures type safety across your codebase.
+This is mandatory for Thelia 3 modules.
 :::
 
 **MyProject.php**:

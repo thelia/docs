@@ -14,7 +14,7 @@ module:generate [options] [--] <name>
 - `name`                   Name wanted for your Module
 
 ## Options
-- `--force`  If defined, it will update the module with missing directories and files (no overrides).
+- `--force`  When set, adds any missing directories and files to the module without overwriting existing ones.
 
 ## Example
 To generate a module named `MyModule`

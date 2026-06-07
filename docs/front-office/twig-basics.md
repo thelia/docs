@@ -11,9 +11,9 @@ Thelia 3 uses **Twig** as the template engine for front-office development.
 For complete Twig documentation, see [twig.symfony.com](https://twig.symfony.com/doc/).
 :::
 
-## Template Inheritance
+## Template inheritance
 
-### Base Layout
+### Base layout
 
 All pages extend a base layout:
 
@@ -34,7 +34,7 @@ All pages extend a base layout:
 </html>
 ```
 
-### Extending the Base Layout
+### Extending the base layout
 
 ```twig
 {# product.html.twig #}
@@ -50,7 +50,7 @@ All pages extend a base layout:
 {% endblock %}
 ```
 
-## Data Access
+## Data access
 
 Use the `resources()` function to fetch data from the API:
 
@@ -72,9 +72,9 @@ Use the `resources()` function to fetch data from the API:
 
 See [Data Access](./data-access) for complete documentation.
 
-## Thelia-Specific Functions
+## Thelia-specific functions
 
-### URL Attributes
+### URL attributes
 
 Get URL parameters using `attr()`:
 
@@ -83,7 +83,7 @@ Get URL parameters using `attr()`:
 {% set categoryId = attr('category', 'id') %}
 ```
 
-### SEO Functions
+### SEO functions
 
 ```twig
 <title>{{ SEOnePageTitle() }}</title>
@@ -105,7 +105,7 @@ The `SEOne*` functions (`SEOnePageTitle`, `SEOnePageDesc`, `SEOnePageCanonical`,
 {{ '%count% item|%count% items'|trans({'%count%': cart.itemCount}) }}
 ```
 
-### Price Formatting
+### Price formatting
 
 ```twig
 {{ price|format_currency('EUR', locale: lang_code) }}
@@ -113,7 +113,7 @@ The `SEOne*` functions (`SEOnePageTitle`, `SEOnePageDesc`, `SEOnePageCanonical`,
 
 ## Components
 
-### Twig Components
+### Twig components
 
 ```twig
 {{ component('Flexy:ProductCard', {product: product}) }}
@@ -135,7 +135,7 @@ The `SEOne*` functions (`SEOnePageTitle`, `SEOnePageDesc`, `SEOnePageCanonical`,
 
 See [LiveComponents](./live-components) for details.
 
-## Asset Management
+## Asset management
 
 ```twig
 {# CSS #}
@@ -148,7 +148,7 @@ See [LiveComponents](./live-components) for details.
 {{ asset('build/images/logo.png') }}
 ```
 
-## Stimulus Controllers
+## Stimulus controllers
 
 ```twig
 <div {{ stimulus_controller('drawer') }}>
@@ -168,7 +168,7 @@ See [LiveComponents](./live-components) for details.
 `dump()` only works when `APP_DEBUG=1`.
 :::
 
-## Best Practices
+## Best practices
 
 ### Use DataAccessService
 
@@ -177,7 +177,7 @@ See [LiveComponents](./live-components) for details.
 {% set products = resources('/api/front/products', {visible: true}) %}
 ```
 
-### Keep Templates Clean
+### Keep templates clean
 
 ```twig
 {# Good - logic in component #}
@@ -189,14 +189,14 @@ See [LiveComponents](./live-components) for details.
 {% endif %}
 ```
 
-### Escape User Content
+### Escape user content
 
 ```twig
 {{ userComment }}  {# Auto-escaped #}
 {{ product.i18ns.description|raw }}  {# Trusted admin content only #}
 ```
 
-## Next Steps
+## Next steps
 
 - [Data Access](./data-access) - Learn the `resources()` function
 - [LiveComponents](./live-components) - Build reactive components

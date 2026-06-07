@@ -433,6 +433,6 @@ if($timestampable === true) //available if your table is timestampable
 
 Loops remain useful for the legacy Smarty back-office and third-party Smarty templates. For new development, prefer the modern data paths:
 
-- [Front-Office Data Access](/docs/front-office/data-access) — fetch data with `resources()` / the `DataAccessService` in Flexy/Twig templates.
-- [Back-Office Bundle structure](/docs/back-office/bundle-structure) — how the `default-twig` back-office bundle uses Repositories and presenters (not loops) to feed its DataTable lists.
-- [Module Structure](/docs/modules/structure) — directory layout for a Thelia 3 module.
+- [Front-Office Data Access](/docs/front-office/data-access) - fetch data with `resources()` / the `DataAccessService` in Flexy/Twig templates.
+- [Back-Office Bundle structure](/docs/back-office/bundle-structure) - how the `default-twig` back-office bundle uses Repositories and presenters (not loops) to feed its DataTable lists.
+- [Module Structure](/docs/modules/structure) - directory layout for a Thelia 3 module.

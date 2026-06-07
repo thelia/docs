@@ -5,11 +5,11 @@ sidebar_position: 1
 
 # API Endpoints Reference
 
-This section provides reference documentation for Thelia's core API endpoints.
+Reference documentation for Thelia's core API endpoints.
 
-## Endpoint Overview
+## Endpoint overview
 
-### Admin Endpoints (`/api/admin/`)
+### Admin endpoints (`/api/admin/`)
 
 Full CRUD operations requiring authentication.
 
@@ -29,7 +29,7 @@ Full CRUD operations requiring authentication.
 | Countries | `/api/admin/countries` | GET, POST, PUT, PATCH, DELETE |
 | Modules | `/api/admin/modules` | GET, POST, PUT, DELETE |
 
-### Front Endpoints (`/api/front/`)
+### Front endpoints (`/api/front/`)
 
 Mostly read-only public access. A few operations write data (cart management, account creation, account updates) and several require a customer JWT.
 
@@ -56,16 +56,16 @@ The current-cart shortcut `/api/front/cart` returns the cart bound to the curren
 Customer and order personal-data routes (`/api/front/account/customers/{id}`, `/api/front/account/orders`, `/api/front/account/orders/{id}`) require a customer JWT and only expose the authenticated customer's own data. The `POST /api/front/customers` operation is the public account-creation endpoint.
 :::
 
-## Common Patterns
+## Common patterns
 
-### Collection Request
+### Collection request
 
 ```http
 GET /api/front/products?visible=true&itemsPerPage=20&page=1
 Accept: application/ld+json
 ```
 
-### Collection Response
+### Collection response
 
 ```json
 {
@@ -95,14 +95,14 @@ Accept: application/ld+json
 }
 ```
 
-### Single Item Request
+### Single item request
 
 ```http
 GET /api/front/products/1
 Accept: application/ld+json
 ```
 
-### Single Item Response
+### Single item response
 
 ```json
 {
@@ -126,7 +126,7 @@ Accept: application/ld+json
 }
 ```
 
-### Create Request (Admin)
+### Create request (admin)
 
 ```http
 POST /api/admin/products
@@ -152,7 +152,7 @@ Authorization: Bearer {token}
 }
 ```
 
-### Update Request (Admin)
+### Update request (admin)
 
 ```http
 PUT /api/admin/products/1
@@ -169,14 +169,14 @@ Authorization: Bearer {token}
 }
 ```
 
-### Delete Request (Admin)
+### Delete request (admin)
 
 ```http
 DELETE /api/admin/products/1
 Authorization: Bearer {token}
 ```
 
-## Error Responses
+## Error responses
 
 :::note
 Error responses use the Hydra format regardless of the `Accept` header you send.
@@ -221,7 +221,7 @@ Error responses use the Hydra format regardless of the `Accept` header you send.
 }
 ```
 
-## Available Formats
+## Available formats
 
 | Format | Accept Header | Description |
 |--------|---------------|-------------|
@@ -233,16 +233,16 @@ Error responses use the Hydra format regardless of the `Accept` header you send.
 JSON-LD (`application/ld+json`) is the canonical format Thelia configures for its API and the one used throughout the examples below.
 :::
 
-## OpenAPI Documentation
+## OpenAPI documentation
 
-Thelia's API is fully documented with OpenAPI. Access the interactive documentation at:
+Thelia's API is documented with OpenAPI. The interactive documentation is available at:
 
 ```
 /api/docs
 ```
 
-This provides:
-- Interactive "Try it out" functionality
+It offers:
+- "Try it out" functionality
 - Complete schema definitions
 - Authentication testing
 - Example requests and responses

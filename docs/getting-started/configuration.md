@@ -7,9 +7,9 @@ sidebar_position: 4
 
 Thelia 3 uses Symfony's configuration system with environment variables and YAML files.
 
-## Environment Variables
+## Environment variables
 
-### .env Files
+### .env files
 
 Thelia uses the standard Symfony `.env` file hierarchy:
 
@@ -20,7 +20,7 @@ Thelia uses the standard Symfony `.env` file hierarchy:
 | `.env.test` | Test defaults | Yes |
 | `.env.test.local` | Test local overrides | No |
 
-### Key Variables
+### Key variables
 
 The `.env` file ships with these defaults:
 
@@ -44,7 +44,7 @@ JWT_PASSPHRASE=your-passphrase
 LOCK_DSN=flock
 ```
 
-### Database Configuration
+### Database configuration
 
 Database credentials are set as individual environment variables (not a `DATABASE_URL` string):
 
@@ -58,7 +58,7 @@ DATABASE_PASSWORD=your_password
 
 These are written to `.env.local` by `bin/install` during setup. With DDEV, they are injected automatically.
 
-## Symfony Configuration
+## Symfony configuration
 
 ### config/packages/
 
@@ -143,18 +143,18 @@ security:
             provider: users_in_memory
 ```
 
-Thelia's authentication (admin and customer) is handled internally by the core, not through Symfony's standard security providers.
+The Thelia core handles authentication for both admins and customers, not Symfony's standard security providers.
 
-## Thelia Configuration
+## Thelia configuration
 
-### Store Settings
+### Store settings
 
 Access in back-office: **Configuration > Store**
 
 - Store name, company information, contact details
 - Default currency and language
 
-### Theme Configuration
+### Theme configuration
 
 ```bash
 php Thelia template:set frontOffice flexy
@@ -163,7 +163,7 @@ php Thelia template:set backOffice default
 
 ## Caching
 
-### Clear Cache
+### Clear cache
 
 ```bash
 # Development
@@ -178,7 +178,7 @@ ddev exec php Thelia cache:clear
 
 Cache is stored in `var/cache/`. Configuration in `config/packages/cache.yaml` defaults to filesystem adapter.
 
-## Debug Mode
+## Debug mode
 
 ```bash
 # Development (default)
@@ -193,7 +193,7 @@ APP_ENV=prod
 Never set `APP_ENV=dev` in production. It exposes sensitive information via the debug toolbar and profiler.
 :::
 
-## Mail Configuration
+## Mail configuration
 
 Configure in `.env.local`:
 
@@ -205,8 +205,8 @@ MAILER_DSN=smtp://user:password@smtp.example.com:587
 MAILER_DSN=null://null
 ```
 
-## Next Steps
+## Next steps
 
-- [First Steps](./first-steps) — Create your first content
-- [Architecture](/docs/architecture) — Understand the system
-- [Module Development](/docs/modules) — Extend Thelia
+- [First Steps](./first-steps): create your first content
+- [Architecture](/docs/architecture): understand the system
+- [Module Development](/docs/modules): extend Thelia

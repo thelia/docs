@@ -7,7 +7,7 @@ sidebar_position: 1
 
 Install Thelia 3 and get your store running.
 
-## With DDEV (Recommended)
+## With DDEV (recommended)
 
 ```bash
 git clone https://github.com/thelia/thelia.git
@@ -19,9 +19,9 @@ ddev exec php bin/install
 ddev launch
 ```
 
-Your store is at **https://thelia-3.ddev.site** — back-office at `/admin`.
+Your store is at https://thelia-3.ddev.site, with the back-office at `/admin`.
 
-Want demo data and an admin account?
+To add demo data and an admin account:
 
 ```bash
 ddev exec php bin/install --with-demo --with-admin \
@@ -48,7 +48,7 @@ php -S localhost:8000 -t public
 - **Composer 2+**
 - **MySQL 8.0+** or **MariaDB 10.6+**
 
-## Next Steps
+## Next steps
 
 | Guide | Description |
 |-------|-------------|

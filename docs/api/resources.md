@@ -5,7 +5,7 @@ sidebar_position: 3
 
 # API Resources
 
-API Resources are the core building blocks of Thelia's API. They define how Propel models are exposed via API Platform.
+API resources are the foundation of Thelia's API. They define how Propel models are exposed through API Platform.
 
 ## PropelResourceInterface
 
@@ -24,7 +24,7 @@ interface PropelResourceInterface
 }
 ```
 
-## Creating a Basic Resource
+## Creating a basic resource
 
 ### 1. Define the Propel Schema
 
@@ -165,7 +165,7 @@ class ProductReview implements PropelResourceInterface
 }
 ```
 
-## Property Attributes
+## Property attributes
 
 ### Groups
 
@@ -218,7 +218,7 @@ public ?Category $category = null;
 public array $images = [];
 ```
 
-### Column Mapping
+### Column mapping
 
 Map to Propel column names when they differ:
 
@@ -230,7 +230,7 @@ use Thelia\Api\Bridge\Propel\Attribute\Column;
 public array $productSaleElements = [];
 ```
 
-## Operation Types
+## Operation types
 
 ### GetCollection
 
@@ -292,7 +292,7 @@ new Delete(
 )
 ```
 
-## Custom Validation
+## Custom validation
 
 Use callback constraints for complex validation:
 
@@ -315,7 +315,7 @@ public function validateUniqueRef(ExecutionContextInterface $context): void
 }
 ```
 
-## Computed Properties
+## Computed properties
 
 Add properties that are not stored in the database:
 
@@ -329,18 +329,18 @@ public function getPublicUrl(): string
 }
 ```
 
-## Auto-Discovery
+## Auto-discovery
 
 Resources are auto-discovered from:
 
 - `core/lib/Thelia/Api/Resource/` (core resources)
 - `Api/Resource/` inside any **activated** module's directory
 
-Discovery is driven by the database: Thelia queries activated modules via `ModuleQuery::getActivated()`, resolves each module's base directory (whether in `local/modules/` or `vendor/`), and registers any `Api/Resource/` subdirectory found. Only activated modules are scanned — placing a resource file in a deactivated module has no effect.
+Discovery is driven by the database: Thelia queries activated modules via `ModuleQuery::getActivated()`, resolves each module's base directory (whether in `local/modules/` or `vendor/`), and registers any `Api/Resource/` subdirectory found. Only activated modules are scanned, so placing a resource file in a deactivated module has no effect.
 
 No additional configuration is required beyond activating the module.
 
-## State Providers
+## State providers
 
 Thelia uses custom state providers to bridge API Platform with Propel. They all live in the `Thelia\Api\Bridge\Propel\State\` namespace:
 
@@ -353,7 +353,7 @@ Thelia uses custom state providers to bridge API Platform with Propel. They all 
 
 These are configured automatically for resources implementing `PropelResourceInterface`.
 
-## Adding Filters
+## Adding filters
 
 Add API Platform filters for searching and filtering:
 
@@ -377,15 +377,15 @@ GET /api/admin/my_project_items?code=test
 GET /api/admin/my_project_items?isActive=true
 ```
 
-## Best Practices
+## Best practices
 
-1. **Define clear groups** - Use consistent naming for serialization groups
-2. **Separate admin/front** - Use different routes and groups for admin vs front
-3. **Validate thoroughly** - Add validation constraints for all writable fields
-4. **Use relations wisely** - Only include related data when needed
-5. **Document your API** - Add descriptions to operations and properties
+1. Name serialization groups consistently.
+2. Keep admin and front separate, with different routes and groups for each.
+3. Add validation constraints to every writable field.
+4. Include related data only when you need it.
+5. Document the API by adding descriptions to operations and properties.
 
-## Next Steps
+## Next steps
 
 - [Translatable Resources](./translatable-resources) - Resources with i18n support
 - [Addons](./addons) - Extending existing resources

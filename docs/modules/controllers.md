@@ -5,14 +5,14 @@ sidebar_position: 4
 
 # Controllers
 
-Controllers handle HTTP requests in your module. Thelia provides two base controller types optimized for front-office and back-office contexts.
+Controllers handle HTTP requests in your module. Thelia provides two base controller types, one for the front office and one for the back office.
 
-## Controller Types
+## Controller types
 
 | Type | Base Class | Template engine | Authorization |
 |------|------------|-----------------|---------------|
-| Front | `BaseFrontController` | Active front-office template (Flexy / Twig) | Manual — call `checkAuth()` when a page requires a logged-in customer |
-| Admin | `BaseAdminController` | Active back-office template | Manual — call `checkAuth($resources, $modules, $accesses)` per action |
+| Front | `BaseFrontController` | Active front-office template (Flexy / Twig) | Manual: call `checkAuth()` when a page requires a logged-in customer |
+| Admin | `BaseAdminController` | Active back-office template | Manual: call `checkAuth($resources, $modules, $accesses)` per action |
 
 :::note The back-office reference is the default-twig bundle
 Admin controllers render through the **active back-office template**, resolved by `TheliaTemplateHelper` (via `getActiveAdminTemplate()`). The reference back-office template in Thelia 3 is the `default-twig` bundle (Twig). The legacy Smarty `default` back-office theme is no longer recommended and is expected to be dropped in Thelia 3.1, so target Twig templates for new modules.
@@ -22,11 +22,11 @@ Admin controllers render through the **active back-office template**, resolved b
 Extending `BaseAdminController` does **not** secure your routes by itself. You must call `checkAuth()` at the start of each action that needs protection (see [Authorization Checks](#authorization-checks)).
 :::
 
-## Front Controllers
+## Front controllers
 
-Front controllers serve public-facing pages using Twig templates.
+Front controllers render public-facing pages with Twig templates.
 
-### Basic Front Controller
+### Basic front controller
 
 ```php
 <?php
@@ -57,13 +57,13 @@ final class PageController extends BaseFrontController
 }
 ```
 
-### Template Location
+### Template location
 
 Templates are resolved from:
 1. `templates/frontOffice/{active_template}/modules/MyProject/`
 2. `local/modules/MyProject/templates/frontOffice/default/`
 
-### Injecting Services
+### Injecting services
 
 ```php
 <?php
@@ -95,7 +95,7 @@ final class ProductController extends BaseFrontController
 }
 ```
 
-### Accessing Request Data
+### Accessing request data
 
 ```php
 use Symfony\Component\HttpFoundation\Request;
@@ -117,7 +117,7 @@ public function searchAction(Request $request): Response
 }
 ```
 
-### JSON Responses
+### JSON responses
 
 ```php
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -134,7 +134,7 @@ public function checkAvailabilityAction(int $productId): JsonResponse
 }
 ```
 
-### Requiring a Logged-In Customer
+### Requiring a logged-in customer
 
 On the front office, `checkAuth()` takes **no arguments**. It throws a `RedirectException` to the login page when no customer is authenticated:
 
@@ -198,11 +198,11 @@ return $this->generateRedirectFromRoute(
 ```
 :::
 
-## Admin Controllers
+## Admin controllers
 
-Admin controllers serve back-office pages, rendered through the active back-office template (the `default-twig` bundle). They run behind the `/admin` firewall, but fine-grained permission checks are **not** automatic: call `checkAuth()` in each action that modifies data or exposes restricted resources.
+Admin controllers render back-office pages through the active back-office template (the `default-twig` bundle). They run behind the `/admin` firewall, but fine-grained permission checks are **not** automatic: call `checkAuth()` in each action that modifies data or exposes restricted resources.
 
-### Basic Admin Controller
+### Basic admin controller
 
 ```php
 <?php
@@ -225,13 +225,13 @@ final class ConfigController extends BaseAdminController
 }
 ```
 
-### Template Location
+### Template location
 
 Admin templates are resolved from:
 1. `templates/backOffice/{active_template}/modules/MyProject/`
 2. `local/modules/MyProject/templates/backOffice/default/`
 
-### Form Handling
+### Form handling
 
 ```php
 <?php
@@ -291,7 +291,7 @@ final class ConfigController extends BaseAdminController
 }
 ```
 
-### Authorization Checks
+### Authorization checks
 
 Control access to specific actions:
 
@@ -319,7 +319,7 @@ Access types:
 - `AccessManager::UPDATE` - Modify existing items
 - `AccessManager::DELETE` - Delete items
 
-### AJAX Actions
+### AJAX actions
 
 ```php
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -351,7 +351,7 @@ public function toggleAction(int $id): JsonResponse
 }
 ```
 
-### Flash Messages
+### Flash messages
 
 ```php
 use Thelia\Core\Translation\Translator;
@@ -369,9 +369,9 @@ $this->getSession()->getFlashBag()->add(
 );
 ```
 
-## Route Configuration
+## Route configuration
 
-Declare routes with PHP 8 `#[Route]` attributes directly on your controller methods. Thelia scans every active module's `Controller/` directory at boot through `ModuleAttributeLoader` and registers the routes automatically — there is no XML to write and nothing to import.
+Declare routes with PHP 8 `#[Route]` attributes directly on your controller methods. Thelia scans every active module's `Controller/` directory at boot through `ModuleAttributeLoader` and registers the routes automatically. There is no XML to write and nothing to import.
 
 ```php
 use Symfony\Component\HttpFoundation\Response;
@@ -384,17 +384,17 @@ public function showAction(int $id): Response
 }
 ```
 
-The `#[Route]` attributes shown throughout this page are picked up the same way — no extra registration step.
+The `#[Route]` attributes shown throughout this page are picked up the same way, with no extra registration step.
 
 :::note Route prefix
 `ModuleAttributeLoader` prepends each module's route prefix to every path it discovers. The prefix comes from the module's `getRoutePrefix()` method (defined on `BaseModule`). Keep this in mind when you generate URLs or read paths in the route table.
 :::
 
 :::caution Legacy `routing.xml`
-Older modules declared routes in `Config/routing.xml`. This still works but is no longer the recommended approach for new code — prefer `#[Route]` attributes, which keep the route next to its action and require no XML maintenance.
+Older modules declared routes in `Config/routing.xml`. This still works but is no longer the recommended approach for new code. Prefer `#[Route]` attributes, which keep the route next to its action and require no XML maintenance.
 :::
 
-## Useful Controller Methods
+## Useful controller methods
 
 The following methods live on `BaseController` and are available to both front and admin controllers.
 
@@ -433,7 +433,7 @@ $this->generateSuccessRedirect($form);
 ### Front-specific (BaseFrontController)
 
 ```php
-// Require a logged-in customer (redirects to login otherwise) — no arguments
+// Require a logged-in customer (redirects to login otherwise) - no arguments
 $this->checkAuth();
 
 // Get the current customer
@@ -456,19 +456,19 @@ $this->setupFormErrorContext($action, $errorMessage, $form);
 $admin = $this->getSecurityContext()->getAdminUser();
 ```
 
-## Best Practices
+## Best practices
 
 ### Do
 
-- **Use dependency injection** for services instead of accessing the container directly
-- **Use route attributes** for cleaner code
-- **Validate all input** from requests
-- **Use appropriate response types** (Response, JsonResponse, RedirectResponse)
-- **Follow naming conventions**: `{action}Action` for methods, `{module}.{context}.{action}` for routes
+- Inject services through the constructor instead of reaching into the container directly
+- Declare routes with `#[Route]` attributes
+- Validate all input from requests
+- Return the response type that fits the action: `Response`, `JsonResponse`, or `RedirectResponse`
+- Follow the naming conventions: `{action}Action` for methods, `{module}.{context}.{action}` for routes
 
 ### Don't
 
-- **Don't put business logic in controllers** - use services
-- **Don't skip authorization checks** in admin controllers
-- **Don't return HTML from AJAX endpoints** - use JSON
-- **Don't hardcode URLs** - use route generation
+- Don't put business logic in controllers; move it into services
+- Don't skip authorization checks in admin controllers
+- Don't return HTML from AJAX endpoints; return JSON
+- Don't hardcode URLs; generate them from route ids

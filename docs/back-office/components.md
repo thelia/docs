@@ -5,27 +5,27 @@ sidebar_position: 5
 
 # UI components and Stimulus
 
-The back-office ships its reusable UI as part of the `default-twig` **bundle**: the
+The back-office ships its reusable UI as part of the `default-twig` bundle. The
 component PHP classes, their Twig templates, the Stimulus controllers and the
 asset build all live inside `templates/backOffice/default-twig/`. Nothing is
-declared in XML and nothing is registered globally — drop a class in the right
-folder and the bundle wires it for you.
+declared in XML and nothing is registered globally. You drop a class in the right
+folder and the bundle picks it up.
 
 This is the back-office counterpart of the Flexy front-office components. The
-patterns are the same (Symfony UX TwigComponent + Stimulus); the difference is
-the surface they target (the admin, on Bootstrap 5) and the fact that the
-back-office layer is **TwigComponent-only** (see the note below).
+patterns are the same (Symfony UX TwigComponent + Stimulus). What differs is the
+surface they target, the admin on Bootstrap 5, and the fact that the back-office
+layer is TwigComponent-only (see the note below).
 
 :::note Themes are bundles
 `BackOfficeDefaultTwigBundle` registers its own component namespace, Twig paths
-and Stimulus app. A module never edits the core to add a back-office component —
-it ships its own bundle, or reuses the ones documented here through Twig.
+and Stimulus app. A module never edits the core to add a back-office component.
+It ships its own bundle, or reuses the ones documented here through Twig.
 :::
 
 ## A concrete component first
 
 Every list screen in the admin renders through a single component, `BoDataTable`.
-Here is its class — a plain `final` class with public properties, tagged with
+Its class is a plain `final` class with public properties, tagged with
 `#[AsTwigComponent]`:
 
 ```php
@@ -57,7 +57,7 @@ final class DataTable
 }
 ```
 
-You render it from any Twig template with the `component()` function — the same
+You render it from any Twig template with the `component()` function, the same
 syntax the Flexy front office uses. The second argument is a hash whose keys map
 one-to-one to the public properties:
 
@@ -158,24 +158,24 @@ A few notes on the more involved ones:
 - **`BoDashboard`** is the only component with constructor dependencies: it
   injects `DashboardStatsProvider` and the `RequestStack`, reads the `period`
   query parameter, and computes the stats for the current locale. The autowiring
-  is automatic (see below) — you still render it as `{{ component('BoDashboard') }}`.
+  is automatic (see below), and you still render it as `{{ component('BoDashboard') }}`.
 
 :::note Component classes are auto-discovered
 The bundle loads `BackOfficeDefaultTwigBundle\` from `src/` with `autowire()`
 and `autoconfigure()` enabled (see
 `BackOfficeDefaultTwigBundle::loadExtension()`). Because Symfony UX TwigComponent
 registers the `#[AsTwigComponent]` attribute for autoconfiguration, every class
-under `src/UiComponents/` becomes a component with no extra service declaration
-— no XML, no `services.yaml` entry. Add a new `final class` with the attribute,
-add its template under `components/`, done.
+under `src/UiComponents/` becomes a component with no extra service declaration:
+no XML, no `services.yaml` entry. Add a new `final class` with the attribute,
+add its template under `components/`, and you are done.
 :::
 
 ### No LiveComponents in the back-office
 
-Unlike the Flexy front office, the back-office bundle uses **only**
-`#[AsTwigComponent]` — there is no `#[AsLiveComponent]`, no `LiveProp`, no
-`LiveAction` in `src/UiComponents/`. Interactivity is delivered by Stimulus
-controllers + Bootstrap 5 JS + HTMX rather than by server-rendered live
+Unlike the Flexy front office, the back-office bundle uses only
+`#[AsTwigComponent]`. There is no `#[AsLiveComponent]`, no `LiveProp`, no
+`LiveAction` in `src/UiComponents/`. Interactivity comes from Stimulus
+controllers, Bootstrap 5 JS and HTMX rather than from server-rendered live
 re-rendering. If you need the LiveComponent pattern (reactive props,
 server round-trips), see the front-office reference linked at the end.
 
@@ -246,12 +246,12 @@ It imports `Tooltip` and `Popover` from `bootstrap` and disposes them on
 `assets/bootstrap.js` with `startStimulusApp(require.context('…/lazy-controller-loader!./controllers', …))`,
 so every `*_controller.js` in `assets/controllers/` is lazily loaded by
 identifier. You never edit `controllers.json` to register a back-office
-controller — just add the file.
+controller. Just add the file.
 :::
 
 ## Building the assets
 
-The bundle builds its SCSS and JS with **Webpack Encore**. The entry point is
+The bundle builds its SCSS and JS with Webpack Encore. The entry point is
 `assets/app.js` (which imports `bootstrap.js`, the SCSS, Bootstrap and HTMX),
 declared in `webpack.config.js` and bridged to Stimulus with
 `.enableStimulusBridge('./assets/controllers.json')`.
@@ -275,7 +275,7 @@ clear the cache: `ddev exec bin/console cache:clear -e dev`.
 
 ## Learn more
 
-- [Back-Office Development](./index.md) — overview of the admin layer
-- [Hooks Reference](./hooks) — how modules inject content into back-office screens
-- [Front-office LiveComponents](/docs/front-office/live-components) — the reactive component pattern (used in Flexy, not in the back-office)
-- [Front-office Stimulus controllers](/docs/front-office/stimulus) — the front-office counterpart of these controllers
+- [Back-Office Development](./index.md): overview of the admin layer
+- [Hooks Reference](./hooks): how modules inject content into back-office screens
+- [Front-office LiveComponents](/docs/front-office/live-components): the reactive component pattern (used in Flexy, not in the back-office)
+- [Front-office Stimulus controllers](/docs/front-office/stimulus): the front-office counterpart of these controllers

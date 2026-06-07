@@ -19,7 +19,7 @@ module:activate [options] [--] <module>
 
 
 ## Example
-To activate silently TheliaLibrary module   
+To activate the TheliaLibrary module silently:
 ```shell
 php Thelia module:activate -s TheliaLibrary
 ```

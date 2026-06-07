@@ -10,7 +10,7 @@ Thelia is an open-source e-commerce platform built on **PHP 8.3+**, **Symfony 7.
 
 Version 3 introduces a modern front-office powered by Twig and Symfony UX, a full REST API, and a domain-layer architecture. The back-office has been ported to a Twig bundle (`default-twig`) on the same stack.
 
-## At a Glance
+## At a glance
 
 | Layer | Technology |
 |-------|-----------|
@@ -21,7 +21,7 @@ Version 3 introduces a modern front-office powered by Twig and Symfony UX, a ful
 | Back-office | Twig (`default-twig` bundle), Repositories + UiComponents, Hooks |
 | Default front theme | Flexy (Tailwind CSS, ~50 components) |
 
-## How Data Flows
+## How data flows
 
 ```
 Browser → Symfony Router → Twig Template
@@ -35,7 +35,7 @@ Browser → Symfony Router → Twig Template
 
 Templates call the API internally through `DataAccessService`. External clients (mobile apps, SPAs) call the same API over HTTP.
 
-## Quick Start
+## Quick start
 
 ```bash
 git clone https://github.com/thelia/thelia.git && cd thelia && git checkout twig
@@ -58,33 +58,33 @@ DATABASE_HOST=localhost DATABASE_NAME=thelia DATABASE_USER=root DATABASE_PASSWOR
   --pdf_theme=default --email_theme=default
 ```
 
-The theme flags pick the front-office theme (`flexy`) and the Twig back-office bundle (`default-twig`). Once the install finishes, your store is ready. Open the front-office and the back-office at `/admin`.
+The theme flags pick the front-office theme (`flexy`) and the Twig back-office bundle (`default-twig`). When the install finishes, open the front-office in your browser and the back-office at `/admin`.
 
-## What's New in Thelia 3
+## What's new in Thelia 3
 
 Compared to [Thelia 2](/docs/2.x):
 
-- **Twig replaces Smarty** in the front-office
-- **API Platform** provides a full REST API (was "coming soon" in v2)
-- **LiveComponents** enable reactive UIs without JavaScript
-- **Domain Facades** (Cart, Customer, Checkout) encapsulate business logic
-- **`bin/install`** — standalone installer that works without the Symfony kernel
-- **Testing framework** with `IntegrationTestCase` and `FixtureFactory`
+- Twig replaces Smarty in the front-office.
+- API Platform provides a full REST API (it was "coming soon" in v2).
+- LiveComponents enable reactive UIs without JavaScript.
+- Domain facades (Cart, Customer, Checkout) encapsulate business logic.
+- `bin/install` is a standalone installer that runs without the Symfony kernel.
+- A testing framework ships with `IntegrationTestCase` and `FixtureFactory`.
 
-The back-office has been ported to a Twig bundle (`default-twig`) on Bootstrap 5, Twig and Stimulus — it is the reference back-office. The legacy Smarty back-office (`default`) is transitional and likely to be dropped in a future release.
+The back-office has been ported to a Twig bundle (`default-twig`) built on Bootstrap 5, Twig and Stimulus. This is the reference back-office. The legacy Smarty back-office (`default`) is transitional and likely to be dropped in a future release.
 
-## Documentation Structure
+## Documentation structure
 
-This documentation follows a progressive approach:
+The sections build on each other, from installation to reference:
 
-1. **[Getting Started](./getting-started/index.md)** — Install and configure Thelia
-2. **[Architecture](./architecture/index.md)** — Understand the system design
-3. **[Front-Office](./front-office/index.md)** — Build pages with Twig and Symfony UX
-4. **[API](./api/index.md)** — REST endpoints, resources, filters
-5. **[Back-Office](./back-office/index.md)** — Twig admin bundle, repositories, hooks
-6. **[Modules](./modules)** — Create and distribute extensions
-7. **[Testing](./testing/index.md)** — Write tests with IntegrationTestCase
-8. **[Reference](./reference/index.md)** — Events, forms, CLI commands, i18n
+1. [Getting Started](./getting-started/index.md): install and configure Thelia
+2. [Architecture](./architecture/index.md): understand the system design
+3. [Front-Office](./front-office/index.md): build pages with Twig and Symfony UX
+4. [API](./api/index.md): REST endpoints, resources, filters
+5. [Back-Office](./back-office/index.md): Twig admin bundle, repositories, hooks
+6. [Modules](./modules): create and distribute extensions
+7. [Testing](./testing/index.md): write tests with IntegrationTestCase
+8. [Reference](./reference/index.md): events, forms, CLI commands, i18n
 
 ## Requirements
 
@@ -94,8 +94,8 @@ This documentation follows a progressive approach:
 
 ## Community
 
-- [GitHub](https://github.com/thelia/thelia) — Source code and issues
-- [Forum](https://forum.thelia.net) — Community discussions
-- [Discord](https://discord.gg/YgwpYEE3y3) — Real-time chat
+- [GitHub](https://github.com/thelia/thelia): source code and issues
+- [Forum](https://forum.thelia.net): community discussions
+- [Discord](https://discord.gg/YgwpYEE3y3): real-time chat
 
 Thelia is licensed under [LGPL v3](https://www.gnu.org/licenses/lgpl-3.0.en.html).

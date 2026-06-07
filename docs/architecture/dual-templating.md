@@ -5,9 +5,9 @@ sidebar_position: 2
 
 # Templating Engines
 
-Thelia 3 renders its interfaces with **Twig**. Both the front-office (Flexy theme) and the modern back-office (`default-twig` theme) are Twig bundles built on Symfony UX (Stimulus, TwigComponent, LiveComponent) and Bootstrap 5.
+Thelia 3 renders its interfaces with Twig. Both the front-office (Flexy theme) and the modern back-office (`default-twig` theme) are Twig bundles built on Symfony UX (Stimulus, TwigComponent, LiveComponent) and Bootstrap 5.
 
-A second engine, **Smarty**, still ships for the legacy `default` back-office theme. It is kept only for the transition and is not the recommended path for new development.
+A second engine, Smarty, still ships for the legacy `default` back-office theme. It is kept only for the transition and is not the recommended path for new development.
 
 :::caution The Smarty back-office is being phased out
 The Smarty `default` back-office theme is legacy and will likely be dropped in Thelia 3.1. Build new admin screens and module admin extensions against the `default-twig` bundle conventions. Smarty examples below are documented for reference only.
@@ -25,7 +25,7 @@ The Smarty `default` back-office theme is legacy and will likely be dropped in T
 | **Routing** | `#[Route]` attributes | `#[Route]` attributes | `admin.xml` route files |
 | **Packaging** | `FlexyBundle` | `BackOfficeDefaultTwigBundle` | Thelia templates |
 
-Both Twig themes are **Symfony bundles**: their templates, components, Stimulus controllers, form themes and assets all live inside the bundle. See [Modules vs Bundles](./modules-vs-bundles.md).
+Both Twig themes are Symfony bundles: their templates, components, Stimulus controllers, form themes and assets all live inside the bundle. See [Modules vs Bundles](./modules-vs-bundles.md).
 
 ## Front-office: Twig + Symfony UX
 
@@ -93,7 +93,7 @@ Read a value derived from the current route with the `attr()` Twig function (als
 Flexy ships TwigComponents (server-rendered) and LiveComponents (reactive, re-render on the server without a page reload). Render them with the `component()` function, using the names declared in the `#[AsTwigComponent]` / `#[AsLiveComponent]` attributes under `src/UiComponents/`:
 
 ```twig
-{# Product page LiveComponent — receives the product array #}
+{# Product page LiveComponent - receives the product array #}
 {{ component('Flexy:Pages:Product', { product: product }) }}
 
 {# Category listing with filters (LiveComponent) #}
@@ -137,7 +137,7 @@ See [Stimulus](../front-office/stimulus.md).
 
 ## Back-office: the default-twig bundle (recommended)
 
-The reference back-office is the `default-twig` theme, packaged as `BackOfficeDefaultTwigBundle`. It is a Bootstrap 5.3 / Twig / Stimulus port of the legacy Smarty admin, and it is **autonomous**: its routes, hooks, forms and assets all live inside the bundle.
+The reference back-office is the `default-twig` theme, packaged as `BackOfficeDefaultTwigBundle`. It is a Bootstrap 5.3 / Twig / Stimulus port of the legacy Smarty admin, and it is autonomous: its routes, hooks, forms and assets all live inside the bundle.
 
 ### Activation
 
@@ -182,7 +182,7 @@ templates/backOffice/default-twig/
 
 ### Routing with attributes
 
-Admin screens declare their routes with PHP 8 `#[Route]` attributes on thin controllers — no `admin.xml`:
+Admin screens declare their routes with PHP 8 `#[Route]` attributes on thin controllers, with no `admin.xml`:
 
 ```php
 // templates/backOffice/default-twig/src/Controller/Catalog/BrandController.php
@@ -238,7 +238,7 @@ ACL resources live in `core/lib/Thelia/Core/Security/Resource/AdminResources.php
 ## Legacy back-office: Smarty (transitional)
 
 :::caution
-This section documents the legacy `default` (Smarty) back-office. It is kept for the transition only and is expected to be dropped in Thelia 3.1. Do not target it for new work — use the `default-twig` bundle conventions above.
+This section documents the legacy `default` (Smarty) back-office. It is kept for the transition only and is expected to be dropped in Thelia 3.1. Do not target it for new work. Use the `default-twig` bundle conventions above.
 :::
 
 The legacy admin uses Smarty templates with Thelia's loop system for data retrieval.
@@ -286,14 +286,14 @@ The legacy admin uses Smarty templates with Thelia's loop system for data retrie
 - Reactive UI with LiveComponents and Stimulus.
 - Data fetched through `resources()` / `attr()`.
 
-### Back-office (default-twig / Twig) — recommended
+### Back-office (default-twig / Twig), recommended
 
 - New admin screens and admin extensions in modules.
 - Thin controllers with `#[Route]` attributes.
 - Reusable `Bo*` TwigComponents, Bootstrap 5 form theme, Stimulus.
 - Extending admin screens through the bundle's hook functions.
 
-### Back-office (Smarty) — legacy only
+### Back-office (Smarty), legacy only
 
 - Maintaining existing modules that still render Smarty admin templates.
 - Not recommended for new development; plan migration to the `default-twig` conventions.
@@ -333,8 +333,8 @@ The legacy admin uses Smarty templates with Thelia's loop system for data retrie
 
 ## Learn more
 
-- [Front-office development](../front-office/index.md) — Twig + Flexy guide
-- [Front-office data access](../front-office/data-access.md) — `resources()` / `attr()`
-- [LiveComponents](../front-office/live-components.md) — building reactive UIs
-- [Back-office development](../back-office/index.md) — admin templates and hooks
-- [Modules vs Bundles](./modules-vs-bundles.md) — how themes are packaged
+- [Front-office development](../front-office/index.md): Twig + Flexy guide
+- [Front-office data access](../front-office/data-access.md): `resources()` / `attr()`
+- [LiveComponents](../front-office/live-components.md): building reactive UIs
+- [Back-office development](../back-office/index.md): admin templates and hooks
+- [Modules vs Bundles](./modules-vs-bundles.md): how themes are packaged

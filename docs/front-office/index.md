@@ -5,20 +5,20 @@ sidebar_position: 1
 
 # Front-Office Development
 
-Thelia 3 introduces a modern front-office architecture built on **Twig** templates and **Symfony UX** components. This provides a reactive, component-based development experience while maintaining excellent performance.
+Thelia 3 builds its front office on Twig templates and Symfony UX components. Components are reactive, and most of the UI logic stays on the server.
 
-## Technology Stack
+## Technology stack
 
 | Technology | Purpose |
 |------------|---------|
-| **Twig** | Template engine |
-| **Symfony UX LiveComponents** | Reactive UI components |
-| **Symfony UX TwigComponent** | Static reusable components |
-| **Stimulus** | JavaScript controllers |
-| **Webpack Encore** | Asset management |
-| **DataAccessService** | API data fetching |
+| `Twig` | Template engine |
+| Symfony UX LiveComponents | Reactive UI components |
+| Symfony UX TwigComponent | Static reusable components |
+| Stimulus | JavaScript controllers |
+| Webpack Encore | Asset management |
+| `DataAccessService` | API data fetching |
 
-## Architecture Overview
+## Architecture overview
 
 ```
 Front-Office Request Flow
@@ -52,11 +52,11 @@ Front-Office Request Flow
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Key Concepts
+## Key concepts
 
-### Data Fetching with DataAccessService
+### Data fetching with DataAccessService
 
-Instead of using loops directly in templates, Thelia 3 uses `DataAccessService` to call API endpoints internally (without HTTP overhead):
+Instead of running loops directly in templates, Thelia 3 uses `DataAccessService` to call API endpoints internally, without HTTP overhead:
 
 ```twig
 {# Get current product ID from URL #}
@@ -69,9 +69,9 @@ Instead of using loops directly in templates, Thelia 3 uses `DataAccessService` 
 <h1>{{ product.i18ns.title }}</h1>
 ```
 
-### Reactive Components with LiveComponents
+### Reactive components with LiveComponents
 
-LiveComponents provide reactive UI without writing JavaScript:
+LiveComponents give you reactive UI without writing JavaScript:
 
 ```twig
 {# Render a reactive product component #}
@@ -84,9 +84,9 @@ The component automatically handles:
 - Quantity updates
 - Real-time price changes
 
-### JavaScript Behavior with Stimulus
+### JavaScript behavior with Stimulus
 
-For custom JavaScript behavior, Stimulus controllers provide a clean, declarative approach:
+For custom JavaScript behavior, Stimulus controllers use a declarative approach:
 
 ```twig
 <div data-controller="drawer">
@@ -95,11 +95,11 @@ For custom JavaScript behavior, Stimulus controllers provide a clean, declarativ
 </div>
 ```
 
-## Theme Structure
+## Theme structure
 
-The front-office theme is a **Symfony bundle** (`FlexyBundle`): its services are autoconfigured, and its TwigComponents/LiveComponents, Stimulus controllers and form theme all live inside the bundle — there is no XML wiring to maintain.
+The front-office theme is a Symfony bundle (`FlexyBundle`). Its services are autoconfigured, and its TwigComponents/LiveComponents, Stimulus controllers and form theme all live inside the bundle, so there is no XML wiring to maintain.
 
-The default **Flexy** theme demonstrates the recommended structure:
+The default Flexy theme shows the recommended structure:
 
 ```
 templates/frontOffice/flexy/
@@ -134,10 +134,10 @@ templates/frontOffice/flexy/
 ```
 
 :::note Components: anonymous vs. PHP-backed
-`components/` holds **anonymous** Twig components (Atoms/Molecules/Organisms/Layout/Page) — pure `.html.twig` files with no PHP class. `src/UiComponents/` holds **PHP-backed** TwigComponents and LiveComponents: each one is a PHP class with a colocated `.html.twig` template in the same folder.
+`components/` holds anonymous Twig components (Atoms/Molecules/Organisms/Layout/Page): pure `.html.twig` files with no PHP class. `src/UiComponents/` holds PHP-backed TwigComponents and LiveComponents, where each one is a PHP class with a colocated `.html.twig` template in the same folder.
 :::
 
-## Section Contents
+## Section contents
 
 | Section | Description |
 |---------|-------------|
@@ -148,9 +148,9 @@ templates/frontOffice/flexy/
 | [Stimulus](./stimulus.md) | JavaScript controllers |
 | [Forms](./forms.md) | Front-office forms |
 
-## Quick Example
+## Quick example
 
-Here's a minimal category page showing all concepts together:
+A minimal category page that uses all of these concepts together:
 
 ```twig
 {% extends 'base.html.twig' %}
@@ -188,18 +188,18 @@ Here's a minimal category page showing all concepts together:
 {% endblock %}
 ```
 
-## Comparison with Back-Office
+## Comparison with the back office
 
-| Aspect | Front-Office | Back-Office |
+| Aspect | Front office | Back office |
 |--------|--------------|-------------|
-| Template Engine | **Twig** | Smarty |
-| Data Fetching | **DataAccessService** | Loops |
-| Components | **LiveComponents** | Smarty templates |
+| Template engine | `Twig` | Smarty |
+| Data fetching | `DataAccessService` | Loops |
+| Components | LiveComponents | Smarty templates |
 | Hooks | Minimal use | Extensively used |
-| JavaScript | **Stimulus** | Custom scripts |
+| JavaScript | Stimulus | Custom scripts |
 
-## Next Steps
+## Next steps
 
-1. **[Twig Basics](./twig-basics.md)** - Learn Twig templating fundamentals
-2. **[Data Access](./data-access.md)** - Master the `resources()` function
-3. **[Flexy Theme](./flexy-theme/index.md)** - Explore the default theme
+1. [Twig Basics](./twig-basics.md) for the Twig templating fundamentals
+2. [Data Access](./data-access.md) for the `resources()` function
+3. [Flexy Theme](./flexy-theme/index.md) for the default theme

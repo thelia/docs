@@ -18,7 +18,7 @@ Create a new administrator user
  -    `--locale[=LOCALE]`          Preferred locale (default: en_US)
  -    `--password[=PASSWORD]`      Password
 
-When run without options, the command prompts interactively for each value. Any option you pass on the command line skips the matching prompt. During interactive prompting, the login and email are checked for uniqueness, and the password must be entered twice. Values supplied directly through options bypass these interactive checks.
+When run without options, the command prompts for each value. Any option you pass on the command line skips the matching prompt. The interactive prompts check the login and email for uniqueness and ask for the password twice. Values passed through options skip those checks.
 
 ## Example
 Create an admin in one line

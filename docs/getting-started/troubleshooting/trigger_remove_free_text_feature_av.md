@@ -3,7 +3,7 @@ title: Trigger Creation Fails
 sidebar_position: 1
 ---
 
-When installing Thelia on a shared hosting environment, you might encounter an issue during the creation of the trigger `remove_free_text_feature_av`.
+When installing Thelia on a shared hosting environment, the creation of the trigger `remove_free_text_feature_av` can fail.
 
 ### Error Details
 
@@ -14,7 +14,7 @@ Error: #1142 - The 'TRIGGER' command is denied to user 'sun_temp_1'@'od-8308ad.i
 ```
 ### Cause
 
-This issue is caused by insufficient database permissions for the user. Shared hosting environments often restrict the use of advanced features such as triggers. This limitation is not specific, might also occur with other hosting providers.
+The database user does not have enough permissions. Shared hosting environments often restrict advanced features such as triggers, and the same limitation can occur with other hosting providers.
 
 ### Workaround
 
@@ -39,6 +39,6 @@ WHERE `id` IN (
 
 ### Impact
 
-This trigger is used to clean up the associated `feature_av` entries when a `feature_product` is deleted. The inability to create this trigger does not impact Thelia's functionality.
+This trigger cleans up the associated `feature_av` entries when a `feature_product` is deleted. If it cannot be created, Thelia still works normally.
 
 

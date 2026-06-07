@@ -5,7 +5,7 @@ sidebar_position: 1
 
 # Migrating from Thelia 2
 
-In Thelia 2, a module controller routes with `@Route` annotations, declares its services in `config.xml`, and serves Smarty templates. In Thelia 3, the same controller uses `#[Route]` PHP attributes, registers its services from a static `configureServices()` method, and serves Twig — and most of the `config.xml` is gone. This guide maps every change so you can plan a migration.
+In Thelia 2, a module controller routes with `@Route` annotations, declares its services in `config.xml`, and serves Smarty templates. In Thelia 3, the same controller uses `#[Route]` PHP attributes, registers its services from a static `configureServices()` method, and serves Twig. Most of the `config.xml` is gone. This guide maps every change so you can plan a migration.
 
 ## What changed at the platform level
 
@@ -30,7 +30,7 @@ The Thelia version numbers here come from the root `composer.json` (`php: ">= 8.
 The two changes that surprise people coming from Thelia 2:
 
 - **The back-office is now Twig, not Smarty.** Thelia 2's `default` Smarty back-office still ships in Thelia 3 *during the transition*, but the reference is the `default-twig` bundle (see below).
-- **The API is the same API Platform, upgraded.** Thelia 2 already shipped API Platform 3.4 with the Propel bridge. Thelia 3 does *not* introduce API Platform — it moves it from 3.4 to 4.3 standalone. The work is upgrading existing resources, not rewriting a custom API.
+- **The API is the same API Platform, upgraded.** Thelia 2 already shipped API Platform 3.4 with the Propel bridge. Thelia 3 does *not* introduce API Platform; it moves it from 3.4 to 4.3 standalone. The work is upgrading existing resources, not rewriting a custom API.
 
 ## Front-office: Smarty → Twig (FlexyBundle)
 
@@ -65,13 +65,13 @@ The back-office reference in Thelia 3 is the **`default-twig` bundle** (`templat
 
 It is a full Symfony bundle, autonomous from the core:
 
-- `src/Controller/` — `#[Route]` controllers, grouped by domain (`Catalog/`, `Customer/`, `Order/`, …)
-- `src/Repository/` and `src/Service/` — Propel queries and presenters, kept out of the controllers
-- `src/Twig/` and `src/UiComponents/` — Twig extensions plus `AsTwigComponent` / `AsLiveComponent` components
-- `src/Form/` — Symfony form types
-- `src/Hook/` — back-office hooks, declared with the bundle's `#[AsHook]` attribute (auto-tagged at bundle build)
-- `form/bo_form_theme.html.twig` — a Bootstrap 5 form theme
-- `assets/` — SCSS, Stimulus controllers, images, built with npm
+- `src/Controller/`: `#[Route]` controllers, grouped by domain (`Catalog/`, `Customer/`, `Order/`, …)
+- `src/Repository/` and `src/Service/`: Propel queries and presenters, kept out of the controllers
+- `src/Twig/` and `src/UiComponents/`: Twig extensions plus `AsTwigComponent` / `AsLiveComponent` components
+- `src/Form/`: Symfony form types
+- `src/Hook/`: back-office hooks, declared with the bundle's `#[AsHook]` attribute (auto-tagged at bundle build)
+- `form/bo_form_theme.html.twig`: a Bootstrap 5 form theme
+- `assets/`: SCSS, Stimulus controllers, images, built with npm
 
 :::caution The Smarty back-office is deprecated
 The legacy Smarty back-office (`templates/backOffice/default/`) still ships side by side with `default-twig` during the transition, but it is **no longer recommended** and is expected to be dropped in Thelia 3.1. Build new back-office work on the `default-twig` bundle.
@@ -88,7 +88,7 @@ php bin/install \
 
 ## API Platform 3.4 → 4.3 standalone
 
-Thelia 2 ships API Platform 3.4 with the Propel bridge (`PropelResourceInterface`, `ResourceAddonInterface` — they already exist there). The migration is the API Platform 4.3 upgrade, pulled in through the `api-platform/symfony` package (`^4.3`) instead of the legacy `api-platform/core` metapackage.
+Thelia 2 ships API Platform 3.4 with the Propel bridge (`PropelResourceInterface` and `ResourceAddonInterface` already exist there). The migration is the API Platform 4.3 upgrade, pulled in through the `api-platform/symfony` package (`^4.3`) instead of the legacy `api-platform/core` metapackage.
 
 If your module exposes or extends API resources, these breaking changes apply:
 
@@ -97,7 +97,7 @@ If your module exposes or extends API resources, these breaking changes apply:
 | IRI / resource-class / URL interfaces | `ApiPlatform\Api\IriConverterInterface` (and `ResourceClassResolverInterface`, `UrlGeneratorInterface`) | `ApiPlatform\Metadata\IriConverterInterface` (and `…\ResourceClassResolverInterface`, `…\UrlGeneratorInterface`) |
 | Exceptions | `ApiPlatform\Exception\InvalidArgumentException` / `RuntimeException` | `ApiPlatform\Metadata\Exception\…` |
 | OpenAPI on an operation | `openapiContext: [...]` | `openapi: new Operation(...)` (`ApiPlatform\OpenApi\Model\Operation`) |
-| Extending `ObjectNormalizer` | `extends ObjectNormalizer` | `ObjectNormalizer` is now `final` — use `NormalizerAwareInterface` + `NormalizerAwareTrait` and delegate |
+| Extending `ObjectNormalizer` | `extends ObjectNormalizer` | `ObjectNormalizer` is now `final`, so use `NormalizerAwareInterface` + `NormalizerAwareTrait` and delegate |
 | Declaring property types | `ApiProperty::withBuiltinTypes([...])` | `ApiProperty::withNativeType(Type $type)` |
 
 ```php
@@ -126,7 +126,7 @@ new GetCollection(
 Symfony 7 removed `AnnotatedRouteControllerLoader`, so Doctrine `@Route` annotations no longer work. Thelia's old `ModuleAnnotationLoader` was deleted and replaced by `ModuleAttributeLoader` (`Thelia\Core\Routing\ModuleAttributeLoader`), which auto-scans each active module's `Controller/` directory for `#[Route]` attributes and prefixes the routes with the module's `getRoutePrefix()`.
 
 ```php
-// Before — Thelia 2 (Symfony 6.4)
+// Before - Thelia 2 (Symfony 6.4)
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -134,7 +134,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 public function myAction(): Response { ... }
 
-// After — Thelia 3 (Symfony 7.4)
+// After - Thelia 3 (Symfony 7.4)
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/my-path', name: 'my_route', methods: ['GET'], requirements: ['id' => '\d+'])]
@@ -144,7 +144,7 @@ public function myAction(): Response { ... }
 Watch the syntax shifts: `methods="GET"` (string) becomes `methods: ['GET']` (array), and `requirements={"id"="\d+"}` becomes `requirements: ['id' => '\d+']` (PHP array).
 
 :::caution
-`BaseModule::getAnnotationRoutePrefix()` is `@deprecated`. Override `BaseModule::getRoutePrefix()` instead — same signature, same behavior. `ModuleAttributeLoader` calls `getRoutePrefix()`.
+`BaseModule::getAnnotationRoutePrefix()` is `@deprecated`. Override `BaseModule::getRoutePrefix()` instead: same signature, same behavior. `ModuleAttributeLoader` calls `getRoutePrefix()`.
 :::
 
 ## Modules: `config.xml` → `configureServices()` + autoconfiguration
@@ -154,22 +154,22 @@ This is the largest change for module authors. In Thelia 3, **`config.xml` is op
 | Thelia 2 (`config.xml`) | Thelia 3 |
 |-------------------------|----------|
 | `<services>` business services | static `configureServices()` with `load()->autowire()->autoconfigure()` |
-| `<hooks>` | `extends BaseHook` + `getSubscribedHooks()` — **auto-discovered, no XML** |
-| `<loops>` | `extends BaseLoop` — **auto-tagged** with a snake_case name, no XML (loops still work, but prefer API resources for new code) |
-| `<forms>` | `extends BaseForm` + static `getName()` — **auto-tagged, no XML** |
+| `<hooks>` | `extends BaseHook` + `getSubscribedHooks()`, **auto-discovered, no XML** |
+| `<loops>` | `extends BaseLoop`, **auto-tagged** with a snake_case name, no XML (loops still work, but prefer API resources for new code) |
+| `<forms>` | `extends BaseForm` + static `getName()`, **auto-tagged, no XML** |
 | `<commands>` | autoconfigured |
 
 Services move out of XML into a static method on your module class:
 
 ```php
-// Before — Config/config.xml
+// Before - Config/config.xml
 // <services>
 //   <service id="MyModule\Service\Mailer" class="MyModule\Service\Mailer">
 //     <argument type="service" id="mailer.mailer"/>
 //   </service>
 // </services>
 
-// After — local/modules/MyModule/MyModule.php
+// After - local/modules/MyModule/MyModule.php
 use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
 
 public static function configureServices(ServicesConfigurator $servicesConfigurator): void
@@ -203,17 +203,17 @@ class FrontHook extends BaseHook
 ```
 
 :::caution Remove the `<hooks>`, `<loops>` and `<forms>` blocks
-A frequent migration mistake is keeping these in `config.xml` *and* extending the base class — you end up with a service registered twice. Delete the XML declarations: the base class is enough.
+A frequent migration mistake is keeping these in `config.xml` *and* extending the base class, which registers the service twice. Delete the XML declarations: the base class is enough.
 :::
 
 What `config.xml` is still used for, and only this:
 
-- `<exports>` / `<imports>` — import/export profiles
-- `<parameters>` — module parameters
+- `<exports>` / `<imports>`: import/export profiles
+- `<parameters>`: module parameters
 - a `<loop>` alias when you want a loop name **different** from the auto-generated snake_case one
 
 ```php
-// Before — #[TaggedIterator] / #[TaggedLocator] (deprecated since Symfony 7.1)
+// Before - #[TaggedIterator] / #[TaggedLocator] (deprecated since Symfony 7.1)
 use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
 public function __construct(#[TaggedIterator('my.tag')] iterable $handlers) {}
 
@@ -266,13 +266,13 @@ Bootstrap the isolated test database with `bin/test-prepare`. It creates the tes
 
 ## What stayed the same
 
-You do **not** rewrite these — they carry over unchanged:
+You do **not** rewrite these. They carry over unchanged:
 
-- **Propel ORM** — same query API, same models. No `EntityManager`, no `flush()`: every `->save()` persists immediately. Respect the strict native types (`string` for `DECIMAL`, `int` for `tinyint` — pass `1`/`0`, not `true`/`false`).
-- **Event-driven flow** — `Controller → dispatch(Event) → Action listener → Model::save()`. A controller never persists.
-- **`TheliaEvents` constants** — event names are unchanged.
-- **Module lifecycle methods** — `install()`, `update()`, `preActivation()`, `postActivation()`, etc. on `BaseModule`.
-- **`module.xml` + `schema.xml`** — still required, same format.
+- **Propel ORM**: same query API, same models. No `EntityManager`, no `flush()`: every `->save()` persists immediately. Respect the strict native types (`string` for `DECIMAL`, `int` for `tinyint`, so pass `1`/`0`, not `true`/`false`).
+- **Event-driven flow**: `Controller → dispatch(Event) → Action listener → Model::save()`. A controller never persists.
+- **`TheliaEvents` constants**: event names are unchanged.
+- **Module lifecycle methods**: `install()`, `update()`, `preActivation()`, `postActivation()`, etc. on `BaseModule`.
+- **`module.xml` + `schema.xml`**: still required, same format.
 
 ## Migration checklist
 
@@ -294,7 +294,7 @@ You do **not** rewrite these — they carry over unchanged:
 
 - [ ] Add static `configureServices()` to your module class; remove the `<services>` XML
 - [ ] Replace `routing.xml` / `@Route` with `#[Route]` attributes in `Controller/`
-- [ ] Remove `<hooks>`, `<loops>`, `<forms>` from `config.xml` — the base classes auto-register them
+- [ ] Remove `<hooks>`, `<loops>`, `<forms>` from `config.xml`; the base classes auto-register them
 - [ ] Keep in `config.xml` **only** `<exports>`, `<imports>`, `<parameters>`, and any `<loop>` alias
 - [ ] Replace `#[TaggedIterator]` / `#[TaggedLocator]` with `#[AutowireIterator]` / `#[AutowireLocator]`
 - [ ] Replace `getAnnotationRoutePrefix()` with `getRoutePrefix()`
@@ -324,12 +324,12 @@ You do **not** rewrite these — they carry over unchanged:
 | `Thelia\Core\Event\TheliaEvents` | Stable |
 | `Thelia\Core\Hook\BaseHook` | Stable |
 | `Thelia\Form\BaseForm` | Stable |
-| `Thelia\Core\Template\Element\BaseLoop` | Stable — still supported; prefer API resources for new code |
-| `BaseModule::getAnnotationRoutePrefix()` | **Deprecated** — use `getRoutePrefix()` |
+| `Thelia\Core\Template\Element\BaseLoop` | Stable; still supported, but prefer API resources for new code |
+| `BaseModule::getAnnotationRoutePrefix()` | **Deprecated**; use `getRoutePrefix()` |
 
-## See Also
+## See also
 
-- [Architecture](/docs/architecture) — Understand the new system design
-- [Front-Office](/docs/front-office) — Twig and Symfony UX guide
-- [Modules](/docs/modules) — Modern module development
-- [Testing](/docs/testing) — New test framework
+- [Architecture](/docs/architecture): understand the new system design
+- [Front-Office](/docs/front-office): Twig and Symfony UX guide
+- [Modules](/docs/modules): modern module development
+- [Testing](/docs/testing): new test framework

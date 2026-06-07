@@ -5,17 +5,17 @@ sidebar_position: 2
 
 # Bundle structure
 
-The Thelia 3 back-office is no longer a folder of templates wired by XML. It is a **Symfony bundle** —
-`BackOfficeDefaultTwigBundle` — that registers its own services, routes, hooks and templates the
-idiomatic Symfony way: autowiring, `#[Route]` attributes, autoconfigured tags. There is **no
-`services.xml` and no `routing.xml`** anywhere in it.
+The Thelia 3 back-office is no longer a folder of templates wired by XML. It is a Symfony bundle,
+`BackOfficeDefaultTwigBundle`, that registers its own services, routes, hooks and templates the
+idiomatic Symfony way: autowiring, `#[Route]` attributes, autoconfigured tags. It contains no
+`services.xml` and no `routing.xml` anywhere.
 
 This page explains how that bundle is wired so you can read its code, extend it, or model your own
 admin module on it.
 
 :::note Owner decision
 The legacy Smarty `default` back-office theme is no longer recommended and will likely be dropped in
-Thelia 3.1. The reference back-office is the `default-twig` bundle described here — it owns its
+Thelia 3.1. The reference back-office is the `default-twig` bundle described here. It owns its
 routes, hooks, templates, forms and assets.
 :::
 
@@ -49,7 +49,7 @@ final class BackOfficeDefaultTwigBundle extends AbstractBundle
 ```
 
 The bundle is always registered in `config/bundles.php`, but it only loads its services and templates
-when it is the **active** admin template. `isActive()` compares its own name against the
+when it is the active admin template. `isActive()` compares its own name against the
 `%thelia_admin_template%` container parameter, which the Thelia kernel sets at boot from the
 `active-admin-template` configuration value stored in the database.
 
@@ -92,24 +92,23 @@ public function loadExtension(array $config, ContainerConfigurator $container, C
 }
 ```
 
-What this gives you:
+This scan registers the following automatically:
 
-- **Controllers, repositories, services, Twig extensions, event listeners and UI components** are all
-  registered automatically. Drop a new `final readonly` class under `src/Service/` and it is
-  autowired — no declaration to add.
-- **`autoconfigure()`** wires Symfony tags by convention: event listeners, Twig extensions, voters,
-  and (thanks to a custom attribute registered in `build()`) the `#[AsHook]` back-office hooks.
-- The **excludes** are the things that are not services: the bundle class itself, immutable `DTO/`
+- Controllers, repositories, services, Twig extensions, event listeners and UI components. Drop a new
+  `final readonly` class under `src/Service/` and it is autowired, with no declaration to add.
+- `autoconfigure()` wires Symfony tags by convention: event listeners, Twig extensions, voters, and
+  (thanks to a custom attribute registered in `build()`) the `#[AsHook]` back-office hooks.
+- The excluded paths are the things that are not services: the bundle class itself, immutable `DTO/`
   value objects, the `#[AsHook]` attribute definition, and the `DependencyInjection/` compiler passes.
 
 There is no `services.xml`, no `services.yaml` listing every class. The only YAML the bundle imports
-is `config/packages/twig.yaml`, which registers the back-office form theme — and it does so through
+is `config/packages/twig.yaml`, which registers the back-office form theme. It does so through
 `prependExtension()`, the standard Symfony bundle mechanism.
 
 ## Routing: `#[Route]` attributes, one controller per domain
 
-Routes are PHP 8 attributes scanned by Symfony. There is **no `routing.xml`**. Each business domain
-has one thin `final` controller; the class-level `#[Route]` sets the path prefix and the route-name
+Routes are PHP 8 attributes scanned by Symfony, with no `routing.xml`. Each business domain
+has one thin `final` controller. The class-level `#[Route]` sets the path prefix and the route-name
 prefix, and each method adds its own segment.
 
 ```php
@@ -140,7 +139,7 @@ final class ProductController
 }
 ```
 
-The final route name is the class prefix plus the method name — for example `admin.products.default`
+The final route name is the class prefix plus the method name, for example `admin.products.default`
 or `admin.products.seo.save`. The `BrandController` follows the exact same shape with its own prefix:
 
 ```php
@@ -159,7 +158,7 @@ final class BrandController
 ```
 
 :::caution Route names are not all iso with the legacy Smarty back-office
-A few route **names** were renamed during the migration and are **not** aliased back to the legacy
+A few route names were renamed during the migration and are not aliased back to the legacy
 ones. A module that builds URLs with `path()` / `url()` against an old name must update it. Examples
 from the bundle's `README.md`:
 
@@ -175,15 +174,14 @@ Hooks and ACL resources are bridged (no change required); route names are not. C
 
 ## Controller composition: no base class
 
-Back-office controllers do **not** extend a `BaseForm`, a Thelia `BaseAdminController`, or an
+Back-office controllers do not extend a `BaseForm`, a Thelia `BaseAdminController`, or an
 `AbstractCrudController`. They are plain `final` classes that get everything they need through
-constructor injection (ADR-011). The two pillars are:
+constructor injection (ADR-011). They rely on two services:
 
-- **`AdminFormAction`** — a `readonly` orchestrator that runs the full submit pipeline: ACL
-  check, form validation, event dispatch, success logging, redirect, and inline error rendering on
-  failure.
-- **`AdminAccessChecker`** — a `readonly` service that bridges to the Thelia ACL and returns a
-  `403` `Response` when access is denied (or `null` when granted).
+- `AdminFormAction`, a `readonly` orchestrator that runs the full submit pipeline: ACL check, form
+  validation, event dispatch, success logging, redirect, and inline error rendering on failure.
+- `AdminAccessChecker`, a `readonly` service that bridges to the Thelia ACL and returns a `403`
+  `Response` when access is denied, or `null` when granted.
 
 Everything else is repositories and presenters specific to the domain.
 
@@ -243,12 +241,12 @@ final class BrandController
 }
 ```
 
-Two distinct entry points on `AdminFormAction`:
+`AdminFormAction` exposes two entry points:
 
-- **`submit(...)`** — for form submissions. You hand it the form, the Thelia event name, and an
+- `submit(...)` handles form submissions. You hand it the form, the Thelia event name, and an
   `eventFactory` callable that builds the event from the validated form. It validates, dispatches,
   logs and redirects; on any `\Throwable` it re-renders the form with the error.
-- **`tokenAction(...)`** — for single-shot CSRF-protected actions (delete, toggle visibility,
+- `tokenAction(...)` handles single-shot CSRF-protected actions (delete, toggle visibility,
   reorder). You hand it a ready-made event and the request; it checks the `_token` (read from the
   request body *or* the query string), dispatches, and redirects.
 
@@ -258,7 +256,7 @@ This keeps the controller thin and matches the core event-driven flow: a control
 :::note Propel is not Doctrine
 There is no `EntityManager` and no `flush()`. The listener that handles the dispatched event calls
 `->save()` on a Propel model, which persists immediately. Respect the native Propel types when
-building events — `int` for tinyint columns (pass `0`/`1`, never `true`/`false`), `string` for
+building events: `int` for tinyint columns (pass `0`/`1`, never `true`/`false`), `string` for
 decimal values.
 :::
 
@@ -282,7 +280,7 @@ final class AdminVoter extends Voter
 ```
 
 Because the voter is autoconfigured by the `load()` scan, you use the native Symfony helper in Twig
-templates. The attribute is the access level; the subject is the ACL **resource** string:
+templates. The attribute is the access level; the subject is the ACL resource string:
 
 ```twig
 {% if is_granted('UPDATE', 'admin.product') %}…{% endif %}
@@ -299,7 +297,7 @@ if ($denied = $this->access->check(self::RESOURCE, [], AccessManager::VIEW)) {
 }
 ```
 
-The resource strings come from the core `AdminResources` class — for example `AdminResources::PRODUCT`
+The resource strings come from the core `AdminResources` class. For example, `AdminResources::PRODUCT`
 is `admin.product` and `AdminResources::BRAND` is `admin.brand`:
 
 ```php
@@ -319,11 +317,11 @@ than hardcoding the string, so a typo is a compile-time error.
 
 The Twig back-office does not use Smarty `{loop}`s. Data access lives in plain PHP:
 
-- **`src/Repository/`** — one repository per entity (`ProductRepository`, `BrandRepository`,
+- `src/Repository/` holds one repository per entity (`ProductRepository`, `BrandRepository`,
   `CategoryRepository`, `OrderRepository`, …). Each is a `final readonly` class wrapping Propel
   queries (`ProductQuery::create()->…`) and returning models or scalar rows. This is where pagination,
   search, sorting and previous/next navigation live.
-- **`src/Service/<Domain>/`** — presenters and domain logic that turn Propel models into
+- `src/Service/<Domain>/` holds presenters and domain logic that turn Propel models into
   Twig-friendly arrays (`Service/Catalog/`, `Service/Order/`, `Service/Customer/`, …). The
   `Service/Admin/` folder holds the cross-cutting orchestration (`AdminFormAction`,
   `AdminAccessChecker`, `AdminFormValidator`, `AdminLogger`, `AdminFormErrorRenderer`).
@@ -332,7 +330,7 @@ The controller composes these: it asks a repository for rows, asks a presenter t
 renders a Twig template. No query logic lives in the template.
 
 ```php
-// excerpt — ProductController list() builds rows via the repository, then renders
+// excerpt - ProductController list() builds rows via the repository, then renders
 $products = $query
     ->offset(($page - 1) * self::PAGE_SIZE)
     ->limit(self::PAGE_SIZE)
@@ -359,5 +357,5 @@ foreach ($products as $product) {
 
 ## Learn more
 
-- [Back-Office Development](./index.md) — overview of the admin section
-- [Hooks](./hooks.md) — extension points for modules in the back-office
+- [Back-Office Development](./index.md): overview of the admin section
+- [Hooks](./hooks.md): extension points for modules in the back-office

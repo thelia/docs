@@ -5,9 +5,9 @@ sidebar_position: 6
 
 # Serialization Groups
 
-Serialization groups control which fields are included in API responses and accepted in requests. This allows the same resource to expose different data for different contexts.
+Serialization groups control which fields are included in API responses and accepted in requests. The same resource can then expose different data depending on the context.
 
-## Group Naming Convention
+## Group naming convention
 
 Thelia uses a consistent naming pattern:
 
@@ -21,9 +21,9 @@ Examples:
 - `front:product:read` - Public front-office reading
 - `front:product:read:single` - Front-office single item (more detail)
 
-## Standard Groups
+## Standard groups
 
-### Admin Groups
+### Admin groups
 
 | Group | Purpose |
 |-------|---------|
@@ -32,7 +32,7 @@ Examples:
 | `admin:*:write` | Admin create/update operations |
 | `admin:*:write:update` | Additional fields for updates only |
 
-### Front Groups
+### Front groups
 
 | Group | Purpose |
 |-------|---------|
@@ -40,9 +40,9 @@ Examples:
 | `front:*:read:single` | Additional fields for single item |
 | `front:*:write` | Public write operations (if any) |
 
-## Defining Groups on Resources
+## Defining groups on resources
 
-### Resource Constants
+### Resource constants
 
 Define groups as class constants:
 
@@ -60,7 +60,7 @@ class Product extends AbstractTranslatableResource
 }
 ```
 
-### Applying Groups to Properties
+### Applying groups to properties
 
 ```php
 // Always visible to admin
@@ -84,9 +84,9 @@ public array $featureProducts = [];
 public ?\DateTime $updatedAt = null;
 ```
 
-## Applying Groups to Operations
+## Applying groups to operations
 
-### Normalization Context (Output)
+### Normalization context (output)
 
 ```php
 #[ApiResource(
@@ -106,7 +106,7 @@ public ?\DateTime $updatedAt = null;
 )]
 ```
 
-### Denormalization Context (Input)
+### Denormalization context (input)
 
 ```php
 #[ApiResource(
@@ -126,9 +126,9 @@ public ?\DateTime $updatedAt = null;
 )]
 ```
 
-## Practical Examples
+## Practical examples
 
-### Collection vs Single Item
+### Collection vs single item
 
 ```php
 class Product extends AbstractTranslatableResource
@@ -167,7 +167,7 @@ class Product extends AbstractTranslatableResource
 }
 ```
 
-### Admin vs Front
+### Admin vs front
 
 ```php
 class Customer extends AbstractTranslatableResource
@@ -196,7 +196,7 @@ class Customer extends AbstractTranslatableResource
 }
 ```
 
-### Create vs Update
+### Create vs update
 
 ```php
 class Product extends AbstractTranslatableResource
@@ -216,9 +216,9 @@ class Product extends AbstractTranslatableResource
 }
 ```
 
-## Cross-Resource Groups
+## Cross-resource groups
 
-Sometimes you need to include related resource data:
+To include data from a related resource:
 
 ```php
 class OrderProduct
@@ -240,7 +240,7 @@ class Order
 }
 ```
 
-## Validation Groups
+## Validation groups
 
 Validation can be tied to serialization groups:
 
@@ -252,11 +252,11 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 public string $ref;
 ```
 
-## Best Practices
+## Best practices
 
-### 1. Minimize Collection Payload
+### 1. Minimize collection payload
 
-Only include essential fields in collections:
+Include only essential fields in collections:
 
 ```php
 // Good: Collections are lean
@@ -271,9 +271,9 @@ public string $ref;
 public array $allRelatedData = [];
 ```
 
-### 2. Separate Admin and Front
+### 2. Separate admin and front
 
-Never expose admin-only data to front:
+Never expose admin-only data on the front:
 
 ```php
 // Bad: Admin data exposed to front
@@ -285,9 +285,9 @@ public ?string $internalNotes = null;
 public ?string $internalNotes = null;
 ```
 
-### 3. Use Constants
+### 3. Use constants
 
-Always use constants for maintainability:
+Use constants rather than string literals to keep group names consistent:
 
 ```php
 // Good
@@ -297,7 +297,7 @@ Always use constants for maintainability:
 #[Groups(['admin:product:read', 'front:product:read'])]
 ```
 
-### 4. Document Special Groups
+### 4. Document special groups
 
 Comment non-obvious group usage:
 
@@ -312,7 +312,7 @@ Comment non-obvious group usage:
 public array $details = [];
 ```
 
-## Debugging Groups
+## Debugging groups
 
 Check which groups are active:
 
@@ -323,7 +323,7 @@ $context['groups'] // Contains active groups
 
 Use API Platform's Swagger/OpenAPI documentation to verify field visibility.
 
-## Next Steps
+## Next steps
 
 - [Filters](./filters) - Query and filter API data
 - [Resources](./resources) - Creating API resources

@@ -5,7 +5,7 @@ sidebar_position: 2
 
 # Updating Thelia
 
-## Update Components
+## Update components
 
 Update Thelia and its dependencies:
 
@@ -19,7 +19,7 @@ For a specific version:
 composer require thelia/thelia:^3.1
 ```
 
-## Update Database
+## Update the database
 
 After updating, apply database migrations:
 
@@ -27,12 +27,9 @@ After updating, apply database migrations:
 php Thelia thelia:install
 ```
 
-This command handles:
-- Database schema updates
-- New migrations
-- Required data updates
+This command applies database schema updates, new migrations, and any required data updates.
 
-## Update Assets
+## Update assets
 
 Rebuild front-office assets after updates:
 
@@ -41,7 +38,7 @@ npm install
 npm run build
 ```
 
-## Clear Cache
+## Clear the cache
 
 Always clear the cache after an update:
 
@@ -49,7 +46,7 @@ Always clear the cache after an update:
 php Thelia cache:clear
 ```
 
-## Module Updates
+## Updating modules
 
 Update modules separately:
 
@@ -64,9 +61,9 @@ php Thelia module:refresh
 php Thelia cache:clear
 ```
 
-## Best Practices
+## Recommendations
 
-1. **Backup** your database before updating
-2. **Test** updates on a staging environment first
-3. **Review** the changelog for breaking changes
-4. **Update** modules compatible with your Thelia version
+1. Back up your database before updating.
+2. Test updates on a staging environment first.
+3. Review the changelog for breaking changes.
+4. Update only modules that are compatible with your Thelia version.

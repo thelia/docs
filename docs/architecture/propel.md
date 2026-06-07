@@ -5,7 +5,7 @@ sidebar_position: 5
 
 # Propel ORM
 
-Thelia 3 uses the [Propel ORM](https://propelorm.org/) to talk to the database. If you come from a Symfony background you are probably used to Doctrine — Propel works differently. Read the next section before writing any model code.
+Thelia 3 uses the [Propel ORM](https://propelorm.org/) to talk to the database. If you come from a Symfony background you are probably used to Doctrine, and Propel works differently. Read the next section before writing any model code.
 
 ## Propel is not Doctrine
 
@@ -22,9 +22,9 @@ Each `->save()` runs the `INSERT`/`UPDATE` straight away. There is no unit of wo
 :::caution Respect the native Propel types
 Propel generates strictly typed setters from your `schema.xml`. Passing the wrong scalar type throws a `TypeError` on PHP 8.3.
 
-- **`TINYINT` columns are `?int`** — pass `0` or `1`, never `true`/`false`.
+- `TINYINT` columns are `?int`, so pass `0` or `1`, never `true`/`false`.
   `setVisible(?int $v = null)` is the real generated signature.
-- **`DECIMAL` columns are `?string`** — pass a string, never a `float`.
+- `DECIMAL` columns are `?string`, so pass a string, never a `float`.
   `setPrice(?string $v = null)` is the real generated signature.
 
 For toggles, use `$model->setVisible($model->getVisible() ? 0 : 1)`.
@@ -64,9 +64,9 @@ Run this command to generate both the model classes and the SQL from your schema
 php Thelia module:generate:model --generate-sql MyModule
 ```
 
-This command generates a `TheliaMain.sql` file in `local/modules/MyModule/Config/`. Do not edit it — it is overwritten every time the command runs.
+This command generates a `TheliaMain.sql` file in `local/modules/MyModule/Config/`. Do not edit it, since it is overwritten every time the command runs.
 
-It also generates a [Model](https://propelorm.org/documentation/reference/active-record.html) and a [ModelQuery](https://propelorm.org/documentation/reference/model-criteria.html) class for each table. Those generated stubs are empty classes that extend the real Propel base classes (stored in the Propel cache). You can add your own methods and properties to the stubs — they are never overwritten.
+It also generates a [Model](https://propelorm.org/documentation/reference/active-record.html) and a [ModelQuery](https://propelorm.org/documentation/reference/model-criteria.html) class for each table. Those generated stubs are empty classes that extend the real Propel base classes (stored in the Propel cache). You can add your own methods and properties to the stubs, which are never overwritten.
 
 :::note
 `module:generate:model` delegates the SQL part to the `module:generate:sql` command, which writes to your module's `Config/` directory. The file is named after the Propel connection (`TheliaMain`), hence `TheliaMain.sql`. Without the `--generate-sql` option, only the model classes are generated.
@@ -100,9 +100,9 @@ class MyModule extends BaseModule
 ```
 
 :::caution Import the right `Database` class
-The class is `Thelia\Core\Install\Database`. The legacy `Thelia\Install\Database` no longer exists in Thelia 3 — importing it triggers a fatal error.
+The class is `Thelia\Core\Install\Database`. The legacy `Thelia\Install\Database` no longer exists in Thelia 3, and importing it triggers a fatal error.
 
-`new Database($con)` is correct: the constructor accepts a `ConnectionInterface` (or a `\PDO`, or `null` to grab the write connection automatically). Do **not** call `$con->getWrappedConnection()` yourself — `Database` already unwraps the connection internally.
+`new Database($con)` is correct: the constructor accepts a `ConnectionInterface` (or a `\PDO`, or `null` to grab the write connection automatically). Do not call `$con->getWrappedConnection()` yourself, because `Database` already unwraps the connection internally.
 :::
 
 ### On module update

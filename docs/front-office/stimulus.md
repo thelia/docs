@@ -5,13 +5,13 @@ sidebar_position: 6
 
 # Stimulus Controllers
 
-Thelia 3 uses **Stimulus** for client-side JavaScript behavior. Stimulus connects JavaScript to DOM elements using data attributes.
+Thelia 3 uses Stimulus for client-side JavaScript behavior. Stimulus connects JavaScript to DOM elements using data attributes.
 
 :::tip Official Documentation
 For complete Stimulus documentation, see [stimulus.hotwired.dev](https://stimulus.hotwired.dev/).
 :::
 
-## Twig Helpers
+## Twig helpers
 
 Symfony UX provides Twig helpers for Stimulus:
 
@@ -33,9 +33,9 @@ Symfony UX provides Twig helpers for Stimulus:
 <div {{ stimulus_controller('gallery')|stimulus_controller('lazy-load') }}>
 ```
 
-## Flexy Theme Controllers
+## Flexy theme controllers
 
-The Flexy theme includes ready-to-use Stimulus controllers:
+The Flexy theme includes several Stimulus controllers you can use directly:
 
 | Controller | Purpose |
 |------------|---------|
@@ -59,7 +59,7 @@ Encore.enableStimulusBridge('./assets/controllers.json');
 The table above lists the most commonly used controllers. The Flexy theme ships around 20 controllers; the authoritative list is always the `assets/controllers/` folder of the theme bundle.
 :::
 
-### Usage Example
+### Usage example
 
 ```twig
 {# Using Flexy's drawer controller #}
@@ -78,7 +78,7 @@ The table above lists the most commonly used controllers. The Flexy theme ships 
 
 ## Integrating with LiveComponents
 
-Stimulus complements LiveComponents for client-side animations and effects:
+Stimulus works alongside LiveComponents for client-side animations and effects:
 
 ```twig
 {# LiveComponent with Stimulus for UI animations #}
@@ -89,7 +89,7 @@ Stimulus complements LiveComponents for client-side animations and effects:
 </div>
 ```
 
-### Listening to LiveComponent Events
+### Listening to LiveComponent events
 
 ```javascript
 // assets/controllers/cart_animation_controller.js
@@ -112,9 +112,9 @@ export default class extends Controller {
 }
 ```
 
-## Creating Custom Controllers
+## Creating custom controllers
 
-### 1. Create the Controller
+### 1. Create the controller
 
 ```javascript
 // assets/controllers/my_controller.js
@@ -130,7 +130,7 @@ export default class extends Controller {
 }
 ```
 
-### 2. Use in Templates
+### 2. Use in templates
 
 ```twig
 <div data-controller="my" data-my-message-value="Hello!">
@@ -141,7 +141,7 @@ export default class extends Controller {
 
 Stimulus automatically discovers controllers from `assets/controllers/` using naming conventions.
 
-## Next Steps
+## Next steps
 
 - [LiveComponents](./live-components) - Server-side reactivity
 - [Flexy Theme](./flexy-theme/) - See controllers in action

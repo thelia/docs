@@ -3,9 +3,9 @@ title: Creating a Theme
 sidebar_position: 3
 ---
 
-# Creating a Theme from Scratch
+# Creating a theme from scratch
 
-A Thelia 3 front-office theme is a **Symfony bundle**. The Flexy theme ships as `FlexyBundle`: a class extending `AbstractBundle` that auto-loads its own services, Twig/Live components, controllers and assets. Template files alone are not enough — a real theme needs its Bundle class so Symfony can wire everything.
+A Thelia 3 front-office theme is a Symfony bundle. The Flexy theme ships as `FlexyBundle`: a class extending `AbstractBundle` that auto-loads its own services, Twig/Live components, controllers and assets. Template files alone are not enough. A real theme needs its Bundle class so Symfony can wire everything together.
 
 This guide walks through the pieces of a theme, using Flexy as the reference, and shows how to build your own.
 
@@ -17,7 +17,7 @@ This guide walks through the pieces of a theme, using Flexy as the reference, an
 
 ## A theme is a bundle
 
-The Flexy theme registers itself as a Symfony bundle. The whole theme — services, Twig components, Live components, controllers — is autowired from the bundle's `src/` directory.
+The Flexy theme registers itself as a Symfony bundle. The whole theme (services, Twig components, Live components, controllers) is autowired from the bundle's `src/` directory.
 
 ```php
 // templates/frontOffice/flexy/src/FlexyBundle.php
@@ -148,7 +148,7 @@ The exact file list above mirrors the real Flexy theme root. Pages like `checkou
 
 ## Theme descriptor: template.xml
 
-Every theme has a `template.xml` at its root. This is the **only XML a theme needs** — it is a descriptor read by Thelia, not a service or routing configuration. Here is the real Flexy descriptor:
+Every theme has a `template.xml` at its root. This is the only XML a theme needs: a descriptor read by Thelia, not a service or routing configuration. Here is the real Flexy descriptor:
 
 ```xml
 <!-- templates/frontOffice/my-theme/template.xml -->
@@ -180,16 +180,16 @@ Every theme has a `template.xml` at its root. This is the **only XML a theme nee
 
 The tags, in order:
 
-- `<descriptive locale="...">` — one block per locale, each with a `<title>`. Add as many as you need (Flexy ships `fr` and `en`).
-- `<languages>` — the locales the theme supports.
-- `<version>` — the theme version.
-- `<authors>` — one or more `<author>` blocks with `<name>`, `<company>`, `<email>`, `<website>`.
-- `<thelia>` — the **minimum core version** the theme requires.
-- `<stability>` — `prod`, `beta`, `alpha`, etc.
-- `<assets>` — the directory holding compiled assets (Flexy uses `dist`, matching the Webpack output path).
+- `<descriptive locale="...">`: one block per locale, each with a `<title>`. Add as many as you need (Flexy ships `fr` and `en`).
+- `<languages>`: the locales the theme supports.
+- `<version>`: the theme version.
+- `<authors>`: one or more `<author>` blocks with `<name>`, `<company>`, `<email>`, `<website>`.
+- `<thelia>`: the minimum core version the theme requires.
+- `<stability>`: `prod`, `beta`, `alpha`, etc.
+- `<assets>`: the directory holding compiled assets (Flexy uses `dist`, matching the Webpack output path).
 
 :::caution
-There is **no** `<name>`, flat `<author>`, `<description>`, `<parent>` or `<required_version>` tag. The descriptor does not declare theme inheritance. To reuse Flexy from your own theme, render Flexy's components directly (`{{ component('Flexy:...') }}`) — see [Using Flexy components](#using-flexy-components) — rather than declaring a parent.
+There is no `<name>`, flat `<author>`, `<description>`, `<parent>` or `<required_version>` tag. The descriptor does not declare theme inheritance. To reuse Flexy from your own theme, render Flexy's components directly (`{{ component('Flexy:...') }}`, see [Using Flexy components](#using-flexy-components)) rather than declaring a parent.
 :::
 
 ## Creating the base layout
@@ -241,7 +241,7 @@ There is **no** `<name>`, flat `<author>`, `<description>`, `<parent>` or `<requ
 
 ### Homepage (index.html.twig)
 
-The homepage is served at `/` by the route named `index`. Fetch data with `resources()` (see [Data access](/docs/front-office/data-access)). **Product and category URLs are rewritten**, so link with the resource's `publicUrl` field — there is no `product_show` or `category` route to call.
+The homepage is served at `/` by the route named `index`. Fetch data with `resources()` (see [Data access](/docs/front-office/data-access)). Product and category URLs are rewritten, so link with the resource's `publicUrl` field. There is no `product_show` or `category` route to call.
 
 ```twig
 {# templates/frontOffice/my-theme/index.html.twig #}
@@ -351,15 +351,15 @@ Filtering, sorting and paginating a product grid is stateful work. Flexy delegat
 ```
 
 :::caution
-Adding to the cart is handled by the `Flexy:Pages:Product` LiveComponent, not by a plain HTML `<form>` posting to a `cart_add` route — no such route exists. If you build your own add-to-cart UI, model it on the Flexy Live component in `src/UiComponents/Pages/Product/`.
+Adding to the cart is handled by the `Flexy:Pages:Product` LiveComponent, not by a plain HTML `<form>` posting to a `cart_add` route. No such route exists. If you build your own add-to-cart UI, model it on the Flexy Live component in `src/UiComponents/Pages/Product/`.
 :::
 
 ## Creating components
 
 Flexy splits its UI in two places:
 
-- **`components/`** holds plain Twig partials organized with Atomic Design (`Atoms/`, `Molecules/`, `Organisms/`, `Layout/`, `Page/`). You `include` them through the `@components` namespace.
-- **`src/UiComponents/`** holds TwigComponents and LiveComponents — a PHP class plus its `.html.twig` template, rendered by name with `{{ component('Flexy:...') }}`. Flexy's own product card is one of these: `Flexy:ProductCard` (`src/UiComponents/ProductCard/`), which fetches its own price and image data.
+- `components/` holds plain Twig partials organized with Atomic Design (`Atoms/`, `Molecules/`, `Organisms/`, `Layout/`, `Page/`). You `include` them through the `@components` namespace.
+- `src/UiComponents/` holds TwigComponents and LiveComponents: a PHP class plus its `.html.twig` template, rendered by name with `{{ component('Flexy:...') }}`. Flexy's own product card is one of these: `Flexy:ProductCard` (`src/UiComponents/ProductCard/`), which fetches its own price and image data.
 
 For a custom theme you can either reuse `Flexy:ProductCard` or build your own partial. The hand-built version below links to the product with `product.publicUrl` and resolves the image the same way the real Flexy `ProductCard` component does:
 
@@ -427,7 +427,7 @@ The header links to real, named routes (the back-office and the Flexy controller
 ```
 
 :::caution Route names
-The Flexy controllers prefix their routes. Use `path('index')` for the homepage, `path('customer_login')` to log in, `path('account_index')` for the account dashboard, `path('checkout_cart')` for the cart. Do **not** use `homepage`, `account`, `product_show` or `category` — those route names do not exist.
+The Flexy controllers prefix their routes. Use `path('index')` for the homepage, `path('customer_login')` to log in, `path('account_index')` for the account dashboard, `path('checkout_cart')` for the cart. Do not use `homepage`, `account`, `product_show` or `category`: those route names do not exist.
 :::
 
 ## Asset pipeline
@@ -515,8 +515,8 @@ Or from the back office: **Configuration → Templates**, select your theme for 
 
 ## Learn more
 
-- [Customizing Flexy](./customization) — override specific parts of the Flexy theme
-- [LiveComponents](/docs/front-office/live-components) — build interactive, server-rendered components
-- [TwigComponents](/docs/front-office/live-components) — reusable Twig component classes
-- [Data access](/docs/front-office/data-access) — fetch data with `resources()` and `attr()`
-- [Stimulus](/docs/front-office/stimulus) — add behavior to your assets
+- [Customizing Flexy](./customization): override specific parts of the Flexy theme
+- [LiveComponents](/docs/front-office/live-components): build interactive, server-rendered components
+- [TwigComponents](/docs/front-office/live-components): reusable Twig component classes
+- [Data access](/docs/front-office/data-access): fetch data with `resources()` and `attr()`
+- [Stimulus](/docs/front-office/stimulus): add behavior to your assets

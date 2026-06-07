@@ -5,14 +5,14 @@ sidebar_position: 2
 
 # Forms Reference
 
-Thelia's form system is built on Symfony Forms, providing validation, CSRF protection, and easy template rendering.
+Thelia's form system is built on Symfony Forms. It handles validation, CSRF protection, and template rendering.
 
-:::info Context-Specific Documentation
+:::info Context-specific documentation
 - **Front-Office Forms**: See [Front-Office Forms](/docs/front-office/forms) for LiveComponent-based forms with Twig
 - **Back-Office Forms**: See [Back-Office Development](/docs/back-office) for Smarty form rendering
 :::
 
-## Creating a Form
+## Creating a form
 
 Create a form class extending `BaseForm`:
 
@@ -52,7 +52,7 @@ class MyForm extends BaseForm
 }
 ```
 
-## Form Naming Convention
+## Form naming convention
 
 The form name is automatically generated from the fully qualified class name:
 
@@ -61,7 +61,7 @@ The form name is automatically generated from the fully qualified class name:
 
 You can override this with `getName()`, but it's not recommended.
 
-## Validation Constraints
+## Validation constraints
 
 Use Symfony Validator constraints:
 
@@ -83,7 +83,7 @@ $this->formBuilder
     ]);
 ```
 
-### Custom Validation with Callback
+### Custom validation with a callback
 
 ```php
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -105,7 +105,7 @@ public function validateUniqueCode(mixed $value, ExecutionContextInterface $cont
 }
 ```
 
-## Using Forms in Controllers
+## Using forms in controllers
 
 ```php
 <?php
@@ -148,7 +148,7 @@ class MyController extends BaseFrontController
 }
 ```
 
-## Available Field Types
+## Available field types
 
 Thelia supports all [Symfony Form Types](https://symfony.com/doc/current/reference/forms/types.html):
 
@@ -164,7 +164,7 @@ Thelia supports all [Symfony Form Types](https://symfony.com/doc/current/referen
 | `HiddenType` | Hidden fields |
 | `FileType` | File uploads |
 
-## CSRF Protection
+## CSRF protection
 
 Forms include CSRF protection by default. Always include hidden fields in your templates:
 
@@ -185,7 +185,7 @@ Forms include CSRF protection by default. Always include hidden fields in your t
 {{ form_end(form) }}
 ```
 
-## Next Steps
+## Next steps
 
 - [Front-Office Forms](/docs/front-office/forms) - LiveComponent forms with real-time validation
 - [Back-Office Development](/docs/back-office) - Smarty form rendering

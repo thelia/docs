@@ -5,9 +5,9 @@ sidebar_position: 9
 
 # Payment Modules
 
-Payment modules handle the checkout payment process, integrating with payment gateways, managing transactions, and handling callbacks.
+Payment modules handle the checkout payment step. They talk to a payment gateway, process the transaction, and react to the gateway's callbacks.
 
-## Payment Flow
+## Payment flow
 
 1. Customer selects payment method at checkout
 2. `isValidPayment()` determines if method is available
@@ -17,9 +17,9 @@ Payment modules handle the checkout payment process, integrating with payment ga
 6. Gateway callback confirms payment
 7. Order status is updated
 
-## Creating a Payment Module
+## Creating a payment module
 
-### Main Class
+### Main class
 
 Payment modules extend `AbstractPaymentModule`:
 
@@ -142,7 +142,7 @@ final class MyPayment extends AbstractPaymentModule
 :::note Framework methods vs. your helpers
 Only `generateGatewayFormResponse()`, `getPaymentSuccessPageUrl()`, `getPaymentFailurePageUrl()` and `manageStockOnCreation()` come from `AbstractPaymentModule`. `pay()` and `isValidPayment()` come from `PaymentModuleInterface`. `getCurrentOrderTotalAmount()`, `getRequest()`, `getDispatcher()` and `getContainer()` come from `BaseModule`.
 
-The methods `getApiKey()`, `getMerchantId()`, `getGatewayUrl()`, `getCallbackUrl()`, `getBaseUrl()` and `refund()` are **your own helpers** in this example — the framework does not provide them. In particular there is no `refund()` in `AbstractPaymentModule` or `PaymentModuleInterface`; implement it yourself if your gateway supports refunds.
+The methods `getApiKey()`, `getMerchantId()`, `getGatewayUrl()`, `getCallbackUrl()`, `getBaseUrl()` and `refund()` are your own helpers in this example. The framework does not provide them. In particular there is no `refund()` in `AbstractPaymentModule` or `PaymentModuleInterface`; implement it yourself if your gateway supports refunds.
 :::
 
 :::caution getPaymentFailurePageUrl() signature
@@ -156,7 +156,7 @@ public function getPaymentFailurePageUrl(int $order_id, ?string $message): strin
 :::
 
 :::tip No routing.xml, no service declaration
-The payment module is auto-wired through `configureServices()` (with autoconfigure enabled). Its controllers' routes are declared with PHP 8 `#[Route]` attributes — you don't need a `routing.xml`.
+The payment module is auto-wired through `configureServices()` (with autoconfigure enabled). Its controllers' routes are declared with PHP 8 `#[Route]` attributes, so you don't need a `routing.xml`.
 :::
 
 ### module.xml
@@ -226,11 +226,11 @@ public function isValidPayment(): bool
 }
 ```
 
-## pay() Method Patterns
+## pay() method patterns
 
-### Pattern 1: Gateway Redirect
+### Pattern 1: gateway redirect
 
-Submit form data to external gateway:
+Submit form data to an external gateway:
 
 ```php
 public function pay(Order $order): ?Response
@@ -247,9 +247,9 @@ public function pay(Order $order): ?Response
 
 This renders the `checkout-gateway` template to auto-submit the form to the payment gateway.
 
-### Pattern 2: Direct API Payment
+### Pattern 2: direct API payment
 
-Process payment directly with API:
+Process the payment directly through the API:
 
 ```php
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -270,7 +270,7 @@ public function pay(Order $order): ?Response
         ]);
 
         if ($result['status'] === 'success') {
-            // Mark the order as paid — the same pattern the core FreeOrder module uses
+            // Mark the order as paid - the same pattern the core FreeOrder module uses
             $event = new OrderEvent($order);
             $event->setStatus(OrderStatusQuery::getPaidStatus()->getId());
             $this->getDispatcher()->dispatch($event, TheliaEvents::ORDER_UPDATE_STATUS);
@@ -290,14 +290,14 @@ public function pay(Order $order): ?Response
 ```
 
 :::caution Module methods vs controller methods
-`AbstractPaymentModule` gives you `generateGatewayFormResponse()`, `getPaymentSuccessPageUrl()`, `getPaymentFailurePageUrl()`, plus `getRequest()` and `getDispatcher()` from `BaseModule` — but **not** `generateRedirect()`, `getLog()`, `confirmPayment()` or `cancelPayment()`. Those live on the controllers (`BaseController`, `BasePaymentModuleController`). Inside `pay()`, return a plain Symfony `RedirectResponse` and dispatch `TheliaEvents::ORDER_UPDATE_STATUS` yourself, as shown above.
+`AbstractPaymentModule` gives you `generateGatewayFormResponse()`, `getPaymentSuccessPageUrl()`, `getPaymentFailurePageUrl()`, plus `getRequest()` and `getDispatcher()` from `BaseModule`. It does **not** give you `generateRedirect()`, `getLog()`, `confirmPayment()` or `cancelPayment()`. Those live on the controllers (`BaseController`, `BasePaymentModuleController`). Inside `pay()`, return a plain Symfony `RedirectResponse` and dispatch `TheliaEvents::ORDER_UPDATE_STATUS` yourself, as shown above.
 
 In your callback controller (which extends `BasePaymentModuleController`), prefer the `confirmPayment(EventDispatcherInterface $eventDispatcher, int $orderId)` and `cancelPayment()` helpers instead.
 :::
 
-### Pattern 3: Hosted Payment Page
+### Pattern 3: hosted payment page
 
-Redirect to gateway's hosted page:
+Redirect to the gateway's hosted page:
 
 ```php
 public function pay(Order $order): ?Response
@@ -314,7 +314,7 @@ public function pay(Order $order): ?Response
 }
 ```
 
-## Callback Handling
+## Callback handling
 
 Process gateway notifications:
 
@@ -415,9 +415,9 @@ final class CallbackController extends BasePaymentModuleController
 }
 ```
 
-### Customer Return Pages
+### Customer return pages
 
-Handle customer returns from gateway:
+Handle customer returns from the gateway:
 
 ```php
 #[Route('/mypayment/return', name: 'mypayment.return')]
@@ -444,7 +444,7 @@ public function cancelAction(Request $request): Response
 }
 ```
 
-## Stock Management
+## Stock management
 
 Control when stock is decremented:
 
@@ -493,7 +493,7 @@ public function refund(Order $order, float $amount): bool
 
 ## Logging
 
-Use dedicated log file for debugging:
+Use a dedicated log file for debugging:
 
 ```php
 // In BasePaymentModuleController
@@ -510,7 +510,7 @@ $this->getLog()->error('Payment failed', [
 
 Logs are stored in `log/mypayment.log`.
 
-## Admin Configuration
+## Admin configuration
 
 **Controller/Admin/ConfigController.php**:
 ```php
@@ -545,9 +545,9 @@ public function saveAction(): Response
 }
 ```
 
-## Security Considerations
+## Security considerations
 
-### Signature Verification
+### Signature verification
 
 Always verify webhook signatures:
 
@@ -573,7 +573,7 @@ private function verifyWebhookSignature(Request $request): bool
 }
 ```
 
-### Secure Configuration
+### Secure configuration
 
 Store sensitive data securely:
 
@@ -587,9 +587,9 @@ $this->getLog()->info('Payment attempt', [
 
 ## Testing
 
-### Test Mode
+### Test mode
 
-Support sandbox/test environments:
+Support sandbox and test environments:
 
 ```php
 private function getApiEndpoint(): string
@@ -605,7 +605,7 @@ private function isTestMode(): bool
 }
 ```
 
-### Test Cards
+### Test cards
 
 Document test card numbers in your module's README:
 
@@ -616,20 +616,20 @@ Test Cards (Sandbox):
 - 3D Secure: 4000 0000 0000 3220
 ```
 
-## Best Practices
+## Best practices
 
 ### Do
 
-- **Always verify signatures** on callbacks
-- **Log all payment events** for debugging and audit
-- **Handle all error cases** gracefully
-- **Use HTTPS** for all payment URLs
-- **Store transaction references** for reconciliation
-- **Implement idempotency** to handle duplicate callbacks
+- Always verify signatures on callbacks
+- Log all payment events, for debugging and audit
+- Handle every error case gracefully
+- Use HTTPS for all payment URLs
+- Store transaction references for reconciliation
+- Implement idempotency to handle duplicate callbacks
 
 ### Don't
 
-- **Never log sensitive data** (full card numbers, CVV)
-- **Never trust client-side data** for payment amounts
-- **Don't skip callback verification** even in test mode
-- **Don't process payments without order validation**
+- Never log sensitive data (full card numbers, CVV)
+- Never trust client-side data for payment amounts
+- Don't skip callback verification, even in test mode
+- Don't process payments without validating the order

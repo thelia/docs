@@ -3,11 +3,10 @@ title: Events
 sidebar_position: 1
 ---
 
-Thelia dispatch a lot of events during various workflows : account creation, order process, ...    
-You can listen any of this event to add or replace logic. Or add your own events that can be listened by other modules.    
-More info for Event dispatcher component can be found on [Symfony documentation](https://symfony.com/doc/current/components/event_dispatcher.html)
+Thelia dispatches many events during its workflows, such as account creation and the order process. You can listen to any of these events to add or replace logic, and you can dispatch your own events for other modules to listen to.
+The [Symfony documentation](https://symfony.com/doc/current/components/event_dispatcher.html) covers the Event Dispatcher component in detail.
 
-To do this you have to create an event subscriber, it's just a simple class that implement the `EventSubscriberInterface` with a `getSubscribedEvents` function to choose what event to listen :
+To listen to an event, create an event subscriber: a class that implements `EventSubscriberInterface` and declares a `getSubscribedEvents` method to choose which events to listen to.
 ```php
 <?php
 
@@ -47,7 +46,7 @@ Thelia native events are all listed in `TheliaEvents` class
 
 
 ### Propel events
-Propel dispatch several events during model lifecycle :
+Propel dispatches several events during a model's lifecycle:
 
 | Constant name | Description                            |
 |:--------------|:---------------------------------------|
@@ -60,8 +59,8 @@ Propel dispatch several events during model lifecycle :
 | PRE_DELETE    | Before deleting the object in database |
 | POST_DELETE   | After deleting the object in database  |
 
-Those constants are accessible to the class of model name suffixed by Event.    
-For example to listen product update use this event `ProductEvent::POST_UPDATE`
+Each constant lives on the class named after the model with an `Event` suffix.
+For example, to listen for a product update, use `ProductEvent::POST_UPDATE`.
 
 ```php
 <?php

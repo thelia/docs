@@ -11,7 +11,7 @@ Tests run against a dedicated test database (`test`), never your dev or demo dat
 
 ## Run the tests
 
-The fastest path is the Composer scripts. They unset any shell-injected `DATABASE_*` variables and pin `APP_ENV=test`, so `.env.test` always wins and the test database is used.
+Use the Composer scripts. They unset any shell-injected `DATABASE_*` variables and pin `APP_ENV=test`, so `.env.test` always wins and the test database is used.
 
 ```bash
 # Prepare the test database, then run all 5 suites
@@ -28,13 +28,13 @@ ddev exec composer test:http-flexy
 ddev exec composer test:http-backoffice
 ```
 
-To (re)prepare the test database on its own — after a schema change or on a fresh checkout:
+To (re)prepare the test database on its own, after a schema change or on a fresh checkout:
 
 ```bash
 ddev exec composer test:prepare
 ```
 
-Under the hood each script calls PHPUnit with the matching test suite:
+Each script calls PHPUnit with the matching test suite:
 
 ```bash
 ./vendor/bin/phpunit --testsuite unit
@@ -60,10 +60,10 @@ The suites are declared in `phpunit.xml.dist`. Each maps to a directory under `t
 
 Each suite has a matching base class:
 
-- `unit` — plain `PHPUnit\Framework\TestCase`.
-- `integration` — `Thelia\Test\IntegrationTestCase`.
-- `api` — `Thelia\Test\ApiTestCase`.
-- `http-flexy` and `http-backoffice` — `Thelia\Test\WebIntegrationTestCase`.
+- `unit`: plain `PHPUnit\Framework\TestCase`.
+- `integration`: `Thelia\Test\IntegrationTestCase`.
+- `api`: `Thelia\Test\ApiTestCase`.
+- `http-flexy` and `http-backoffice`: `Thelia\Test\WebIntegrationTestCase`.
 
 ## Write an integration test
 
@@ -105,13 +105,10 @@ final class ProductCreationTest extends IntegrationTestCase
 }
 ```
 
-Every test runs inside a database transaction that is rolled back in `tearDown()`. That gives you:
-
-- Isolation — no test leaks data into another.
-- No manual cleanup.
+Every test runs inside a database transaction that is rolled back in `tearDown()`. No test leaks data into another, and you never write manual cleanup.
 
 :::caution Never hardcode IDs
-Auto-increment values are **not** rolled back by the transaction. A row inserted in one test still bumps the sequence for the next. Read IDs from the objects the factory returns; never assume a product will get id `1`.
+Auto-increment values are not rolled back by the transaction. A row inserted in one test still bumps the sequence for the next. Read IDs from the objects the factory returns; never assume a product will get id `1`.
 :::
 
 ### `IntegrationTestCase`
@@ -121,7 +118,7 @@ Auto-increment values are **not** rolled back by the transaction. A row inserted
 `setUp()` does, in order:
 
 1. Boots the Symfony kernel.
-2. Calls `TheliaKernel::isInstalled()` and **skips the test** if the test database is not installed (so missing `bin/test-prepare` produces a clear skip, not a fatal error).
+2. Calls `TheliaKernel::isInstalled()` and skips the test if the test database is not installed (so missing `bin/test-prepare` produces a clear skip, not a fatal error).
 3. Initializes the `Translator` and `URL` singletons that legacy business code reads statically.
 4. Pushes a minimal `Request` (with a `Session`) onto the request stack so listeners reading the request don't crash.
 5. If `$useTransaction` is `true`, opens the `TheliaMain` Propel connection and starts a transaction. It also calls `Propel::disableInstancePooling()` so reads always hit the database.
@@ -197,7 +194,7 @@ It sets the `Content-Type` and `Accept` headers from `$format` (`jsonld`, `json`
 | `AssertsJsonApi` | `assertJsonResponseSuccessful()`, `assertHydraTotalItems()`, `assertJsonCollectionHasCount()`, `assertResourceId()`. |
 
 :::tip Propel assertions
-A fourth trait, `PropelAssertions`, lives next to these. It exposes `assertRowExists()`, `assertRowDeleted()`, `assertRowCount()` and `assertI18nValue()`. It is not composed into `ApiTestCase` by default — `use` it in your own test class when you need to assert directly against the database.
+A fourth trait, `PropelAssertions`, lives next to these. It exposes `assertRowExists()`, `assertRowDeleted()`, `assertRowCount()` and `assertI18nValue()`. It is not composed into `ApiTestCase` by default. Add `use` for it in your own test class when you need to assert directly against the database.
 :::
 
 ## FixtureFactory
@@ -211,7 +208,7 @@ Two families of methods:
 - **Reference entities** use *find-or-create*: called with no overrides they reuse seeded data when it exists, otherwise they create a row.
 - **Other entities** always create a new row.
 
-Every method takes an optional `array $overrides = []` as its **last** argument. Methods with hard dependencies (a product needs a category, a tax rule and a currency) take them as explicit typed parameters before the overrides.
+Every method takes an optional `array $overrides = []` as its last argument. Methods with hard dependencies (a product needs a category, a tax rule and a currency) take them as explicit typed parameters before the overrides.
 
 ```php
 $factory = $this->createFixtureFactory();
@@ -259,14 +256,14 @@ $product = $factory->product($category, $taxRule, $currency, [
 | `order` | `order(?Customer $customer = null, array $overrides = [])` |
 
 :::note
-`productSaleElement()` creates an **additional** PSE. `product()` already creates the default sale element and its price through `Product::create()`, so never call `productSaleElement()` for the default one.
+`productSaleElement()` creates an additional PSE. `product()` already creates the default sale element and its price through `Product::create()`, so never call `productSaleElement()` for the default one.
 
-`order()` builds a minimal order with its mandatory dependencies (customer, invoice and delivery addresses, cart, payment and delivery modules) and puts it in the `not_paid` status. It does not add products — create your own `OrderProduct` rows when a test needs revenue.
+`order()` builds a minimal order with its mandatory dependencies (customer, invoice and delivery addresses, cart, payment and delivery modules) and puts it in the `not_paid` status. It does not add products, so create your own `OrderProduct` rows when a test needs revenue.
 :::
 
 ## How the test database is prepared
 
-`bin/test-prepare` builds a clean test database **without booting the Symfony kernel** for the database and module work. The Composer script `test:prepare` runs it, then warms the test cache.
+`bin/test-prepare` builds a clean test database without booting the Symfony kernel for the database and module work. The Composer script `test:prepare` runs it, then warms the test cache.
 
 It performs the following:
 
@@ -278,7 +275,7 @@ It performs the following:
 6. Runs `module:post-activate-all` so modules that create their tables in `postActivation()` (for example `CustomDelivery`, `ShortCode`) get them in the test database.
 7. Generates the JWT key pair with `lexik:jwt:generate-keypair --skip-if-exists`, required by the `/api/admin/login` and `/api/front/login` endpoints the API tests use.
 
-It does **not** set templates, create an admin, or import demo data — it is the minimal setup a test run needs.
+It does not set templates, create an admin, or import demo data. It is the minimal setup a test run needs.
 
 :::caution Stale Propel cache
 If tests suddenly hit the wrong database after switching branches or environments, delete `var/propel/test/` and re-run `composer test:prepare`. Step 5 above does this automatically, but a manual run is the quickest fix when a cache survives.
@@ -286,13 +283,13 @@ If tests suddenly hit the wrong database after switching branches or environment
 
 ## Best practices
 
-- Use the factory for all test data — avoid raw SQL inserts.
-- Never hardcode IDs — auto-increment values are not deterministic across tests.
-- Keep tests independent — each test sets up its own data.
+- Use the factory for all test data, and avoid raw SQL inserts.
+- Never hardcode IDs. Auto-increment values are not deterministic across tests.
+- Keep tests independent. Each test sets up its own data.
 - Use `getService()` with a FQCN rather than reaching into the container directly.
-- Run the full `composer test` before reporting — a suite green in isolation does not prove non-regression across the shared database state.
+- Run the full `composer test` before reporting. A suite green in isolation does not prove non-regression across the shared database state.
 
 ## Learn more
 
-- [Modules](../modules/index.md) — the event-driven flow your integration tests exercise.
-- [API reference](../api/index.md) — the endpoints your API tests call.
+- [Modules](../modules/index.md): the event-driven flow your integration tests exercise.
+- [API reference](../api/index.md): the endpoints your API tests call.

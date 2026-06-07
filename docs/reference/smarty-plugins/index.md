@@ -5,7 +5,7 @@ sidebar_position: 3
 
 # Smarty Plugins
 
-:::caution Legacy — Smarty back-office theme
+:::caution Legacy - Smarty back-office theme
 Smarty plugins belong to the **legacy Smarty back-office theme**, which is **no longer recommended and will likely be dropped in Thelia 3.1**. The reference back-office is the **Twig** theme (`default-twig` bundle), where you use Twig functions and extensions instead of Smarty plugins.
 
 Keep reading this section only if you maintain a Smarty back-office template. For the Twig back-office, use the mapping below.
@@ -23,7 +23,7 @@ The Twig back-office replaces the most common Smarty plugins with Twig functions
 | `{intl l="..."}` | the `\|trans` filter | Symfony translator |
 
 ```twig
-{# templates/backOffice/default-twig — Twig back-office #}
+{# templates/backOffice/default-twig - Twig back-office #}
 
 {# {url path="..."} → path()/url() #}
 <a href="{{ path('admin.products.default') }}">{{ 'Products'|trans }}</a>

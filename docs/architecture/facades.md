@@ -5,20 +5,20 @@ sidebar_position: 3
 
 # Domain Facades
 
-Facades in Thelia 3 are the primary entry point for business logic. They orchestrate multiple services and provide a clean API for common operations.
+Facades in Thelia 3 are the main entry point for business logic. They coordinate several services and expose a single API for common operations.
 
 ## Purpose
 
-Facades serve several purposes:
+A facade does four things:
 
-1. **Simplify complex operations** - Combine multiple service calls into single methods
-2. **Encapsulate business rules** - Validation, authorization, and side effects
-3. **Provide session helpers** - Easy access to current cart, customer, etc.
-4. **Ensure consistency** - Single source of truth for domain operations
+1. Combines several service calls into a single method, so a controller does not have to wire them together.
+2. Holds the business rules for its domain: validation, authorization, and side effects.
+3. Gives easy access to session state, such as the current cart or customer.
+4. Acts as the single source of truth for its domain operations.
 
-## Available Facades
+## Available facades
 
-These are the four facades you will use most often in a front office:
+These are the four facades you will use most often in a front office.
 
 | Facade | Namespace | Purpose |
 |--------|-----------|---------|
@@ -30,18 +30,18 @@ These are the four facades you will use most often in a front office:
 :::note
 These four are the most common front-office facades, but they are not the only ones. The core ships around sixteen domain facades. The others are organized by domain under `Thelia\Domain\`:
 
-- `AddressFacade` — `Thelia\Domain\Addressing`
-- `ShippingFacade` — `Thelia\Domain\Shipping`
-- `ProductFacade` and `PSEFacade` — `Thelia\Domain\Catalog\Product`
-- `CategoryFacade` — `Thelia\Domain\Catalog\Category`
-- `BrandFacade` — `Thelia\Domain\Catalog\Brand`
-- `CurrencyFacade` — `Thelia\Domain\Catalog\Currency`
-- `TaxFacade` — `Thelia\Domain\Catalog\Tax`
-- `MediaFacade` — `Thelia\Domain\Media`
-- `ContentFacade` — `Thelia\Domain\CMS\Content`
-- `LocalizationFacade` — `Thelia\Domain\Localization`
+- `AddressFacade` in `Thelia\Domain\Addressing`
+- `ShippingFacade` in `Thelia\Domain\Shipping`
+- `ProductFacade` and `PSEFacade` in `Thelia\Domain\Catalog\Product`
+- `CategoryFacade` in `Thelia\Domain\Catalog\Category`
+- `BrandFacade` in `Thelia\Domain\Catalog\Brand`
+- `CurrencyFacade` in `Thelia\Domain\Catalog\Currency`
+- `TaxFacade` in `Thelia\Domain\Catalog\Tax`
+- `MediaFacade` in `Thelia\Domain\Media`
+- `ContentFacade` in `Thelia\Domain\CMS\Content`
+- `LocalizationFacade` in `Thelia\Domain\Localization`
 
-Some catalog facades are nested deeper than the top-level domain (for example `Thelia\Domain\Catalog\Product`), so always confirm the exact namespace against the class file before importing it.
+Some catalog facades are nested deeper than the top-level domain, such as `Thelia\Domain\Catalog\Product`, so confirm the exact namespace against the class file before importing it.
 :::
 
 ## CartFacade
@@ -296,7 +296,7 @@ final readonly class PlaceOrderHandler
 `createOrder()` throws `TheliaProcessException` if the customer, currency, language, or cart has no identifier. The optional last argument `bool $useOrderDefinedAddresses = false`: when `true`, the existing `OrderAddress` rows are reused instead of creating new ones from the chosen addresses.
 :::
 
-## Using Facades in LiveComponents
+## Using facades in LiveComponents
 
 ```php
 <?php
@@ -347,9 +347,9 @@ final class AddToCart
 }
 ```
 
-## Using Facades in Twig
+## Using facades in Twig
 
-While facades are primarily used in PHP, you can access them in templates through services:
+Facades are mostly used in PHP, but you can also reach them in templates through services:
 
 ```twig
 {# In a LiveComponent template #}
@@ -360,7 +360,7 @@ While facades are primarily used in PHP, you can access them in templates throug
 
 ## DTOs
 
-Facades use Data Transfer Objects for method parameters:
+Facades take Data Transfer Objects as method parameters:
 
 ### CartItemAddDTO
 
@@ -426,9 +426,9 @@ readonly class CustomerRegisterDTO
 }
 ```
 
-## Creating Custom Facades
+## Creating custom facades
 
-For module-specific business logic, create your own facades:
+For module-specific business logic, write your own facades:
 
 ```php
 <?php
@@ -484,20 +484,20 @@ final class MyModule extends BaseModule
 ```
 
 :::note
-`configureServices()` is mandatory: without it, no class in the module is scanned at all (auto-registration is reverted). Once it is present, you do not declare individual services such as a facade in `config.xml` — that file is optional in Thelia 3 and only needed for things `configureServices()` cannot express (for example `<exports>`, `<imports>`, `<parameters>`, or a `<loop>` alias).
+`configureServices()` is mandatory: without it, no class in the module is scanned at all (auto-registration is reverted). Once it is present, you do not declare individual services such as a facade in `config.xml`. That file is optional in Thelia 3 and only needed for things `configureServices()` cannot express, such as `<exports>`, `<imports>`, `<parameters>`, or a `<loop>` alias.
 :::
 
-## Best Practices
+## Best practices
 
-1. **Use DTOs for parameters** - Avoid primitive obsession
-2. **Keep facades thin** - Delegate to services, don't implement logic
-3. **One responsibility** - Each facade should focus on one domain
-4. **Inject dependencies** - Use constructor injection
-5. **Use readonly** - Facades should be immutable
-6. **Type everything** - Full type hints on all methods
+1. Pass DTOs instead of long lists of primitive parameters.
+2. Keep facades thin: delegate to services rather than implementing logic in the facade.
+3. Give each facade a single domain to cover.
+4. Inject dependencies through the constructor.
+5. Mark facades `readonly` so they stay immutable.
+6. Type every method, parameter, and return value.
 
-## Next Steps
+## Next steps
 
-- [Module Development](/docs/modules) - Creating modules with facades
-- [API Resources](/docs/api/resources) - Exposing data via API
-- [LiveComponents](/docs/front-office/live-components) - Using facades in components
+- [Module Development](/docs/modules): creating modules with facades
+- [API Resources](/docs/api/resources): exposing data via API
+- [LiveComponents](/docs/front-office/live-components): using facades in components

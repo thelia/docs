@@ -5,7 +5,7 @@ sidebar_position: 3
 
 # Data Access Service
 
-The **DataAccessService** is the primary way to fetch data in Thelia 3 front-office templates. It provides a unified interface to call API endpoints internally without HTTP overhead.
+`DataAccessService` is how front-office templates fetch data in Thelia 3. It calls API endpoints internally, without the cost of a real HTTP request.
 
 ## Overview
 
@@ -19,9 +19,9 @@ Instead of using loops (which are now reserved for back-office), front-office te
 {% set products = resources('/api/front/products', {visible: true}) %}
 ```
 
-## Twig Functions
+## Twig functions
 
-The `DataAccessExtension` provides these functions:
+`DataAccessExtension` provides these functions:
 
 | Function | Description |
 |----------|-------------|
@@ -32,9 +32,9 @@ The `DataAccessExtension` provides these functions:
 `resources()` returns `object|array|null`. A collection endpoint returns an array of items, a single-item endpoint returns one object, and a missing resource returns `null`. Do not assume the result is always an array.
 :::
 
-## The `resources()` Function
+## The `resources()` function
 
-### Basic Usage
+### Basic usage
 
 ```twig
 {# Fetch a single item by ID #}
@@ -48,7 +48,7 @@ The `DataAccessExtension` provides these functions:
 {% endfor %}
 ```
 
-### With Parameters
+### With parameters
 
 ```twig
 {# Filter by category #}
@@ -91,7 +91,7 @@ Use `itemsPerPage` and `page` parameters for pagination:
 In PHP (services, LiveComponents), you can use the `'jsonld'` format as a third parameter to `DataAccessService::resources()` to get Hydra metadata with pagination info. This format parameter is not available in the Twig function.
 :::
 
-## The `attr()` Function
+## The `attr()` function
 
 The `attr()` function reads a contextual attribute. It calls the matching
 `attribute<Type>()` method on `AttributeAccessService` (so `attr('product', 'id')`
@@ -161,7 +161,7 @@ Supported cart names: `product_count` (alias `count_product`), `item_count`
 `discount`, `discount_tax_amount`, `weight`, `delivery_module_id`,
 `payment_module_id`.
 
-### Complete Example
+### Complete example
 
 ```twig
 {# product.html.twig #}
@@ -176,7 +176,7 @@ Supported cart names: `product_count` (alias `count_product`), `item_count`
 {% endblock %}
 ```
 
-## Available Endpoints
+## Available endpoints
 
 ### Products
 
@@ -277,7 +277,7 @@ controller that resolves the session cart). The plural `/api/front/carts/{id}` a
 `/api/front/account/orders/{id}` endpoints are scoped to the authenticated customer.
 :::
 
-## Using in PHP (Services & LiveComponents)
+## Using it in PHP (services and LiveComponents)
 
 ### Injecting DataAccessService
 
@@ -363,9 +363,9 @@ class CategoryFilters
 }
 ```
 
-### Using JSON-LD Format for Pagination Metadata
+### Using the JSON-LD format for pagination metadata
 
-When you need pagination metadata (total items, next/previous page links), use the `'jsonld'` format:
+When you need pagination metadata (total items, next and previous page links), pass the `'jsonld'` format:
 
 ```php
 private function loadProductsWithPagination(): void
@@ -382,14 +382,13 @@ private function loadProductsWithPagination(): void
 }
 ```
 
-:::note Default vs JSON-LD Format
-- **Default (no format)**: Returns a simple array of items. Use this for most cases.
-- **JSON-LD format**: Returns Hydra metadata (`hydra:member`, `hydra:totalItems`, `hydra:view`). Use when you need pagination info or total count.
+:::note Default vs JSON-LD format
+With no format (the default), you get a plain array of items, which covers most cases. The `'jsonld'` format instead returns Hydra metadata (`hydra:member`, `hydra:totalItems`, `hydra:view`); use it when you need pagination info or a total count.
 :::
 
-## Filtering Parameters
+## Filtering parameters
 
-### Common Filters
+### Common filters
 
 | Parameter | Description | Example |
 |-----------|-------------|---------|
@@ -398,7 +397,7 @@ private function loadProductsWithPagination(): void
 | `itemsPerPage` | Pagination limit | `'itemsPerPage': 30` |
 | `page` | Page number | `'page': 2` |
 
-### Relation Filters
+### Relation filters
 
 ```twig
 {# Filter by related entity ID #}
@@ -412,10 +411,10 @@ private function loadProductsWithPagination(): void
 }) %}
 ```
 
-### Search Filters
+### Search filters
 
-The product `title` filter uses a `word_start` strategy (matches the beginning of
-each word in the translated title):
+The product `title` filter uses a `word_start` strategy: it matches the beginning of
+each word in the translated title.
 
 ```twig
 {# Text search on the product title #}
@@ -424,12 +423,12 @@ each word in the translated title):
 }) %}
 ```
 
-### Custom Filters (tfilters)
+### Custom filters (tfilters)
 
-Thelia provides a `tfilters` system for faceted navigation. The
-`/api/front/tfilters/{resource}` endpoint returns the available filters for a
-resource (e.g. `products`); the same `tfilters` payload is then applied to the
-resource collection. This is the pattern used by the `CategoryFilters` LiveComponent.
+Thelia has a `tfilters` system for faceted navigation. The
+`/api/front/tfilters/{resource}` endpoint returns the filters available for a
+resource (for example `products`), and you then apply the same `tfilters` payload to the
+resource collection. The `CategoryFilters` LiveComponent follows this pattern.
 
 ```twig
 {# Get available product filters for a category #}
@@ -444,7 +443,7 @@ resource collection. This is the pattern used by the `CategoryFilters` LiveCompo
 }) %}
 ```
 
-## Accessing Translated Content
+## Accessing translated content
 
 API responses include translated content in the `i18ns` property:
 
@@ -461,7 +460,7 @@ API responses include translated content in the `i18ns` property:
 {{ product.i18ns.chapo|default('No description available') }}
 ```
 
-## Error Handling
+## Error handling
 
 ```twig
 {% set product = resources('/api/front/products/' ~ productId) %}
@@ -484,9 +483,9 @@ if ($product === null) {
 }
 ```
 
-## Performance Considerations
+## Performance
 
-### Avoid N+1 Queries
+### Avoid N+1 queries
 
 ```twig
 {# Bad - multiple API calls in loop #}
@@ -498,7 +497,7 @@ if ($product === null) {
 {{ component('Flexy:ProductCard', {product: product}) }}
 ```
 
-### Use Pagination
+### Use pagination
 
 ```twig
 {# Always limit results #}
@@ -508,11 +507,11 @@ if ($product === null) {
 }) %}
 ```
 
-### Cache Considerations
+### Caching
 
-DataAccessService calls go through API Platform's caching layer. The responses benefit from HTTP caching when properly configured.
+`DataAccessService` calls go through API Platform's caching layer, so responses can be served from the HTTP cache once it is configured.
 
-## Next Steps
+## Next steps
 
 - [LiveComponents](./live-components) - Build reactive components with data access
 - [API Endpoints](/docs/api/endpoints/) - Complete endpoint reference
