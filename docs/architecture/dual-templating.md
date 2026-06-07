@@ -1,42 +1,54 @@
 ---
-title: Dual Templating System
+title: Templating Engines
 sidebar_position: 2
 ---
 
-# Dual Templating System
+# Templating Engines
 
-Thelia 3 uses two templating engines: **Twig** for the front-office and **Smarty** for the back-office. This architectural decision optimizes each interface for its specific requirements.
+Thelia 3 renders its interfaces with **Twig**. Both the front-office (Flexy theme) and the modern back-office (`default-twig` theme) are Twig bundles built on Symfony UX (Stimulus, TwigComponent, LiveComponent) and Bootstrap 5.
+
+A second engine, **Smarty**, still ships for the legacy `default` back-office theme. It is kept only for the transition and is not the recommended path for new development.
+
+:::caution The Smarty back-office is being phased out
+The Smarty `default` back-office theme is legacy and will likely be dropped in Thelia 3.1. Build new admin screens and module admin extensions against the `default-twig` bundle conventions. Smarty examples below are documented for reference only.
+:::
 
 ## Overview
 
-| Aspect | Front-Office (Twig) | Back-Office (Smarty) |
-|--------|---------------------|----------------------|
-| **Engine** | Twig 3.x | Smarty 4.x |
-| **Data Access** | DataAccessService | Loops (Propel) |
-| **Components** | Symfony LiveComponents | Template includes |
-| **JavaScript** | Stimulus | jQuery |
-| **Theme** | Flexy (Symfony Bundle) | Default (Thelia templates) |
+| Aspect | Front-office (Flexy) | Back-office (default-twig) | Back-office (default, legacy) |
+|--------|----------------------|----------------------------|-------------------------------|
+| **Engine** | Twig 3 | Twig 3 | Smarty |
+| **Data access** | `resources()` / `attr()` Twig functions (DataAccessService) | Repositories + presenters (Propel) | Loops (Propel) |
+| **Components** | TwigComponent / LiveComponent | TwigComponent / LiveComponent | Template includes |
+| **JavaScript** | Stimulus | Stimulus | jQuery |
+| **Styling** | Theme SCSS | Bootstrap 5.3 | Theme CSS |
+| **Routing** | `#[Route]` attributes | `#[Route]` attributes | `admin.xml` route files |
+| **Packaging** | `FlexyBundle` | `BackOfficeDefaultTwigBundle` | Thelia templates |
 
-## Front-Office: Twig + Symfony UX
+Both Twig themes are **Symfony bundles**: their templates, components, Stimulus controllers, form themes and assets all live inside the bundle. See [Modules vs Bundles](./modules-vs-bundles.md).
 
-The front-office provides a modern, reactive user experience using Twig templates enhanced with Symfony UX components.
+## Front-office: Twig + Symfony UX
 
-### Template Location
+The front-office ships as the `FlexyBundle`. Templates live at the theme root, components and PHP under `src/`.
+
+### Template location
 
 ```
 templates/frontOffice/flexy/
-├── base.html.twig           # Base layout
-├── index.html.twig          # Homepage
-├── product.html.twig        # Product page
-├── category.html.twig       # Category page
-├── checkout.html.twig       # Checkout process
+├── base.html.twig            # base layout
+├── index.html.twig           # homepage
+├── product.html.twig         # product page
+├── category.html.twig        # category page
+├── checkout-cart.html.twig   # cart step
 └── src/
-    └── UiComponents/        # LiveComponents
+    ├── Twig/
+    │   └── DataAccessExtension.php   # registers resources() and attr()
+    └── UiComponents/         # TwigComponent / LiveComponent
 ```
 
-### Data Retrieval
+### Data retrieval
 
-Use `DataAccessService` via the `resources()` Twig function:
+Fetch data from the API layer with the `resources()` Twig function. It is registered by `FlexyBundle\Twig\DataAccessExtension` and delegates to `Thelia\Api\Service\DataAccess\DataAccessService`:
 
 ```twig
 {# Fetch a single product #}
@@ -53,13 +65,16 @@ Use `DataAccessService` via the `resources()` Twig function:
 {# Display products #}
 {% for product in products %}
     <h2>{{ product.i18ns.title }}</h2>
-    <p>{{ product.price }} EUR</p>
+    {# Prices live on the product's sale elements (PSE), not on a flat property #}
+    <p>{{ product.productSaleElements[0].productPrices[0].price }} EUR</p>
 {% endfor %}
 ```
 
-### Route Attributes
+See [Front-office data access](../front-office/data-access.md) for the full reference.
 
-Access route parameters with `attr()`:
+### Route attributes
+
+Read a value derived from the current route with the `attr()` Twig function (also registered by `DataAccessExtension`, backed by `AttributeAccessService`):
 
 ```twig
 {# On /product/42 page #}
@@ -69,24 +84,40 @@ Access route parameters with `attr()`:
 {% set categoryId = attr('category', 'id') %}
 ```
 
-### LiveComponents
+:::note
+`attr(type, name)` resolves a method `attribute<Type>()` on `AttributeAccessService`. Calling it with a type that has no matching method throws a `RuntimeException`, so only documented attribute types are valid.
+:::
 
-Reactive components without custom JavaScript:
+### Components
+
+Flexy ships TwigComponents (server-rendered) and LiveComponents (reactive, re-render on the server without a page reload). Render them with the `component()` function, using the names declared in the `#[AsTwigComponent]` / `#[AsLiveComponent]` attributes under `src/UiComponents/`:
 
 ```twig
-{# Render a product page component #}
+{# Product page LiveComponent — receives the product array #}
 {{ component('Flexy:Pages:Product', { product: product }) }}
 
-{# Render cart widget #}
-{{ component('Flexy:CartWidget') }}
+{# Category listing with filters (LiveComponent) #}
+{{ component('Flexy:CategoryFilters', {
+    initialCategoryId: categoryId,
+    initialPage: page
+}) }}
 
-{# Render category filters #}
-{{ component('Flexy:CategoryFilters', { categoryId: categoryId }) }}
+{# Cart step (LiveComponent) #}
+{{ component('Flexy:Checkout:Cart') }}
+
+{# Order summary (LiveComponent) #}
+{{ component('Flexy:Checkout:Summary') }}
 ```
 
-### Stimulus Controllers
+:::tip
+Component names are namespaced with colons (`Flexy:Checkout:Cart`), mirroring their folder under `src/UiComponents/`. Grep the bundle for `AsLiveComponent` / `AsTwigComponent` to discover the available components and their props.
+:::
 
-For custom JavaScript behavior:
+See [LiveComponents](../front-office/live-components.md) for building your own.
+
+### Stimulus controllers
+
+For custom JavaScript behavior, attach a Stimulus controller. Controllers live in `assets/controllers/` inside the bundle:
 
 ```twig
 <div data-controller="product-gallery">
@@ -102,22 +133,117 @@ For custom JavaScript behavior:
 </div>
 ```
 
-## Back-Office: Smarty
+See [Stimulus](../front-office/stimulus.md).
 
-The back-office uses Smarty templates with Thelia's loop system for data retrieval.
+## Back-office: the default-twig bundle (recommended)
 
-### Template Location
+The reference back-office is the `default-twig` theme, packaged as `BackOfficeDefaultTwigBundle`. It is a Bootstrap 5.3 / Twig / Stimulus port of the legacy Smarty admin, and it is **autonomous**: its routes, hooks, forms and assets all live inside the bundle.
+
+### Activation
+
+```bash
+# fresh install
+ddev exec php bin/install \
+  --frontoffice_theme=flexy --backoffice_theme=default-twig \
+  --pdf_theme=default --email_theme=default \
+  --with-demo --with-admin
+
+# already installed: switch active back-office template
+ddev exec bin/console template:set backOffice default-twig
+ddev exec bin/console cache:warmup -e dev
+
+# build assets
+ddev exec bash -c "cd templates/backOffice/default-twig && npm install && npm run build"
+```
+
+### Bundle layout
 
 ```
-templates/backOffice/default/
-├── layout.tpl               # Base layout
-├── home.tpl                 # Dashboard
-├── product-edit.tpl         # Product editing
-├── order-edit.tpl           # Order management
-└── includes/                # Partial templates
+templates/backOffice/default-twig/
+├── base.html.twig            # base layout
+├── home.html.twig            # dashboard
+├── <domain>/                 # one folder per domain (catalog, customer, ...)
+│   ├── list.html.twig
+│   ├── edit.html.twig
+│   └── _create_modal.html.twig
+├── components/               # reusable Twig components (BoDataTable, BoDashboard, ...)
+├── form/
+│   └── bo_form_theme.html.twig   # custom Bootstrap 5 form theme
+├── assets/                   # SCSS + JS + img
+│   └── controllers/          # Stimulus controllers
+└── src/
+    ├── BackOfficeDefaultTwigBundle.php
+    ├── Controller/           # thin controllers, #[Route] attributes
+    ├── DTO/                  # immutable data transfer objects
+    ├── Form/                 # Symfony forms
+    ├── Twig/                 # HookExtension, BackOfficeUrlExtension, DataTableExtension, ...
+    └── UiComponents/         # AsTwigComponent / AsLiveComponent
 ```
 
-### Data Retrieval with Loops
+### Routing with attributes
+
+Admin screens declare their routes with PHP 8 `#[Route]` attributes on thin controllers — no `admin.xml`:
+
+```php
+// templates/backOffice/default-twig/src/Controller/Catalog/BrandController.php
+#[Route('/admin/brand', name: 'admin.brand.')]
+final class BrandController
+{
+    #[Route('', name: 'default', methods: ['GET'])]
+    public function list(/* ... */) { /* ... */ }
+
+    #[Route('/create', name: 'create', methods: ['POST'])]
+    public function create(/* ... */) { /* ... */ }
+
+    #[Route('/update/{brand_id}', name: 'update', methods: ['GET'], requirements: ['brand_id' => '\d+'])]
+    public function updateView(int $brand_id) { /* ... */ }
+}
+```
+
+### Components
+
+The bundle exposes its own TwigComponents, prefixed `Bo`. Render them with `component()`:
+
+```twig
+{# Reusable list table #}
+{{ component('BoDataTable', { /* ... */ }) }}
+
+{# Confirmation modal #}
+{{ component('BoConfirmDialog', { /* ... */ }) }}
+```
+
+Discover them by grepping the bundle for `AsTwigComponent` under `src/UiComponents/` (`BoDataTable`, `BoDashboard`, `BoCreateDialog`, `BoConfirmDialog`, `BoPagination`, ...).
+
+### Hooks
+
+Modules extend admin screens through hooks, exposed as Twig functions by `BackOfficeDefaultTwigBundle\Twig\HookExtension`:
+
+```twig
+{{ safe_hook('main.head-css') }}
+
+{% for block in hook_block('home.block', { foo: bar }) %}
+    <h2>{{ block.title }}</h2>
+    {{ block.content|raw }}
+{% endfor %}
+
+{% if has_hook('product.tab') %}{# ... #}{% endif %}
+```
+
+Most hook names are kept identical to the legacy Smarty template; a few renamed hooks are bridged to their legacy name so existing third-party modules keep working unchanged. See [Back-office hooks](../back-office/hooks.md).
+
+:::note Access control
+ACL resources live in `core/lib/Thelia/Core/Security/Resource/AdminResources.php`. Check access with `is_granted('VIEW', 'admin.brand')` in templates, or via the bundle's `AdminAccessChecker` in controllers.
+:::
+
+## Legacy back-office: Smarty (transitional)
+
+:::caution
+This section documents the legacy `default` (Smarty) back-office. It is kept for the transition only and is expected to be dropped in Thelia 3.1. Do not target it for new work — use the `default-twig` bundle conventions above.
+:::
+
+The legacy admin uses Smarty templates with Thelia's loop system for data retrieval.
+
+### Data retrieval with loops
 
 ```smarty
 {* List products in a category *}
@@ -135,16 +261,11 @@ templates/backOffice/default/
 
 ### Hooks
 
-Extend back-office templates without modifying core files:
-
 ```smarty
-{* In a template *}
 {hook name="product.additional-info"}
-
-{* Hook content rendered from modules *}
 ```
 
-### Form Handling
+### Form handling
 
 ```smarty
 {form name="product_modification"}
@@ -157,28 +278,29 @@ Extend back-office templates without modifying core files:
 {/form}
 ```
 
-## When to Use Which
+## When to use which
 
-### Use Twig (Front-Office) When:
+### Front-office (Flexy / Twig)
 
-- Building customer-facing pages
-- Creating reactive UI components
-- Integrating with JavaScript frameworks
-- Building a custom storefront theme
-- Need modern component architecture
+- Customer-facing pages and storefront themes.
+- Reactive UI with LiveComponents and Stimulus.
+- Data fetched through `resources()` / `attr()`.
 
-### Use Smarty (Back-Office) When:
+### Back-office (default-twig / Twig) — recommended
 
-- Extending admin functionality via modules
-- Adding admin hooks
-- Creating admin pages in modules
-- Maintaining compatibility with existing modules
+- New admin screens and admin extensions in modules.
+- Thin controllers with `#[Route]` attributes.
+- Reusable `Bo*` TwigComponents, Bootstrap 5 form theme, Stimulus.
+- Extending admin screens through the bundle's hook functions.
 
-## Comparison Examples
+### Back-office (Smarty) — legacy only
 
-### Displaying a Product List
+- Maintaining existing modules that still render Smarty admin templates.
+- Not recommended for new development; plan migration to the `default-twig` conventions.
 
-**Twig (Front-Office):**
+## Comparison: displaying a product list
+
+**Front-office (Twig):**
 
 ```twig
 {% set products = resources('/api/front/products', {
@@ -190,14 +312,14 @@ Extend back-office templates without modifying core files:
     {% for product in products %}
         <article class="product-card">
             <h2>{{ product.i18ns.title }}</h2>
-            <p class="price">{{ product.price|number_format(2) }} EUR</p>
-            <a href="{{ path('product', { id: product.id }) }}">View</a>
+            <p class="price">{{ product.productSaleElements[0].productPrices[0].price|number_format(2) }} EUR</p>
+            <a href="{{ product.publicUrl }}">View</a>
         </article>
     {% endfor %}
 </div>
 ```
 
-**Smarty (Back-Office):**
+**Legacy back-office (Smarty):**
 
 ```smarty
 {loop name="products" type="product" category=$category_id visible=1}
@@ -209,30 +331,10 @@ Extend back-office templates without modifying core files:
 {/loop}
 ```
 
-### Conditional Display
+## Learn more
 
-**Twig:**
-
-```twig
-{% if customer is not null %}
-    <p>Welcome, {{ customer.firstname }}!</p>
-{% else %}
-    <a href="{{ path('login') }}">Sign In</a>
-{% endif %}
-```
-
-**Smarty:**
-
-```smarty
-{if $customer}
-    <p>Welcome, {$customer.firstname}!</p>
-{else}
-    <a href="{url path="/login"}">Sign In</a>
-{/if}
-```
-
-## Next Steps
-
-- [Front-Office Development](/docs/front-office) - Complete Twig guide
-- [Back-Office Development](/docs/back-office) - Smarty and loops reference
-- [LiveComponents](/docs/front-office/live-components) - Building reactive UIs
+- [Front-office development](../front-office/index.md) — Twig + Flexy guide
+- [Front-office data access](../front-office/data-access.md) — `resources()` / `attr()`
+- [LiveComponents](../front-office/live-components.md) — building reactive UIs
+- [Back-office development](../back-office/index.md) — admin templates and hooks
+- [Modules vs Bundles](./modules-vs-bundles.md) — how themes are packaged

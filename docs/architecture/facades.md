@@ -18,12 +18,31 @@ Facades serve several purposes:
 
 ## Available Facades
 
+These are the four facades you will use most often in a front office:
+
 | Facade | Namespace | Purpose |
 |--------|-----------|---------|
 | `CartFacade` | `Thelia\Domain\Cart` | Cart operations, items, addresses |
 | `CustomerFacade` | `Thelia\Domain\Customer` | Authentication, registration, profile |
-| `OrderFacade` | `Thelia\Domain\Order` | Order management |
+| `OrderFacade` | `Thelia\Domain\Order` | Order creation |
 | `CheckoutFacade` | `Thelia\Domain\Checkout` | Checkout process orchestration |
+
+:::note
+These four are the most common front-office facades, but they are not the only ones. The core ships around sixteen domain facades. The others are organized by domain under `Thelia\Domain\`:
+
+- `AddressFacade` — `Thelia\Domain\Addressing`
+- `ShippingFacade` — `Thelia\Domain\Shipping`
+- `ProductFacade` and `PSEFacade` — `Thelia\Domain\Catalog\Product`
+- `CategoryFacade` — `Thelia\Domain\Catalog\Category`
+- `BrandFacade` — `Thelia\Domain\Catalog\Brand`
+- `CurrencyFacade` — `Thelia\Domain\Catalog\Currency`
+- `TaxFacade` — `Thelia\Domain\Catalog\Tax`
+- `MediaFacade` — `Thelia\Domain\Media`
+- `ContentFacade` — `Thelia\Domain\CMS\Content`
+- `LocalizationFacade` — `Thelia\Domain\Localization`
+
+Some catalog facades are nested deeper than the top-level domain (for example `Thelia\Domain\Catalog\Product`), so always confirm the exact namespace against the class file before importing it.
+:::
 
 ## CartFacade
 
@@ -96,7 +115,8 @@ final readonly class CartController
 | `recalculatePostage(Cart)` | Force shipping recalculation |
 | `reset(bool)` | Reset cart data |
 | `getCartFromSession()` | Get current cart (nullable) |
-| `getOrCreateFromSession()` | Get or create cart |
+| `getOrCreateForCustomer(Customer)` | Get or create a cart for a given customer |
+| `getOrCreateFromSession()` | Get or create cart from the current session |
 | `getDeliveryAddressId()` | Get selected delivery address |
 | `getInvoiceAddressId()` | Get selected invoice address |
 | `getDeliveryModuleId()` | Get selected shipping module |
@@ -150,13 +170,131 @@ final readonly class AccountController
 
 | Method | Description |
 |--------|-------------|
-| `login(CustomerLogin)` | Authenticate with credentials |
-| `logout()` | End customer session |
-| `getCurrentCustomer()` | Get authenticated customer (nullable) |
-| `isLoggedIn()` | Check if customer is authenticated |
-| `register(CustomerRegisterDTO)` | Create new account |
-| `update(CustomerRegisterDTO, Customer)` | Update profile |
-| `sendCode(Customer)` | Resend confirmation email |
+| `login(CustomerLogin): void` | Authenticate with credentials, set the session and remember-me cookie |
+| `logout(): void` | End customer session |
+| `getCurrentCustomer(): ?Customer` | Get authenticated customer (nullable) |
+| `isLoggedIn(): bool` | Check if customer is authenticated |
+| `register(CustomerRegisterDTO): Customer` | Create new account, returns the created customer |
+| `update(CustomerRegisterDTO, Customer): void` | Update an existing customer profile |
+| `sendCode(Customer): void` | Resend an account code email |
+
+:::caution
+`update()` returns `void`, not `Customer`. The updated state is applied in place on the `Customer` model you pass in. Only `register()` returns a `Customer`.
+:::
+
+## CheckoutFacade
+
+Orchestrates the checkout flow: selecting addresses and modules, validating the cart, paying, and cancelling.
+
+**Location:** `core/lib/Thelia/Domain/Checkout/CheckoutFacade.php`
+
+### Usage
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Symfony\Component\HttpFoundation\Response;
+use Thelia\Domain\Checkout\CheckoutFacade;
+use Thelia\Domain\Checkout\DTO\CheckoutDTO;
+use Thelia\Model\Cart;
+
+final readonly class CheckoutController
+{
+    public function __construct(
+        private CheckoutFacade $checkoutFacade,
+    ) {}
+
+    public function placeOrder(Cart $cart): ?Response
+    {
+        $dto = new CheckoutDTO(
+            cart: $cart,
+            deliveryModuleId: 1,
+            deliveryAddressId: 42,
+            invoiceAddressId: 42,
+            paymentModuleId: 2,
+        );
+
+        // Validates the cart, then runs the payment module.
+        return $this->checkoutFacade->pay($dto);
+    }
+}
+```
+
+### Methods
+
+| Method | Description |
+|--------|-------------|
+| `selectDeliveryAddress(CheckoutDTO): void` | Select the delivery address and refresh shipping |
+| `selectInvoiceAddress(CheckoutDTO): void` | Select the invoice address and refresh shipping |
+| `selectDeliveryModule(CheckoutDTO): void` | Select the delivery module and refresh shipping |
+| `selectPaymentModule(CheckoutDTO): void` | Select the payment module and refresh shipping |
+| `validateForOrder(Cart): void` | Check the cart is ready for order placement (items, addresses, payment) |
+| `pay(CheckoutDTO): ?Response` | Validate then run the payment module, returns the payment `Response` if any |
+| `cancelOrder(int): Order` | Cancel an order by its identifier |
+| `resetCheckout(): void` | Reset checkout selections on the cart and clear postage |
+
+:::note
+`CheckoutDTO` is constructed from a `Cart`. Any identifier you leave `null` (delivery module, delivery/invoice address, payment module) is back-filled from the cart's current selection in the constructor. Pass only what you want to override.
+:::
+
+## OrderFacade
+
+Creates an `Order` from a session order and a cart, within a single Propel transaction (stock decrement, taxes, addresses, virtual products).
+
+**Location:** `core/lib/Thelia/Domain/Order/OrderFacade.php`
+
+### Usage
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Thelia\Domain\Order\OrderFacade;
+use Thelia\Core\Security\User\UserInterface;
+use Thelia\Model\Cart;
+use Thelia\Model\Currency;
+use Thelia\Model\Lang;
+use Thelia\Model\Order;
+
+final readonly class PlaceOrderHandler
+{
+    public function __construct(
+        private OrderFacade $orderFacade,
+        private EventDispatcherInterface $dispatcher,
+    ) {}
+
+    public function place(
+        Order $sessionOrder,
+        Currency $currency,
+        Lang $lang,
+        Cart $cart,
+        UserInterface $customer,
+    ): Order {
+        return $this->orderFacade->createOrder(
+            dispatcher: $this->dispatcher,
+            sessionOrder: $sessionOrder,
+            currency: $currency,
+            lang: $lang,
+            cart: $cart,
+            customer: $customer,
+        );
+    }
+}
+```
+
+### Methods
+
+| Method | Description |
+|--------|-------------|
+| `createOrder(EventDispatcherInterface, Order, Currency, Lang, Cart, UserInterface, bool): Order` | Persist a placed order from the session order and cart, in one transaction |
+
+:::note
+`createOrder()` throws `TheliaProcessException` if the customer, currency, language, or cart has no identifier. The optional last argument `bool $useOrderDefinedAddresses = false`: when `true`, the existing `OrderAddress` rows are reused instead of creating new ones from the chosen addresses.
+:::
 
 ## Using Facades in LiveComponents
 
@@ -327,11 +465,27 @@ final readonly class WishlistFacade
 }
 ```
 
-Register in `config.xml`:
+A module facade placed under `src/` needs no XML. As long as your module declares `configureServices()` with `autowire()` and `autoconfigure()`, the class is registered and its dependencies are injected automatically:
 
-```xml
-<service id="MyModule\Domain\WishlistFacade" autowire="true" />
+```php
+// local/modules/MyModule/MyModule.php
+use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
+use Thelia\Module\BaseModule;
+
+final class MyModule extends BaseModule
+{
+    public static function configureServices(ServicesConfigurator $services): void
+    {
+        $services->load(self::getModuleCode().'\\', __DIR__)
+            ->autowire()
+            ->autoconfigure();
+    }
+}
 ```
+
+:::note
+`configureServices()` is mandatory: without it, no class in the module is scanned at all (auto-registration is reverted). Once it is present, you do not declare individual services such as a facade in `config.xml` — that file is optional in Thelia 3 and only needed for things `configureServices()` cannot express (for example `<exports>`, `<imports>`, `<parameters>`, or a `<loop>` alias).
+:::
 
 ## Best Practices
 

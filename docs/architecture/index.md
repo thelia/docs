@@ -13,11 +13,20 @@ Thelia 3 is built on a modern architecture that combines the stability of Symfon
 
 | Layer | Technology | Purpose |
 |-------|------------|---------|
-| Framework | Symfony 6.4+ | HTTP handling, DI, routing, security |
-| ORM | Propel 2 | Database abstraction and queries |
-| API | API Platform 3+ | RESTful API generation |
-| Front-Office | Twig + Symfony UX | Reactive UI components |
-| Back-Office | Smarty | Admin interface templating |
+| Language | PHP 8.3+ | `composer.json` requires `>= 8.3` |
+| Framework | Symfony 7.4 LTS | HTTP handling, DI, routing, security |
+| ORM | Propel ORM (not Doctrine) | Database abstraction and queries |
+| API | API Platform 4.3 (standalone) | RESTful API generation (`api-platform/symfony`) |
+| Front-Office | Twig + Symfony UX (Flexy bundle) | Reactive UI components |
+| Back-Office | Twig (default-twig bundle) | Admin interface templating |
+
+:::note
+Propel is **not** Doctrine: there is no `EntityManager` and no `flush()`. Every `->save()` persists immediately. Respect the strict native Propel types (`string` for decimal columns, `int` for tinyint columns).
+:::
+
+:::caution Back-office: Twig is the reference
+The Twig back-office (`default-twig` bundle) is the reference admin theme. The legacy Smarty `default` back-office still ships, but it is no longer recommended and is expected to be dropped in a later release. Build new admin features on the `default-twig` bundle.
+:::
 
 ### Directory Structure
 
@@ -28,22 +37,27 @@ thelia/
 │       ├── Api/                    # API Platform integration
 │       │   ├── Resource/           # API resources
 │       │   ├── Bridge/Propel/      # Propel state providers
-│       │   └── Service/DataAccess/  # DataAccessService
-│       ├── Domain/                 # Business logic facades
-│       │   ├── Cart/
-│       │   ├── Customer/
-│       │   ├── Order/
-│       │   └── Checkout/
+│       │   └── Service/DataAccess/ # DataAccessService
+│       ├── Domain/                 # Business logic facades (17 folders)
+│       │   ├── Cart/               # e.g. Cart, Customer, Order, Checkout,
+│       │   ├── Customer/           #      Catalog, Promotion, Shipping,
+│       │   ├── Order/              #      Taxation, Media, CMS, Addressing,
+│       │   └── Checkout/           #      Admin, Localization, Marketing,
+│       │                           #      Module, DataTransfer, Shared
 │       ├── Core/                   # Kernel, security, forms
 │       └── Model/                  # Propel models
 ├── templates/
-│   ├── frontOffice/flexy/          # Twig templates
-│   └── backOffice/default/         # Smarty templates
+│   ├── frontOffice/flexy/          # Front-office Twig theme (FlexyBundle)
+│   ├── backOffice/default-twig/    # Back-office Twig theme (reference)
+│   └── backOffice/default/         # Legacy Smarty back-office (deprecated)
 ├── vendor/thelia/
-│   ├── flexy/                      # Flexy theme bundle
 │   └── modules/                    # Official modules
 └── local/modules/                  # Custom modules
 ```
+
+:::note
+The front-office theme is a Symfony bundle: `templates/frontOffice/flexy/` exposes namespace `FlexyBundle` (class `src/FlexyBundle.php`). The back-office reference theme is the bundle in `templates/backOffice/default-twig/` (namespace `BackOfficeDefaultTwigBundle`, class `src/BackOfficeDefaultTwigBundle.php`). Both ship their own controllers, Twig/Live components, Stimulus controllers, form themes and assets inside the bundle.
+:::
 
 ## Architectural Patterns
 
@@ -88,40 +102,51 @@ $cartFacade->addItem($dto);       // Validates, applies rules, persists
 $cartFacade->getCartFromSession(); // Retrieves current cart
 ```
 
-See [Facades](./facades) for detailed documentation.
+See [Facades](./facades.md) for detailed documentation.
 
-### Dual Templating
+### Twig everywhere
 
-Thelia 3 uses two templating engines optimized for different purposes:
+Both the front-office and the back-office reference themes are Twig bundles:
 
-| Front-Office (Twig) | Back-Office (Smarty) |
-|---------------------|----------------------|
-| Modern, reactive UI | Stable, battle-tested |
-| LiveComponents | Template loops |
-| DataAccessService | Direct Propel queries |
-| Stimulus | jQuery |
+| Front-Office (Flexy bundle) | Back-Office (default-twig bundle) |
+|-----------------------------|-----------------------------------|
+| Twig + LiveComponents | Twig + LiveComponents |
+| DataAccessService (`resources()`) | Repositories / Services |
+| Stimulus controllers | Stimulus controllers |
+| Webpack Encore + Tailwind | Webpack Encore + Bootstrap 5 |
 
-See [Dual Templating](./dual-templating) for details.
+:::caution
+The legacy Smarty `default` back-office is still shipped for backward compatibility, but it is deprecated. New back-office work should target the `default-twig` bundle.
+:::
+
+See [Dual Templating](./dual-templating.md) for details.
 
 ### Module System
 
-Modules extend Thelia functionality:
+Modules extend Thelia functionality. A modern Thelia 3 module is almost free of XML: routes are `#[Route]` PHP 8 attributes auto-scanned by `ModuleAttributeLoader`, services are declared in `configureServices()` with `autowire()` + `autoconfigure()`, and hooks and loops are auto-discovered from their base classes. The only XML the core still requires is `Config/module.xml` (metadata, XSD `module-2_2.xsd`) and `Config/schema.xml` when the module creates its own database tables.
 
 ```
 local/modules/MyModule/
 ├── Config/
-│   ├── module.xml          # Module metadata
-│   ├── config.xml          # Services & listeners
-│   └── routing.xml         # Routes
+│   ├── module.xml          # REQUIRED — metadata (XSD module-2_2.xsd)
+│   ├── schema.xml          # REQUIRED only if the module has DB tables
+│   ├── TheliaMain.sql      # Generated SQL (applied by `module:schema:apply`)
+│   └── config.xml          # OPTIONAL — exports/imports/parameters/loop aliases only
+├── Controller/             # #[Route] PHP 8 attributes (no routing.xml)
 ├── Api/
-│   ├── Resource/           # API resources
-│   └── Addon/              # Resource enrichments
-├── LiveComponent/          # Front-office components
-├── Hook/                   # Back-office hooks
-└── templates/
+│   ├── Resource/           # API resources (auto-discovered)
+│   └── Addon/              # Resource enrichments (ResourceAddonInterface)
+├── LiveComponent/          # Front-office components (#[AsLiveComponent])
+├── Hook/                   # Back-office hooks (extends BaseHook, auto-tagged)
+├── templates/
+└── MyModule.php            # extends BaseModule + static configureServices()
 ```
 
-See [Modules vs Bundles](./modules-vs-bundles) for the difference between Thelia modules and Symfony bundles.
+:::note No more service/route/hook XML
+There is no `routing.xml` (routes are PHP attributes), and `config.xml` is optional — it is only needed for exports, imports, parameters or loop aliases. Services, listeners, hooks and loops are registered through `configureServices()` and autoconfiguration. See the modules guide for the full skeleton.
+:::
+
+See [Modules vs Bundles](./modules-vs-bundles.md) for the difference between Thelia modules and Symfony bundles.
 
 ## Data Flow
 
@@ -209,6 +234,6 @@ Internal API calls without HTTP overhead:
 
 ## Next Steps
 
-- [Dual Templating](./dual-templating) - Understand Twig vs Smarty usage
-- [Facades](./facades) - Learn about the domain layer
-- [Modules vs Bundles](./modules-vs-bundles) - Extension architecture
+- [Dual Templating](./dual-templating.md) - Understand Twig vs Smarty usage
+- [Facades](./facades.md) - Learn about the domain layer
+- [Modules vs Bundles](./modules-vs-bundles.md) - Extension architecture
