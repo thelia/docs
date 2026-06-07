@@ -18,8 +18,23 @@ Create a new administrator user
  -    `--locale[=LOCALE]`          Preferred locale (default: en_US)
  -    `--password[=PASSWORD]`      Password
 
+When run without options, the command prompts interactively for each value. Any option you pass on the command line skips the matching prompt. During interactive prompting, the login and email are checked for uniqueness, and the password must be entered twice. Values supplied directly through options bypass these interactive checks.
+
 ## Example
 Create an admin in one line
 ```shell
 php Thelia admin:create --login_name admin --password StRoNgPaSsWoRd --last_name Admin --first_name Shop --email admin@example.com
 ```
+
+:::tip Install-time alternative
+You don't need this command for the first administrator. The installer creates one for you when you pass `--with-admin`:
+
+```shell
+php bin/install --with-demo --with-admin \
+    --admin_login=admin --admin_password=StRoNgPaSsWoRd \
+    --admin_first_name=Shop --admin_last_name=Admin \
+    --admin_email=admin@example.com
+```
+
+Use `admin:create` later to add more administrators. See the [Install Reference](../../getting-started/install-reference.md) for all installer options.
+:::

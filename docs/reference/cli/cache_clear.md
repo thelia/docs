@@ -3,19 +3,17 @@ title: cache:clear
 ---
 
 ## Description
-Clear the cache
+Invalidate all caches
 
 ## Usage
 ```shell
 cache:clear [options]
 ```
 
-## Arguments
-- `module`                    module to activate
-
 ## Options
-- `--no-warmup`            Do not warm up the cache
-- `--no-optional-warmers`  Skip optional cache warmers (faster)
+- `--without-assets`    Do not clear the assets cache in the web space
+- `--with-images`       Clear images generated in `image_cache_dir_from_web_root` or `web/cache/images` directory
+- `--with-documents`    Clear documents generated in `document_cache_dir_from_web_root` or `web/cache/documents` directory
 
 
 ## Example
