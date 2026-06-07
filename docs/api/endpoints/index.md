@@ -18,20 +18,20 @@ Full CRUD operations requiring authentication.
 | Products | `/api/admin/products` | GET, POST, PUT, PATCH, DELETE |
 | Categories | `/api/admin/categories` | GET, POST, PUT, PATCH, DELETE |
 | Customers | `/api/admin/customers` | GET, POST, PUT, PATCH, DELETE |
-| Orders | `/api/admin/orders` | GET, PUT, PATCH |
+| Orders | `/api/admin/orders` | GET, POST, PUT, PATCH, DELETE |
 | Brands | `/api/admin/brands` | GET, POST, PUT, PATCH, DELETE |
-| Tax Rules | `/api/admin/tax_rules` | GET, POST, PUT, DELETE |
-| Features | `/api/admin/features` | GET, POST, PUT, DELETE |
-| Attributes | `/api/admin/attributes` | GET, POST, PUT, DELETE |
+| Tax Rules | `/api/admin/tax_rules` | GET, POST, PUT, PATCH, DELETE |
+| Features | `/api/admin/features` | GET, POST, PUT, PATCH, DELETE |
+| Attributes | `/api/admin/attributes` | GET, POST, PUT, PATCH, DELETE |
 | Contents | `/api/admin/contents` | GET, POST, PUT, PATCH, DELETE |
 | Folders | `/api/admin/folders` | GET, POST, PUT, PATCH, DELETE |
-| Currencies | `/api/admin/currencies` | GET, POST, PUT, DELETE |
-| Countries | `/api/admin/countries` | GET, POST, PUT, DELETE |
-| Modules | `/api/admin/modules` | GET, PUT |
+| Currencies | `/api/admin/currencies` | GET, POST, PUT, PATCH, DELETE |
+| Countries | `/api/admin/countries` | GET, POST, PUT, PATCH, DELETE |
+| Modules | `/api/admin/modules` | GET, POST, PUT, DELETE |
 
 ### Front Endpoints (`/api/front/`)
 
-Read-only public access (some with customer auth).
+Mostly read-only public access. A few operations write data (cart management, account creation, account updates) and several require a customer JWT.
 
 | Resource | Endpoint | Operations |
 |----------|----------|------------|
@@ -39,8 +39,22 @@ Read-only public access (some with customer auth).
 | Categories | `/api/front/categories` | GET (collection, item) |
 | Brands | `/api/front/brands` | GET (collection, item) |
 | Contents | `/api/front/contents` | GET (collection, item) |
-| Cart | `/api/front/carts` | GET, POST, PUT |
+| Feature products | `/api/front/feature_products` | GET (collection, item) |
+| Cart | `/api/front/carts` | POST, GET (item), PUT, DELETE |
+| Current cart | `/api/front/cart` | GET |
+| Customers | `/api/front/customers` | POST |
+| Customer account | `/api/front/account/customers/{id}` | GET, PUT |
+| Orders | `/api/front/account/orders` | GET (collection) |
+| Order detail | `/api/front/account/orders/{id}` | GET |
 | Countries | `/api/front/countries` | GET (collection, item) |
+
+:::note
+The current-cart shortcut `/api/front/cart` returns the cart bound to the current session through a dedicated controller, so you do not need to know its `id`. The collection-style `/api/front/carts/{id}` operations require customer authentication.
+:::
+
+:::caution
+Customer and order personal-data routes (`/api/front/account/customers/{id}`, `/api/front/account/orders`, `/api/front/account/orders/{id}`) require a customer JWT and only expose the authenticated customer's own data. The `POST /api/front/customers` operation is the public account-creation endpoint.
+:::
 
 ## Common Patterns
 
@@ -211,8 +225,14 @@ Error responses use the Hydra format regardless of the `Accept` header you send.
 
 | Format | Accept Header | Description |
 |--------|---------------|-------------|
-| JSON | `application/json` | Default, plain JSON arrays |
-| JSON-LD | `application/ld+json` | With Hydra metadata (pagination info) |
+| JSON-LD | `application/ld+json` | Canonical format, with Hydra metadata (pagination info) |
+| JSON | `application/json` | Plain JSON, when enabled in the API Platform configuration |
+
+<!-- TODO:VERIFY two configs disagree on enabled formats: core/lib/Thelia/Config/Resources/packages/api_platform.php registers json+jsonld+html, but config/packages/api_platform.yaml narrows `formats` to jsonld only. Could not determine the merged result at runtime. JSON-LD is unambiguously the canonical format. -->
+
+:::note
+JSON-LD (`application/ld+json`) is the canonical format Thelia configures for its API and the one used throughout the examples below.
+:::
 
 ## OpenAPI Documentation
 

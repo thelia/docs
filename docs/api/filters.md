@@ -152,6 +152,51 @@ GET /api/front/products?productSaleElements.productPrices.price[lte]=100
 GET /api/front/products?productSaleElements.productPrices.price[gte]=10&productSaleElements.productPrices.price[lte]=100
 ```
 
+### DateFilter
+
+Filter on `TIMESTAMP` / date columns by range. The operators are `before`, `after`, `strictly_before` and `strictly_after` (not `gte`/`lte`).
+
+```php
+// core/lib/Thelia/Api/Resource/Order.php
+#[ApiFilter(
+    filterClass: DateFilter::class,
+    properties: [
+        'createdAt' => DateFilter::INCLUDE_NULL_BEFORE_AND_AFTER,
+        'updatedAt' => DateFilter::INCLUDE_NULL_BEFORE_AND_AFTER,
+    ],
+)]
+```
+
+The value mapped to each property is a *null-handling strategy*:
+
+| Strategy constant | Behavior on `NULL` values |
+|-------------------|---------------------------|
+| `EXCLUDE_NULL` (default) | Rows where the column is `NULL` are excluded |
+| `INCLUDE_NULL_BEFORE` | `NULL` rows kept, ordered ascending |
+| `INCLUDE_NULL_AFTER` | `NULL` rows kept, ordered descending |
+| `INCLUDE_NULL_BEFORE_AND_AFTER` | `NULL` rows always kept |
+
+**Usage:**
+
+```http
+# On or before a date (LESS_EQUAL)
+GET /api/admin/orders?createdAt[before]=2026-01-31
+
+# On or after a date (GREATER_EQUAL)
+GET /api/admin/orders?createdAt[after]=2026-01-01
+
+# Strictly before / after (excludes the boundary)
+GET /api/admin/orders?createdAt[strictly_before]=2026-02-01
+GET /api/admin/orders?createdAt[strictly_after]=2025-12-31
+
+# Between two dates (combine after + before)
+GET /api/admin/orders?createdAt[after]=2026-01-01&createdAt[before]=2026-01-31
+```
+
+:::note
+`before` and `after` are inclusive (`<=` / `>=`). Use `strictly_before` and `strictly_after` for exclusive comparisons (`<` / `>`).
+:::
+
 ### NotInFilter
 
 Exclude specific values.
@@ -194,14 +239,18 @@ Custom Thelia-specific filters (varies by resource).
 
 #### ProductPriceOrderFilter
 
-Sort products by price.
+`Thelia\Api\Bridge\Propel\Filter\CustomFilters\ProductFilter\ProductPriceOrderFilter`
+
+Sort products by untaxed price. The query parameter is `untaxed_price_order`, with `asc` or `desc` as accepted values.
 
 ```http
-GET /api/front/products?order[price]=asc
-GET /api/front/products?order[price]=desc
+GET /api/front/products?untaxed_price_order=asc
+GET /api/front/products?untaxed_price_order=desc
 ```
 
 #### DepthProductFilter
+
+`Thelia\Api\Bridge\Propel\Filter\CustomFilters\ProductFilter\DepthProductFilter`
 
 Filter by category depth.
 
@@ -358,8 +407,11 @@ new GetCollection(
 | BooleanFilter | `Thelia\Api\Bridge\Propel\Filter\BooleanFilter` |
 | OrderFilter | `Thelia\Api\Bridge\Propel\Filter\OrderFilter` |
 | RangeFilter | `Thelia\Api\Bridge\Propel\Filter\RangeFilter` |
+| DateFilter | `Thelia\Api\Bridge\Propel\Filter\DateFilter` |
 | NotInFilter | `Thelia\Api\Bridge\Propel\Filter\NotInFilter` |
 | TheliaFilter | `Thelia\Api\Bridge\Propel\Filter\CustomFilters\TheliaFilter` |
+| ProductPriceOrderFilter | `Thelia\Api\Bridge\Propel\Filter\CustomFilters\ProductFilter\ProductPriceOrderFilter` |
+| DepthProductFilter | `Thelia\Api\Bridge\Propel\Filter\CustomFilters\ProductFilter\DepthProductFilter` |
 
 ## Best Practices
 

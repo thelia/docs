@@ -272,7 +272,7 @@ $description = $product['i18ns']['description'];
 
 ## Accessing All Locales (Raw API)
 
-If you need access to all translations, use the HTTP API directly or call the API with appropriate headers:
+If you need access to all translations, use the HTTP API directly:
 
 ```http
 GET /api/admin/products/1
@@ -297,6 +297,12 @@ Response includes all locales:
     }
 }
 ```
+
+:::important
+This multi-locale shape is what **both** the `/api/admin` and `/api/front` HTTP endpoints return. The front endpoints are **not** flattened either: `i18ns` is always keyed by locale over HTTP.
+
+Flattening to the current locale happens **only** through the `DataAccessService` (the `resources()` Twig function and the PHP service), not on the HTTP API. Source: `ResourceService::formatI18ns()` in `core/lib/Thelia/Api/Service/API/ResourceService.php`.
+:::
 
 ## Propel I18n Table
 

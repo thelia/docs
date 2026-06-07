@@ -342,7 +342,7 @@ No additional configuration is required beyond activating the module.
 
 ## State Providers
 
-Thelia uses custom state providers to bridge API Platform with Propel:
+Thelia uses custom state providers to bridge API Platform with Propel. They all live in the `Thelia\Api\Bridge\Propel\State\` namespace:
 
 | Provider | Purpose |
 |----------|---------|

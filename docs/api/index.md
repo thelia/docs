@@ -62,7 +62,7 @@ class Product extends AbstractTranslatableResource
 }
 ```
 
-See [Resources](./resources) for complete documentation.
+See [Resources](./resources.md) for complete documentation.
 
 ### Addons
 
@@ -82,7 +82,7 @@ class CustomerCustomerFamily implements ResourceAddonInterface
 }
 ```
 
-See [Addons](./addons) for complete documentation.
+See [Addons](./addons.md) for complete documentation.
 
 ### Serialization Groups
 
@@ -95,7 +95,7 @@ Control which fields are visible in different contexts:
 | `front:*:read` | Public front-office |
 | `*:single` | Single item only (not collections) |
 
-See [Serialization Groups](./serialization-groups) for details.
+See [Serialization Groups](./serialization-groups.md) for details.
 
 ### Filters
 
@@ -105,7 +105,7 @@ Filter, sort, and search API collections:
 GET /api/front/products?visible=true&brand.id=5&order[position]=asc
 ```
 
-See [Filters](./filters) for available filters.
+See [Filters](./filters.md) for available filters.
 
 ## Route Namespaces
 
@@ -134,7 +134,7 @@ GET    /api/front/products/{id}      # Get single product
 
 The API uses JWT (JSON Web Token) authentication via `lexik/jwt-authentication-bundle`.
 
-See [Authentication](./authentication) for details on:
+See [Authentication](./authentication.md) for details on:
 - JWT token authentication
 - Login endpoints (`/api/admin/login`, `/api/front/login`)
 - CORS configuration
@@ -161,7 +161,7 @@ $products = $this->dataAccessService->resources('/api/front/products', [
 
 ### Default Format (JSON)
 
-API responses return simple JSON arrays by default:
+API responses return simple JSON arrays by default. Translatable fields are nested under `i18ns`, keyed by locale:
 
 ```json
 [
@@ -170,8 +170,14 @@ API responses return simple JSON arrays by default:
         "ref": "PROD-001",
         "visible": true,
         "i18ns": {
-            "title": "My Product",
-            "description": "Product description..."
+            "en_US": {
+                "title": "My Product",
+                "description": "Product description..."
+            },
+            "fr_FR": {
+                "title": "Mon produit",
+                "description": "Description du produit..."
+            }
         }
     },
     {
@@ -179,12 +185,24 @@ API responses return simple JSON arrays by default:
         "ref": "PROD-002",
         "visible": true,
         "i18ns": {
-            "title": "Another Product",
-            "description": "..."
+            "en_US": {
+                "title": "Another Product",
+                "description": "..."
+            },
+            "fr_FR": {
+                "title": "Un autre produit",
+                "description": "..."
+            }
         }
     }
 ]
 ```
+
+:::note i18ns shape: HTTP vs internal
+Over HTTP, the API **always** returns `i18ns` keyed by locale (`"i18ns": { "en_US": {...}, "fr_FR": {...} }`). The HTTP response is never flattened to a single locale.
+
+The flattened single-locale shape (`"i18ns": { "title": ... }`) only appears when you consume the API **internally** through `DataAccessService::resources()` or the `resources()` Twig function. In that path, `ResourceService::resources()` always finishes by calling `formatI18ns()`, which collapses `i18ns` down to the current locale's sub-array (this happens for both the JSON and `jsonld` formats). The locale used is the one resolved by `LocaleService`; pass an explicit `locale` parameter to change which locale is kept.
+:::
 
 ### JSON-LD Format (with Hydra Metadata)
 
@@ -231,16 +249,18 @@ Use `'jsonld'` format only when you need pagination metadata (total items, page 
 
 ## Available Endpoints
 
+A short summary of the most common resources. The front routes for `Customers` and `Orders` require customer authentication (they only expose the authenticated customer's own data).
+
 | Entity | Admin Route | Front Route |
 |--------|-------------|-------------|
 | Products | `/api/admin/products` | `/api/front/products` |
 | Categories | `/api/admin/categories` | `/api/front/categories` |
-| Customers | `/api/admin/customers` | - |
-| Orders | `/api/admin/orders` | - |
-| Cart | - | `/api/front/carts` |
+| Customers | `/api/admin/customers` | `/api/front/customers` (POST), `/api/front/account/customers/{id}` |
+| Orders | `/api/admin/orders` | `/api/front/account/orders` |
+| Cart | `/api/admin/carts` | `/api/front/carts`, `/api/front/cart` |
 | Brands | `/api/admin/brands` | `/api/front/brands` |
 
-See [Endpoints Reference](./endpoints) for complete API documentation.
+See [Endpoints Reference](./endpoints/index.md) for the complete, authoritative API documentation.
 
 ## Creating Custom Resources
 
@@ -269,12 +289,12 @@ class ProductReview implements PropelResourceInterface
 }
 ```
 
-See [Module API Resources](/docs/modules/api-resources) for module-specific documentation.
+See [Module Structure — API Components](/docs/modules/structure#api-components) for module-specific documentation.
 
 ## Next Steps
 
-- [Authentication](./authentication) - Secure your API access
-- [Resources](./resources) - Create API resources
-- [Addons](./addons) - Extend existing resources
-- [Filters](./filters) - Query and filter data
-- [Endpoints Reference](./endpoints) - Complete API reference
+- [Authentication](./authentication.md) - Secure your API access
+- [Resources](./resources.md) - Create API resources
+- [Addons](./addons.md) - Extend existing resources
+- [Filters](./filters.md) - Query and filter data
+- [Endpoints Reference](./endpoints/index.md) - Complete API reference

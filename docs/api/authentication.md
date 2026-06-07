@@ -7,6 +7,12 @@ sidebar_position: 2
 
 Thelia 3 API uses **JWT (JSON Web Token)** authentication via the `lexik/jwt-authentication-bundle`.
 
+The API layer relies on the standalone API Platform distribution rather than the full metapackage. The relevant packages declared in `core/composer.json` are:
+
+- `api-platform/symfony` `^4.3` (standalone, not `api-platform/api-platform`)
+- `lexik/jwt-authentication-bundle` `^3.0`
+- `nelmio/cors-bundle` `^2.2`
+
 ## Authentication Methods
 
 | Method | Use Case | Routes |
@@ -110,7 +116,13 @@ Configure in `.env`:
 JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem
 JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem
 JWT_PASSPHRASE=your-passphrase
+# Token lifetime in seconds (read by lexik_jwt_authentication.token_ttl)
+JWT_TOKEN_TTL=3600
 ```
+
+:::note
+The bundle configuration (`config/packages/lexik_jwt_authentication.yaml`) maps these variables directly: `secret_key`, `public_key`, `pass_phrase` and `token_ttl: '%env(int:JWT_TOKEN_TTL)%'`. Tokens expire after `JWT_TOKEN_TTL` seconds (default `3600`, i.e. one hour).
+:::
 
 ## CORS Configuration
 
