@@ -226,9 +226,8 @@ Error responses use the Hydra format regardless of the `Accept` header you send.
 | Format | Accept Header | Description |
 |--------|---------------|-------------|
 | JSON-LD | `application/ld+json` | Canonical format, with Hydra metadata (pagination info) |
-| JSON | `application/json` | Plain JSON, when enabled in the API Platform configuration |
-
-<!-- TODO:VERIFY two configs disagree on enabled formats: core/lib/Thelia/Config/Resources/packages/api_platform.php registers json+jsonld+html, but config/packages/api_platform.yaml narrows `formats` to jsonld only. Could not determine the merged result at runtime. JSON-LD is unambiguously the canonical format. -->
+| JSON | `application/json` | Plain JSON, enabled by default |
+| HTML | `text/html` | Serves the interactive OpenAPI documentation |
 
 :::note
 JSON-LD (`application/ld+json`) is the canonical format Thelia configures for its API and the one used throughout the examples below.
