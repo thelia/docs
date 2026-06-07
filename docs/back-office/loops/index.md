@@ -5,8 +5,13 @@ sidebar_position: 1
 
 # Loops
 
-:::info Thelia 3 - Back-Office Only
-In **Thelia 3**, Loops are used exclusively in the **back-office** (Smarty templates). For the **front-office**, use the [DataAccessService](/docs/front-office/data-access) to fetch data via API calls in Twig templates.
+:::caution Loops are a legacy Smarty mechanism
+Loops are a **legacy data-access mechanism** tied to the Smarty templating engine. They are **not** the recommended way to fetch data in Thelia 3:
+
+- The **front-office** (Flexy/Twig theme) reads data through `resources()` / the `DataAccessService`. See [Front-Office Data Access](/docs/front-office/data-access).
+- The new **Twig back-office** (the `default-twig` bundle) fetches data through dedicated **Repositories** (Propel queries) and renders lists with Twig UI components (DataTable). It does **not** use loops.
+
+The loop classes (in `core/lib/Thelia/Core/Template/Loop/`, around 70 of them) are retained mainly for the legacy Smarty `default` back-office theme and for third-party Smarty templates. If you are building a module against the Twig back-office or the Flexy front-office, prefer the modern data paths linked above.
 :::
 
 Loops are Smarty plugins that query the database and iterate over results. They provide a convenient way to fetch and display data in Smarty templates.
@@ -423,3 +428,11 @@ if($timestampable === true) //available if your table is timestampable
 
 - `CREATE_DATE`  Date of creation
 - `UPDATE_DATE`  Date of last update
+
+## Learn more
+
+Loops remain useful for the legacy Smarty back-office and third-party Smarty templates. For new development, prefer the modern data paths:
+
+- [Front-Office Data Access](/docs/front-office/data-access) — fetch data with `resources()` / the `DataAccessService` in Flexy/Twig templates.
+- [Back-Office Bundle structure](/docs/back-office/bundle-structure) — how the `default-twig` back-office bundle uses Repositories and presenters (not loops) to feed its DataTable lists.
+- [Module Structure](/docs/modules/structure) — directory layout for a Thelia 3 module.
