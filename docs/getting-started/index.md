@@ -52,8 +52,8 @@ php -S localhost:8000 -t public
 
 | Guide | Description |
 |-------|-------------|
-| [DDEV Installation](./ddev) | Detailed DDEV setup, commands, and services |
-| [Standard Installation](./installation) | Manual PHP/MySQL setup for production |
-| [Install Reference](./install-reference) | All `bin/install` options and env vars |
-| [Configuration](./configuration) | Environment variables and Symfony config |
-| [First Steps](./first-steps) | Create your first product |
+| [DDEV Installation](./ddev.md) | Detailed DDEV setup, commands, and services |
+| [Standard Installation](./installation.md) | Manual PHP/MySQL setup for production |
+| [Install Reference](./install-reference.md) | All `bin/install` options and env vars |
+| [Configuration](./configuration.md) | Environment variables and Symfony config |
+| [First Steps](./first-steps.md) | Create your first product |
