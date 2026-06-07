@@ -252,6 +252,12 @@ This renders the `checkout-gateway` template to auto-submit the form to the paym
 Process payment directly with API:
 
 ```php
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Thelia\Core\Event\Order\OrderEvent;
+use Thelia\Core\Event\TheliaEvents;
+use Thelia\Log\Tlog;
+use Thelia\Model\OrderStatusQuery;
+
 public function pay(Order $order): ?Response
 {
     try {
@@ -264,25 +270,29 @@ public function pay(Order $order): ?Response
         ]);
 
         if ($result['status'] === 'success') {
-            // Payment successful
-            $this->confirmPayment($this->getDispatcher(), $order->getId());
-            return $this->generateRedirect($this->getPaymentSuccessPageUrl($order->getId()));
+            // Mark the order as paid — the same pattern the core FreeOrder module uses
+            $event = new OrderEvent($order);
+            $event->setStatus(OrderStatusQuery::getPaidStatus()->getId());
+            $this->getDispatcher()->dispatch($event, TheliaEvents::ORDER_UPDATE_STATUS);
+
+            return new RedirectResponse($this->getPaymentSuccessPageUrl($order->getId()));
         }
 
         // Payment failed
-        return $this->generateRedirect($this->getPaymentFailurePageUrl($order->getId(), null));
+        return new RedirectResponse($this->getPaymentFailurePageUrl($order->getId(), null));
 
     } catch (\Exception $e) {
-        $this->getLog()->error('Payment failed: ' . $e->getMessage());
-        return $this->generateRedirect($this->getPaymentFailurePageUrl($order->getId(), null));
+        Tlog::getInstance()->error('Payment failed: ' . $e->getMessage());
+
+        return new RedirectResponse($this->getPaymentFailurePageUrl($order->getId(), null));
     }
 }
 ```
 
-:::caution getLog(), confirmPayment() and cancelPayment() live on the controller
-`getLog()`, `confirmPayment()` and `cancelPayment()` are defined on `BasePaymentModuleController`, not on `AbstractPaymentModule`. The example above assumes the logic runs from your payment controller (which extends `BasePaymentModuleController`). From inside the module's `pay()` method you don't have `getLog()`; delegate the API call and confirmation to a controller, or instantiate your own logger.
+:::caution Module methods vs controller methods
+`AbstractPaymentModule` gives you `generateGatewayFormResponse()`, `getPaymentSuccessPageUrl()`, `getPaymentFailurePageUrl()`, plus `getRequest()` and `getDispatcher()` from `BaseModule` — but **not** `generateRedirect()`, `getLog()`, `confirmPayment()` or `cancelPayment()`. Those live on the controllers (`BaseController`, `BasePaymentModuleController`). Inside `pay()`, return a plain Symfony `RedirectResponse` and dispatch `TheliaEvents::ORDER_UPDATE_STATUS` yourself, as shown above.
 
-`confirmPayment()` and `cancelPayment()` both take `(EventDispatcherInterface $eventDispatcher, int $orderId)` — pass `$this->getDispatcher()` and `$order->getId()` as shown.
+In your callback controller (which extends `BasePaymentModuleController`), prefer the `confirmPayment(EventDispatcherInterface $eventDispatcher, int $orderId)` and `cancelPayment()` helpers instead.
 :::
 
 ### Pattern 3: Hosted Payment Page
@@ -300,7 +310,7 @@ public function pay(Order $order): ?Response
         'cancel_url' => $this->getPaymentFailurePageUrl($order->getId(), null),
     ]);
 
-    return $this->generateRedirect($session['checkout_url']);
+    return new RedirectResponse($session['checkout_url']);
 }
 ```
 
