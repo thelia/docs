@@ -14,7 +14,7 @@ title: Product sale elements document
 | product_sale_elements_id | A single or list of product sale element id                                    |                 | product_sale_elements_id="2", product_sale_elements_id="1,4,7" |
 | product_document_id      | A single or list of product document id                                        |                 | product_document_id="2", product_document_id="1,4,7"           |
 
-Plus the [global arguments](./global_arguments) and [search arguments](./search_arguments)
+Plus the [global arguments](./global_arguments) and [search arguments](./searchArguments.md)
 
 ## Outputs
 

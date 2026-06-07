@@ -43,7 +43,7 @@ Product loop lists products from your shop. You very probably will have to use t
 | with_prev_next_info        | A boolean. If set to true, $HAS_PREVIOUS, $HAS_NEXT, $PREVIOUS, and $NEXT output variables are available.                                                                                                                                                                                                                            | false   | with_prev_next_info="yes"                                                                                                                                                                                                                                     |
 | with_prev_next_visible     | A boolean value.                                                                                                                                                                                                                                                                                                                     |         | with_prev_next_visible="yes"                                                                                                                                                                                                                                  |
 
-Plus the [global arguments](./global_arguments) and [search arguments](./search_arguments)
+Plus the [global arguments](./global_arguments) and [search arguments](./searchArguments.md)
 
 ## Outputs
 
@@ -92,7 +92,7 @@ The product loop has a specific behaviour with the parameter `complex` if set to
 | $VISIBLE             | Return if the product is visible or not                                                                                                                                                          |          ✅                                                      |         ✅                                                |
 | $WEIGHT              | the default product sale elements weight                                                                                                                                                         |          🚫                                                      |         ✅                                                |
 
-Plus the [global outputs](./global_outputs) and [search arguments](./search_arguments)
+Plus the [global outputs](./global_outputs) and [search arguments](./searchArguments.md)
 
 ## Examples
 

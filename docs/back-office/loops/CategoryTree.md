@@ -13,7 +13,7 @@ Category tree loop, to get a category tree from a given category to a given dept
 | depth            | The max depth                                                                                          |         | depth="5"       |
 | exclude          | A single or a list of category ids to exclude for result.                                              |         | exclude="5,72"  |
 | need_count_child | A boolean which indicates whether the number of children in each category should be taken into account |         |                 |
-| order            | A list of values <br/> [Expected values](#category-order-possible-values)                              | position| order="random"  |
+| order            | A list of values <br/> [Expected values](#categorytree-order-possible-values)                              | position| order="random"  |
 | visible          | Whatever we consider hidden category or not.                                                           | true    |                 |
 
 Plus the [global arguments](./global_arguments)
@@ -45,9 +45,9 @@ I want to display a select list with all visible categories.
 </select>
 ```
 
-## Order possible values {#brand-order-possible-values}
+## Order possible values {#categorytree-order-possible-values}
 
-[Arguments](#brand-arguments)
+[Arguments](#arguments)
 
 | Ascending value | Descending value  | Sorted fields                 |
 |-----------------|-------------------|:------------------------------|

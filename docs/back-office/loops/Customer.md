@@ -17,7 +17,7 @@ Customer loop displays customers information.
 | sponsor             | The sponsor ID which you want the list of affiliated customers                                                                                      |          | sponsor="1"                           |
 | with_prev_next_info | A boolean. If set to true, $HAS_PREVIOUS, $HAS_NEXT, $PREVIOUS, and $NEXT output variables are available.                                           |  false   | with_prev_next_info="yes"             |
 
-Plus the [global arguments](./global_arguments) and [search arguments](./search_arguments)
+Plus the [global arguments](./global_arguments) and [search arguments](./searchArguments.md)
 
 ## Outputs
 

@@ -14,7 +14,7 @@ Product sale elements image loop to display images of product's variations.
 | product_sale_elements_id | A single or list of product sale element id                                    |                 | product_sale_elements_id="2", product_sale_elements_id="1,4,7" |
 | product_image_id         | A single or list of product image id                                           |                 | product_image_id="2", product_image_id="1,4,7"                 |
 
-Plus the [global arguments](./global_arguments) and [search arguments](./search_arguments)
+Plus the [global arguments](./global_arguments) and [search arguments](./searchArguments.md)
 
 ## Outputs
 

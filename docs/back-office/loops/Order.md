@@ -22,7 +22,7 @@ Order loop displays orders information.
 | delivery_ref               | A single or a list of delivery references.                                                                                                                                                          |                     | delivery_ref="delivery_ref"            |
 | transaction_ref            | A single or a list of transaction references.                                                                                                                                                       |                     | transaction_ref="transaction_ref"      |
 
-Plus the [global arguments](./global_arguments) and [search arguments](./search_arguments)
+Plus the [global arguments](./global_arguments) and [search arguments](./searchArguments.md)
 
 ## Outputs
 

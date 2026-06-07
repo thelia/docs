@@ -12,7 +12,7 @@ Country area loop lists.
 | area         | A single or a list of area ids.                                                              |         | area="10,9", area: "500"                   |
 | country      | A single or a list of country ids.                                                           |         | country="2", country="1,4,7"               |
 | id           | A single or a list of country ids.                                                           |         | id="2", id="1,4,7"                         |
-| order        | A list of values <br/> [Expected values](#content-order-possible-values)                     | id      |  order="alpha_reverse"                     |
+| order        | A list of values <br/> [Expected values](#country-order-possible-values)                     | id      |  order="alpha_reverse"                     |
 | states       | A boolean value to return countries that have states or not (possible values : yes, no or *) |         |  states="no"                               |
 
 Plus the [global arguments](./global_arguments)

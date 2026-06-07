@@ -20,7 +20,7 @@ Product sale elements loop lists product sale elements from your shop. You may n
 | ref                    | A product reference                                                                                                                  |                 | ref="a_ref"                  |
 | visible                | A boolean value, or * (the default) for ignoring this filter                                                                         |  *              | visible="no"                 |
 
-Plus the [global arguments](./global_arguments) and [search arguments](./search_arguments)
+Plus the [global arguments](./global_arguments) and [search arguments](./searchArguments.md)
 
 ## Outputs
 
