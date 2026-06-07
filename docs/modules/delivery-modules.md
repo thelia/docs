@@ -21,8 +21,9 @@ declare(strict_types=1);
 
 namespace MyCarrier;
 
+use Thelia\Core\Translation\Translator;
 use Thelia\Model\Country;
-use Thelia\Model\State;
+use Thelia\Model\OrderPostage;
 use Thelia\Module\AbstractDeliveryModule;
 use Thelia\Module\Exception\DeliveryException;
 
@@ -70,9 +71,13 @@ final class MyCarrier extends AbstractDeliveryModule
 
         // Calculate based on weight
         $weight = $cart->getWeight();
-        $price = $this->calculatePriceByWeight($weight, $country);
+        $amount = $this->calculatePriceByWeight($weight, $country);
 
-        return $price;
+        // Return a tax-aware OrderPostage instead of a raw float.
+        $postage = new OrderPostage();
+        $postage->setAmount($amount);
+
+        return $postage;
     }
 
     private function getAllowedCountries(): array
@@ -98,10 +103,31 @@ final class MyCarrier extends AbstractDeliveryModule
 
     private function trans(string $message): string
     {
-        return $this->getTranslator()->trans($message, [], self::DOMAIN_NAME);
+        // The default Thelia translation domain is 'core', so always pass
+        // your module domain explicitly.
+        return Translator::getInstance()->trans($message, [], self::DOMAIN_NAME);
     }
 }
 ```
+
+:::caution
+`BaseModule` has no `getTranslator()` and no `getCart()` method. Read the
+current cart with `$this->getRequest()->getSession()->getSessionCart($this->getDispatcher())`,
+and translate with `Thelia\Core\Translation\Translator::getInstance()` (or an
+injected Symfony `TranslatorInterface` if your module already declares services).
+Always pass your module domain (here `self::DOMAIN_NAME`): the default domain
+is `core`.
+:::
+
+:::note
+`getPostage()` may return either a `float` or an `OrderPostage`. Returning an
+`OrderPostage` lets you carry the postage tax separately. The `OrderPostage`
+constructor does not assign its arguments, so set the amount with
+`setAmount()` (and `setAmountTax()` if you compute tax yourself). For
+zone/tax-rule-based carriers, prefer `AbstractDeliveryModuleWithState::buildOrderPostage()`,
+which builds the `OrderPostage` and applies the configured delivery tax rule
+for you.
+:::
 
 ### module.xml
 
@@ -110,7 +136,7 @@ final class MyCarrier extends AbstractDeliveryModule
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://thelia.net/schema/dic/module"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://thelia.net/schema/dic/module http://thelia.net/schema/dic/module/module-2_1.xsd">
+        xsi:schemaLocation="http://thelia.net/schema/dic/module http://thelia.net/schema/dic/module/module-2_2.xsd">
     <fullnamespace>MyCarrier\MyCarrier</fullnamespace>
     <descriptive locale="en_US">
         <title>My Carrier</title>
@@ -121,6 +147,53 @@ final class MyCarrier extends AbstractDeliveryModule
     <thelia>2.5.0</thelia>
     <stability>stable</stability>
 </module>
+```
+
+## The abstract surface
+
+Two base classes are available, depending on how your carrier prices delivery.
+
+### AbstractDeliveryModule
+
+`AbstractDeliveryModule` implements `DeliveryModuleInterface`. You must implement
+three methods:
+
+- `isValidDelivery(Country $country): bool` — whether the method appears in checkout.
+- `getPostage(Country $country): OrderPostage|float` — the delivery price.
+- `handleVirtualProductDelivery(): bool` — return `true` if your carrier handles
+  virtual products (the base class returns `false`).
+
+It also provides two helpers you can use as is:
+
+- `getAreaForCountry(Country $country): ?Area` — the first geographic area matching
+  the country for this module.
+- `getDeliveryMode()` — returns the delivery mode string, defaults to `'delivery'`.
+
+### AbstractDeliveryModuleWithState
+
+For zone/area-based carriers that need state-level (region/province) resolution,
+extend `AbstractDeliveryModuleWithState` instead. It adds:
+
+- `getAreaForCountry(Country $country, ?State $state = null): ?Area` — area resolution
+  that also accounts for the customer state.
+- `buildOrderPostage(float $untaxedPostage, Country $country, $locale, $taxRuleId = null)` —
+  builds an `OrderPostage` from an untaxed amount and applies the delivery tax rule
+  (`taxrule_id_delivery_module` config, or the `$taxRuleId` you pass), filling the
+  taxed amount, tax amount and tax rule title for you.
+
+```php
+// MyCarrier/MyCarrier.php
+public function getPostage(Country $country): OrderPostage|float
+{
+    $cart = $this->getRequest()->getSession()->getSessionCart($this->getDispatcher());
+    $untaxedPostage = $this->calculatePriceByWeight($cart->getWeight(), $country);
+
+    return $this->buildOrderPostage(
+        $untaxedPostage,
+        $country,
+        $this->getRequest()->getSession()->getLang()->getLocale(),
+    );
+}
 ```
 
 ## isValidDelivery()
@@ -136,7 +209,7 @@ public function isValidDelivery(Country $country): bool
     }
 
     // Check cart weight
-    $cart = $this->getCart();
+    $cart = $this->getRequest()->getSession()->getSessionCart($this->getDispatcher());
     if ($cart->getWeight() > 30) {
         return false;
     }
@@ -175,7 +248,7 @@ public function getPostage(Country $country): OrderPostage|float
         );
     }
 
-    $cart = $this->getCart();
+    $cart = $this->getRequest()->getSession()->getSessionCart($this->getDispatcher());
 
     // Price calculation strategies
     return match ($this->getPricingStrategy()) {
@@ -252,7 +325,7 @@ Handle free shipping thresholds:
 ```php
 public function getPostage(Country $country): OrderPostage|float
 {
-    $cart = $this->getCart();
+    $cart = $this->getRequest()->getSession()->getSessionCart($this->getDispatcher());
     $cartTotal = $cart->getTaxedAmount();
 
     // Free shipping threshold
@@ -398,7 +471,7 @@ Use in module:
 ```php
 public function getPostage(Country $country): OrderPostage|float
 {
-    $cart = $this->getCart();
+    $cart = $this->getRequest()->getSession()->getSessionCart($this->getDispatcher());
 
     $rates = $this->carrierApi->getShippingRates([
         'origin' => $this->getStoreAddress(),
@@ -421,9 +494,13 @@ public function getPostage(Country $country): OrderPostage|float
 
 ## Tracking
 
-Create shipments and track orders:
+Create shipments and track orders by listening to order status changes. The
+listener implements `EventSubscriberInterface`, so it is auto-tagged through
+`configureServices()` autoconfiguration — no XML service declaration is needed.
 
 ```php
+// MyCarrier/EventListener/OrderEventListener.php
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\TheliaEvents;
 

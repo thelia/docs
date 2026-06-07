@@ -9,10 +9,18 @@ Controllers handle HTTP requests in your module. Thelia provides two base contro
 
 ## Controller Types
 
-| Type | Base Class | Template Engine | Auto-Security |
+| Type | Base Class | Template engine | Authorization |
 |------|------------|-----------------|---------------|
-| Front | `BaseFrontController` | Twig | No |
-| Admin | `BaseAdminController` | Smarty | Yes (admin required) |
+| Front | `BaseFrontController` | Active front-office template (Flexy / Twig) | Manual — call `checkAuth()` when a page requires a logged-in customer |
+| Admin | `BaseAdminController` | Active back-office template | Manual — call `checkAuth($resources, $modules, $accesses)` per action |
+
+:::note The back-office reference is the default-twig bundle
+Admin controllers render through the **active back-office template**, resolved by `TheliaTemplateHelper` (via `getActiveAdminTemplate()`). The reference back-office template in Thelia 3 is the `default-twig` bundle (Twig). The legacy Smarty `default` back-office theme is no longer recommended and is expected to be dropped in Thelia 3.1, so target Twig templates for new modules.
+:::
+
+:::caution Authorization is not automatic
+Extending `BaseAdminController` does **not** secure your routes by itself. You must call `checkAuth()` at the start of each action that needs protection (see [Authorization Checks](#authorization-checks)).
+:::
 
 ## Front Controllers
 
@@ -126,6 +134,43 @@ public function checkAvailabilityAction(int $productId): JsonResponse
 }
 ```
 
+### Requiring a Logged-In Customer
+
+On the front office, `checkAuth()` takes **no arguments**. It throws a `RedirectException` to the login page when no customer is authenticated:
+
+```php
+// core/lib/Thelia/Controller/Front/BaseFrontController.php
+public function checkAuth(): void
+```
+
+Call it at the start of an action that must only be reachable by a logged-in customer:
+
+```php
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Thelia\Controller\Front\BaseFrontController;
+
+final class AccountController extends BaseFrontController
+{
+    #[Route('/my-account/orders', name: 'myproject.front.account_orders')]
+    public function ordersAction(): Response
+    {
+        // Redirects to the login page if no customer is logged in
+        $this->checkAuth();
+
+        $customer = $this->getSecurityContext()->getCustomerUser();
+
+        return $this->render('account-orders', [
+            'customer' => $customer,
+        ]);
+    }
+}
+```
+
+:::caution Front vs admin signature
+The argument-based form `checkAuth($resources, $modules, $accesses)` exists **only** on `BaseAdminController`. On `BaseFrontController`, `checkAuth()` is argument-less. Do not pass `AccessManager` constants to a front controller's `checkAuth()`.
+:::
+
 ### Redirects
 
 ```php
@@ -134,15 +179,28 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 #[Route('/old-page', name: 'myproject.front.old_page')]
 public function oldPageAction(): RedirectResponse
 {
+    // getRoute() turns a route id into a URL string, generateRedirect() wraps it in a RedirectResponse
     return $this->generateRedirect(
-        $this->getRouteUrl('myproject.front.new_page')
+        $this->getRoute('myproject.front.new_page')
     );
 }
 ```
 
+:::tip Redirect to a route in one call
+`generateRedirectFromRoute()` combines both steps. Pass URL parameters as the second argument:
+
+```php
+return $this->generateRedirectFromRoute(
+    'myproject.front.show',
+    [],            // extra query parameters appended to the URL
+    ['id' => 42],  // route parameters (placeholders)
+);
+```
+:::
+
 ## Admin Controllers
 
-Admin controllers serve back-office pages. All routes are automatically secured - only authenticated administrators can access them.
+Admin controllers serve back-office pages, rendered through the active back-office template (the `default-twig` bundle). They run behind the `/admin` firewall, but fine-grained permission checks are **not** automatic: call `checkAuth()` in each action that modifies data or exposes restricted resources.
 
 ### Basic Admin Controller
 
@@ -313,90 +371,88 @@ $this->getSession()->getFlashBag()->add(
 
 ## Route Configuration
 
-### Using routing.xml
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<routes xmlns="http://symfony.com/schema/routing"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://symfony.com/schema/routing
-        http://symfony.com/schema/routing/routing-1.0.xsd">
-
-    <!-- Front routes -->
-    <route id="myproject.front.index" path="/my-feature">
-        <default key="_controller">MyProject\Controller\Front\PageController::indexAction</default>
-    </route>
-
-    <route id="myproject.front.show" path="/my-feature/{id}">
-        <default key="_controller">MyProject\Controller\Front\PageController::showAction</default>
-        <requirement key="id">\d+</requirement>
-    </route>
-
-    <!-- Admin routes -->
-    <route id="myproject.admin.config" path="/admin/module/MyProject">
-        <default key="_controller">MyProject\Controller\Admin\ConfigController::indexAction</default>
-    </route>
-
-    <route id="myproject.admin.config.save" path="/admin/module/MyProject" methods="POST">
-        <default key="_controller">MyProject\Controller\Admin\ConfigController::saveAction</default>
-    </route>
-</routes>
-```
-
-### Using PHP Attributes
+Declare routes with PHP 8 `#[Route]` attributes directly on your controller methods. Thelia scans every active module's `Controller/` directory at boot through `ModuleAttributeLoader` and registers the routes automatically — there is no XML to write and nothing to import.
 
 ```php
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/my-feature/{id}', name: 'myproject.front.show', requirements: ['id' => '\d+'], methods: ['GET'])]
 public function showAction(int $id): Response
+{
+    // ...
+}
 ```
+
+The `#[Route]` attributes shown throughout this page are picked up the same way — no extra registration step.
+
+:::note Route prefix
+`ModuleAttributeLoader` prepends each module's route prefix to every path it discovers. The prefix comes from the module's `getRoutePrefix()` method (defined on `BaseModule`). Keep this in mind when you generate URLs or read paths in the route table.
+:::
+
+:::caution Legacy `routing.xml`
+Older modules declared routes in `Config/routing.xml`. This still works but is no longer the recommended approach for new code — prefer `#[Route]` attributes, which keep the route next to its action and require no XML maintenance.
+:::
 
 ## Useful Controller Methods
 
-### From BaseFrontController
+The following methods live on `BaseController` and are available to both front and admin controllers.
+
+### Shared (BaseController)
 
 ```php
-// Render a template
+// Render a template ($args, then optional HTTP status)
 $this->render('template-name', ['var' => 'value']);
 
-// Generate URL from route ID
-$url = $this->getRoute('route.name', ['param' => 'value']);
+// Generate a URL string from a route id (ABSOLUTE_URL by default)
+$url = $this->getRoute('myproject.front.show', ['id' => 42]);
 
-// Redirect
+// Build a RedirectResponse from a URL
 $this->generateRedirect($url);
 
-// Access session
+// Build a RedirectResponse directly from a route id
+$this->generateRedirectFromRoute('myproject.front.show', [], ['id' => 42]);
+
+// Access the session
 $session = $this->getSession();
 
-// Get current customer
-$customer = $this->getSecurityContext()->getCustomerUser();
+// Access the security context (current customer or admin)
+$securityContext = $this->getSecurityContext();
 
-// Get request
+// Access the current request
 $request = $this->getRequest();
-```
 
-### From BaseAdminController
-
-```php
-// All BaseFrontController methods, plus:
-
-// Check authorization (note: order is resources, modules, access)
-$this->checkAuth($resources, $modules, $accessType);
-
-// Create a form
-$form = $this->createForm(FormName::getName());
-
-// Validate form
+// Create and validate a Thelia form
+$form = $this->createForm(MyForm::getName());
 $validatedForm = $this->validateForm($form);
 
-// Setup error context for form
-$this->setupFormErrorContext($title, $message, $form);
-
-// Redirect after successful form submission
+// Build a RedirectResponse to the form's success_url (null if none defined)
 $this->generateSuccessRedirect($form);
+```
 
-// Get current admin
+### Front-specific (BaseFrontController)
+
+```php
+// Require a logged-in customer (redirects to login otherwise) — no arguments
+$this->checkAuth();
+
+// Get the current customer
+$customer = $this->getSecurityContext()->getCustomerUser();
+```
+
+### Admin-specific (BaseAdminController)
+
+```php
+// Check authorization (arguments: resources, modules, accesses)
+// Returns a Response (the error page) when not granted, null when allowed
+if (null !== $response = $this->checkAuth($resources, $modules, $accesses)) {
+    return $response;
+}
+
+// Build the form error context (title, message, form)
+$this->setupFormErrorContext($action, $errorMessage, $form);
+
+// Get the current admin
 $admin = $this->getSecurityContext()->getAdminUser();
 ```
 

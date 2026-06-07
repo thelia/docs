@@ -60,7 +60,7 @@ Modules can:
 | **LiveComponents** | Create interactive front-office components |
 | **Controllers** | Handle HTTP requests (front and admin) |
 | **Event Listeners** | React to system events |
-| **Loops** | Query data for back-office templates |
+| **Loops** | `BaseLoop` is the extension point for `{loop}` in Smarty back-office templates; for front-office (Twig) data, prefer API resources |
 | **Hooks** | Inject content into back-office templates |
 | **Forms** | Create validated forms |
 | **Commands** | Add CLI commands |
@@ -73,10 +73,10 @@ local/modules/MyProject/
 ├── MyProject.php              # Main module class (required)
 ├── composer.json              # For distribution
 ├── Config/
-│   ├── module.xml             # Module metadata (required)
-│   ├── config.xml             # Service configuration (required)
-│   ├── routing.xml            # Route definitions
-│   └── schema.xml             # Database schema
+│   ├── module.xml             # Module metadata (required, XSD module-2_2.xsd)
+│   ├── config.xml             # Legacy XML config (stub still required as a file; content optional)
+│   ├── routing.xml            # Legacy routes (optional, prefer #[Route] attributes)
+│   └── schema.xml             # Database schema (only if you define tables)
 ├── Api/
 │   ├── Resource/              # API Platform resources
 │   └── Addon/                 # Resource addons
@@ -92,12 +92,16 @@ local/modules/MyProject/
 ├── Command/                   # Console commands
 ├── Model/                     # Propel models (generated)
 ├── templates/
-│   ├── frontOffice/           # Twig templates
-│   └── backOffice/            # Smarty templates
+│   ├── frontOffice/           # Twig templates (Flexy theme)
+│   └── backOffice/            # Back-office template overrides
 └── I18n/                      # Translations
 ```
 
-See [Module Structure](./structure) for detailed explanations of each component.
+See [Module Structure](./structure.md) for detailed explanations of each component.
+
+:::note Back-office templates
+The reference back-office theme in Thelia 3 is the **default-twig** bundle: a self-contained bundle with its own `#[Route]` controllers, hooks, Twig templates, form themes and assets. The legacy Smarty `default` back-office theme is deprecated and is expected to be dropped in Thelia 3.1. Target the Twig back-office for new module screens.
+:::
 
 ## PHP Best Practices
 
@@ -143,29 +147,49 @@ final class MyProject extends BaseModule
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://thelia.net/schema/dic/module"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://thelia.net/schema/dic/module http://thelia.net/schema/dic/module/module-2_1.xsd">
+        xsi:schemaLocation="http://thelia.net/schema/dic/module http://thelia.net/schema/dic/module/module-2_2.xsd">
     <fullnamespace>MyProject\MyProject</fullnamespace>
     <descriptive locale="en_US">
         <title>My Project</title>
         <description>Custom functionality for my project</description>
     </descriptive>
+    <languages>
+        <language>en_US</language>
+        <language>fr_FR</language>
+    </languages>
     <version>1.0.0</version>
-    <author>
-        <name>Your Name</name>
-    </author>
+    <authors>
+        <author>
+            <name>Your Name</name>
+            <email>you@example.com</email>
+        </author>
+    </authors>
+    <type>classic</type>
     <thelia>2.5.0</thelia>
-    <stability>stable</stability>
+    <stability>prod</stability>
 </module>
 ```
 
-**Config/config.xml**:
+**Config/config.xml** (legacy stub):
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns="http://thelia.net/schema/dic/config"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-config.xsd">
+        xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-1.0.xsd">
 </config>
 ```
+
+:::note Services are not declared in config.xml
+Your services are registered through `configureServices()` (autowire + autoconfigure), not in `config.xml`. The same applies to hooks, loops, forms and commands: they are auto-discovered from their base class or interface. You only need entries in `config.xml` for legacy declarations the core still reads from it: `<exports>`, `<imports>`, `<parameters>`, and loop name aliases that differ from the auto-generated snake_case name.
+:::
+
+:::caution config.xml must still exist as a file
+The core kernel (`TheliaKernel`) loads `Config/config.xml` unconditionally for every activated module, and the module installer (`ModuleValidator`) checks the file exists before activation. A missing `config.xml` raises a `FileLocatorFileNotFoundException` at container compile time in debug mode (in production the error is caught and logged, and the module silently fails to load). Keep the empty stub above even when everything is autowired. `php Thelia module:generate` already creates it for you.
+:::
+
+:::tip routing.xml is legacy
+Declare your routes with `#[Route]` PHP 8 attributes on your controllers. The `ModuleAttributeLoader` auto-scans the module's `Controller/` directory and applies `BaseModule::getRoutePrefix()` to every route. `Config/routing.xml` is only kept for backward compatibility and is not needed for new modules.
+:::
 
 ## Activating a Module
 
@@ -186,11 +210,11 @@ After creating your module:
 ## Next Steps
 
 ### Module Development
-- [Module Structure](./structure) - Detailed file and directory explanations
-- [Module Lifecycle](./lifecycle) - Installation, activation, and updates
-- [Controllers](./controllers) - Handling HTTP requests
-- [Delivery Modules](./delivery-modules) - Shipping integrations
-- [Payment Modules](./payment-modules) - Payment gateway integrations
+- [Module Structure](./structure.md) - Detailed file and directory explanations
+- [Module Lifecycle](./lifecycle.md) - Installation, activation, and updates
+- [Controllers](./controllers.md) - Handling HTTP requests
+- [Delivery Modules](./delivery-modules.md) - Shipping integrations
+- [Payment Modules](./payment-modules.md) - Payment gateway integrations
 
 ### API Development
 - [API Resources](/docs/api/resources) - Creating API endpoints

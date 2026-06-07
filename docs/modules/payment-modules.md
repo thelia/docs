@@ -97,7 +97,7 @@ final class MyPayment extends AbstractPaymentModule
             'amount' => $order->getTotalAmount(),
             'currency' => $order->getCurrency()->getCode(),
             'return_url' => $this->getPaymentSuccessPageUrl($order->getId()),
-            'cancel_url' => $this->getPaymentFailurePageUrl($order->getId()),
+            'cancel_url' => $this->getPaymentFailurePageUrl($order->getId(), null),
             'callback_url' => $this->getCallbackUrl(),
         ];
 
@@ -139,6 +139,26 @@ final class MyPayment extends AbstractPaymentModule
 }
 ```
 
+:::note Framework methods vs. your helpers
+Only `generateGatewayFormResponse()`, `getPaymentSuccessPageUrl()`, `getPaymentFailurePageUrl()` and `manageStockOnCreation()` come from `AbstractPaymentModule`. `pay()` and `isValidPayment()` come from `PaymentModuleInterface`. `getCurrentOrderTotalAmount()`, `getRequest()`, `getDispatcher()` and `getContainer()` come from `BaseModule`.
+
+The methods `getApiKey()`, `getMerchantId()`, `getGatewayUrl()`, `getCallbackUrl()`, `getBaseUrl()` and `refund()` are **your own helpers** in this example — the framework does not provide them. In particular there is no `refund()` in `AbstractPaymentModule` or `PaymentModuleInterface`; implement it yourself if your gateway supports refunds.
+:::
+
+:::caution getPaymentFailurePageUrl() signature
+`getPaymentFailurePageUrl()` requires two arguments: `getPaymentFailurePageUrl(int $order_id, ?string $message)`. Pass `null` for a generic failure message, or a string to display a specific reason on the failure page.
+
+```php
+// AbstractPaymentModule.php
+public function getPaymentSuccessPageUrl(int $order_id): string;
+public function getPaymentFailurePageUrl(int $order_id, ?string $message): string;
+```
+:::
+
+:::tip No routing.xml, no service declaration
+The payment module is auto-wired through `configureServices()` (with autoconfigure enabled). Its controllers' routes are declared with PHP 8 `#[Route]` attributes — you don't need a `routing.xml`.
+:::
+
 ### module.xml
 
 **Config/module.xml**:
@@ -146,7 +166,7 @@ final class MyPayment extends AbstractPaymentModule
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://thelia.net/schema/dic/module"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://thelia.net/schema/dic/module http://thelia.net/schema/dic/module/module-2_1.xsd">
+        xsi:schemaLocation="http://thelia.net/schema/dic/module http://thelia.net/schema/dic/module/module-2_2.xsd">
     <fullnamespace>MyPayment\MyPayment</fullnamespace>
     <descriptive locale="en_US">
         <title>My Payment Gateway</title>
@@ -155,7 +175,7 @@ final class MyPayment extends AbstractPaymentModule
     <version>1.0.0</version>
     <type>payment</type>
     <thelia>2.5.0</thelia>
-    <stability>stable</stability>
+    <stability>prod</stability>
 </module>
 ```
 
@@ -187,7 +207,9 @@ public function isValidPayment(): bool
     }
 
     // Customer requirements
-    $customer = $this->getSecurityContext()->getCustomerUser();
+    // Inside a module, the customer comes from the session (no getSecurityContext()
+    // helper here: that one lives on the controllers, not on BaseModule).
+    $customer = $this->getRequest()->getSession()->getCustomerUser();
     if ($customer && $this->isCustomerBlocked($customer)) {
         return false;
     }
@@ -238,7 +260,7 @@ public function pay(Order $order): ?Response
             'currency' => $order->getCurrency()->getCode(),
             'order_ref' => $order->getRef(),
             'customer_email' => $order->getCustomer()->getEmail(),
-            'card_token' => $this->getRequest()->get('card_token'),
+            'card_token' => $this->getRequest()->request->get('card_token'),
         ]);
 
         if ($result['status'] === 'success') {
@@ -248,14 +270,20 @@ public function pay(Order $order): ?Response
         }
 
         // Payment failed
-        return $this->generateRedirect($this->getPaymentFailurePageUrl($order->getId()));
+        return $this->generateRedirect($this->getPaymentFailurePageUrl($order->getId(), null));
 
     } catch (\Exception $e) {
         $this->getLog()->error('Payment failed: ' . $e->getMessage());
-        return $this->generateRedirect($this->getPaymentFailurePageUrl($order->getId()));
+        return $this->generateRedirect($this->getPaymentFailurePageUrl($order->getId(), null));
     }
 }
 ```
+
+:::caution getLog(), confirmPayment() and cancelPayment() live on the controller
+`getLog()`, `confirmPayment()` and `cancelPayment()` are defined on `BasePaymentModuleController`, not on `AbstractPaymentModule`. The example above assumes the logic runs from your payment controller (which extends `BasePaymentModuleController`). From inside the module's `pay()` method you don't have `getLog()`; delegate the API call and confirmation to a controller, or instantiate your own logger.
+
+`confirmPayment()` and `cancelPayment()` both take `(EventDispatcherInterface $eventDispatcher, int $orderId)` — pass `$this->getDispatcher()` and `$order->getId()` as shown.
+:::
 
 ### Pattern 3: Hosted Payment Page
 
@@ -269,7 +297,7 @@ public function pay(Order $order): ?Response
         'currency' => $order->getCurrency()->getCode(),
         'order_ref' => $order->getRef(),
         'success_url' => $this->getPaymentSuccessPageUrl($order->getId()),
-        'cancel_url' => $this->getPaymentFailurePageUrl($order->getId()),
+        'cancel_url' => $this->getPaymentFailurePageUrl($order->getId(), null),
     ]);
 
     return $this->generateRedirect($session['checkout_url']);
@@ -385,22 +413,24 @@ Handle customer returns from gateway:
 #[Route('/mypayment/return', name: 'mypayment.return')]
 public function returnAction(Request $request): Response
 {
-    $orderId = $request->query->get('order_id');
+    $orderId = (int) $request->query->get('order_id');
     $status = $request->query->get('status');
 
+    // redirectToSuccessPage()/redirectToFailurePage() return void: they throw a
+    // RedirectException that the kernel turns into the actual HTTP redirect.
     if ($status === 'success') {
-        return $this->redirectToSuccessPage($orderId);
+        $this->redirectToSuccessPage($orderId);
     }
 
-    return $this->redirectToFailurePage($orderId);
+    $this->redirectToFailurePage($orderId, null);
 }
 
 #[Route('/mypayment/cancel', name: 'mypayment.cancel')]
 public function cancelAction(Request $request): Response
 {
-    $orderId = $request->query->get('order_id');
+    $orderId = (int) $request->query->get('order_id');
 
-    return $this->redirectToFailurePage($orderId);
+    $this->redirectToFailurePage($orderId, null);
 }
 ```
 
@@ -423,7 +453,7 @@ public function manageStockOnCreation(): bool
 
 ## Refunds
 
-Handle refund requests:
+Refunds are **not** part of the payment module contract. Neither `AbstractPaymentModule` nor `PaymentModuleInterface` declares a `refund()` method. The example below is a helper you write yourself and call from your own back-office action or callback handler.
 
 ```php
 public function refund(Order $order, float $amount): bool

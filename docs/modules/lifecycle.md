@@ -83,8 +83,20 @@ final class MyProject extends BaseModule
         // Update configuration
         // Transform data
     }
+
+    /**
+     * Called when the module is deleted. This is the cleanup hook.
+     */
+    public function destroy(?ConnectionInterface $con = null, $deleteModuleData = false): void
+    {
+        // Drop tables, remove configuration, delete files
+    }
 }
 ```
+
+:::note Every method has a default no-op implementation
+`BaseModule` provides empty bodies for all lifecycle methods, so you only override the ones you need. `preActivation()` and `preDeactivation()` return `true` by default.
+:::
 
 ## Installation
 
@@ -92,22 +104,34 @@ The `install()` method runs once when the module is first installed.
 
 ### Creating Database Tables
 
-```php
-public function install(?ConnectionInterface $con = null): void
-{
-    // Method 1: Execute SQL file
-    $this->executeSqlFile(
-        __DIR__ . '/Config/TheliaMain.sql',
-        $con
-    );
+Thelia ships a `Thelia\Core\Install\Database` helper that runs a `.sql` file against the Propel connection. Generate the file from your `Config/schema.xml` with `php Thelia module:generate:sql MyProject`, then load it.
 
-    // Method 2: Use Propel migrations
-    $database = new \Thelia\Install\Database($con);
-    $database->insertSql(null, [
-        __DIR__ . '/Config/schema.sql',
-    ]);
+The recommended place to load the install SQL is `postActivation()`, guarded by a config flag so it runs only once. Activation runs inside a database transaction: if `postActivation()` throws, the transaction is rolled back and the module is left deactivated — so the next activation attempt re-runs the same code. The guard makes that re-run safe.
+
+```php
+// local/modules/MyProject/MyProject.php
+use Propel\Runtime\Connection\ConnectionInterface;
+use Thelia\Core\Install\Database;
+
+public function postActivation(?ConnectionInterface $con = null): void
+{
+    if (!self::getConfigValue('is_initialized', false)) {
+        (new Database($con))->insertSql(null, [
+            __DIR__ . '/Config/TheliaMain.sql',
+        ]);
+
+        self::setConfigValue('is_initialized', true);
+    }
 }
 ```
+
+:::caution Pass the connection, not the wrapped PDO
+`Database::__construct()` accepts a `ConnectionInterface`, a `\PDO`, or `null` (it pulls the write connection from Propel). Pass `$con` directly — `new Database($con)`. Do not call `$con->getWrappedConnection()` yourself.
+:::
+
+:::caution Use the `Thelia\Core\Install` namespace
+The legacy `Thelia\Install\Database` class was removed. The current class is `Thelia\Core\Install\Database`. There is no `executeSqlFile()` method on `BaseModule`; use `Database::insertSql()` instead.
+:::
 
 ### Setting Default Configuration
 
@@ -181,7 +205,7 @@ private function isModuleActive(string $moduleCode): bool
 
 ### Post-Activation Setup
 
-Use `postActivation()` for initialization that requires the module to be active:
+Use `postActivation()` for initialization that requires the module to be active. Wrap any one-time seeding (install SQL, default data) in the `is_initialized` guard shown in [Creating Database Tables](#creating-database-tables) so it does not re-run on every activation cycle:
 
 ```php
 public function postActivation(?ConnectionInterface $con = null): void
@@ -219,6 +243,15 @@ private function registerHookPositions(): void
 ```
 
 ## Deactivation
+
+:::note New in Thelia 3: deactivation tolerates missing source files
+A module can stay registered in the database after its source files are removed from disk (for example, dropped from `composer.json` while still active). Thelia 3 stays operational in that situation:
+
+- The deactivation handler (`Thelia\Action\Module`) detects that the module class is missing (`class_exists()` on its full namespace fails) and deactivates the row cleanly, without running the lifecycle hooks. It logs a warning saying the module was deactivated without running its lifecycle hooks. Activation, on the other hand, is refused with a `ModuleException` — you cannot activate code that is not on disk.
+- At boot, the schema locator (`Thelia\Core\Propel\Schema\SchemaLocator`) skips the missing module's Propel schema instead of failing, and logs (via `error_log`, since Propel models are not generated yet) a message telling you to run `module:deactivate <Module>` to clean up. The application still boots, so you can run the cleanup.
+
+This is operational robustness, not an API you call — you do not need to handle it in your module code.
+:::
 
 ### Pre-Deactivation Checks
 
@@ -312,7 +345,7 @@ private function migrateToV120(ConnectionInterface $con): void
     $oldValue = ConfigQuery::read('myproject_old_key');
     if ($oldValue !== null) {
         ConfigQuery::write('myproject_new_key', $oldValue);
-        ConfigQuery::delete('myproject_old_key');
+        ConfigQuery::create()->filterByName('myproject_old_key')->delete();
     }
 }
 
@@ -335,31 +368,40 @@ The current version comes from the database, and the new version from `module.xm
 php Thelia module:refresh
 ```
 
-## Uninstallation
+## Uninstallation (destroy)
 
-Modules don't have a built-in uninstall method. Handle cleanup manually:
+When a module is deleted, Thelia calls the `destroy()` method. This is the cleanup hook — use it to drop tables, remove configuration, and delete files the module created.
 
 ```php
-// Create a console command for clean uninstallation
-class UninstallCommand extends Command
+// local/modules/MyProject/MyProject.php
+use Propel\Runtime\ActiveQuery\Criteria;
+use Propel\Runtime\Connection\ConnectionInterface;
+use Thelia\Model\ConfigQuery;
+
+public function destroy(?ConnectionInterface $con = null, $deleteModuleData = false): void
 {
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        // Remove database tables
-        $this->dropTables();
-
-        // Remove configuration
-        ConfigQuery::delete('myproject_%');
-
-        // Remove uploaded files
-        $this->deleteUploadDirectory();
-
-        $output->writeln('Module data cleaned up. You can now remove the module files.');
-
-        return Command::SUCCESS;
+    if (!$deleteModuleData) {
+        return;
     }
+
+    // Drop the module's tables
+    $con?->exec('DROP TABLE IF EXISTS my_project_data');
+
+    // Remove configuration
+    ConfigQuery::create()
+        ->filterByName(['myproject_api_key', 'myproject_enabled'], Criteria::IN)
+        ->delete();
+
+    // Reset the install guard so a future re-install re-seeds the data
+    self::setConfigValue('is_initialized', false);
 }
 ```
+
+The second argument, `$deleteModuleData`, tells you whether the operator asked to drop the module's data. When it is `false`, leave user data untouched and only remove what is safe to recreate.
+
+:::caution `destroy()` runs inside a transaction
+The module deletion handler wraps `destroy()` in a database transaction and removes the module files afterwards. If `destroy()` throws, the whole deletion is rolled back. Keep it idempotent (`DROP TABLE IF EXISTS`, guarded deletes) — a module can be deleted more than once if a previous attempt failed.
+:::
 
 ## CLI Commands
 
@@ -386,6 +428,12 @@ php Thelia module:generate:model MyProject
 
 # Generate SQL from schema
 php Thelia module:generate:sql MyProject
+
+# Run postActivation() for every active module (used after a fresh install)
+php Thelia module:post-activate-all
+
+# Apply a module's Propel schema to the database
+php Thelia module:schema:apply MyProject
 ```
 
 ## Best Practices
