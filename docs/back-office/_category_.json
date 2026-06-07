@@ -6,6 +6,6 @@
     "id": "back-office/index"
   },
   "customProps": {
-    "description": "Admin interface with Smarty templates"
+    "description": "Admin interface built on the Twig default-twig bundle (Symfony UX + Bootstrap 5)"
   }
 }

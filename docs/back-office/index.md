@@ -5,263 +5,332 @@ sidebar_position: 1
 
 # Back-Office Development
 
-The back-office (admin panel) in Thelia uses **Smarty templates** with **Loops** and **Hooks**. This section covers tools and techniques specific to back-office development.
+The Thelia 3 back-office (admin panel) is a **Symfony bundle** named `default-twig`. It renders
+**Twig** templates, fetches data through **Repositories**, displays lists with **Twig
+UiComponents** (a server-rendered DataTable), and stays extensible through **hooks** and **Symfony
+UX** (Stimulus + LiveComponent/TwigComponent).
+
+The bundle lives at `templates/backOffice/default-twig/` and is autonomous: it declares its own
+routes with PHP 8 `#[Route]` attributes, its own hooks, its own templates, forms, and assets.
+
+:::caution The Smarty back-office is legacy
+The previous Smarty `default` back-office theme is **no longer recommended** and will likely be
+**dropped in Thelia 3.1**. New development targets the `default-twig` bundle. The two themes can run
+side by side during the transition, but you should build any new admin screen on the Twig bundle.
+:::
 
 ## Back-Office vs Front-Office
 
-| Aspect | Back-Office | Front-Office |
-|--------|-------------|--------------|
-| Template Engine | **Smarty** | **Twig** |
-| Data Fetching | **Loops** (Propel queries) | **DataAccessService** (API) |
-| Extensibility | **Hooks** (Smarty functions) | **LiveComponents** |
-| Interactivity | JavaScript | **Stimulus** controllers |
+| Aspect | Back-Office (`default-twig`) | Front-Office (Flexy) |
+|--------|------------------------------|----------------------|
+| Template engine | **Twig** | **Twig** |
+| Data access | **Repositories** + **Twig UiComponents** (DataTable) | **DataAccessService** (API) |
+| Extensibility | **Hooks** (`safe_hook`, `hook_block`, `has_hook` Twig functions) + `#[AsHook]` | **Hooks** + Twig overrides |
+| Interactivity | **Stimulus** + **Symfony UX** (LiveComponent / TwigComponent) | **Stimulus** + **Symfony UX** |
 
-## Technology Stack
+## Activating the Twig back-office
 
-### Smarty Templates
+The `default-twig` bundle is the back-office reference. Activate it at install time, or switch an
+existing installation to it.
 
-The back-office uses Smarty as its template engine, located in:
+```bash
+# fresh install — select the default-twig back-office theme
+ddev exec php bin/install \
+  --frontoffice_theme=flexy --backoffice_theme=default-twig \
+  --pdf_theme=default --email_theme=default \
+  --with-demo --with-admin \
+  --admin_login=thelia --admin_password=thelia \
+  --admin_first_name=thelia --admin_last_name=thelia \
+  --admin_email=thelia@example.com
 
+# already installed — switch the active back-office template
+ddev exec bin/console template:set backOffice default-twig
+ddev exec bin/console cache:warmup -e dev
+
+# build the bundle assets (SCSS + JS)
+ddev exec bash -c "cd templates/backOffice/default-twig && npm install && npm run build"
 ```
-templates/backOffice/default/
-├── home.html
-├── category-edit.html
-├── product-edit.html
-├── order-edit.html
-└── ...
-```
 
-### Loops
+The admin is then available at `https://<your-site>.ddev.site/admin`.
 
-:::caution Deprecation Notice
-`BaseLoop` is deprecated in Thelia 3. New code should prefer the API resources. Loops remain available for backward compatibility with existing back-office templates.
+:::tip Watch assets during development
+While editing SCSS or Stimulus controllers, run `npm run watch` from
+`templates/backOffice/default-twig/` so the bundle assets rebuild automatically. After editing a
+Twig template, clear the cache with `ddev exec bin/console cache:clear -e dev`.
 :::
 
-Loops are Smarty plugins that query the database and iterate over results. They are still used in the current back-office templates.
+## Bundle structure
 
-```smarty
-{loop type="product" name="products" category="3" visible="1"}
-    <tr>
-        <td>{$ID}</td>
-        <td>{$TITLE}</td>
-        <td>{$PRICE} {$CURRENCY}</td>
-    </tr>
-{/loop}
+The back-office is a regular Symfony bundle. Templates live at the bundle root (so the Thelia
+parser resolver picks them up as `templates/backOffice/default-twig/<name>.html.twig`), and the PHP
+lives under `src/`:
+
+```
+templates/backOffice/default-twig/
+├── base.html.twig             # base layout
+├── auth-layout.html.twig      # login screen
+├── home.html.twig             # dashboard
+├── <domain>/                  # one folder per business domain (catalog, customer, order, ...)
+│   ├── list.html.twig
+│   ├── edit.html.twig
+│   ├── _create_modal.html.twig
+│   └── _delete_modal.html.twig
+├── components/                # reusable Twig component templates (DataTable, Dashboard, ...)
+├── form/
+│   └── bo_form_theme.html.twig    # Bootstrap 5 form theme, scoped to /admin
+├── config/
+│   └── packages/twig.yaml         # registers the form theme namespace + form_themes
+├── assets/                    # SCSS + JS + img + flags
+│   ├── app.js
+│   ├── controllers/           # Stimulus controllers
+│   └── styles/
+└── src/
+    ├── BackOfficeDefaultTwigBundle.php
+    ├── Controller/            # one folder per domain (Catalog, Customer, Order, ...)
+    ├── DTO/                   # immutable data transfer objects
+    ├── EventListener/         # AdminContextRequestListener, AdminLocaleListener
+    ├── Form/                  # Symfony form types (CustomerType, AddressType, ...)
+    ├── Hook/Attribute/        # the #[AsHook] attribute
+    ├── Repository/            # Propel queries
+    ├── Security/              # AdminVoter
+    ├── Service/               # back-office services (AdminFormAction, ...)
+    ├── Twig/                  # Twig extensions (HookExtension, DataTableExtension, ...)
+    └── UiComponents/          # AsTwigComponent / AsLiveComponent
 ```
 
-See the [Loops Reference](/docs/back-office/loops) for all available loops.
-
-### Hooks
-
-Hooks allow modules to inject content at specific points in back-office templates:
-
-```smarty
-{hook name="product.additional-info" product="{$ID}"}
-```
-
-See the [Hooks Reference](/docs/back-office/hooks) for all available hooks.
-
-### Smarty Plugins
-
-Custom Smarty functions for common operations:
-
-```smarty
-{* URL generation *}
-<a href="{url path="/admin/products"}">Products</a>
-
-{* Internationalization *}
-<h1>{intl l="Product Management"}</h1>
-
-{* Configuration values *}
-{config key="store_name"}
-```
-
-See [Smarty Plugins](/docs/back-office/smarty-plugins) for the complete reference.
-
-## Module Back-Office Integration
-
-### Adding Admin Pages
-
-Modules can add their own admin pages:
+The bundle is registered as a standard Symfony bundle and only loads its services when it is the
+active back-office template. Services are autodiscovered and autoconfigured — no service XML to
+write:
 
 ```php
+// templates/backOffice/default-twig/src/BackOfficeDefaultTwigBundle.php
+$container->services()
+    ->load('BackOfficeDefaultTwigBundle\\', $resourcePath)
+    ->exclude([
+        $resourcePath.'/BackOfficeDefaultTwigBundle.php',
+        $resourcePath.'/DTO/',
+        $resourcePath.'/Hook/Attribute/',
+        $resourcePath.'/DependencyInjection/',
+    ])
+    ->autowire()
+    ->autoconfigure();
+```
+
+## Adding an admin page from a module
+
+A module adds an admin page with a thin controller and a PHP 8 `#[Route]` attribute. The controller
+renders a Twig template; it never persists data itself (Thelia is event-driven —
+`Controller → dispatch(Event) → Action listener → Model::save()`).
+
+```php
+// local/modules/MyModule/src/Controller/ConfigController.php
+namespace MyModule\Controller;
+
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Twig\Environment;
 
-#[Route('/admin/module/MyModule', name: 'mymodule.admin.config')]
-public function configAction(): Response
+final class ConfigController
 {
-    return $this->render('module-config');
+    public function __construct(private readonly Environment $twig)
+    {
+    }
+
+    #[Route('/admin/module/MyModule', name: 'mymodule.admin.config')]
+    public function config(): Response
+    {
+        return new Response($this->twig->render('@MyModule/config.html.twig'));
+    }
 }
 ```
 
-### Adding to Admin Menu
+:::note No `@Route` annotations
+Symfony 7 removed Doctrine annotations. Always use the PHP 8 attribute
+`Symfony\Component\Routing\Attribute\Route`, never `@Route`.
+:::
 
-Use hooks to add entries to the admin menu:
+## Back-office forms
+
+Build admin forms with Symfony's form component and let the bundle's `bo_form_theme.html.twig`
+render them with Bootstrap 5 markup. The theme is registered globally and scopes itself to the
+`/admin` path, so any form rendered under `/admin` gets the back-office styling automatically.
 
 ```php
-public static function getSubscribedHooks(): array
-{
-    return [
-        'main.top-menu-tools' => [
-            ['type' => 'back', 'method' => 'onMainTopMenuTools']
-        ],
-    ];
-}
-
-public function onMainTopMenuTools(HookRenderBlockEvent $event): void
-{
-    $event->add([
-        'id' => 'mymodule-menu',
-        'title' => $this->trans('My Module'),
-        'url' => URL::getInstance()->absoluteUrl('/admin/module/MyModule'),
-    ]);
-}
-```
-
-### Extending Existing Pages
-
-Add content to existing admin pages via hooks:
-
-```php
-public static function getSubscribedHooks(): array
-{
-    return [
-        'product.edit-js' => [
-            ['type' => 'back', 'method' => 'onProductEditJs']
-        ],
-    ];
-}
-
-public function onProductEditJs(HookRenderEvent $event): void
-{
-    $productId = $event->getArgument('product_id');
-    $event->add($this->render('product-edit-js.html', [
-        'product_id' => $productId
-    ]));
-}
-```
-
-## Directory Structure
-
-### Default Back-Office Theme
-
-```
-templates/backOffice/default/
-├── home.html                 # Dashboard
-├── category-edit.html        # Category editor
-├── product-edit.html         # Product editor
-├── order-edit.html           # Order details
-├── customer-edit.html        # Customer details
-├── modules.html              # Module management
-├── configuration.html        # Configuration pages
-├── assets/
-│   ├── css/
-│   └── js/
-├── includes/
-│   ├── main-menu.html
-│   └── notifications.html
-└── forms/
-    └── standard/
-```
-
-### Module Back-Office Templates
-
-```
-local/modules/MyModule/
-├── templates/
-│   └── backOffice/
-│       └── default/
-│           ├── module-config.html
-│           └── includes/
-│               └── my-component.html
-```
-
-## Back-Office Forms
-
-Use Thelia's form system for admin forms:
-
-```php
-<?php
+// local/modules/MyModule/src/Form/ConfigType.php
 namespace MyModule\Form;
 
-use Thelia\Form\BaseForm;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
 
-class ConfigForm extends BaseForm
+final class ConfigType extends AbstractType
 {
-    protected function buildForm(): void
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $this->formBuilder
-            ->add('api_key', 'text', [
-                'label' => 'API Key',
+        $builder
+            ->add('apiKey', TextType::class, [
+                'label' => 'API key',
                 'required' => true,
             ])
-            ->add('enabled', 'checkbox', [
-                'label' => 'Enable Module',
+            ->add('enabled', CheckboxType::class, [
+                'label' => 'Enable module',
+                'required' => false,
             ]);
-    }
-
-    public static function getName(): string
-    {
-        return 'mymodule_config';
     }
 }
 ```
 
-Render in template:
+Render the form in a Twig template with the standard Symfony form helpers:
 
-```smarty
-<form method="post" action="{url path="/admin/module/MyModule/save"}">
-    {form name="mymodule_config"}
-        {form_field field="api_key"}
-            <div class="form-group">
-                <label>{$label}</label>
-                <input type="text" name="{$name}" value="{$value}" class="form-control" />
-                {if $error}<span class="error">{$message}</span>{/if}
-            </div>
-        {/form_field}
-
-        {form_field field="enabled"}
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" name="{$name}" {if $value}checked{/if} />
-                    {$label}
-                </label>
-            </div>
-        {/form_field}
-
-        <button type="submit" class="btn btn-primary">
-            {intl l="Save"}
-        </button>
-    {/form}
-</form>
+```twig
+{# local/modules/MyModule/templates/config.html.twig #}
+{{ form_start(form, { action: path('mymodule.admin.config.save'), method: 'post' }) }}
+    {{ form_row(form.apiKey) }}
+    {{ form_row(form.enabled) }}
+    <button type="submit" class="btn btn-primary">{{ 'Save'|trans }}</button>
+{{ form_end(form) }}
 ```
+
+The form theme is wired in the bundle's Twig configuration:
+
+```yaml
+# templates/backOffice/default-twig/config/packages/twig.yaml
+twig:
+  paths:
+    "%kernel.project_dir%/templates/backOffice/default-twig/form": BackOfficeDefaultTwigForm
+  form_themes:
+    - "@BackOfficeDefaultTwigForm/bo_form_theme.html.twig"
+```
+
+## Extending the back-office with hooks
+
+Hooks are the extension points modules use to inject content into back-office screens. In templates,
+the bundle exposes Twig functions through `BackOfficeDefaultTwigBundle\Twig\HookExtension`:
+
+```twig
+{# render a hook's HTML output (tolerant: swallows a failing listener) #}
+{{ safe_hook('state.edit-js', { state_id: state.id }) }}
+
+{# iterate over the fragments contributed by a block hook #}
+{% if has_hook('product.tab') %}
+    <ul>
+        {% for block in hook_block('product.tab', { product_id: product.id }) %}
+            <li><a href="{{ block.href }}">{{ block.title }}</a></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+```
+
+On the module side, a hook listener extends `Thelia\Core\Hook\BaseHook` and declares which hooks it
+listens to with `getSubscribedHooks()`:
+
+```php
+// local/modules/MyModule/src/Hook/AdminHook.php
+namespace MyModule\Hook;
+
+use Thelia\Core\Event\Hook\HookRenderBlockEvent;
+use Thelia\Core\Event\Hook\HookRenderEvent;
+use Thelia\Core\Hook\BaseHook;
+use Thelia\Tools\URL;
+
+final class AdminHook extends BaseHook
+{
+    public static function getSubscribedHooks(): array
+    {
+        return [
+            'main.top-menu-tools' => [
+                ['type' => 'back', 'method' => 'onMainTopMenuTools'],
+            ],
+            'product.tab' => [
+                ['type' => 'back', 'method' => 'onProductTab'],
+            ],
+        ];
+    }
+
+    public function onMainTopMenuTools(HookRenderBlockEvent $event): void
+    {
+        $event->add([
+            'id' => 'mymodule-menu',
+            'title' => $this->trans('My Module'),
+            'href' => URL::getInstance()->absoluteUrl('/admin/module/MyModule'),
+        ]);
+    }
+
+    public function onProductTab(HookRenderEvent $event): void
+    {
+        $productId = $event->getArgument('product_id');
+
+        $event->add($this->render('product-tab.html', ['product_id' => $productId]));
+    }
+}
+```
+
+:::tip Attribute alternative — `#[AsHook]`
+The Twig back-office also ships a PHP 8 attribute,
+`BackOfficeDefaultTwigBundle\Hook\Attribute\AsHook`, registered for autoconfiguration by the bundle.
+You can annotate a listener method instead of returning a `getSubscribedHooks()` array:
+
+```php
+use BackOfficeDefaultTwigBundle\Hook\Attribute\AsHook;
+use Thelia\Core\Event\Hook\HookRenderEvent;
+
+#[AsHook(event: 'product.tab', type: 'back')]
+public function onProductTab(HookRenderEvent $event): void
+{
+    // ...
+}
+```
+
+The attribute takes `event` (the hook code), an optional `type` (defaults to `back`), and an
+optional `priority`.
+:::
+
+See the [Hooks Reference](./hooks.md) for the full list of back-office hooks and the conventional
+extension points every screen emits.
+
+## Interactivity: Stimulus and Symfony UX
+
+The back-office uses [Symfony UX](https://symfony.com/bundles/ux-stimulus/current/index.html):
+
+- **Stimulus controllers** live in `assets/controllers/` and wire behavior to markup with
+  `data-controller` / `data-action` attributes.
+- **TwigComponent** and **LiveComponent** classes live in `src/UiComponents/` (annotated with
+  `#[AsTwigComponent]` / `#[AsLiveComponent]`). The list screens render through a server-side
+  `DataTable` component.
+
+There is no bespoke jQuery layer to learn — the same UX stack powers both the front-office Flexy
+theme and the back-office bundle.
 
 ## Best Practices
 
 ### Do
 
-- Use **Loops** for data fetching in back-office templates
-- Use **Hooks** to extend existing admin pages
-- Follow the existing admin UI patterns and CSS classes
-- Use `{intl}` for all user-facing strings
-- Validate forms server-side
+- Build new admin screens on the **`default-twig` bundle**, not the Smarty theme.
+- Keep controllers **thin**: dispatch an event and let an `Action` listener persist.
+- Fetch data through **Repositories** and present lists with the **DataTable** UiComponent.
+- Use **hooks** (`safe_hook` / `hook_block`) to extend existing screens instead of editing core
+  templates.
+- Render forms with the **`bo_form_theme`** so they match the rest of the admin.
+- Translate every user-facing string with `|trans`.
 
 ### Don't
 
-- Don't modify core back-office templates directly
-- Don't use API calls for simple data fetching in back-office (use Loops)
-- Don't hardcode URLs (use `{url}` plugin)
-- Don't skip form CSRF tokens
+- Don't edit core back-office templates directly — extend through hooks.
+- Don't use `@Route` annotations — use the PHP 8 `#[Route]` attribute.
+- Don't call `save()` from a controller — dispatch an event (Thelia is event-driven).
+- Don't hardcode URLs — use `path()` / `url()`.
+- Don't skip the CSRF token on form submissions.
 
 ## Reference Documentation
 
-- [Loops Reference](./loops/) - All available loops
-- [Hooks Reference](./hooks) - All back-office hooks
-- [Smarty Plugins](./smarty-plugins/) - Built-in Smarty functions
-- [Forms](/docs/reference/forms) - Form handling
+- [Hooks Reference](./hooks.md) — all back-office hooks and conventional extension points
+- [Forms](/docs/reference/forms) — Thelia form handling
+- [Internationalization](/docs/reference/internationalization) — translating admin strings
+- [Module Development](/docs/modules) — creating modules
 
 ## Next Steps
 
-- [Loops](./loops/) - Learn about data fetching with Loops
-- [Hooks](./hooks) - Extend the admin interface
-- [Module Development](/docs/modules) - Create back-office modules
+- [Hooks](./hooks.md) — extend the admin interface through hooks
+- [Modules — Controllers](/docs/modules/controllers) — add admin pages from a module
+- [Front-office LiveComponents](/docs/front-office/live-components) — the Symfony UX patterns reused by the back-office
