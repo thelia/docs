@@ -1,6 +1,6 @@
 ---
 title: Internationalization
-sidebar_position: 13
+sidebar_position: 3
 ---
 
 ## In templates

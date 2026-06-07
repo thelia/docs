@@ -1,6 +1,6 @@
 ---
 title: Migrating from Thelia 2
-sidebar_position: 10
+sidebar_position: 1
 ---
 
 # Migrating from Thelia 2

@@ -41,3 +41,12 @@ See [CLI Reference](./cli/index.md) for all available commands.
 | [Forms](./forms.md) | Form creation and validation |
 | [Internationalization](./internationalization.md) | Multi-language support |
 | [CLI Commands](./cli/index.md) | Console commands |
+
+## Legacy References
+
+These sections document the Smarty data layer kept for the transitional legacy back-office. Prefer [API resources](/docs/api/index.md) in new code.
+
+| Topic | Description |
+|-------|-------------|
+| [Loops](./loops/index.md) | Smarty loop reference (legacy data layer) |
+| [Smarty Plugins](./smarty-plugins/index.md) | Smarty plugins for the legacy back-office theme |

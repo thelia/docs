@@ -6,6 +6,6 @@
     "id": "reference/index"
   },
   "customProps": {
-    "description": "Events, forms, i18n, CLI commands"
+    "description": "Events, forms, i18n, CLI commands, legacy loop and Smarty references"
   }
 }

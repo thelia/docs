@@ -1,6 +1,6 @@
 ---
 title: Events
-sidebar_position: 9
+sidebar_position: 1
 ---
 
 Thelia dispatch a lot of events during various workflows : account creation, order process, ...    
