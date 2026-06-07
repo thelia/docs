@@ -5,107 +5,116 @@ sidebar_position: 1
 
 # Flexy Theme
 
-**Flexy** is the default front-office theme for Thelia 3. It's built as a Symfony Bundle and showcases modern development practices with Twig, LiveComponents, and Stimulus.
+**Flexy** is the default front-office theme for Thelia 3. It is a Symfony bundle (`FlexyBundle`) that ships its PHP classes, Twig templates, components, form theme and front-end assets together. It showcases the modern Thelia stack: Twig, Symfony UX (Live/Twig Components, Stimulus) and Webpack Encore.
 
 ## Overview
 
 Flexy provides:
-- **Modern UI** with Tailwind CSS
-- **47 components** (23 LiveComponents + 24 TwigComponents)
-- **Responsive design** out of the box
+
+- **Modern UI** styled with Tailwind CSS
+- **Around 50 components** (25 LiveComponents + 24 TwigComponents), all auto-discovered from `src/UiComponents/`
 - **Complete e-commerce flow** (catalog, cart, checkout, account)
-- **SEO optimizations** built-in
+- **Server-rendered reactivity** through Symfony UX LiveComponents and Stimulus
 
 ## Theme Structure
 
-```
-vendor/thelia/flexy/
-├── src/
-│   ├── FlexyBundle.php
-│   ├── UiComponents/          # LiveComponents PHP classes
-│   │   ├── Pages/
-│   │   │   └── Product/
-│   │   ├── Checkout/
-│   │   ├── CategoryFilters/
-│   │   └── ...
-│   ├── Service/
-│   ├── DTO/
-│   └── Twig/
-│       └── DataAccessExtension.php
-└── assets/
-    └── controllers/           # Stimulus controllers
+The whole theme is a single Composer package of type `thelia-frontoffice-template`, installed as a path repository. Everything — PHP and templates — lives under `templates/frontOffice/flexy/`:
 
-templates/frontOffice/flexy/
-├── base.html.twig             # Base layout
-├── index.html.twig            # Homepage
-├── category.html.twig         # Category listing
-├── product.html.twig          # Product detail
-├── checkout-*.html.twig       # Checkout steps
-├── account*.html.twig         # Customer account
-├── login.html.twig            # Login page
-├── components/                # Twig components
-│   ├── Layout/
-│   │   ├── Header/
-│   │   └── Footer/
-│   ├── Molecules/
-│   │   ├── ProductCard/
-│   │   ├── Breadcrumb/
-│   │   └── ...
-│   └── Organisms/
-│       └── CategoryCard/
-├── src/
-│   └── UiComponents/          # LiveComponent templates
-│       ├── Pages/Product/
-│       ├── CategoryFilters/
-│       └── ...
-├── form/
-│   └── flexy_form_theme.html.twig
-└── assets/
-    ├── css/
-    └── js/
 ```
+templates/frontOffice/flexy/
+├── composer.json              # type: thelia-frontoffice-template, autoload FlexyBundle\ → src/
+├── src/                       # PHP classes (PSR-4: FlexyBundle\)
+│   ├── FlexyBundle.php        # the bundle entry point
+│   ├── Controller/
+│   ├── DTO/
+│   ├── Event/
+│   ├── EventListener/
+│   ├── Form/
+│   ├── Service/
+│   ├── Twig/
+│   └── UiComponents/          # Live & Twig Components (PHP + colocated .html.twig)
+│       ├── Pages/Product/
+│       ├── Checkout/
+│       ├── CategoryFilters/
+│       ├── CrossSelling/
+│       └── ...
+├── base.html.twig             # base layout
+├── index.html.twig            # homepage
+├── category.html.twig         # category listing
+├── product.html.twig          # product detail
+├── checkout-*.html.twig       # checkout steps
+├── account*.html.twig         # customer account
+├── login.html.twig            # login page
+├── components/                # anonymous Twig components (Atoms / Molecules / Organisms / Layout)
+├── form/                      # form theme + custom field templates
+│   └── flexy_form_theme.html.twig
+├── config/packages/           # bundle config (twig, twig_component, encore, …)
+├── assets/                    # JS, CSS, images, Stimulus controllers
+└── webpack.config.js          # Webpack Encore build
+```
+
+:::note
+There is no `vendor/thelia/flexy/src/` versus `templates/frontOffice/flexy/` split. The bundle is one directory. The `FlexyBundle\` namespace maps to `src/`, declared in the theme's own `composer.json`.
+:::
+
+### How the bundle wires itself
+
+`FlexyBundle` extends Symfony's `AbstractBundle`. It loads its services with autowiring and autoconfiguration, and imports its own configuration:
+
+```php
+// templates/frontOffice/flexy/src/FlexyBundle.php
+public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
+{
+    $serviceConfigurator = $container->services();
+
+    $serviceConfigurator->load('FlexyBundle\\', $this->getResourcePath())
+        ->autowire()
+        ->autoconfigure();
+
+    $serviceConfigurator->load('FlexyBundle\\UiComponents\\', $this->getUiComponentsPath())
+        ->autowire()
+        ->autoconfigure();
+}
+
+public function prependExtension(ContainerConfigurator $container, ContainerBuilder $builder): void
+{
+    $container->import('../config/packages/*.yaml');
+}
+```
+
+No XML. Services, components, Twig paths and the form theme are all declared through PHP attributes and the bundle's `config/packages/*.yaml`.
 
 ## Key Pages
 
 ### Homepage (`index.html.twig`)
 
 ```twig
+{# templates/frontOffice/flexy/index.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    {# Hero section #}
-    {{ include('@components/Layout/Hero/Hero.html.twig') }}
+    {{ component('Flexy:CrossSelling', {categoryId: 1, title: 'Last seen products'|trans}) }}
 
-    {# Featured categories #}
-    <section class="container">
-        {% set categories = resources('/api/front/categories', {
-            'parent': 0,
-            'visible': true,
-            'itemsPerPage': 6
-        }) %}
+    <div class="bg-theme-lighter">
+        {{ component('Flexy:CrossSelling', {categoryId: 2, title: 'Popular products'|trans}) }}
+    </div>
 
-        {% for category in categories %}
-            {{ include('@components/Organisms/CategoryCard/CategoryCard.html.twig', {
-                category: category
-            }) }}
-        {% endfor %}
-    </section>
-
-    {# Featured products #}
-    {{ component('Flexy:CrossSelling', {
-        title: 'Featured Products'|trans
-    }) }}
+    {{ component('Flexy:ProductCategory', {title: 'Our product categories'|trans}) }}
 {% endblock %}
 ```
+
+:::caution
+`Flexy:CrossSelling` requires a `categoryId` — there is no default in the PHP class, so calling it without one throws an error. See [Cross-selling](#cross-selling) below.
+:::
 
 ### Category Page (`category.html.twig`)
 
 ```twig
+{# templates/frontOffice/flexy/category.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% set categoryId = attr('category', 'id') %}
 {% set category = resources('/api/front/categories/' ~ categoryId) %}
-{% set page = app.request.get('page')|default(1) %}
 
 {% block body %}
     {# Category hero #}
@@ -115,21 +124,17 @@ templates/frontOffice/flexy/
         breadcrumb: breadcrumb
     }) }}
 
-    {# Product listing with filters #}
+    {# Reactive product listing with filters #}
     {{ component('Flexy:CategoryFilters', {
-        initialCategoryId: categoryId,
-        initialPage: page
+        initialCategoryId: categoryId
     }) }}
-{% endblock %}
-
-{% block stimulus_controller %}
-    {{ stimulus_controller('drawer') }}
 {% endblock %}
 ```
 
 ### Product Page (`product.html.twig`)
 
 ```twig
+{# templates/frontOffice/flexy/product.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% set productId = attr('product', 'id') %}
@@ -140,21 +145,13 @@ templates/frontOffice/flexy/
         {# Breadcrumb #}
         {{ component('Molecules:Breadcrumb:Breadcrumb', {breadcrumb: breadcrumb}) }}
 
-        {# Main product component #}
+        {# Main product component (variant selection, add to cart) #}
         {{ component('Flexy:Pages:Product', {product: product}) }}
 
-        {# Description accordion #}
-        {% if product.i18ns.description %}
-            {{ include('@components/Molecules/Accordion/Accordion.html.twig', {
-                title: 'Description'|trans,
-                content: product.i18ns.description|raw,
-                open: true
-            }) }}
-        {% endif %}
-
-        {# Cross-selling #}
+        {# Cross-selling: categoryId is required #}
         {{ component('Flexy:CrossSelling', {
-            categoryId: product.productCategories|first.category.id
+            categoryId: product.productCategories|first.category.id,
+            title: 'Last seen products'|trans
         }) }}
     </div>
 
@@ -163,118 +160,140 @@ templates/frontOffice/flexy/
 {% endblock %}
 ```
 
-## LiveComponents
+## Components
 
-Flexy includes 40+ LiveComponents organized by function:
+Flexy ships around 50 components in `src/UiComponents/`. The directory is the authoritative list — each PHP class carries either an `#[AsLiveComponent]` or an `#[AsTwigComponent]` attribute, and the component name is whatever that attribute declares.
 
-### Page Components
+- **LiveComponents** (`#[AsLiveComponent]`) re-render on the server in response to user interaction (model binding, live actions). Use them for forms, filters, checkout steps.
+- **TwigComponents** (`#[AsTwigComponent]`) are stateless and render once. Use them for cards, layout pieces and presentational widgets.
+
+All names are prefixed with `Flexy` (configured in `config/packages/twig_component.yaml`). Call any component with the `component()` Twig function.
+
+### LiveComponents
 
 | Component | Purpose |
 |-----------|---------|
-| `Flexy:Pages:Product` | Full product page with variant selection |
-| `Flexy:CategoryFilters` | Product listing with filters |
+| `Flexy:Pages:Product` | Full product page (variant selection, add to cart) |
+| `Flexy:CategoryFilters` | Product listing with reactive filters |
 | `Flexy:SearchBar` | Search with autocomplete |
-
-### Checkout Components
-
-| Component | Purpose |
-|-----------|---------|
 | `Flexy:Checkout:Cart` | Shopping cart |
-| `Flexy:Checkout:Delivery` | Delivery method selection |
 | `Flexy:Checkout:Payment` | Payment method selection |
 | `Flexy:Checkout:Summary` | Order summary |
-| `Flexy:CheckoutSteps` | Step indicator |
-
-### Cart Components
-
-| Component | Purpose |
-|-----------|---------|
-| `Flexy:CartItem` | Single cart item |
-| `Flexy:HeaderButton` | Cart icon with count |
-| `Flexy:AddToCartToast` | Add to cart notification |
-| `Flexy:PromoCodeForm` | Promo code input |
-
-### Account Components
-
-| Component | Purpose |
-|-----------|---------|
-| `Flexy:AccountHero` | Account header |
+| `Flexy:Checkout:MiniSummary` | Compact order summary |
+| `Flexy:Checkout:Gateway` | Payment gateway step |
+| `Flexy:Checkout:Invoice` | Invoice address step |
+| `Flexy:Checkout:NextButton` | Checkout next-step button |
+| `Flexy:Checkout:PickupPointSearch` | Pickup point search (checkout) |
+| `Flexy:Checkout:PromoCodeForm` | Promo code input |
+| `Flexy:Checkout:Delivery` | Delivery step (delivery module selection) |
+| `Flexy:Checkout:Delivery:HomeDelivery` | Home delivery option |
+| `Flexy:Checkout:Delivery:PickupDelivery` | Pickup delivery option |
+| `Flexy:AccountAddressForm` | Account address form |
 | `Flexy:AccountCustomerUpdate` | Profile edit form |
-| `Flexy:AddressCard` | Address display/edit |
 | `Flexy:AddressesForm` | Address form |
-| `Flexy:OrderCard` | Order history item |
+| `Flexy:AddToCartToast` | Add-to-cart notification |
+| `Flexy:CustomerInformationForm` | Customer information form |
+| `Flexy:InvoiceAddresses` | Invoice address selection |
+| `Flexy:OrderCreator` | Order creation flow |
+| `Flexy:PaymentModules` | Payment module selection |
+| `Flexy:PickupPointSearch` | Pickup point search |
+| `Flexy:RegisterValidationCode` | Registration validation code |
 
-### UI Components
+### TwigComponents
 
 | Component | Purpose |
 |-----------|---------|
 | `Flexy:ProductCard` | Product card in listings |
-| `Flexy:CrossSelling` | Related products |
-| `Flexy:LangSelect` | Language switcher |
+| `Flexy:CrossSelling` | Related products carousel |
+| `Flexy:CartItem` | Single cart item |
+| `Flexy:HeaderButton` | Cart icon with count |
 | `Flexy:HeaderProfile` | User menu |
+| `Flexy:LangSelect` | Language switcher |
 | `Flexy:Blocks` | CMS blocks |
+| `Flexy:AccountHero` | Account header |
+| `Flexy:AddressCard` | Address display |
+| `Flexy:OrderCard` | Order history item |
+| `Flexy:OrderProductCard` | Order line product card |
+| `Flexy:CatHero` | Category hero |
+| `Flexy:Button` | Button |
+| `Flexy:CheckboxButton` | Checkbox button |
+| `Flexy:RadioButton` | Radio button |
+| `Flexy:InvoiceCard` | Invoice card |
+| `Flexy:PaymentCard` | Payment method card |
+| `Flexy:DeliveryTracking` | Delivery tracking display |
+| `Flexy:ProductCategory` | Product category block |
+| `Flexy:SimilarContent` | Similar content block |
+| `Flexy:Inputs:Radio` | Radio input |
+| `Flexy:Checkout:CheckoutSteps` | Checkout step indicator |
+| `Flexy:Checkout:AddressCardCheckout` | Address card in checkout |
+| `Flexy:Checkout:Delivery:StoreDelivery` | Store delivery option |
 
-### Using Components
+:::note
+Watch the exact namespaces: the step indicator is `Flexy:Checkout:CheckoutSteps` (not `Flexy:CheckoutSteps`), and the promo form is `Flexy:Checkout:PromoCodeForm` (not `Flexy:PromoCodeForm`). When in doubt, open the component's PHP class in `src/UiComponents/` and read the `name:` argument of its attribute.
+:::
+
+### Cross-selling
+
+`Flexy:CrossSelling` is a TwigComponent. Its PHP class exposes exactly two PHP properties:
+
+```php
+// templates/frontOffice/flexy/src/UiComponents/CrossSelling/CrossSelling.php
+#[AsTwigComponent(name: 'Flexy:CrossSelling', template: '@UiComponents/CrossSelling/CrossSelling.html.twig')]
+class CrossSelling
+{
+    public string $categoryId;          // required, no default
+    public array $productIdsToIgnore = [];
+
+    // getProducts() fetches /api/front/products filtered by category,
+    // capped at 3 items, excluding $productIdsToIgnore
+}
+```
 
 ```twig
-{# With required props #}
-{{ component('Flexy:ProductCard', {product: product}) }}
-
-{# With optional props #}
+{# Fetch the 3 newest products of category 5, excluding the current one #}
 {{ component('Flexy:CrossSelling', {
-    categoryId: categoryId,
-    title: 'Related Products'|trans,
-    limit: 8
-}) }}
-
-{# In checkout flow #}
-{{ component('Flexy:Checkout:Delivery', {
-    addresses: customerAddresses
+    categoryId: 5,
+    productIdsToIgnore: [currentProductId],
+    title: 'You may also like'|trans
 }) }}
 ```
 
-## Twig Components
+:::caution
+`categoryId` is **required**. There is no `limit` property — the component always returns up to 3 products. `title` is a presentational prop read by the template, not by the PHP class.
+:::
 
-Non-reactive components use standard Twig includes:
+### Using components
 
 ```twig
-{# Layout components #}
+{# A stateless TwigComponent #}
+{{ component('Flexy:ProductCard', {product: product}) }}
+
+{# A reactive LiveComponent #}
+{{ component('Flexy:CategoryFilters', {initialCategoryId: categoryId}) }}
+```
+
+Anonymous components under `components/` are rendered with `include()` using the `@components` namespace:
+
+```twig
 {{ include('@components/Layout/Header/Header.html.twig') }}
-{{ include('@components/Layout/Footer/Footer.html.twig') }}
-
-{# UI molecules #}
-{{ include('@components/Molecules/ProductCard/ProductCard.html.twig', {
-    product: product
-}) }}
-
-{{ include('@components/Molecules/Accordion/Accordion.html.twig', {
-    title: 'Details',
-    content: contentHtml,
-    open: true
-}) }}
-
-{{ include('@components/Molecules/Breadcrumb/Breadcrumb.html.twig', {
-    breadcrumb: breadcrumb
-}) }}
+{{ include('@components/Molecules/Breadcrumb/Breadcrumb.html.twig', {breadcrumb: breadcrumb}) }}
 ```
 
 ## Styling
 
 ### Tailwind CSS
 
-Flexy uses Tailwind CSS for styling:
+Flexy is styled with Tailwind CSS, configured in `tailwind.config.js`:
 
 ```twig
 <div class="container mx-auto px-4">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4">
+    <h1 class="h2 text-black">
         {{ product.i18ns.title }}
     </h1>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {% for product in products %}
-            <div class="bg-white rounded-lg shadow p-4">
-                {{ component('Flexy:ProductCard', {product: product}) }}
-            </div>
+            {{ component('Flexy:ProductCard', {product: product}) }}
         {% endfor %}
     </div>
 </div>
@@ -282,111 +301,114 @@ Flexy uses Tailwind CSS for styling:
 
 ### Custom CSS
 
-Add custom styles in `assets/css/`:
-
-```css
-/* assets/css/custom.css */
-.ProductPage {
-    @apply container mx-auto py-8;
-}
-
-.ProductPage-grid {
-    @apply grid grid-cols-1 lg:grid-cols-2 gap-8;
-}
-```
+Per-page CSS is added as dedicated Webpack entries (see below). Add your stylesheets under `assets/css/` and reference them from an entry.
 
 ## Assets
 
 ### Webpack Encore
 
-Flexy uses Webpack Encore for asset management:
+Assets are built with Webpack Encore. The real configuration lives in `templates/frontOffice/flexy/webpack.config.js`:
 
 ```javascript
-// webpack.config.js
+// templates/frontOffice/flexy/webpack.config.js (excerpt)
 const Encore = require('@symfony/webpack-encore');
+const path = require('path');
 
 Encore
-    .setOutputPath('public/build/')
-    .setPublicPath('/build')
-    .addEntry('app', './templates/frontOffice/flexy/assets/js/app.js')
-    .addStyleEntry('app-css', './templates/frontOffice/flexy/assets/css/app.css')
-    .enableStimulusBridge('./assets/controllers.json')
-    .enablePostCssLoader()
+    // compiled assets go to dist/, served from /templates-assets/frontOffice/flexy/dist
+    .setOutputPath('dist/')
+    .addAliases({
+        '@components': path.resolve(__dirname, './components'),
+        '@js': path.resolve(__dirname, './assets/js'),
+        '@assets': path.resolve(__dirname, './assets'),
+    })
+
+    // main entry + per-page CSS entries
+    .addEntry('app', './assets/app.js')
+    .addEntry('category-css', './assets/css/pages/category.css')
+    .addEntry('product-css', './assets/css/pages/product.css')
+
+    .splitEntryChunks()
+    .enableSingleRuntimeChunk()
+    .cleanupOutputBeforeBuild()
+    .enableSourceMaps(!Encore.isProduction())
+    .enableVersioning(Encore.isProduction())
 ;
+
+Encore.enablePostCssLoader();
+Encore.enableTypeScriptLoader();
+Encore.enableReactPreset();
+Encore.enableStimulusBridge('./assets/controllers.json');
+
+module.exports = Encore.getWebpackConfig();
 ```
+
+:::note
+Output goes to `dist/` (not `public/build/`), and is served under `/templates-assets/frontOffice/flexy/dist`. Templates reference built assets with `encore_entry_link_tags('app')` / `encore_entry_script_tags('app')`, as in `base.html.twig`.
+:::
 
 ### Building Assets
 
 ```bash
-# Development
-ddev ssh
-cd templates/frontOffice/flexy
-npm install
-npm run dev
-
-# Production
-npm run build
-
-# Watch mode
-npm run watch
+ddev exec bash -c "cd templates/frontOffice/flexy && npm install && npm run build"
 ```
 
-## Configuration
-
-### Theme Selection
-
-In Thelia configuration or during installation:
-
-```bash
-php Thelia thelia:install --frontoffice_theme=flexy
-```
-
-### Environment Variables
-
-Flexy respects Thelia's environment configuration:
-
-```env
-# .env.local
-APP_ENV=dev
-APP_DEBUG=1
-```
+For development you can also run `npm run dev` or `npm run watch` from the same directory.
 
 ## Form Theme
 
-Flexy includes a custom form theme:
+Flexy ships a custom form theme at `form/flexy_form_theme.html.twig`. The `form/` directory is mapped to the `@formTwig` Twig namespace by the bundle's `config/packages/twig.yaml`, and the theme is applied **globally** in the same file:
+
+```yaml
+# templates/frontOffice/flexy/config/packages/twig.yaml
+twig:
+  paths:
+    "%kernel.project_dir%/templates/frontOffice/%thelia_front_template%/form": formTwig
+  form_themes:
+    - "frontOffice/%thelia_front_template%/form/flexy_form_theme.html.twig"
+```
+
+Because the theme is registered globally, you usually do **not** need a per-form `{% form_theme %}` tag — every form rendered in the front office already uses it. If you do need to override it for a single form, reference the theme by its namespace:
 
 ```twig
-{# Apply theme globally in base.html.twig #}
-{% form_theme form '@Flexy/form/flexy_form_theme.html.twig' %}
-
-{# Or per-form #}
-{% form_theme myForm '@Flexy/form/flexy_form_theme.html.twig' %}
+{% form_theme myForm '@formTwig/flexy_form_theme.html.twig' %}
 {{ form_widget(myForm) }}
 ```
 
+:::caution
+The `@Flexy` Twig namespace does not exist in this bundle. Form-related templates use `@formTwig`, components use `@components` and `@UiComponents`.
+:::
+
 ## SEO Features
 
-### Built-in SEO Functions
+The base layout uses functions from the SEOne module to render titles, meta and structured data:
 
 ```twig
-{# Page title #}
+{# templates/frontOffice/flexy/base.html.twig (excerpt) #}
 <title>{{ SEOnePageTitle() }}</title>
-
-{# Meta description #}
 <meta name="description" content="{{ SEOnePageDesc() }}">
-
-{# Canonical URL #}
-<link rel="canonical" href="{{ SEOnePageCanonical() }}">
-
-{# Structured data #}
+<link rel="canonical" href="{{ SEOnePageCanonical() }}"/>
 {{ SEOneBreadcrumbJsonLd(breadcrumb)|raw }}
-
-{# Hreflang for multi-language #}
 {{ SEOneHreflang()|raw }}
 ```
 
-## Next Steps
+:::note
+These functions are provided by the SEOne module (a Flexy dependency), not by Thelia core.
+:::
 
-- [Customization](./customization) - Customize Flexy for your needs
-- [Creating a Theme](./creating-theme) - Build a theme from scratch
-- [LiveComponents](/docs/front-office/live-components) - Component development
+## Installation
+
+Select Flexy as the front-office theme when running the installer:
+
+```bash
+ddev exec php bin/install --frontoffice_theme=flexy --backoffice_theme=default
+```
+
+If `--frontoffice_theme` is omitted, the installer falls back to the `ACTIVE_FRONT_TEMPLATE` environment variable, then to `flexy`.
+
+## Learn more
+
+- [Customizing Flexy](./customization.md) — adapt Flexy to your needs
+- [Creating a Theme](./creating-theme.md) — build a front-office theme from scratch
+- [LiveComponents](../live-components.md) — develop reactive components
+- [Twig basics](../twig-basics.md) — `resources()`, `attr()` and the Data Access layer

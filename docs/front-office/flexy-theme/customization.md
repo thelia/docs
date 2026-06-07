@@ -5,85 +5,84 @@ sidebar_position: 2
 
 # Customizing Flexy
 
-This guide covers how to customize the Flexy theme for your project.
+This guide covers how to customize the Flexy theme for your project. Flexy is a Symfony bundle (`FlexyBundle\`), so you customize it the way you customize any bundle-based theme: clone it, register it as a Composer path repository, and activate it.
 
 ## Creating Your Custom Theme
 
-The recommended approach is to **duplicate Flexy** and configure it as a local package. This allows you to fully customize the theme while still benefiting from Composer's dependency management.
+The recommended approach is to **clone the `thelia-templates/flexy` repository** into your project and declare it as a Composer **path repository**. You keep the upstream git history (so you can pull future Flexy updates), and Composer installs your local copy instead of the published package.
 
-### Step 1: Copy Flexy
-
-Copy the Flexy theme to your templates directory with your custom name:
+### Step 1: Clone Flexy into your templates directory
 
 ```bash
-cp -r vendor/thelia/flexy templates/frontOffice/myCustomTheme
+git clone https://github.com/thelia/Flexy.git templates/frontOffice/myCustomTheme
 ```
 
-### Step 2: Update Theme's composer.json
+The Flexy `composer.json` declares the package name `thelia/flexy`, the PSR-4 root `FlexyBundle\` and the Twig component `name_prefix: Flexy`. Those identifiers are global. **If you keep both the original Flexy and your copy installed at the same time, they collide.** See the caution below before going further.
 
-Edit `templates/frontOffice/myCustomTheme/composer.json` and change the package name:
+### Step 2: Add a path repository to the root composer.json
 
-```json
-{
-    "name": "myCustomTheme/flexy",
-    "description": "My Custom Flexy Theme for Thelia 3",
-    "type": "thelia-frontoffice-template",
-    ...
-}
-```
-
-### Step 3: Add Repository to Root composer.json
-
-In your project's root `composer.json`, add a path repository pointing to your theme:
+In your project's root `composer.json`, point a `path` repository at your clone:
 
 ```json
 {
     "repositories": [
         {
             "type": "path",
-            "url": "templates/frontOffice/myCustomTheme/"
+            "url": "templates/frontOffice/myCustomTheme/",
+            "options": {
+                "symlink": false
+            }
         }
-    ],
-    "require": {
-        ...
-        "myCustomTheme/flexy": "dev-main"
-    }
+    ]
 }
 ```
 
-### Step 4: Update Autoload
+A `path` repository with `"symlink": false` copies the directory into `vendor/`, so your edits in `templates/frontOffice/myCustomTheme/` are the source of truth and Composer mirrors them on install/update.
 
-In the root `composer.json`, update the autoload section to point to your custom theme:
+### Step 3: Activate the theme
 
-```json
-{
-    "autoload": {
-        "psr-4": {
-            "FlexyBundle\\": "templates/frontOffice/myCustomTheme/src/"
-        }
-    }
-}
-```
-
-### Step 5: Install and Configure
-
-Run Composer to install your custom theme:
+Set your theme as the active front-office template via the environment variable in `.env.local`:
 
 ```bash
-composer update myCustomTheme/flexy
+# .env.local
+ACTIVE_FRONT_TEMPLATE=myCustomTheme
 ```
 
-Then set your theme as the active front-office template:
+Or pass it to the installer when you (re)install:
 
 ```bash
 php Thelia thelia:install --frontoffice_theme=myCustomTheme
 ```
 
-Or via environment variable in `.env.local`:
+:::caution Namespace and component-prefix collisions
+Flexy registers three project-global identifiers:
 
-```bash
-ACTIVE_FRONT_TEMPLATE=myCustomTheme
+- the Composer package name `thelia/flexy` (`composer.json`)
+- the PSR-4 namespace root `FlexyBundle\` (`composer.json`, `autoload.psr-4`)
+- the Twig component name prefix `Flexy` (`config/packages/twig_component.yaml`, under `FlexyBundle\UiComponents\`)
+
+If you install your copy **alongside** the original Flexy, both register `FlexyBundle\` and the `Flexy:` Twig component prefix. Symfony will load one class definition over the other and component names like `Flexy:ProductCard` become ambiguous.
+
+To run both side by side, rename them in your copy:
+
+1. In `composer.json`, change the package `name` and the `autoload.psr-4` root (for example `MyThemeBundle\`).
+2. Rename the `FlexyBundle\` namespace in every PHP file under `src/` to your new root.
+3. In `config/packages/twig_component.yaml`, change the `name_prefix` and the namespace key:
+
+```yaml
+# templates/frontOffice/myCustomTheme/config/packages/twig_component.yaml
+twig_component:
+    anonymous_template_directory: 'frontOffice/%thelia_front_template%/components/'
+    defaults:
+        MyThemeBundle\UiComponents\:
+            name_prefix: MyTheme
+            template_directory: '%kernel.project_dir%/templates/frontOffice/%thelia_front_template%/src/UiComponents'
 ```
+
+4. Update every `{{ component('Flexy:...') }}` call in your templates to the new prefix.
+
+If you only need **one** active front-office theme (the common case), you do not have to rename anything: keep `FlexyBundle\` and `Flexy:` and simply do not require the upstream `thelia/flexy` package at the same time.
+:::
 
 ## Customization Strategies
 
@@ -92,42 +91,34 @@ ACTIVE_FRONT_TEMPLATE=myCustomTheme
 | **CSS/Tailwind overrides** | Colors, fonts, spacing |
 | **Template overrides** | Layout changes, new sections |
 | **Component overrides** | Modified behavior |
-| **Full theme duplicate** | Major customizations |
+| **Full theme clone** | Major customizations |
 
 ## CSS Customization
 
 ### Tailwind Configuration
 
-Edit `templates/frontOffice/myCustomTheme/tailwind.config.js`:
+Flexy's `tailwind.config.js` scans the bundle's own files. The real `content` globs are relative to the theme directory:
 
 ```javascript
+// templates/frontOffice/myCustomTheme/tailwind.config.js
+/** @type {import('tailwindcss').Config} */
 module.exports = {
     content: [
-        './templates/frontOffice/myCustomTheme/**/*.html.twig',
-        './local/modules/**/templates/frontoffice/**/*.html.twig',
+        './components/**/*.{twig,ts,js,json}',
+        './src/UiComponents/**/*.{twig,ts,js,json}',
+        './form/**/*.twig',
+        './*.twig',
     ],
     theme: {
         extend: {
             colors: {
-                // Brand colors
+                // Flexy maps Tailwind colors to CSS variables.
+                // Override the variables in your CSS (see below), or add new colors here.
                 'brand': {
                     50: '#f0f9ff',
-                    100: '#e0f2fe',
                     500: '#0ea5e9',
-                    600: '#0284c7',
                     700: '#0369a1',
                 },
-                // Theme colors
-                'theme': {
-                    'lighter': '#f8fafc',
-                    'light': '#f1f5f9',
-                    'DEFAULT': '#0ea5e9',
-                    'dark': '#0369a1',
-                },
-            },
-            fontFamily: {
-                'sans': ['Inter', 'system-ui', 'sans-serif'],
-                'heading': ['Montserrat', 'sans-serif'],
             },
         },
     },
@@ -135,33 +126,33 @@ module.exports = {
 };
 ```
 
+:::note
+Flexy's default theme colors (`theme`, `theme-dark`, `grey`, `error`, ...) are defined as `var(--...)` CSS variables, not hard-coded hex values. The cleanest way to re-skin Flexy is to override those CSS variables in your stylesheet rather than rewriting the Tailwind palette.
+:::
+
 ### Custom CSS
 
-Edit `templates/frontOffice/myCustomTheme/assets/css/app.css`:
+Edit the theme stylesheets under `templates/frontOffice/myCustomTheme/assets/css/`:
 
 ```css
-/* Override theme variables */
+/* templates/frontOffice/myCustomTheme/assets/css/app.css */
+
+/* Override Flexy theme variables */
 :root {
-    --color-primary: #0ea5e9;
-    --color-primary-dark: #0369a1;
-    --font-family-base: 'Inter', sans-serif;
-    --font-family-heading: 'Montserrat', sans-serif;
+    --theme: #0ea5e9;
+    --theme-dark: #0369a1;
+    --theme-light: #7dd3fc;
 }
 
 /* Custom component styles */
 .ProductCard {
     @apply rounded-xl shadow-lg hover:shadow-xl transition-shadow;
 }
-
-.btn-primary {
-    @apply bg-brand-500 hover:bg-brand-600 text-white font-semibold
-           py-2 px-4 rounded-lg transition-colors;
-}
 ```
 
 ### Rebuild Assets
 
-After CSS changes, rebuild the assets:
+Flexy uses Webpack Encore. After CSS or JS changes, rebuild the assets from the theme directory:
 
 ```bash
 cd templates/frontOffice/myCustomTheme
@@ -169,27 +160,34 @@ npm install
 npm run build
 ```
 
+:::note Output directory is `dist/`
+Flexy's `webpack.config.js` sets the output path to `dist/` (not `public/build/`). The compiled assets are served from `/templates-assets/frontOffice/<theme>/dist`. Reference the placeholder image as `asset('dist/images/placeholder.webp')`, as the core components do.
+:::
+
 ## Template Customization
 
-Since you have a full copy of the theme, you can directly edit any template file:
+Since you have a full clone of the theme, you can directly edit any template file. The real Flexy layout is:
 
 ```
 templates/frontOffice/myCustomTheme/
-├── base.html.twig           # Base layout
-├── index.html.twig          # Homepage
-├── product.html.twig        # Product page
-├── category.html.twig       # Category page
-├── components/
+├── base.html.twig            # Base layout
+├── index.html.twig           # Homepage
+├── product.html.twig         # Product page
+├── category.html.twig        # Category page
+├── components/               # Anonymous Twig components (atoms / molecules / organisms)
 │   ├── Layout/
 │   │   ├── Header/
 │   │   │   └── Header.html.twig
 │   │   └── Footer/
-│   │       └── Footer.html.twig
-│   └── Molecules/
-│       └── ProductCard/
-│           └── ProductCard.html.twig
+│   └── Organisms/
+│       └── CategoryCard/
+│           └── CategoryCard.html.twig
 └── src/
-    └── UiComponents/        # LiveComponents
+    └── UiComponents/         # Twig / Live components (PHP + template)
+        ├── ProductCard/
+        ├── CrossSelling/
+        └── Pages/
+            └── Product/
 ```
 
 ### Modify Page Templates
@@ -202,7 +200,6 @@ templates/frontOffice/myCustomTheme/
 {% set product = resources('/api/front/products/' ~ productId) %}
 
 {% block body %}
-    {# Your custom product layout #}
     <div class="custom-product-layout">
         <div class="product-gallery">
             {# Custom gallery #}
@@ -220,27 +217,33 @@ templates/frontOffice/myCustomTheme/
 {% endblock %}
 ```
 
-### Modify Header
+:::tip
+`attr('product', 'id')` reads an attribute set by the controller (it takes the type and the attribute name), and `resources('/api/front/...')` calls the API resource through the `DataAccessService`. See [Data Access](/docs/front-office/data-access) for the full reference.
+:::
+
+### Modify the Header
+
+Categories and products are linked through their **rewritten URLs**, not through route-name-with-id helpers. The API resource exposes a `publicUrl` field (`Category::getPublicUrl()`, `Product::getPublicUrl()`, serialized in the `front:*:read` group). The homepage route is named `index`.
 
 ```twig
 {# templates/frontOffice/myCustomTheme/components/Layout/Header/Header.html.twig #}
 <header class="site-header">
     <div class="container">
-        {# Custom logo #}
-        <a href="{{ path('homepage') }}" class="logo">
+        {# Logo points to the homepage #}
+        <a href="{{ path('index') }}" class="logo">
             <img src="{{ asset('images/my-logo.svg') }}" alt="My Store">
         </a>
 
-        {# Custom navigation #}
+        {# Top-level categories #}
         <nav class="main-nav">
             {% set categories = resources('/api/front/categories', {
-                'parent': 0,
-                'visible': true
+                parent: 0,
+                visible: true
             }) %}
             <ul>
                 {% for category in categories %}
                     <li>
-                        <a href="{{ path('category', {id: category.id}) }}">
+                        <a href="{{ category.publicUrl }}">
                             {{ category.i18ns.title }}
                         </a>
                     </li>
@@ -248,19 +251,33 @@ templates/frontOffice/myCustomTheme/
             </ul>
         </nav>
 
-        {# Header actions #}
-        <div class="header-actions">
-            {{ component('Flexy:HeaderButton') }}
-        </div>
+        {# Cart / account actions #}
+        {{ include('@components/Organisms/HeaderNav/HeaderNav.html.twig') }}
     </div>
 </header>
 ```
 
-## LiveComponent Customization
+:::caution Do not build catalog links from route + id
+There is no `product_show` or `category` route taking an `{id}`. Catalog pages are served from SEO-friendly rewritten URLs. Always render a category or product link from its `publicUrl` field. For a ready-made card, feed the resource to the `CategoryCard` organism, which reads `category.publicUrl` internally:
 
-### Modify Existing Components
+```twig
+{{ include('@components/Organisms/CategoryCard/CategoryCard.html.twig', {
+    category: category,
+    id: category.id
+}) }}
+```
+:::
 
-Edit components in `templates/frontOffice/myCustomTheme/src/UiComponents/`:
+## Component Customization
+
+Flexy ships two kinds of server-rendered components under `src/UiComponents/`:
+
+- **Twig components** (`#[AsTwigComponent]`) — stateless, rendered once. Example: `ProductCard`, `CrossSelling`.
+- **Live components** (`#[AsLiveComponent]`) — reactive, can re-render on user interaction. Example: `Pages\Product`, `CategoryFilters`.
+
+### Modify an Existing Component
+
+`ProductCard` is a Twig component. It accepts either a `productId` (it then fetches the product itself) or a `product` (a `ProductDTO` or a raw array). Here is its real signature:
 
 ```php
 <?php
@@ -270,33 +287,47 @@ declare(strict_types=1);
 
 namespace FlexyBundle\UiComponents\ProductCard;
 
-use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
-use Symfony\UX\LiveComponent\Attribute\LiveProp;
-use Symfony\UX\LiveComponent\DefaultActionTrait;
+use FlexyBundle\DTO\ProductDTO;
+use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
+use Symfony\UX\TwigComponent\Attribute\PreMount;
+use Thelia\Api\Service\DataAccess\DataAccessService;
+use Thelia\Domain\Taxation\TaxEngine\TaxEngine;
 
-#[AsLiveComponent(
-    name: 'Flexy:ProductCard',
-    template: '@UiComponents/ProductCard/ProductCard.html.twig'
-)]
+#[AsTwigComponent(name: 'Flexy:ProductCard', template: '@UiComponents/ProductCard/ProductCard.html.twig')]
 class ProductCard
 {
-    use DefaultActionTrait;
+    public ?int $productId = null;
 
-    #[LiveProp]
-    public array $product;
+    public function __construct(
+        private readonly DataAccessService $dataAccessService,
+        private TaxEngine $taxEngine,
+    ) {
+    }
 
-    // Add custom properties
-    #[LiveProp]
-    public bool $showQuickView = true;
+    #[PreMount]
+    public function preMount(?array $data): void
+    {
+        if (isset($data['productId']) && $data['productId']) {
+            $this->productId = $data['productId'];
+        }
+    }
 
-    #[LiveProp]
-    public bool $showWishlist = false;
+    public function mount(ProductDTO|array|null $product = null): void
+    {
+        // Resolves the product from $product (DTO or array) or from $productId.
+    }
 }
 ```
 
-### Add New Components
+To customize it, edit the file in your theme: add helper methods, change the price logic, or edit the template at `src/UiComponents/ProductCard/ProductCard.html.twig`.
 
-Create new components in your theme:
+:::caution
+`ProductCard` is a Twig component (`#[AsTwigComponent]`), **not** a Live component, and its data property is a typed `ProductDTO` (resolved in `mount()`), not a public `array $product` LiveProp. If you need reactivity (a property writable from the browser that triggers a re-render), create a Live component instead.
+:::
+
+### Add a New Live Component
+
+Create reactive components under `src/UiComponents/`. The Twig component prefix is `Flexy` (from `twig_component.yaml`), and the template directory resolves to `src/UiComponents`:
 
 ```php
 <?php
@@ -311,10 +342,7 @@ use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 
-#[AsLiveComponent(
-    name: 'Flexy:Newsletter',
-    template: '@UiComponents/Newsletter/Newsletter.html.twig'
-)]
+#[AsLiveComponent(name: 'Flexy:Newsletter', template: '@UiComponents/Newsletter/Newsletter.html.twig')]
 class Newsletter
 {
     use DefaultActionTrait;
@@ -328,20 +356,22 @@ class Newsletter
     #[LiveAction]
     public function subscribe(): void
     {
-        // Subscribe logic
+        // Subscribe logic.
         $this->submitted = true;
     }
 }
 ```
 
+See [Live Components](/docs/front-office/live-components) for the full reference.
+
 ## JavaScript Customization
 
 ### Add Stimulus Controllers
 
-Create controllers in `templates/frontOffice/myCustomTheme/assets/controllers/`:
+Flexy enables the Stimulus bridge in `webpack.config.js`. Add controllers under `templates/frontOffice/myCustomTheme/assets/controllers/`:
 
 ```javascript
-// quick_view_controller.js
+// templates/frontOffice/myCustomTheme/assets/controllers/quick_view_controller.js
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
@@ -350,9 +380,7 @@ export default class extends Controller {
     async open(event) {
         const productId = event.currentTarget.dataset.productId;
         const response = await fetch(`/quick-view/${productId}`);
-        const html = await response.text();
-
-        this.contentTarget.innerHTML = html;
+        this.contentTarget.innerHTML = await response.text();
         this.modalTarget.classList.remove('hidden');
     }
 
@@ -378,54 +406,25 @@ export default class extends Controller {
 </div>
 ```
 
-## Adding Product Features
+See [Stimulus](/docs/front-office/stimulus) for more.
 
-### Product Badges
+## Adding Product Sections
 
-```twig
-{# In ProductCard template #}
-<div class="product-card">
-    <div class="product-badges">
-        {% if product.newProduct %}
-            <span class="badge badge-new">New</span>
-        {% endif %}
-        {% if product.promo %}
-            <span class="badge badge-sale">
-                -{{ product.promoPercent }}%
-            </span>
-        {% endif %}
-        {% if product.quantity <= 5 and product.quantity > 0 %}
-            <span class="badge badge-low">Low Stock</span>
-        {% endif %}
-    </div>
-    {# Rest of card... #}
-</div>
-```
+### Related Products
 
-### Custom Product Sections
+Use the `Flexy:ProductCard` Twig component to render a grid of products. To exclude the current product, use the `not_in` filter exposed by the API resource.
 
 ```twig
 {# product.html.twig #}
 {% block body %}
     {{ component('Flexy:Pages:Product', {product: product}) }}
 
-    {# Specifications #}
-    <section class="product-specs">
-        <h2>Specifications</h2>
-        {% for feature in product.featureProducts %}
-            <dl>
-                <dt>{{ feature.feature.i18ns.title }}</dt>
-                <dd>{{ feature.featureAv.i18ns.title }}</dd>
-            </dl>
-        {% endfor %}
-    </section>
-
-    {# Related products #}
+    {# Related products in the same category #}
     <section class="related-products">
         <h2>You might also like</h2>
         {% set related = resources('/api/front/products', {
             'productCategories.category.id': product.productCategories[0].category.id,
-            'id[not_in]': product.id,
+            'not_in[id]': [product.id],
             'itemsPerPage': 4
         }) %}
         <div class="product-grid">
@@ -437,13 +436,18 @@ export default class extends Controller {
 {% endblock %}
 ```
 
+:::caution NotInFilter syntax
+The Thelia `NotInFilter` is keyed `not_in[<property>]` and expects an **array** of values, for example `'not_in[id]': [product.id]`. This matches the core `Flexy:CrossSelling` component, which queries `'not_in[id]' => $this->productIdsToIgnore`. The reverse form `id[not_in]` is **not** supported and will be ignored.
+:::
+
+`Flexy:ProductCard` accepts a `product` (a `ProductDTO` or a raw array) — both are handled by its `mount()` method — or a `productId` if you only have the id.
+
 ## Form Customization
 
-### Custom Form Theme
-
-Create `templates/frontOffice/myCustomTheme/form/form_theme.html.twig`:
+Flexy ships a form theme at `form/flexy_form_theme.html.twig`. To customize form rendering in your theme, edit that file (or create your own and register it). It overrides the standard Symfony form blocks:
 
 ```twig
+{# templates/frontOffice/myCustomTheme/form/flexy_form_theme.html.twig #}
 {% use 'form_div_layout.html.twig' %}
 
 {% block form_row %}
@@ -451,30 +455,25 @@ Create `templates/frontOffice/myCustomTheme/form/form_theme.html.twig`:
         {{ form_label(form) }}
         {{ form_widget(form) }}
         {{ form_errors(form) }}
-        {% if help %}
-            <small class="form-help">{{ help }}</small>
-        {% endif %}
     </div>
-{% endblock %}
-
-{% block button_widget %}
-    <button {{ block('button_attributes') }}
-            class="btn {{ attr.class|default('btn-primary') }}">
-        {{ label|trans }}
-    </button>
 {% endblock %}
 ```
 
+See [Forms](/docs/front-office/forms) for the front-office form workflow.
+
 ## Best Practices
 
-1. **Version control your theme** - Track all changes in git
-2. **Document customizations** - Add comments explaining changes
-3. **Use CSS variables** - Easier to maintain and override
-4. **Keep component changes minimal** - Override only what you need
-5. **Test after Thelia updates** - Check compatibility with core updates
+1. **Version control your theme** — you cloned a git repository; keep committing.
+2. **Override CSS variables** rather than rewriting the Tailwind palette.
+3. **Link catalog pages via `publicUrl`**, never via a route + id.
+4. **Keep component changes minimal** — override only what you need.
+5. **Rebuild assets** (`npm run build`) after every CSS/JS change.
+6. **Test after Thelia updates** — pull upstream Flexy, then re-test.
 
-## Next Steps
+## Learn More
 
-- [Creating a Theme](./creating-theme) - Build completely from scratch
-- [LiveComponents](/docs/front-office/live-components) - Component documentation
-- [Modules](/docs/modules/) - Packaging additional customizations
+- [Creating a Theme](./creating-theme) — Build a theme from scratch
+- [Live Components](/docs/front-office/live-components) — Reactive component reference
+- [Data Access](/docs/front-office/data-access) — Fetching data with `resources()` and `attr()`
+- [Stimulus](/docs/front-office/stimulus) — Front-office JavaScript controllers
+- [Modules](/docs/modules/) — Packaging additional customizations

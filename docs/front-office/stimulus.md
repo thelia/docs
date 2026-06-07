@@ -45,10 +45,19 @@ The Flexy theme includes ready-to-use Stimulus controllers:
 | `header` | Header behavior |
 | `filters` | Filter UI interactions |
 | `product` | Product page interactions |
-| `simple_slider` | Image slider |
+| `simple-slider` | Image slider |
 | `tooltip` | Tooltip display |
 
-Location: `vendor/thelia/flexy/assets/controllers/`
+Location: `templates/frontOffice/flexy/assets/controllers/`. Controllers are registered through `assets/controllers.json` and the Stimulus bridge enabled in `webpack.config.js`:
+
+```js
+// templates/frontOffice/flexy/webpack.config.js
+Encore.enableStimulusBridge('./assets/controllers.json');
+```
+
+:::note
+The table above lists the most commonly used controllers. The Flexy theme ships around 20 controllers; the authoritative list is always the `assets/controllers/` folder of the theme bundle.
+:::
 
 ### Usage Example
 

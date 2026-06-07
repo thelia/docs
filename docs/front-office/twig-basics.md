@@ -93,6 +93,10 @@ Get URL parameters using `attr()`:
 {{ SEOneHreflang()|raw }}
 ```
 
+:::note
+The `SEOne*` functions (`SEOnePageTitle`, `SEOnePageDesc`, `SEOnePageCanonical`, `SEOneBreadcrumbJsonLd`, `SEOneHreflang`, `SEOneBreadcrumb`) are **not** core Twig functions. They are provided by the SEOne module (`thelia/seone-module`), which Flexy declares as a dependency. A theme built from scratch without that module would not have these functions available.
+:::
+
 ### Translation
 
 ```twig
@@ -104,7 +108,7 @@ Get URL parameters using `attr()`:
 ### Price Formatting
 
 ```twig
-{{ product.price|format_currency('EUR', locale=lang_code) }}
+{{ price|format_currency('EUR', locale: lang_code) }}
 ```
 
 ## Components
@@ -179,8 +183,8 @@ See [LiveComponents](./live-components) for details.
 {# Good - logic in component #}
 {{ component('Flexy:ProductPrice', {product: product}) }}
 
-{# Avoid - complex logic in template #}
-{% if product.promo and product.promoStartDate <= 'now'|date %}
+{# Avoid - complex business logic in template #}
+{% if someComplexCondition and anotherCondition %}
     ...
 {% endif %}
 ```

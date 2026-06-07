@@ -26,7 +26,11 @@ The `DataAccessExtension` provides these functions:
 | Function | Description |
 |----------|-------------|
 | `resources(path, params)` | Fetch data from an API endpoint |
-| `attr(type, name)` | Get URL attributes (product id, category id, etc.) |
+| `attr(type, name)` | Read a contextual attribute (current product, cart, customer, etc.) |
+
+:::note Return type
+`resources()` returns `object|array|null`. A collection endpoint returns an array of items, a single-item endpoint returns one object, and a missing resource returns `null`. Do not assume the result is always an array.
+:::
 
 ## The `resources()` Function
 
@@ -89,7 +93,11 @@ In PHP (services, LiveComponents), you can use the `'jsonld'` format as a third 
 
 ## The `attr()` Function
 
-The `attr()` function retrieves URL parameters based on the current route:
+The `attr()` function reads a contextual attribute. It calls the matching
+`attribute<Type>()` method on `AttributeAccessService` (so `attr('product', 'id')`
+calls `attributeProduct('id')`). The type comes from the current route attributes
+(`product_id`, `category_id`, etc.), the session (cart, currency, lang), or the
+configuration table.
 
 ```twig
 {# Get product ID from URL #}
@@ -104,6 +112,54 @@ The `attr()` function retrieves URL parameters based on the current route:
 {# Get folder ID #}
 {% set folderId = attr('folder', 'id') %}
 ```
+
+### Available attribute types
+
+Each type resolves through a dedicated method on `AttributeAccessService`.
+
+| Type (`attr('<type>', ...)`) | Method | Resolvable names |
+|------|--------|------------------|
+| `product` | `attributeProduct` | Any Propel getter (`id`, `ref`, `visible`, ...) plus i18n columns `title`, `chapo`, `description`, `postscriptum` |
+| `category` | `attributeCategory` | Same as product (getter + i18n columns); falls back to the product's default category |
+| `content` | `attributeContent` | Getter + i18n columns |
+| `folder` | `attributeFolder` | Getter + i18n columns; falls back to the content's default folder |
+| `brand` | `attributeBrand` | Getter + i18n columns; falls back to the product's brand |
+| `currency` | `attributeCurrency` | Getter + i18n column `name` (from the session currency) |
+| `country` | `attributeCountry` | Only `default` (returns the i18n attributes of the default country) |
+| `lang` | `attributeLang` | Any `Lang` getter (`id`, `title`, `locale`, `code`, ...) of the session language |
+| `config` | `attributeConfig` | A configuration variable name (`ConfigQuery::read()`) |
+| `cart` | `attributeCart` | See the cart attributes below |
+| `coupon` | `attributeCoupon` | `has_coupons`, `coupon_count`, `coupon_list`, `is_delivery_free` |
+| `customer` | `attributeCustomer` | Any `Customer` getter (`id`, `firstname`, `lastname`, `email`, ...) of the logged-in customer |
+
+:::caution
+There is no `attr('order', ...)`. Order attributes are exposed through the
+`orderDataAccess()` method, which does not follow the `attribute<Type>` naming the
+`attr()` function relies on. Read order data with `resources('/api/front/account/orders/...')` instead.
+:::
+
+#### Cart attributes
+
+The cart type resolves a fixed set of names (it does not call Propel getters directly):
+
+```twig
+{% set itemCount   = attr('cart', 'item_count') %}
+{% set productCount = attr('cart', 'product_count') %}
+{% set total       = attr('cart', 'total_price') %}
+{% set deliveryId  = attr('cart', 'delivery_module_id') %}
+{% set paymentId   = attr('cart', 'payment_module_id') %}
+```
+
+Supported cart names: `product_count` (alias `count_product`), `item_count`
+(alias `count_item`), `postage`, `taxed_postage`, `total_price` (alias
+`total_price_with_discount`), `total_price_without_discount`,
+`total_price_without_postage`, `raw_total_price`, `total_taxed_price` (alias
+`total_taxed_price_with_discount`), `total_taxed_price_without_discount`,
+`total_taxed_price_without_postage`, `raw_taxed_total_price`, `is_virtual`
+(alias `contains_virtual_product`), `total_vat` (alias `total_tax_amount`),
+`total_tax_amount_without_discount`, `raw_total_tax_amount`, `taxed_discount`,
+`discount`, `discount_tax_amount`, `weight`, `delivery_module_id`,
+`payment_module_id`.
 
 ### Complete Example
 
@@ -178,7 +234,7 @@ The `attr()` function retrieves URL parameters based on the current route:
 
 {# Contents in folder #}
 {% set contents = resources('/api/front/contents', {
-    'folder.id': folderId,
+    'contentFolders.folder.id': folderId,
     'visible': true
 }) %}
 
@@ -188,26 +244,38 @@ The `attr()` function retrieves URL parameters based on the current route:
 
 ### Customers
 
+The current customer ID is read with `attr('customer', 'id')`, then passed to the
+account endpoint (requires `ROLE_CUSTOMER`):
+
 ```twig
-{# Current customer (when logged in) #}
-{% set customer = resources('/api/front/customers/me') %}
+{# Logged-in customer #}
+{% set customerId = attr('customer', 'id') %}
+{% set customer = resources('/api/front/account/customers/' ~ customerId) %}
 
 {# Customer addresses #}
-{% set addresses = resources('/api/front/addresses') %}
+{% set addresses = resources('/api/front/account/addresses', {
+    'customer.id': customerId
+}) %}
 ```
 
 ### Cart & Orders
 
 ```twig
-{# Current cart #}
-{% set cart = resources('/api/front/carts/current') %}
+{# Current session cart #}
+{% set cart = resources('/api/front/cart') %}
 
 {# Customer orders #}
-{% set orders = resources('/api/front/orders') %}
+{% set orders = resources('/api/front/account/orders') %}
 
 {# Single order #}
-{% set order = resources('/api/front/orders/' ~ orderId) %}
+{% set order = resources('/api/front/account/orders/' ~ orderId) %}
 ```
+
+:::note
+The current cart endpoint is the singular `/api/front/cart` (served by a dedicated
+controller that resolves the session cart). The plural `/api/front/carts/{id}` and
+`/api/front/account/orders/{id}` endpoints are scoped to the authenticated customer.
+:::
 
 ## Using in PHP (Services & LiveComponents)
 
@@ -228,16 +296,16 @@ final readonly class ProductService
         private DataAccessService $dataAccessService,
     ) {}
 
-    public function getFeaturedProducts(int $limit = 10): array
+    public function getVisibleProducts(int $limit = 10): object|array|null
     {
         return $this->dataAccessService->resources('/api/front/products', [
-            'featured' => true,
             'visible' => true,
+            'order[position]' => 'asc',
             'itemsPerPage' => $limit,
         ]);
     }
 
-    public function getProduct(int $id): ?array
+    public function getProduct(int $id): object|array|null
     {
         return $this->dataAccessService->resources('/api/front/products/' . $id);
     }
@@ -346,24 +414,30 @@ private function loadProductsWithPagination(): void
 
 ### Search Filters
 
+The product `title` filter uses a `word_start` strategy (matches the beginning of
+each word in the translated title):
+
 ```twig
-{# Text search #}
+{# Text search on the product title #}
 {% set products = resources('/api/front/products', {
-    'i18ns.title': searchQuery
+    'title': searchQuery
 }) %}
 ```
 
 ### Custom Filters (tfilters)
 
-Thelia provides a `tfilters` system for faceted navigation:
+Thelia provides a `tfilters` system for faceted navigation. The
+`/api/front/tfilters/{resource}` endpoint returns the available filters for a
+resource (e.g. `products`); the same `tfilters` payload is then applied to the
+resource collection. This is the pattern used by the `CategoryFilters` LiveComponent.
 
 ```twig
-{# Get available filters for a category #}
+{# Get available product filters for a category #}
 {% set filters = resources('/api/front/tfilters/products', {
     'tfilters[category]': categoryId
 }) %}
 
-{# Apply filters #}
+{# Apply the selected filters to the product collection #}
 {% set products = resources('/api/front/products', {
     'productCategories.category.id': categoryId,
     'tfilters': selectedFilters
@@ -402,6 +476,7 @@ API responses include translated content in the `i18ns` property:
 In PHP:
 
 ```php
+// resources() returns object|array|null
 $product = $this->dataAccessService->resources('/api/front/products/' . $id);
 
 if ($product === null) {
