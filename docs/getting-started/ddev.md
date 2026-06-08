@@ -29,11 +29,21 @@ ddev composer install
 # Install Thelia
 ddev exec php bin/install
 
+# Build the front-office theme assets (required)
+ddev exec bash -c "cd templates/frontOffice/flexy && npm install && npm run build"
+
 # Open in browser
 ddev launch
 ```
 
 Your site is now accessible at **https://thelia-3.ddev.site**
+
+:::warning Build the theme assets
+The `flexy` front-office theme — and any Twig back-office theme such as `default-twig` —
+ship their assets as source and must be built with Webpack Encore. Skip this and the page
+fails with *"Could not find the entrypoints file from Webpack"*. For a Twig back-office:
+`ddev exec bash -c "cd templates/backOffice/default-twig && npm install && npm run build"`.
+:::
 
 :::tip
 `bin/install` reads database credentials from DDEV's environment automatically (`DATABASE_HOST=db`, `DATABASE_NAME=db`, etc.). You do not need to pass any database options.

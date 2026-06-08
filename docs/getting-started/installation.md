@@ -130,13 +130,29 @@ php bin/install \
 | `--admin_last_name` | `Thelia` | Admin last name |
 | `--admin_email` | `admin@thelia.net` | Admin email |
 
-### 4. Start the development server
+### 4. Build the theme assets
+
+The front-office theme (`flexy`) and any Twig back-office theme ship their assets as
+source. They must be compiled with Webpack Encore, otherwise the corresponding pages
+fail with *"Could not find the entrypoints file from Webpack"*.
+
+```bash
+# Front-office (flexy) — always required
+cd templates/frontOffice/flexy && npm install && npm run build && cd -
+
+# Back-office, only when using a Twig template such as default-twig
+cd templates/backOffice/default-twig && npm install && npm run build && cd -
+```
+
+The Smarty back-office template (`default`) needs no build step.
+
+### 5. Start the development server
 
 ```bash
 php -S localhost:8000 -t public
 ```
 
-### 5. Access your site
+### 6. Access your site
 
 - **Front-office**: http://localhost:8000
 - **Back-office**: http://localhost:8000/admin
