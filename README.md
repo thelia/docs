@@ -1,38 +1,24 @@
-# Website
+# Thelia documentation
 
-This website is built using [Docusaurus 2](https://v2.docusaurus.io/), a modern static website generator.
+Source of the [Thelia documentation site](https://doc.thelia.net), built with [Docusaurus](https://docusaurus.io).
 
-## Installation
+## Local development
 
-```console
-yarn install
+```bash
+npm install
+npm start
 ```
 
-## Local Development
-
-```console
-yarn start
-```
-
-This command starts a local development server and open up a browser window. Most changes are reflected live without having to restart the server.
+This starts a local server and opens a browser window. Most changes reload live without restarting the server.
 
 ## Build
 
-```console
-yarn build
+```bash
+npm run build
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+This generates the static site in the `build` directory, ready to serve from any static host.
 
-## Deployment
+## Hooks, events and commands reference
 
-```console
-GIT_USER=<Your GitHub username> USE_SSH=true yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
-
-## Automatic generation
-
-The hooks, events and commands doc can be generated with the open source script: [AutoDocThelia](https://github.com/mathisdlg/AutoDocThelia/).
-
+The hooks, events and commands pages can be regenerated with [AutoDocThelia](https://github.com/mathisdlg/AutoDocThelia/).
