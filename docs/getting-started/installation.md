@@ -13,11 +13,11 @@ For local development, use **[DDEV](./ddev)**. It gives a faster and more consis
 
 ## Prerequisites
 
-### PHP 8.2+
+### PHP 8.3+
 
 ```bash
 php -v
-# PHP 8.2.x (cli) ...
+# PHP 8.3.x (cli) ...
 ```
 
 **Required extensions:**

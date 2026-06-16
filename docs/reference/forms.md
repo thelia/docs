@@ -9,7 +9,7 @@ Thelia's form system is built on Symfony Forms. It handles validation, CSRF prot
 
 :::info Context-specific documentation
 - **Front-Office Forms**: See [Front-Office Forms](/docs/front-office/forms) for LiveComponent-based forms with Twig
-- **Back-Office Forms**: See [Back-Office Development](/docs/back-office) for Smarty form rendering
+- **Back-Office Forms**: See [Back-Office Development](/docs/back-office) for Twig form rendering
 :::
 
 ## Creating a form
@@ -168,7 +168,7 @@ Thelia supports all [Symfony Form Types](https://symfony.com/doc/current/referen
 
 Forms include CSRF protection by default. Always include hidden fields in your templates:
 
-**Smarty (Back-Office):**
+**Smarty (legacy back-office):**
 ```smarty
 {form name="mymodule_form_my_form"}
     <form method="post" action="{url path='/my/action'}">
@@ -178,7 +178,7 @@ Forms include CSRF protection by default. Always include hidden fields in your t
 {/form}
 ```
 
-**Twig (Front-Office with LiveComponents):**
+**Twig (front-office and default-twig back-office):**
 ```twig
 {{ form_start(form) }}
     {# CSRF token included automatically #}
@@ -188,5 +188,5 @@ Forms include CSRF protection by default. Always include hidden fields in your t
 ## Next steps
 
 - [Front-Office Forms](/docs/front-office/forms) - LiveComponent forms with real-time validation
-- [Back-Office Development](/docs/back-office) - Smarty form rendering
+- [Back-Office Development](/docs/back-office) - Twig form rendering
 - [Events](/docs/reference/events) - Form-related events

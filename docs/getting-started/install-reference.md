@@ -94,7 +94,7 @@ php bin/install --with-demo --with-admin
 ### Custom themes
 
 ```bash
-ddev exec php bin/install --frontoffice_theme=myTheme --backoffice_theme=default
+ddev exec php bin/install --frontoffice_theme=myTheme --backoffice_theme=default-twig
 ```
 
 ## Dual layout support

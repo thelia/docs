@@ -176,7 +176,7 @@ Hooks and ACL resources are bridged (no change required); route names are not. C
 
 Back-office controllers do not extend a `BaseForm`, a Thelia `BaseAdminController`, or an
 `AbstractCrudController`. They are plain `final` classes that get everything they need through
-constructor injection (ADR-011). They rely on two services:
+constructor injection. They rely on two services:
 
 - `AdminFormAction`, a `readonly` orchestrator that runs the full submit pipeline: ACL check, form
   validation, event dispatch, success logging, redirect, and inline error rendering on failure.

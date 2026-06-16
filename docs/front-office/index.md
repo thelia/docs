@@ -192,11 +192,11 @@ A minimal category page that uses all of these concepts together:
 
 | Aspect | Front office | Back office |
 |--------|--------------|-------------|
-| Template engine | `Twig` | Smarty |
-| Data fetching | `DataAccessService` | Loops |
-| Components | LiveComponents | Smarty templates |
+| Template engine | `Twig` | `Twig` (default-twig bundle) |
+| Data fetching | `DataAccessService` | Propel `Repository` classes |
+| Components | LiveComponents | Twig and Live components |
 | Hooks | Minimal use | Extensively used |
-| JavaScript | Stimulus | Custom scripts |
+| JavaScript | Stimulus | Stimulus |
 
 ## Next steps
 

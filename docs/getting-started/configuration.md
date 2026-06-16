@@ -158,7 +158,7 @@ Access in back-office: **Configuration > Store**
 
 ```bash
 php Thelia template:set frontOffice flexy
-php Thelia template:set backOffice default
+php Thelia template:set backOffice default-twig
 ```
 
 ## Caching

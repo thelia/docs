@@ -401,7 +401,7 @@ These functions are provided by the SEOne module (a Flexy dependency), not by Th
 Select Flexy as the front-office theme when running the installer:
 
 ```bash
-ddev exec php bin/install --frontoffice_theme=flexy --backoffice_theme=default
+ddev exec php bin/install --frontoffice_theme=flexy --backoffice_theme=default-twig
 ```
 
 If `--frontoffice_theme` is omitted, the installer falls back to the `ACTIVE_FRONT_TEMPLATE` environment variable, then to `flexy`.

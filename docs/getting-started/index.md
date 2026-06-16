@@ -51,7 +51,7 @@ php -S localhost:8000 -t public
 
 ## Prerequisites
 
-- **PHP 8.2+** with extensions: PDO_MySQL, openssl, intl, gd, curl, dom
+- **PHP 8.3+** with extensions: PDO_MySQL, openssl, intl, gd, curl, dom
 - **Composer 2+**
 - **MySQL 8.0+** or **MariaDB 10.6+**
 
