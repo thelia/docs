@@ -53,33 +53,6 @@ ddev exec bash -c "cd templates/backOffice/default-twig && npm install && npm ru
 
 The admin is then available at `https://<your-site>.ddev.site/admin`.
 
-:::danger `Unknown "safe_hook" function` on `/admin`
-If the admin returns `Unknown "safe_hook" function in login.html.twig` (HTTP 500), the
-`default-twig` bundle is **not active**. Its Twig functions (`safe_hook`, `hook_block`, `has_hook`)
-and all its services are registered only when it is the active back-office template: the bundle
-compares its own name against the `%thelia_admin_template%` container parameter, which the Thelia
-kernel sets **at container-compile time** from the `active-admin-template` configuration value. When
-that value is not `default-twig`, the bundle early-returns and registers nothing — yet the Twig
-templates still render (the parser resolver finds them on disk), so the missing function surfaces.
-
-Always activate the theme with the `template:set` command — never by hand:
-
-```bash
-ddev exec bin/console template:set backOffice default-twig
-ddev exec bin/console cache:clear
-```
-
-`template:set` does everything in the right order: copies the theme, installs its required modules,
-**registers the bundle in `config/bundles.php`** (`enableThemeAsBundle()`), runs `composer
-dump-autoload`, writes the `active-admin-template` config, then rebuilds the cache so
-`%thelia_admin_template%` is refreshed. Editing `composer.json` autoload (PSR-4) or the
-`active-admin-template` database row by hand is **not enough** — it skips the `config/bundles.php`
-registration and the ordered cache rebuild. If `safe_hook` is still missing once the bundle is
-active, the installed `thelia/backoffice-default-twig-template` is too old; update it. See
-[Bundle structure](./bundle-structure.md#a-symfony-abstractbundle-activated-on-demand) for the
-activation mechanism.
-:::
-
 :::tip Watch assets during development
 While editing SCSS or Stimulus controllers, run `npm run watch` from
 `templates/backOffice/default-twig/` so the bundle assets rebuild automatically. After editing a

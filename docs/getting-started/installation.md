@@ -81,12 +81,12 @@ composer install
 
 ### 3. Install Thelia
 
-`bin/install` is a standalone script that sets up the database, registers modules, and configures templates. Database credentials are passed as environment variables:
+`bin/install` is a standalone script that sets up the database, registers modules, and configures templates. Database credentials are passed as environment variables. Pass `--backoffice_theme=default-twig` to install the modern Twig back-office:
 
 ```bash
 DATABASE_HOST=localhost DATABASE_NAME=thelia \
 DATABASE_USER=thelia DATABASE_PASSWORD=your_password \
-php bin/install
+php bin/install --frontoffice_theme=flexy --backoffice_theme=default-twig
 ```
 
 #### With demo data and admin user
@@ -95,12 +95,20 @@ php bin/install
 DATABASE_HOST=localhost DATABASE_NAME=thelia \
 DATABASE_USER=thelia DATABASE_PASSWORD=your_password \
 php bin/install \
+    --frontoffice_theme=flexy --backoffice_theme=default-twig \
     --with-demo \
     --with-admin \
     --admin_login=admin \
     --admin_password=admin123 \
     --admin_email=admin@example.com
 ```
+
+:::caution Back-office theme: pass `default-twig`
+`--backoffice_theme` defaults to `default`, the legacy **Smarty** back-office. For the modern Twig
+admin, always pass `--backoffice_theme=default-twig`: `bin/install` then runs `template:set backOffice
+default-twig`, which registers and activates the bundle. Omit it and `/admin` fails with
+`Unknown "safe_hook" function` — the Twig back-office bundle is never activated.
+:::
 
 #### All options
 
@@ -119,7 +127,7 @@ php bin/install \
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--frontoffice_theme` | `flexy` | Front-office template |
-| `--backoffice_theme` | `default` | Back-office template |
+| `--backoffice_theme` | `default` | Back-office template — use `default-twig` for the modern Twig admin (`default` is the legacy Smarty back-office) |
 | `--pdf_theme` | `default` | PDF template |
 | `--email_theme` | `default` | Email template |
 | `--with-demo` | - | Import demo catalog |

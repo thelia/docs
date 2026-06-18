@@ -33,7 +33,7 @@ The script runs in two phases:
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--frontoffice_theme` | `flexy` | Front-office template |
-| `--backoffice_theme` | `default` | Back-office template |
+| `--backoffice_theme` | `default` | Back-office template — use `default-twig` for the modern Twig admin; `default` is the legacy Smarty back-office |
 | `--pdf_theme` | `default` | PDF template |
 | `--email_theme` | `default` | Email template |
 
@@ -70,16 +70,24 @@ With DDEV, these are injected automatically (all set to `db`).
 
 ## Examples
 
+:::caution Pass `--backoffice_theme=default-twig`
+`--backoffice_theme` defaults to `default` (legacy Smarty). For the modern Twig admin, always pass
+`--backoffice_theme=default-twig` — `bin/install` then runs `template:set backOffice default-twig`,
+which registers and activates the bundle. Omit it and `/admin` fails with `Unknown "safe_hook"
+function`.
+:::
+
 ### Minimal (DDEV)
 
 ```bash
-ddev exec php bin/install
+ddev exec php bin/install --frontoffice_theme=flexy --backoffice_theme=default-twig
 ```
 
 ### With demo and admin (DDEV)
 
 ```bash
-ddev exec php bin/install --with-demo --with-admin \
+ddev exec php bin/install --frontoffice_theme=flexy --backoffice_theme=default-twig \
+    --with-demo --with-admin \
     --admin_login=admin --admin_password=admin123
 ```
 
@@ -88,7 +96,7 @@ ddev exec php bin/install --with-demo --with-admin \
 ```bash
 DATABASE_HOST=localhost DATABASE_NAME=thelia \
 DATABASE_USER=thelia DATABASE_PASSWORD=secret \
-php bin/install --with-demo --with-admin
+php bin/install --frontoffice_theme=flexy --backoffice_theme=default-twig --with-demo --with-admin
 ```
 
 ### Custom themes

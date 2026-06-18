@@ -26,11 +26,12 @@ ddev start
 # Install dependencies
 ddev composer install
 
-# Install Thelia
-ddev exec php bin/install
+# Install Thelia (Twig front-office + Twig back-office)
+ddev exec php bin/install --frontoffice_theme=flexy --backoffice_theme=default-twig
 
-# Build the front-office theme assets (required)
+# Build the theme assets (required for both Twig themes)
 ddev exec bash -c "cd templates/frontOffice/flexy && npm install && npm run build"
+ddev exec bash -c "cd templates/backOffice/default-twig && npm install && npm run build"
 
 # Open in browser
 ddev launch
@@ -53,12 +54,20 @@ fails with *"Could not find the entrypoints file from Webpack"*. For a Twig back
 
 ```bash
 ddev exec php bin/install \
+    --frontoffice_theme=flexy --backoffice_theme=default-twig \
     --with-demo \
     --with-admin \
     --admin_login=admin \
     --admin_password=admin123 \
     --admin_email=admin@example.com
 ```
+
+:::caution Always pass `--backoffice_theme=default-twig`
+`--backoffice_theme` defaults to `default` (the legacy Smarty back-office). Pass
+`--backoffice_theme=default-twig` to install the modern Twig back-office — `bin/install` then runs
+`template:set backOffice default-twig`, which registers the bundle and activates it. Without it the
+admin throws `Unknown "safe_hook" function` because the Twig back-office bundle is never activated.
+:::
 
 See [Install Reference](./install-reference) for all available options and environment variables.
 
@@ -148,7 +157,7 @@ ddev exec chmod -R 777 var/cache var/log
 ```bash
 ddev delete -O
 ddev start
-ddev exec php bin/install
+ddev exec php bin/install --frontoffice_theme=flexy --backoffice_theme=default-twig
 ```
 
 ## Next steps
