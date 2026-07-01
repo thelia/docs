@@ -5,7 +5,7 @@ sidebar_position: 2
 
 # Templating Engines
 
-Thelia 3 renders its interfaces with Twig. Both the front-office (Flexy theme) and the modern back-office (`default-twig` theme) are Twig bundles built on Symfony UX (Stimulus, TwigComponent, LiveComponent) and Bootstrap 5.
+Thelia 3 renders its interfaces with Twig. The front-office (Flexy theme) and the modern back-office (`default-twig` theme) are Twig bundles built on Symfony UX (Stimulus, TwigComponent, LiveComponent) and Bootstrap 5, and the transactional emails and order PDF are Twig themes too.
 
 A second engine, Smarty, still ships for the legacy `default` back-office theme. It is kept only for the transition and is not the recommended path for new development.
 
@@ -234,6 +234,16 @@ Most hook names are kept identical to the legacy Smarty template; a few renamed 
 :::note Access control
 ACL resources live in `core/lib/Thelia/Core/Security/Resource/AdminResources.php`. Check access with `is_granted('VIEW', 'admin.brand')` in templates, or via the bundle's `AdminAccessChecker` in controllers.
 :::
+
+## Emails and PDF: Twig themes
+
+Transactional emails and order documents (invoice, delivery slip) are Twig themes as well, installed under `templates/email/` and `templates/pdf/`. They render through the same `TwigParser` as the rest of the site, selected by the `ParserResolver`.
+
+The `ParserResolver` picks a parser by file extension, not by a global setting: `TwigParser` claims `.html.twig` and `.txt.twig`, the legacy `SmartyParser` claimed `.html` and `.tpl`. An email message is a `.html.twig` (HTML body) plus a `.txt.twig` (text body); a PDF document is a single `.html.twig`. Because the choice is per file, a Twig theme and a Smarty theme can coexist during a migration without any core change.
+
+Since a mail or a PDF is often rendered with no HTTP request behind it (from a worker, or the `mail:render` / `pdf:render` console commands), these themes use the CLI-safe helpers the `TwigEngine` module provides (`loop`, `format_money`, `format_date`, `format_address`, `config`, `thelia_url`, `media_url`, `hook` and `hook_block`) rather than request-bound functions. The PDF theme renders HTML that is then converted to PDF by dompdf.
+
+See [Emails and PDF](../reference/emails-and-pdf.md) for the full reference.
 
 ## Legacy back-office: Smarty (transitional)
 
