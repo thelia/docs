@@ -86,6 +86,28 @@ php bin/install \
   --with-demo --with-admin
 ```
 
+## Emails and PDF: Smarty → Twig
+
+The email and PDF themes moved from Smarty to Twig, and the PDF engine changed. If you ship a custom email or PDF theme, or a module that hooks into one, these apply:
+
+| Thelia 2 | Thelia 3 |
+|----------|----------|
+| Smarty `.html` / `.txt` email templates | Twig `.html.twig` (HTML body) + `.txt.twig` (text body) |
+| Smarty `.html` PDF templates | Twig `.html.twig` (`invoice.html.twig`, `delivery.html.twig`) |
+| PDF engine `spipu/html2pdf` | `dompdf` |
+| `{loop}`, `{hook}`, `{config}` | `loop(...)`, `hook(...)`, `config(...)` Twig functions |
+| `{intl l="..."}` | `{{ '...'\|trans({}, 'email', locale) }}` (domain `email` or `pdf`) |
+| `{format_money}`, `{format_date}`, `{format_address}` | `format_money(...)`, `format_date(...)`, `format_address(...)` functions |
+| i18n placeholders `%ref` (single `%`) | `%ref%` (wrapped) for the `email` / `pdf` domains |
+| html2pdf `<page>` / `<page_header>` / `<page_footer>` / `[[page_cu]]` | `@page` / `div { position: fixed }` / `counter(page)` in CSS |
+| catalogs in `I18n/{locale}.php` (Thelia translator) | catalogs in `translations/{domain}.{locale}.php` (Symfony translator) |
+
+The layout mechanism changes too: Smarty `{extends}` becomes Twig `{% extends %}` with `{% block %}`. See [Emails and PDF](../reference/emails-and-pdf.md) for the full theme reference.
+
+:::note dompdf, not mPDF
+dompdf is LGPL-2.1, compatible with Thelia's GPL-3.0. It lays out from CSS 2.1, so a template ported from html2pdf must produce valid table and CSS markup. One known limit: dompdf 3.1 does not resolve `counter(pages)` (the page total), so the footer shows the current page without a total.
+:::
+
 ## API Platform 3.4 → 4.3 standalone
 
 Thelia 2 ships API Platform 3.4 with the Propel bridge (`PropelResourceInterface` and `ResourceAddonInterface` already exist there). The migration is the API Platform 4.3 upgrade, pulled in through the `api-platform/symfony` package (`^4.3`) instead of the legacy `api-platform/core` metapackage.
@@ -289,6 +311,14 @@ You do **not** rewrite these. They carry over unchanged:
 - [ ] Rebuild back-office screens on the `default-twig` bundle (the Smarty `default` theme is deprecated)
 - [ ] Move controllers to `#[Route]` attributes, queries to `Repository/`, presenters to `Service/`
 - [ ] Declare hooks with the bundle's `#[AsHook]` attribute
+
+### Emails and PDF
+
+- [ ] Convert email templates to a `.html.twig` + `.txt.twig` pair, PDF templates to `.html.twig`
+- [ ] Replace `{intl}` with `{{ '...'|trans({}, 'email', locale) }}` (domain `email` / `pdf`), and rewrite placeholders from `%ref` to `%ref%`
+- [ ] Move i18n catalogs from `I18n/{locale}.php` to `translations/{domain}.{locale}.php`
+- [ ] Port html2pdf `<page>` / `<page_header>` / `<page_footer>` / `[[page_cu]]` to CSS (`@page`, `position: fixed`, `counter(page)`)
+- [ ] Rewrite Smarty `{extends}` layouts as Twig `{% extends %}` / `{% block %}`
 
 ### Modules
 
