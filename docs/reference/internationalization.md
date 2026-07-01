@@ -3,254 +3,166 @@ title: Internationalization
 sidebar_position: 3
 ---
 
-## In templates
+# Internationalization
 
-To create multilingual templates, pay attention to:
-- static text
-- date formatting
-- number formatting
-- money formatting
+Thelia is multilingual end to end: the front-office, the back-office, emails and PDF are all translated, and a store can define as many languages as it needs under **Configuration → Languages & URLs**. This page covers how to translate strings in Twig templates and in PHP, and how translations are stored so that a merchant's edits survive a code update.
 
-Thelia provides several Smarty functions for this.
+## In Twig templates
 
-### `{intl}`
+Templates translate with Symfony's native `|trans` filter. The first argument is the source string (the English text doubles as the key), the second is the map of placeholder values, the third is the domain, and the fourth is the target locale:
 
-The `{intl}` function translates a string into the current language.
-```
-    {intl l="This is a string to translate"}
+```twig
+{{ 'Welcome!'|trans }}
 
-    or
+{# with a placeholder #}
+{{ 'Hello, %name%!'|trans({'%name%': customer.firstname}) }}
 
-    {intl l="This is another string to translate" d="mymodule.ai"}
+{# with an explicit domain #}
+{{ 'Thank you for your order!'|trans({}, 'email') }}
 
-    or
-
-    {intl l="Hello, %name, how do you do ?" name={$name}}
-```
-These are three typical uses of `{intl}`.
-
-#### `l`
-
-The `l` parameter contains the string that will be translated. This string should not contain any variable, such as `{intl l="Hello, $name, how do you do ?"}`; use internal variables instead. Every `%varname` found in the string is replaced by the value of the `varname` parameter. For example, `{intl l="Hello, %user, how do you do ?" user={$name}}` is fine.
-
-If no translation can be found for a given string, the translator will return either the value of the `l` parameter, or an empty string, depending on the "Languages & URLs" parameters.
-
-#### `d`
-
-The `d` parameter is the message domain, a set of internationalized messages. Thelia defines the following domains:
-
-- `core` => for thelia core translations
-- bo.*template_name* (eg : `bo.default`) => for each back-office template
-- fo.*template_name* (eg : `fo.default`) => for each front-office template
-- pdf.*template_name* (eg : `pdf.default`) => for each PDF template
-- email.*template_name* (eg : `email.default`) => for each email template
-- In Modules :
-    - *module_code* (eg : `paypal`) => for module core translations
-    - *module_code*.ai (eg : `paypal.ai`) => used in AdminIncludes templates (Note: AdminIncludes are now deprecated)
-    - *module_code*.bo.*template_name* (eg : `paypal.bo.default`) => used in back office template
-    - *module_code*.fo.*template_name* (eg : `paypal.fo.default`) => used in front office template
-
-This parameter is mostly used in modules. Other templates (front-office, back-office, PDF and email) may use the `{default_translation_domain}` function to define a template-wide message domain, and the `d` parameter could then be omitted.
-
-For example, the `layout.tpl` file of the default front-office template contains `{default_translation_domain domain='fo.default'}`.
-
-#### `js`
-
-When using `{intl}` in a JavaScript string, the translated string may contain single or double quotes that must be escaped to prevent a syntax error.
-
-To do so, use the `js` parameter, which escapes single and double quotes:
-```js
-    var myString = '{intl l="A string with 'simple' and \"double\" quotes" js=1}';
-```
-The result will be :
-```js
-    var myString = 'A string \'simple\' and \"double\" quotes';
-```
-You may also use the escape:'html' Smarty modifier :
-```js
-    var myString = '{intl l="A string with 'simple' and \"double\" quotes"|escape:'html'}';
+{# with an explicit domain and locale #}
+{{ 'Thank you for your order!'|trans({}, 'email', locale) }}
 ```
 
-The result will be in this case :
-```js
-    var myString = 'A string with &#039;simple&#039; and &quot;double&quot; quotes';
-```
-The 'quotes' modifier can also be used, with some care, as it escapes only single quotes:
-```js
-    var myString = '{intl l="A string with 'simple' and \"double\" quotes"|escape:'quotes'}';
-```
-which gives:
-```js
-    var myString = 'A string with \'simple\' and "double" quotes';
-```
-#### Translating your templates
+When many strings in a template share the same domain, declare it once at the top with `trans_default_domain` and drop the domain argument on each call:
 
-Translation is done through the back-office, under Configuration -> Translation. The strings are automatically collected from your template, and you can enter a translation for any language defined in your store (see Configuration -> Languages & URLs).
+```twig
+{% trans_default_domain 'messages' %}
 
-### `{format_date}`
-
-Use this function to format a date according to the current locale standards.
-
-#### Examples
-```
-    Return the given date using the locale date format as date and time
-    {format_date date=$dateTimeObject}
-
-    Return the given date using a specified format    
-    {format_date date=$dateTimeObject format="Y-m-d H:i:s"}
-
-    Return the given date as a date string, using the locale date
-    {format_date date=$dateTimeObject output="date"}
-
-    Return the given date as a time string, using the locale date
-    {format_date date=$dateTimeObject output="time"}
+{{ 'Save'|trans }}
+{{ 'Cancel'|trans }}
 ```
 
-#### Parameters
+:::note Emails and PDF pass the domain and locale explicitly
+The shipped email and PDF templates do not use `trans_default_domain`; they pass the domain (`email` / `pdf`) and the target `locale` on every call: `{{ '…'|trans({}, 'email', locale) }}`. A mail is often rendered outside the customer's request, so pinning the locale on each string keeps the rendering correct. See [Emails and PDF](./emails-and-pdf.md#translations).
+:::
 
-- `date`: a DateTime object (required)
-- `format`: the expected format. The current locale format will be used if this parameter is empty or missing
-- `output`: the type of desired ouput, one of :
-    - `date`: the date only
-    - `time`: the time only
-    - `datetime`: the date and the time (default)
+### Placeholders
 
+`|trans` substitutes placeholders wrapped in percent signs, `%name%`. The same token appears in the catalog key and in the parameter map:
 
-### `{format_number}`
-
-Use this function to format a number according to the current locale standards, or a specific format.
-
-#### Examples
-
+```twig
+{{ 'Your order confirmation Nº %ref%'|trans({'%ref%': order_ref}, 'email', locale) }}
 ```
-    Outputs "1 246,1"
-    {format_number number="1246.12" decimals="1" dec_point="," thousands_sep=" "}
-
-    Outputs "1246,12" if locale is fr_FR, 1 246.12 if locale is en_US
-    {format_number number="1246.12"}
-```
-
-#### Parameters
-
-- `number`: int or float number
-- `decimals`: how many decimals format expected
-- `dec_point`: separator for the decimal point
-- `thousands_sep`: thousands separator
-
-
-### `{format_money}`
-
-Use this function to format an amount of money according to the current locale standards, or a specific format.
-
-#### Examples
-
-```
-    Outputs "1 246,1 €"
-    {format_money number="1246.12" decimals="1" dec_point="," thousands_sep=" " symbol="€"}
-
-    Outputs "1246,12 €" if locale is fr_FR, "€ 1 246.12" if locale is en_US
-    {format_money number="1246.12"}
-```
-
-#### Parameters
-
-- `number`: int or float number
-- `decimals`: how many decimals format expected
-- `dec_point`: separator for the decimal point
-- `thousands_sep`: thousands separator
-- `symbol`: Currency symbol
-- `remove_zero_decimal` (since 2.4.0) : Do not show decimals if they are zero. example: 1234.00 € will become 1234 €
-
-### `{format_address}`
-
-Use this function to format an address according to the current country standards.
-
-#### Examples
-
-```smarty
-{* format Address 1 in html *}
-{format_address address="1"}
-
-{* format Address 1 in html and in french (default is the session lang) *}
-{format_address address="1" locale="fr_FR"}
-
-{* format Address 1 in html with custom tag and attributes *}
-{format_address address="1" html_tag="address" html_class="customer-address" html_id="address1" }
-
-{* format Address 1 in plain text *}
-{format_address address="1" html="0"}
-
-{* format Address 1 as a postal label *}
-{format_address postal="1" address="1"}
-
-{* format Address 1 as a postal label and set the origin country (default is the shop country, then the default country) *}
-{format_address postal="1" address="1" origin_country='FR'}
-
-{* format order address 1 *}
-{format_address order_address="1"}
-
-{* format a custom address *}
-{format_address
-    recipient="M. Barack Obama"
-    organization="The White House"
-    address_line1="1600 Pennsylvania Avenue NW"
-    postal_code="20500"
-    locality="Washington"
-    country_code="US"
-    administrative_area="US-DC"
-}
-```
-
-#### Parameters
-
-Address information:
-
-- `address`: an address id
-- or `order_address`: an order address id
-- or separated list of information :
-    - `country_code` : the country code. eg: US
-    - `administrative_area` : state or province code. eg: US-CA
-    - `locality` : The city
-    - `dependent_locality`
-    - `postal_code`
-    - `sorting_code`
-    - `address_line1`
-    - `address_line2`
-    - `organization`
-    - `recipient`
-
-Formatting options:
-
-- `postal` : (boolean value) format address as a postal label. Takes care of uppercasing fields where required by the format (to facilitate automated mail sorting). Default: `false`.
-- `origin_country` : used when `postal` is true to specify the origin country. allowing it to differentiate between domestic and international mail. The default value is the store country, then the default country if store country is not specified.
-- `html` : (boolean value) format address in html (`true`) or in plain text (`false`)
-- `html_tag` : main outer tag used if html formatting is used. default : `p`
-- `html_*` : list of html attributes to add to the main tag. eg : `html_class="address"` will generate `<p class="address">...`
-- `locale` : the locale used to generate country name. Default: the current locale in session.
-
-## In php files
-
-To translate strings in your PHP classes, such as error messages, use the translator.
-`Translator` is a singleton class that lets you register a string as translatable, like this:
 
 ```php
-Translator::getInstance()
-    ->trans("A string that need to be translated");
+// email.fr_FR.php
+return [
+    'Your order confirmation Nº %ref%' => 'Confirmation de votre commande Nº %ref%',
+];
 ```
 
-To insert a dynamic value that changes and does not need to be translated, pass it as the second parameter:
+:::caution `%name%` (Symfony) vs `%name` (legacy Thelia)
+The Symfony `|trans` filter expects `%name%`. The legacy Thelia translator (used by the old Smarty `{intl}` plugin, and still by the core and modules, see [below](#in-php)) uses a single leading `%`, as in `%ref`. When you migrate a Smarty template to Twig, rewrite the placeholders accordingly.
+:::
+
+### Formatting dates, numbers, money and addresses
+
+Locale-aware formatting is done with the Twig **functions** the `TwigEngine` module provides. They mirror the Smarty `{format_*}` plugins and keep the Thelia semantics: the language format configured in the admin, the store currency, the address format for a country:
+
+```twig
+{{ format_date(order.CREATE_DATE, 'datetime') }}   {# date, time or datetime #}
+{{ format_number(1246.12, 2) }}
+{{ format_money(order.TOTAL_TAXED_AMOUNT, order.CURRENCY) }}
+{{ format_address(order.DELIVERY_ADDRESS, locale)|raw }}
+```
+
+:::note Functions, not filters
+`format_date`, `format_number`, `format_money` and `format_address` are Twig **functions** (called as `format_date(...)`), not filters. Symfony's `IntlExtension` already registers `format_date` and `format_number` as filters with ICU semantics; registering Thelia filters under the same names would silently shadow them. Using functions keeps both available and preserves the Thelia formatting rules. The logic lives in the engine-agnostic core `FormatService`, so the values are identical whatever the template engine.
+:::
+
+## In PHP
+
+Core code and modules translate through the Thelia `Translator`, a singleton wrapping the Symfony translator:
 
 ```php
-Translator::getInstance()
-    ->trans("A string that need to be translated with %variable", ['%variable' => $myVariable]);
+use Thelia\Core\Translation\Translator;
+
+Translator::getInstance()->trans('A string that needs translation');
 ```
 
-The third parameter of the `trans` function is the domain. In a module file, the best practice is to use the global module domain, which is stored in a constant of the base class:
+Pass dynamic values as placeholders (single leading `%`, the legacy Thelia convention):
+
 ```php
-Translator::getInstance()
-    ->trans(
-        "A string that need to be translated with %variable",
-        ['%variable' => $myVariable]
-        MyProject::DOMAIN_NAME
-    );
+Translator::getInstance()->trans(
+    'A string with %variable',
+    ['%variable' => $myVariable],
+);
 ```
+
+The third argument is the domain. In a module, use the module's own domain, stored as a constant on the module base class:
+
+```php
+Translator::getInstance()->trans(
+    'A string with %variable',
+    ['%variable' => $myVariable],
+    MyModule::DOMAIN_NAME,
+);
+```
+
+## Domains
+
+A domain is a named set of messages. Splitting translations by domain keeps a module's strings from colliding with the core's. Thelia defines:
+
+| Domain | Contents |
+|--------|----------|
+| `core` | Thelia core strings |
+| `messages` | Default Symfony domain, used by the Twig front-office and back-office |
+| `email` | The active email template's strings |
+| `pdf` | The active PDF template's strings |
+| `<module_code>` (e.g. `paypal`) | A module's core strings |
+| `<module_code>.bo.<template>` | A module's back-office template strings |
+| `<module_code>.fo.<template>` | A module's front-office template strings |
+| `global` | The local override layer (see [below](#the-base-and-override-model)) |
+
+Two translators coexist in Thelia 3. The Twig front-office and back-office, and the email and PDF templates, use the **Symfony translator** (`|trans`, domains `messages` / `email` / `pdf`). The core and the modules still use the **Thelia translator** (`Translator::getInstance()`, domains `core` / `<module_code>`, and the `global` override layer). Converging on a single translator is planned after the beta.
+
+## The base and override model
+
+Translations come from two layers, and a merchant's edits must never be lost when the code is updated. Thelia separates them:
+
+- **Base layer: versioned, shipped with the code.** The core strings live in `core/lib/Thelia/Config/I18n/{locale}.php`; a template's or a module's strings live in its own `I18n/{locale}.php`; the email and PDF catalogs live in `translations/{domain}.{locale}.php`. These files are part of the package and are overwritten by an update.
+- **Override layer: local, not versioned.** Merchant edits made in the back-office are written to `local/I18n/{locale}.php`, loaded as the `global` domain. This directory is `.gitignore`d, so a `git push` or a package update never touches it.
+
+The override layer **wins** at resolution: `Translator::trans()` checks the `global` domain first and returns the override if it finds one, before falling back to the base domain. A translation edited in the back-office therefore takes precedence over the shipped string, and survives the next code update.
+
+### Editing translations in the back-office
+
+Translations are edited under **Configuration → Translation**. The strings are collected automatically from the selected source (the core, a template, a module), and you enter a translation for any language defined in your store. Saving writes to the local override layer (`local/I18n`), not to the versioned files.
+
+### Developer mode
+
+A "developer mode" writes the **versioned** base files instead of the override layer. It is meant for a contributor working on the shipped translations, not for a merchant, so it is available only when the application runs in debug mode (`APP_ENV=dev`). On a production instance the toggle is hidden and every save goes to the override layer, which is what keeps merchant edits and code updates from ever conflicting.
+
+Under the hood, the back-office controller reads `kernel.debug` and sets it on the translation event (`TranslationEvent::setDeveloperMode()`); the core write listener is a no-op for the versioned files unless developer mode is explicitly on.
+
+### Contributing translations upstream
+
+There is no command to promote a local override into the versioned base files. Thelia's shared translations are managed on [translate.thelia.net](https://translate.thelia.net) (Crowdin), and the back-office translation screen links to it. That platform is the path for contributing a translation back to the project; it then ships in a release as a base file.
+
+### Pruning orphaned overrides
+
+When a base string is removed from the code, an override that still references it becomes orphaned: harmless, but dead weight. The `i18n:prune-overrides` command reports these orphans (dry-run by default) and removes them with `--force`:
+
+```bash
+# list orphaned overrides across every local locale file
+php Thelia i18n:prune-overrides
+
+# restrict to one locale
+php Thelia i18n:prune-overrides --locale=fr_FR
+
+# actually remove them
+php Thelia i18n:prune-overrides --locale=fr_FR --force
+```
+
+An override is reported when its source string is absent from the base catalogs loaded for that locale. Review the list before forcing, especially on a partially translated locale. The command never touches the versioned base files. See [`i18n:prune-overrides`](./cli/i18n_prune_overrides.md).
+
+## Legacy Smarty
+
+The legacy `default` back-office theme (Smarty) translated with the `{intl}` plugin and the `{format_date}` / `{format_number}` / `{format_money}` / `{format_address}` plugins. That theme is transitional and expected to be dropped in Thelia 3.1. For its syntax, see [Smarty plugins](./smarty-plugins/index.md).
+
+## Learn more
+
+- [Emails and PDF](./emails-and-pdf.md): the `email` / `pdf` domains and their catalogs
+- [`i18n:prune-overrides`](./cli/i18n_prune_overrides.md): clean up orphaned overrides
+- [Smarty plugins](./smarty-plugins/index.md): the legacy `{intl}` / `{format_*}` reference
