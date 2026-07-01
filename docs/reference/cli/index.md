@@ -95,11 +95,16 @@ All commands below live in `Thelia\Command\` (core: `core/lib/Thelia/Command/`).
 `maintenance:purge` still declares its name with `setName()` in `configure()` rather than the `#[AsCommand]` attribute. Both styles work; new commands should use the attribute.
 :::
 
-### Templates
+### Templates, e-mail, PDF and i18n
 
 | Command | Description |
 | --- | --- |
 | `template:set` | Set the active front-office, back-office, e-mail or PDF template. |
+| [`mail:render`](./mail_render.md) | Render a mail message to a file without sending it (preview or template work). |
+| [`pdf:render`](./pdf_render.md) | Render an order PDF (invoice or delivery) to a file without the HTTP flow. |
+| [`i18n:prune-overrides`](./i18n_prune_overrides.md) | List or remove local translation overrides whose base string no longer exists. |
+
+`mail:render` and `pdf:render` render the active email/PDF template through the same parser the store uses, without sending or serving anything, so you can preview a rendering or work on a template from the CLI. See [Emails and PDF](../emails-and-pdf.md#previewing-a-rendering). `i18n:prune-overrides` maintains the local translation override layer described in [Internationalization](../internationalization.md#pruning-orphaned-overrides).
 
 ## Creating a custom command
 
