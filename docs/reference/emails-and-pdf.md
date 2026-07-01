@@ -7,8 +7,6 @@ sidebar_position: 4
 
 Thelia sends its transactional emails and generates its order documents (invoice, delivery slip) from Twig templates. Both are rendered through the same engine as the rest of the site: the `TwigParser` from the `TwigEngine` module, selected by the `ParserResolver`. There is no Smarty in the shipped email and PDF themes anymore.
 
-This page covers where the themes live, how a template is written, how their translations are loaded, and how to preview a rendering from the command line.
-
 ## Theme location
 
 An email theme and a PDF theme are two Thelia template packages, installed under `templates/`:
