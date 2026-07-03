@@ -104,6 +104,8 @@ The email and PDF themes moved from Smarty to Twig, and the PDF engine changed. 
 
 The layout mechanism changes too: Smarty `{extends}` becomes Twig `{% extends %}` with `{% block %}`. See [Emails and PDF](../reference/emails-and-pdf.md) for the full theme reference.
 
+Fresh installs seed the message subjects in the database in Twig syntax too (`{{ order_ref }}` instead of `{$order_ref}`). The subject goes through the same engine as the message body, so a Smarty email theme cannot render the default subjects: port the theme to Twig, or rewrite the subjects in Smarty syntax from the back office.
+
 :::note dompdf, not mPDF
 dompdf is LGPL-2.1, compatible with Thelia's GPL-3.0. It lays out from CSS 2.1, so a template ported from html2pdf must produce valid table and CSS markup. One known limit: dompdf 3.1 does not resolve `counter(pages)` (the page total), so the footer shows the current page without a total.
 :::
