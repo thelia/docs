@@ -167,6 +167,8 @@ public function myAction(): Response { ... }
 
 Watch the syntax shifts: `methods="GET"` (string) becomes `methods: ['GET']` (array), and `requirements={"id"="\d+"}` becomes `requirements: ['id' => '\d+']` (PHP array).
 
+`Config/routing.xml` files are deprecated as well. Thelia 3 still loads them and logs a deprecation for each one, but support will go away in a later release: move the routes to `#[Route]` attributes on the controllers, keep the same route names and paths, and delete the file. The modules shipped with Thelia already made the switch.
+
 :::caution
 `BaseModule::getAnnotationRoutePrefix()` is `@deprecated`. Override `BaseModule::getRoutePrefix()` instead: same signature, same behavior. `ModuleAttributeLoader` calls `getRoutePrefix()`.
 :::
