@@ -146,6 +146,7 @@ templates/frontOffice/flexy/
 | [Flexy Theme](./flexy-theme/index.md) | Default theme structure |
 | [LiveComponents](./live-components.md) | Creating reactive components |
 | [Stimulus](./stimulus.md) | JavaScript controllers |
+| [Theme Hooks](./theme-hooks.md) | Theme extension points for modules |
 | [Forms](./forms.md) | Front-office forms |
 
 ## Quick example
