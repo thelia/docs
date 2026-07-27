@@ -14,7 +14,7 @@ The recommended approach is to clone the `thelia-templates/flexy` repository int
 ### Step 1: Clone Flexy into your templates directory
 
 ```bash
-git clone https://github.com/thelia/Flexy.git templates/frontOffice/myCustomTheme
+git clone https://github.com/thelia-templates/flexy.git templates/frontOffice/myCustomTheme
 ```
 
 The Flexy `composer.json` declares the package name `thelia/flexy`, the PSR-4 root `FlexyBundle\` and the Twig component `name_prefix: Flexy`. Those identifiers are global. If you keep both the original Flexy and your copy installed at the same time, they collide. See the caution below before going further.
