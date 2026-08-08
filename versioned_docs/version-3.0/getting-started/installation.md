@@ -68,14 +68,14 @@ cd thelia
 **With Composer (project):**
 
 ```bash
-composer create-project thelia/thelia-project my-shop
+composer create-project thelia/thelia-project my-shop --stability=beta
 cd my-shop
 ```
 
 :::note Beta release
-Thelia 3.0.0-beta1 is a pre-release. Composer only selects it when the beta stability is allowed:
-add `--stability=beta` to the command above, or set the following in your project `composer.json`
-before requiring Thelia packages:
+Thelia 3.0.0-beta1 is a pre-release. Composer only selects it when the beta stability is allowed,
+which is what `--stability=beta` does above. Alternatively, set the following in your project
+`composer.json` before requiring Thelia packages:
 
 ```json
 {
@@ -93,21 +93,21 @@ composer install
 
 ### 3. Install Thelia
 
-`bin/install` is a standalone script that sets up the database, registers modules, and configures templates. Database credentials are passed as environment variables. Pass `--backoffice_theme=default-twig` to install the modern Twig back-office:
+`bin/install` is a standalone script that sets up the database, registers modules, and configures templates. Database credentials can be passed either as CLI options or as environment variables:
 
 ```bash
-DATABASE_HOST=localhost DATABASE_NAME=thelia \
-DATABASE_USER=thelia DATABASE_PASSWORD=your_password \
-php bin/install --frontoffice_theme=flexy --backoffice_theme=default-twig
+php bin/install --database_host=localhost --database_name=thelia \
+    --database_user=thelia --database_password=your_password \
+    --frontoffice_theme=flexy
 ```
 
 #### With demo data and admin user
 
 ```bash
-DATABASE_HOST=localhost DATABASE_NAME=thelia \
-DATABASE_USER=thelia DATABASE_PASSWORD=your_password \
 php bin/install \
-    --frontoffice_theme=flexy --backoffice_theme=default-twig \
+    --database_host=localhost --database_name=thelia \
+    --database_user=thelia --database_password=your_password \
+    --frontoffice_theme=flexy \
     --with-demo \
     --with-admin \
     --admin_login=admin \
@@ -115,40 +115,43 @@ php bin/install \
     --admin_email=admin@example.com
 ```
 
-:::caution Back-office theme: pass `default-twig`
-`--backoffice_theme` defaults to `default`, the legacy **Smarty** back-office. For the modern Twig
-admin, always pass `--backoffice_theme=default-twig`: `bin/install` then runs `template:set backOffice
-default-twig`, which registers and activates the bundle. Omit it and `/admin` fails with
-`Unknown "safe_hook" function` — the Twig back-office bundle is never activated.
+:::note The back-office theme defaults to `default-twig`
+`--backoffice_theme` defaults to `default-twig`, the Twig back-office, so most installs do not need
+to pass it. Pass `--backoffice_theme=default` only if you deliberately want the legacy Smarty admin.
 :::
 
 #### All options
 
-**Environment variables (database):**
+**Database credentials.** Each setting is resolved as CLI option, then environment variable, then
+default. Host and name are required.
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DATABASE_HOST` | - | Database hostname |
-| `DATABASE_PORT` | `3306` | Database port |
-| `DATABASE_NAME` | - | Database name |
-| `DATABASE_USER` | - | Database user |
-| `DATABASE_PASSWORD` | - | Database password |
+| Option | Variable | Default | Description |
+|--------|----------|---------|-------------|
+| `--database_host` | `DATABASE_HOST` | - | Database hostname |
+| `--database_port` | `DATABASE_PORT` | `3306` | Database port |
+| `--database_name` | `DATABASE_NAME` | - | Database name |
+| `--database_user` | `DATABASE_USER` | - | Database user |
+| `--database_password` | `DATABASE_PASSWORD` | - | Database password |
 
-**CLI options (themes and setup):**
+**Themes and setup:**
 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--frontoffice_theme` | `flexy` | Front-office template |
-| `--backoffice_theme` | `default` | Back-office template — use `default-twig` for the modern Twig admin (`default` is the legacy Smarty back-office) |
+| `--backoffice_theme` | `default-twig` | Back-office template (`default` is the legacy Smarty back-office) |
 | `--pdf_theme` | `default` | PDF template |
 | `--email_theme` | `default` | Email template |
 | `--with-demo` | - | Import demo catalog |
+| `--skip-demo-images` | - | With `--with-demo`, import the catalog without its images |
 | `--with-admin` | - | Create admin user |
+| `--strict-themes` | - | Remove the bundles of the templates you did not select |
 | `--admin_login` | `thelia` | Admin username |
 | `--admin_password` | `thelia` | Admin password |
 | `--admin_first_name` | `Admin` | Admin first name |
 | `--admin_last_name` | `Thelia` | Admin last name |
 | `--admin_email` | `admin@thelia.net` | Admin email |
+
+See [Install Reference](./install-reference) for what `--skip-demo-images` and `--strict-themes` do.
 
 ### 4. Build the theme assets
 

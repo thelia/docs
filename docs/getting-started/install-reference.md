@@ -33,16 +33,31 @@ The script runs in two phases:
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--frontoffice_theme` | `flexy` | Front-office template |
-| `--backoffice_theme` | `default` | Back-office template — use `default-twig` for the modern Twig admin; `default` is the legacy Smarty back-office |
+| `--backoffice_theme` | `default-twig` | Back-office template. `default-twig` is the Twig admin; `default` is the legacy Smarty back-office |
 | `--pdf_theme` | `default` | PDF template |
 | `--email_theme` | `default` | Email template |
+
+Each of these also reads an environment variable when the flag is absent: `ACTIVE_FRONT_TEMPLATE`,
+`ACTIVE_ADMIN_TEMPLATE`, `ACTIVE_PDF_TEMPLATE`, `ACTIVE_EMAIL_TEMPLATE`.
 
 ### Setup options
 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--with-demo` | - | Import demo catalog |
+| `--skip-demo-images` | - | With `--with-demo`, import the catalog without its images |
 | `--with-admin` | - | Create admin user |
+| `--strict-themes` | - | Remove the bundles of the templates you did not select |
+
+`--skip-demo-images` passes `--skip-images` to `thelia:demo:import`. The demo catalog is created
+without downloading or copying the product images, which makes the install noticeably faster. It has
+no effect without `--with-demo`.
+
+`--strict-themes` is off by default so that several templates of the same type can sit side by side
+in one installation, which is what lets the Twig and Smarty back-offices coexist during the
+migration. With the flag on, `bin/install` scans `templates/<type>/` and removes from
+`config/bundles.php` every bundle belonging to a template other than the selected one. Use it for a
+lean production install, not on a development checkout where you switch templates.
 
 ### Admin options (requires `--with-admin`)
 
@@ -54,55 +69,61 @@ The script runs in two phases:
 | `--admin_last_name` | `Thelia` | Admin last name |
 | `--admin_email` | `admin@thelia.net` | Admin email |
 
-## Environment variables
+## Database credentials
 
-Database credentials are passed as environment variables, not CLI options:
+Credentials can be given either as CLI options or as environment variables. Each setting is resolved
+in this order: **CLI option, then environment variable, then default.**
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `DATABASE_HOST` | Yes | - | Database hostname |
-| `DATABASE_PORT` | No | `3306` | Database port |
-| `DATABASE_NAME` | Yes | - | Database name |
-| `DATABASE_USER` | Yes | - | Database user |
-| `DATABASE_PASSWORD` | Yes | - | Database password |
+| Option | Variable | Required | Default | Description |
+|--------|----------|----------|---------|-------------|
+| `--database_host` | `DATABASE_HOST` | Yes | - | Database hostname |
+| `--database_port` | `DATABASE_PORT` | No | `3306` | Database port |
+| `--database_name` | `DATABASE_NAME` | Yes | - | Database name |
+| `--database_user` | `DATABASE_USER` | Yes | - | Database user |
+| `--database_password` | `DATABASE_PASSWORD` | Yes | - | Database password |
 
-With DDEV, these are injected automatically (all set to `db`).
+Host and name have no default: the script exits with an error if neither the option nor the variable
+is set. Whichever way you pass them, `bin/install` writes the resolved values to `.env.local`.
+
+With DDEV, the variables are injected automatically (all set to `db`), so no database option is
+needed.
 
 ## Examples
-
-:::caution Pass `--backoffice_theme=default-twig`
-`--backoffice_theme` defaults to `default` (legacy Smarty). For the modern Twig admin, always pass
-`--backoffice_theme=default-twig` — `bin/install` then runs `template:set backOffice default-twig`,
-which registers and activates the bundle. Omit it and `/admin` fails with `Unknown "safe_hook"
-function`.
-:::
 
 ### Minimal (DDEV)
 
 ```bash
-ddev exec php bin/install --frontoffice_theme=flexy --backoffice_theme=default-twig
+ddev exec php bin/install --frontoffice_theme=flexy
 ```
 
 ### With demo and admin (DDEV)
 
 ```bash
-ddev exec php bin/install --frontoffice_theme=flexy --backoffice_theme=default-twig \
-    --with-demo --with-admin \
+ddev exec php bin/install --frontoffice_theme=flexy \
+    --with-demo --skip-demo-images --with-admin \
     --admin_login=admin --admin_password=admin123
 ```
 
-### Standard environment
+### Standard environment, credentials as options
+
+```bash
+php bin/install --database_host=localhost --database_name=thelia \
+    --database_user=thelia --database_password=secret \
+    --frontoffice_theme=flexy --with-demo --with-admin
+```
+
+### Standard environment, credentials as variables
 
 ```bash
 DATABASE_HOST=localhost DATABASE_NAME=thelia \
 DATABASE_USER=thelia DATABASE_PASSWORD=secret \
-php bin/install --frontoffice_theme=flexy --backoffice_theme=default-twig --with-demo --with-admin
+php bin/install --frontoffice_theme=flexy --with-demo --with-admin
 ```
 
 ### Custom themes
 
 ```bash
-ddev exec php bin/install --frontoffice_theme=myTheme --backoffice_theme=default-twig
+ddev exec php bin/install --frontoffice_theme=myTheme --strict-themes
 ```
 
 ## Dual layout support

@@ -1,7 +1,7 @@
 module.exports = {
   title: 'Thelia Documentation',
   tagline: 'Open-source e-commerce platform',
-  url: 'https://thelia.github.io',
+  url: 'https://doc.thelia.net',
   baseUrl: '/',
   deploymentBranch: 'gh-pages',
   trailingSlash: false,

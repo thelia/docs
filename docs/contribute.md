@@ -3,126 +3,137 @@ sidebar_position: 11
 title: Contribute
 ---
 
-## How to contribute ?
+# Contribute
 
-Thelia is hosted on [GitHub](https://github.com/thelia/thelia).     
-To contribute, fork the project
-and submit a [Pull Request](https://help.github.com/articles/using-pull-requests) or an [Issue](https://github.com/thelia/thelia).
+Thelia is hosted on [GitHub](https://github.com/thelia/thelia). To contribute, fork the repository
+and open a [pull request](https://docs.github.com/en/pull-requests), or report a problem in the
+[issue tracker](https://github.com/thelia/thelia/issues).
 
-## Coding Standard
+## Set up a development checkout
 
-Thelia follows [PSR-I](http://www.php-fig.org/psr/psr-1/) and [PSR-2](http://www.php-fig.org/psr/psr-2/), so your code must follow these rules too. Tools like the
-[PHP Coding Standards Fixer](http://cs.sensiolabs.org/) can handle this for you.
-
-## Pull Request
-
-[Creating a Pull request](https://help.github.com/articles/creating-a-pull-request) is the best way for submitting a
-patch but there are some rules to follow.     
-First of all, fork [Thelia](https://github.com/thelia/thelia) repo and create
-a new branch, never work on the `main` branch, use it only for syncing with [Thelia](https://github.com/thelia/thelia) repo
+Clone the repository and install it with DDEV, which is the setup the project is tested against:
 
 ```bash
-git checkout -b new-branch main
+git clone https://github.com/thelia/thelia.git
+cd thelia
+
+ddev start
+ddev composer install
+ddev exec php bin/install --frontoffice_theme=flexy --with-demo --with-admin
+ddev exec bash -c "cd templates/frontOffice/flexy && npm install && npm run build"
+ddev exec bash -c "cd templates/backOffice/default-twig && npm install && npm run build"
 ```
 
-After finishing your modification you have to rebase your branch and push it to your repo
+See [DDEV Installation](./getting-started/ddev.md) for the full setup, or
+[Standard Installation](./getting-started/installation.md) if you prefer a local PHP and MySQL stack.
+
+## Coding standards
+
+Thelia 3 targets PHP 8.3 and follows [PSR-12](https://www.php-fig.org/psr/psr-12/), through the
+Symfony ruleset of [PHP CS Fixer](https://cs.symfony.com/). The configuration lives in
+`.php-cs-fixer.dist.php` at the root of the repository, so you never have to configure the rules
+yourself:
+
+```bash
+ddev exec composer cs-diff    # report violations without changing anything
+ddev exec composer cs         # fix them in place
+```
+
+New PHP files declare strict types:
+
+```php
+<?php
+
+declare(strict_types=1);
+```
+
+## Before opening a pull request
+
+Three checks must be green. Run them before you push, because the CI runs the same ones:
+
+```bash
+ddev exec composer cs-diff    # coding standards
+ddev exec composer phpstan    # static analysis
+ddev exec composer test       # the full test suite
+```
+
+`composer test` prepares a dedicated test database, then runs the unit, integration, api,
+http-flexy and http-backoffice suites. It never touches your development database. `composer ci`
+chains the three commands in one call.
+
+If PHPStan reports errors on generated Propel classes that you did not touch, its result cache is
+likely stale; `composer phpstan-fresh` clears it and re-runs the analysis.
+
+See [Testing](./testing/index.md) for how to write tests and what each suite covers.
+
+## Pull request workflow
+
+Fork [Thelia](https://github.com/thelia/thelia), then work on a branch. Never commit on `main`: keep
+it in sync with the upstream repository.
+
+```bash
+git checkout -b my-branch main
+```
+
+Once your work is done, rebase it on the current `main` and push it to your fork:
 
 ```bash
 git remote add upstream https://github.com/thelia/thelia.git
 git checkout main
 git pull --ff-only upstream main
-git checkout new-branch
+git checkout my-branch
 git rebase main
-git push origin new-branch
+git push origin my-branch
 ```
 
-Finally, submit a Pull Request as described in the [GitHub documentation](https://help.github.com/articles/creating-a-pull-request).
+Then open the pull request as described in the
+[GitHub documentation](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).
 
-To go further, read this [blog post](http://williamdurand.fr/2013/11/20/on-creating-pull-requests/).
+A few things make a pull request easier to review:
 
+- One concern per pull request. Unrelated fixes belong in separate ones.
+- Commit messages in English, one line, prefixed with the type of change (`feat:`, `fix:`, `docs:`,
+  `refactor:`, `test:`, `chore:`).
+- A change in behaviour comes with a test that fails without the fix.
+- Do not reformat code you are not changing: it hides the actual diff.
 
-## SQL scripts modification
+## Changing the database schema
 
-If you submit modifications that adds new data or change the structure of the database, please read the following documentation.
+The Propel schema of the core models is `local/config/schema.xml`. After editing it, regenerate the
+model classes and the SQL that `bin/install` applies:
 
-### Changes in Thelia model
+```bash
+# generate the Propel base classes
+vendor/thelia/propel/bin/propel build -v \
+    --input-dir=local/config/ --output-dir=core/lib/ --enable-identifier-quoting
 
-If you have changed the `schema.xml` file which is the Propel schema of Thelia models, you should generate the new `thelia.sql` file and the base classes of Propel.
-
-You should execute this command at the root directory of your Thelia website :
-
-```sh
-# generates classes
-vendor/thelia/propel/bin/propel build -v --input-dir=local/config/ --output-dir=core/lib/ --enable-identifier-quoting
-# generates thelia.sql
-vendor/thelia/propel/bin/propel sql:build -v --input-dir=local/config/ --output-dir=setup/
+# generate setup/thelia.sql
+vendor/thelia/propel/bin/propel sql:build -v \
+    --input-dir=local/config/ --output-dir=setup/
 rm setup/sqldb.map
 ```
 
-### Generate SQL for default data and update SQL scripts
+Commit the regenerated classes and `setup/thelia.sql` along with your schema change. An existing
+installation is not migrated by these files: add the corresponding statements to an update script in
+`setup/update/sql/` so that stores already in production can upgrade.
 
-These SQL files should not be modified directly as they are generated by a Thelia command. Instead, you should edit the smarty templates. The first one is the file `setup/insert.sql.tpl` that is used to generate the `insert.sql` file. Others are located in `setup/update/tpl` and are used to generate all SQL update files.
+For a module, the equivalent commands are `module:generate:model` and `module:generate:sql`, which
+read the module's own `schema.xml`. See the [CLI reference](./reference/cli/index.md).
 
-These templates only differ from the SQL for **i18n** tables, though Smarty makes other uses possible.  
-A typical example:
+## Translations
 
-```smarty
-...
+The core strings ship as PHP catalogs in `core/lib/Thelia/Config/I18n/{locale}.php`; a template or a
+module carries its own `I18n/{locale}.php`. These versioned files are the ones a contribution
+touches. Merchant edits made in the back-office go to `local/I18n/`, which is not versioned and is
+never part of a pull request.
 
-INSERT INTO  `module_i18n` (`id`, `locale`, `title`, `description`, `chapo`, `postscriptum`) VALUES
-{foreach $locales as $locale}
-  (@max_id+1, '{$locale}', {intl l='Navigation block' locale=$locale}, NULL,  NULL,  NULL),
-  (@max_id+2, '{$locale}', {intl l='Currency block' locale=$locale}, NULL,  NULL,  NULL),
-  ...
-  (@max_id+12, '{$locale}', {intl l='New Products block' locale=$locale}, NULL,  NULL,  NULL),
-  (@max_id+13, '{$locale}', {intl l='Products offer block' locale=$locale}, NULL,  NULL,  NULL){if ! $locale@last},{/if}
+When you add a translatable string, add it at least to `en_US.php` in the same pull request, so no
+release ships an untranslated key. See
+[Internationalization](./reference/internationalization.md) for the domains, the fallback rules and
+the back-office translation screen.
 
-{/foreach}
-;
+## Contributing to this documentation
 
-...
-```
-
-- `{foreach $locales as $locale}` is used to iterate on the list of locales : en\_US, fr\_FR, ...
-- `{intl l='Navigation block' locale=$locale}` is used to display the translation corresponding to the `l` attribute. This `intl` function
-differs from the classic one used in Thelia. If the translation does not exist, no fallbacks will be used by default.
-The text will be escaped for SQL and quotes will be placed around the input string. If the string is empty then it will be replaced by a `NULL` value.
-The attribute `in_string="1"` is used to disable the placement of quotes around the string. The attribute `use_default="1"` allow you to use the `l`
-attribute as a fallback if the translation does not exist.
-- don't forget to use the `{if ! $locale@last},{/if}` before the `{/foreach}` otherwise your SQL will not be valid.
-
-Keep attention on brackets `{` or `}` that is used by smarty. You can use `{ldelim}`, `{rdelim}` or `{literal}...{/literal}` to escape non smarty code.
-
-To translate the new string, you can use the translation page in the back office.
-
-If you modify templates, you will have to regenerate all sql files. You can use this Thelia command : `php Thelia generate:sql`
-
-You can also limit to a specific list of locales if you use `locales` parameter.
-
-Currently, as all languages are not fully translated, we use this command line to generate SQL files :
-
-```sh
-php Thelia generate:sql --locales='de_DE,en_US,es_ES,fr_FR'
-```
-
-
-## How to contribute new or update Thelia translations
-
-Translations are contributed by Thelia users worldwide. The translation work is coordinated at [Crowdin](http://crowdin.com).  
-The Thelia project is located at [http://translate.thelia.net/](http://translate.thelia.net/).
-
-Translations for **non english** languages should only be done on [http://translate.thelia.net/](http://translate.thelia.net/), not in a Thelia development website and submitted to us with a pull request on GitHub.  
-During the development stage, only english strings should be used inside Thelia and submitted with a pull request.  
-Prior to any release, Thelia maintainers will make an announcement and we'll have a couple of weeks
-of string freeze in order to give people time to complete the translations.
-Once translations are done, Thelia maintainers will integrate all translations in Thelia.
-
-If you want to contribute to translation or want to discuss specific translations, go to the [Thelia project page](http://translate.thelia.net/).
-
-To help translate or to add a language that isn't yet translated:
-
-- Visit the [Thelia page](http://translate.thelia.net/).
-- Sign up at  [Crowdin](http://crowdin.com) or log in if you already have an account.
-- On the Thelia project page, click the **Join Translation Project** button.
-- Choose the language you want to work on. If the language doesn't exist yet, request a new one by clicking the **Contact** link of one of the project managers.
-- Then Select a file in the list and start translating. if you encounter any problems, please consult [Crowdin Knowledge Base](https://support.crowdin.com/) or open a [new discussion on Thelia project page](http://translate.thelia.net/project/thelia/discussions).
+The documentation lives in [thelia/docs](https://github.com/thelia/docs) and is built with
+Docusaurus. Every page has an **Edit this page** link at the bottom that opens the right file on
+GitHub.

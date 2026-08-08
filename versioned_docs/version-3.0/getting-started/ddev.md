@@ -14,6 +14,24 @@ sidebar_position: 3
 
 ## Quick installation
 
+### Building a store
+
+Start from the project skeleton. Thelia 3.0.0-beta1 is a pre-release, so Composer only selects it
+when the beta stability is allowed:
+
+```bash
+composer create-project thelia/thelia-project my-shop --stability=beta
+cd my-shop
+
+ddev config --project-type=symfony --docroot=public
+ddev start
+ddev exec php bin/install --frontoffice_theme=flexy
+```
+
+### Contributing to Thelia
+
+Clone the repository instead, which already ships a `.ddev/` configuration:
+
 ```bash
 # Clone Thelia 3
 git clone https://github.com/thelia/thelia.git
@@ -26,7 +44,7 @@ ddev start
 ddev composer install
 
 # Install Thelia (Twig front-office + Twig back-office)
-ddev exec php bin/install --frontoffice_theme=flexy --backoffice_theme=default-twig
+ddev exec php bin/install --frontoffice_theme=flexy
 
 # Build the theme assets (required for both Twig themes)
 ddev exec bash -c "cd templates/frontOffice/flexy && npm install && npm run build"
@@ -36,7 +54,14 @@ ddev exec bash -c "cd templates/backOffice/default-twig && npm install && npm ru
 ddev launch
 ```
 
-Your site is now accessible at **https://thelia-3.ddev.site**
+Your site is now accessible at **https://thelia.ddev.site**
+
+:::note The hostname follows the directory name
+Thelia's `.ddev/config.yaml` sets no `name` key, so DDEV derives the project name from the directory
+you cloned into. `git clone https://github.com/thelia/thelia.git` creates a `thelia/` directory and
+gives you `https://thelia.ddev.site`; a `my-shop/` directory gives you `https://my-shop.ddev.site`.
+Run `ddev describe` to see the URLs of the current project.
+:::
 
 :::warning Build the theme assets
 The `flexy` front-office theme — and any Twig back-office theme such as `default-twig` —
@@ -53,7 +78,7 @@ fails with *"Could not find the entrypoints file from Webpack"*. For a Twig back
 
 ```bash
 ddev exec php bin/install \
-    --frontoffice_theme=flexy --backoffice_theme=default-twig \
+    --frontoffice_theme=flexy \
     --with-demo \
     --with-admin \
     --admin_login=admin \
@@ -61,11 +86,11 @@ ddev exec php bin/install \
     --admin_email=admin@example.com
 ```
 
-:::caution Always pass `--backoffice_theme=default-twig`
-`--backoffice_theme` defaults to `default` (the legacy Smarty back-office). Pass
-`--backoffice_theme=default-twig` to install the modern Twig back-office — `bin/install` then runs
-`template:set backOffice default-twig`, which registers the bundle and activates it. Without it the
-admin throws `Unknown "safe_hook" function` because the Twig back-office bundle is never activated.
+:::note The back-office theme defaults to `default-twig`
+`--backoffice_theme` defaults to `default-twig`, the Twig back-office, so you do not need to pass it.
+Pass `--backoffice_theme=default` only if you deliberately want the legacy Smarty admin; that admin
+is not built on the Twig hook functions, and a Twig template that calls `safe_hook()` throws
+`Unknown "safe_hook" function` when the Twig back-office bundle is not the active one.
 :::
 
 See [Install Reference](./install-reference) for all available options and environment variables.
@@ -120,11 +145,13 @@ ddev logs -s db             # Database logs
 
 ## Accessing services
 
+Replace `thelia` with your own directory name if you cloned or created the project elsewhere.
+
 | Service | URL |
 |---------|-----|
-| Front-office | https://thelia-3.ddev.site |
-| Back-office | https://thelia-3.ddev.site/admin |
-| Mailpit | https://thelia-3.ddev.site:8026 |
+| Front-office | https://thelia.ddev.site |
+| Back-office | https://thelia.ddev.site/admin |
+| Mailpit | https://thelia.ddev.site:8026 |
 
 ## Theme development
 
@@ -156,7 +183,7 @@ ddev exec chmod -R 777 var/cache var/log
 ```bash
 ddev delete -O
 ddev start
-ddev exec php bin/install --frontoffice_theme=flexy --backoffice_theme=default-twig
+ddev exec php bin/install --frontoffice_theme=flexy
 ```
 
 ## Next steps
