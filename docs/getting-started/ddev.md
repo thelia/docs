@@ -18,7 +18,6 @@ sidebar_position: 3
 # Clone Thelia 3
 git clone https://github.com/thelia/thelia.git
 cd thelia
-git checkout twig
 
 # Start DDEV
 ddev start

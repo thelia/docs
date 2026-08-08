@@ -11,7 +11,7 @@ Install Thelia 3 and get your store running.
 
 ```bash
 git clone https://github.com/thelia/thelia.git
-cd thelia && git checkout twig
+cd thelia
 
 ddev start
 ddev composer install
@@ -41,7 +41,7 @@ ddev exec php bin/install --frontoffice_theme=flexy --backoffice_theme=default-t
 
 ```bash
 git clone https://github.com/thelia/thelia.git
-cd thelia && git checkout twig
+cd thelia
 composer install
 
 DATABASE_HOST=localhost DATABASE_NAME=thelia \

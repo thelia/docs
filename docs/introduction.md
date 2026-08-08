@@ -38,7 +38,7 @@ Templates call the API internally through `DataAccessService`. External clients 
 ## Quick start
 
 ```bash
-git clone https://github.com/thelia/thelia.git && cd thelia && git checkout twig
+git clone https://github.com/thelia/thelia.git && cd thelia
 
 # With DDEV (recommended)
 ddev start && ddev composer install

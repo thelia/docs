@@ -63,7 +63,6 @@ FLUSH PRIVILEGES;
 ```bash
 git clone https://github.com/thelia/thelia.git
 cd thelia
-git checkout twig
 ```
 
 **With Composer (project):**
@@ -72,6 +71,19 @@ git checkout twig
 composer create-project thelia/thelia-project my-shop
 cd my-shop
 ```
+
+:::note Beta release
+Thelia 3.0.0-beta1 is a pre-release. Composer only selects it when the beta stability is allowed:
+add `--stability=beta` to the command above, or set the following in your project `composer.json`
+before requiring Thelia packages:
+
+```json
+{
+    "minimum-stability": "beta",
+    "prefer-stable": true
+}
+```
+:::
 
 ### 2. Install dependencies
 
