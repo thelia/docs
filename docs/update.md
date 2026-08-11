@@ -4,17 +4,30 @@ sidebar_position: 14
 ---
 
 ## Update components
-To update Thelia components just execute this command
 
-```
-composer update thelia/thelia-skeleton 2.5.0
-```
-
-## Update database
-Then update you can update your database with this script
+In a project created from `thelia/thelia-project`, update the skeleton and everything it pulls with it:
 
 ```bash
-php local/setup/update.php
+composer update thelia/thelia-skeleton --with-dependencies
+```
+
+This stays inside the constraint declared in your `composer.json`, which is `~2.6.0` on a 2.6 project. To move to another minor version, edit that constraint first, then run the same command.
+
+Dependencies also carry security fixes of their own. See [Security updates](./security_updates) for the packages to watch and the advisories `composer audit` reports on a 2.6 install.
+
+## Update database
+
+Back up your files and your database first. Then run the update script from the project root:
+
+```bash
+php setup/update.php
+```
+
+It detects the version currently installed, replays every SQL and PHP script between that version and the one you just deployed, and offers to dump the database before it starts. Say yes. Clear the cache once it is done:
+
+```bash
+php Thelia cache:clear
+php Thelia cache:clear --env=prod
 ```
 
 ## Migrate from Thelia `< 2.4` to 2.5
