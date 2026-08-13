@@ -19,15 +19,16 @@ Plus the [global arguments](./global_arguments)
 
 ## Outputs
 
-| Variable       | Value                                          |
-|:---------------|:-----------------------------------------------|
-| $COUNTRY       | the country the state belongs                  |
-| $ID            | the state id                                   |
-| $ISOCODE       | the state ISO code                             |
-| $IS_TRANSLATED | check if the state is translated               |
-| $LOCALE        | The locale used for this research              |
-| $TITLE         | the state title                                |
-| $VISIBLE       | true if the state is visible. False otherwise  |
+| Variable        | Value                                                     |
+|:----------------|:----------------------------------------------------------|
+| $COUNTRY        | the country the state belongs                             |
+| $ID             | the state id                                              |
+| $ISOCODE        | the state ISO code                                        |
+| $ISOCODE_3166_2 | the full ISO 3166-2 code of the state, for instance US-CA |
+| $IS_TRANSLATED  | check if the state is translated                          |
+| $LOCALE         | The locale used for this research                         |
+| $TITLE          | the state title                                           |
+| $VISIBLE        | true if the state is visible. False otherwise             |
 
 Plus the [global outputs](./global_outputs)
 
