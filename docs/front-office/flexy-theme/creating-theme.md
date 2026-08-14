@@ -12,8 +12,10 @@ This guide walks through the pieces of a theme, using Flexy as the reference, an
 ## Prerequisites
 
 - A working Thelia 3 installation (see [Installation](/docs/getting-started/installation)).
-- Node.js and npm for the asset pipeline (Webpack Encore).
 - Familiarity with [Twig basics in Thelia](/docs/front-office/twig-basics) and [data access](/docs/front-office/data-access).
+
+A front-office theme served through AssetMapper needs no Node.js and no bundler. Flexy is one, and
+the guide below follows it.
 
 ## A theme is a bundle
 
@@ -95,7 +97,10 @@ The Flexy theme lives in `templates/frontOffice/flexy/`. A theme combines flat p
 templates/frontOffice/my-theme/
 ├── template.xml               # Theme descriptor (read by Thelia)
 ├── composer.json              # type: thelia-frontoffice-template
-├── webpack.config.js          # Asset pipeline (Webpack Encore)
+├── importmap.php              # AssetMapper entrypoints and JavaScript dependencies
+├── config/
+│   ├── views.yaml             # root templates that are not pages of their own
+│   └── packages/              # framework configuration the theme ships
 ├── base.html.twig             # Base layout
 ├── index.html.twig            # Homepage
 ├── category.html.twig
@@ -138,7 +143,9 @@ templates/frontOffice/my-theme/
 └── assets/
     ├── app.js
     ├── controllers.json
-    ├── css/
+    ├── controllers/
+    ├── styles/
+    ├── icons/
     └── images/
 ```
 
@@ -172,9 +179,8 @@ Every theme has a `template.xml` at its root. This is the only XML a theme needs
             <website>example.com</website>
         </author>
     </authors>
-    <thelia>2.5.4</thelia>
+    <thelia>3.0.0</thelia>
     <stability>prod</stability>
-    <assets>dist</assets>
 </template>
 ```
 
@@ -186,7 +192,9 @@ The tags, in order:
 - `<authors>`: one or more `<author>` blocks with `<name>`, `<company>`, `<email>`, `<website>`.
 - `<thelia>`: the minimum core version the theme requires.
 - `<stability>`: `prod`, `beta`, `alpha`, etc.
-- `<assets>`: the directory holding compiled assets (Flexy uses `dist`, matching the Webpack output path).
+- `<assets>`: optional, the directory holding compiled assets. It only drives the Webpack Encore
+  manifest and its symlink. A theme served through AssetMapper, as Flexy is, declares no `<assets>`
+  tag: it would point at a `dist` directory no build ever produces.
 
 :::caution
 There is no `<name>`, flat `<author>`, `<description>`, `<parent>` or `<required_version>` tag. The descriptor does not declare theme inheritance. To reuse Flexy from your own theme, render Flexy's components directly (`{{ component('Flexy:...') }}`, see [Using Flexy components](#using-flexy-components)) rather than declaring a parent.
@@ -205,11 +213,11 @@ There is no `<name>`, flat `<author>`, `<description>`, `<parent>` or `<required
     <title>{% block title %}My Shop{% endblock %}</title>
 
     {% block stylesheets %}
-        {{ encore_entry_link_tags('app') }}
+        <link rel="stylesheet" href="{{ asset('styles/app.css') }}" blocking="render">
     {% endblock %}
 
-    {% block head_js %}
-        {{ encore_entry_script_tags('app') }}
+    {% block javascripts %}
+        {{ importmap('app') }}
     {% endblock %}
 </head>
 
@@ -231,7 +239,8 @@ There is no `<name>`, flat `<author>`, `<description>`, `<parent>` or `<required
 </html>
 ```
 
-`encore_entry_link_tags()` and `encore_entry_script_tags()` come from WebpackEncoreBundle and resolve the compiled `app` entry defined in `webpack.config.js`.
+`asset()` resolves a path inside the theme's `assets/` directory, and `importmap()` renders the
+`app` entrypoint declared in the theme's `importmap.php`. Both come from AssetMapper.
 
 :::note
 `@components` is a Twig namespace the theme registers in `config/packages/twig.yaml`, pointing at the theme's `components/` directory (Flexy also registers `@UiComponents` for `src/UiComponents` and `@assets` for `assets`). Always reference partials through the namespace (`@components/Layout/...`) as Flexy does, rather than a bare relative path.
@@ -430,57 +439,152 @@ The header links to real, named routes (the back-office and the Flexy controller
 The Flexy controllers prefix their routes. Use `path('index')` for the homepage, `path('customer_login')` to log in, `path('account_index')` for the account dashboard, `path('checkout_cart')` for the cart. Do not use `homepage`, `account`, `product_show` or `category`: those route names do not exist.
 :::
 
+## Serving the pages
+
+A theme carries the routes of the front office. The one that makes a shop work is the catch-all:
+it reads the last segment of a URL as the name of a view and hands it to the core.
+
+```php
+// templates/frontOffice/my-theme/src/Controller/ViewController.php
+namespace MyThemeBundle\Controller;
+
+use Symfony\Component\Routing\Attribute\Route;
+use Thelia\Controller\Front\DefaultController;
+use Thelia\Core\HttpFoundation\Request;
+
+class ViewController extends DefaultController
+{
+    #[Route(
+        '/{_view}',
+        name: 'my_theme_view',
+        requirements: ['_view' => '^(?!admin|api)[^/]+'],
+        defaults: ['_view' => 'index'],
+        priority: -1000,
+    )]
+    public function view(Request $request): void
+    {
+        $this->noAction($request);
+    }
+}
+```
+
+Category, product, content and folder pages all arrive here, either named directly or through the
+rewriting router, which resolves a SEO URL and hands over the view it points at. Without this
+route the shop serves none of them.
+
+Two details are not optional. The negative `priority` puts the route last, because the pattern
+swallows any single segment and would otherwise hide every route declared after it. The
+requirement excludes `admin` and `api`, which are served by routers that only run once this one
+has been tried.
+
+The rendering itself stays in the core: `DefaultController::noAction()` does the work, and the
+controller above only carries the route to it. No module is involved. A theme that expects the
+`thelia/front-module` package to declare this route is a Thelia 2 theme.
+
+### Downloading a virtual product
+
+A theme that sells virtual products needs a route to serve the file, and it must not read that file
+itself. Flexy exposes `/account/order/download/{orderProductId}`: it checks that the order line
+belongs to the logged-in customer and that the order is paid, dispatches an event, and returns
+whatever a listener puts on it.
+
+```php
+#[Route('/order/download/{orderProductId}', name: 'order_download', requirements: ['orderProductId' => '\d+'], methods: ['GET'])]
+public function downloadVirtualProduct(EventDispatcherInterface $eventDispatcher, int $orderProductId): Response
+{
+    // ... resolve $orderProduct for the current customer, 404 otherwise
+
+    $event = new VirtualProductOrderDownloadResponseEvent($orderProduct);
+    $eventDispatcher->dispatch($event, TheliaEvents::VIRTUAL_PRODUCT_ORDER_DOWNLOAD_RESPONSE);
+
+    if (!$event->getResponse() instanceof Response) {
+        // No module answered, so there is no file to serve
+        throw new NotFoundHttpException();
+    }
+
+    return $event->getResponse();
+}
+```
+
+The module storing the file answers the event, VirtualProductDelivery being the usual one. A shop
+with no such module gets a 404 here, not a 500. An unknown id, an order line belonging to someone
+else and an unpaid order return that same 404: none of them tells whether the file exists.
+
+## Declaring internal views
+
+Not every root template is a page. Layouts exist to be extended, error pages are rendered by the
+error handler, and checkout or account templates render only with the context their controller
+prepares. The catch-all above cannot tell them apart from a real page, so a theme says which is
+which in `config/views.yaml`:
+
+```yaml
+# templates/frontOffice/my-theme/config/views.yaml
+internal:
+    - base
+    - checkout-base
+    - error
+    # Quoted: unquoted, YAML reads it as an integer and the core rejects a non-string entry
+    - '404'
+    - account
+    - checkout-cart
+    - checkout-delivery
+```
+
+A request naming one of these views gets a 404. A controller rendering the same template is
+unaffected, since only requests that name a view go through the check.
+
+The file is optional. A theme that ships none keeps every root template reachable by its own name,
+which was the behaviour of every theme until Thelia 3.0.0-beta3. The nearest declaration wins: an
+inherited list only applies while the theme itself declares nothing.
+
+An unreadable or malformed file is a packaging error and is reported as one, so a typo does not
+pass silently.
+
 ## Asset pipeline
 
-Flexy compiles its assets with [Webpack Encore](https://symfony.com/doc/current/frontend.html). The real `webpack.config.js` outputs to the theme's `dist/` directory (matching `<assets>dist</assets>` in `template.xml`), registers an `app` entry plus per-page CSS entries, and enables the Stimulus bridge, PostCSS, TypeScript and React.
+A theme served through AssetMapper ships its assets as they are. There is no bundler, no
+`package.json` and no `dist/` directory.
 
-Key parts of `templates/frontOffice/flexy/webpack.config.js`:
+- `importmap.php` at the theme root declares the JavaScript entrypoints and dependencies.
+- `assets/` holds styles, icons, images and Stimulus controllers.
+- `assets/styles/app.css` is the single input Tailwind compiles.
 
-```javascript
-// templates/frontOffice/my-theme/webpack.config.js
-const Encore = require('@symfony/webpack-encore');
-const path = require('path');
+The theme points the framework at those directories from its bundle class:
 
-if (!Encore.isRuntimeEnvironmentConfigured()) {
-  Encore.configureRuntimeEnvironment(process.env.NODE_ENV || 'dev');
+```php
+// templates/frontOffice/my-theme/src/MyThemeBundle.php
+public function prependExtension(ContainerConfigurator $container, ContainerBuilder $builder): void
+{
+    $builder->prependExtensionConfig('framework', [
+        'asset_mapper' => [
+            // Listed first so AssetMapper searches the theme before the project
+            'paths' => [
+                \dirname(__DIR__).'/assets',
+                \dirname(__DIR__).'/assets/styles',
+                \dirname(__DIR__).'/components',
+            ],
+            'vendor_dir' => '%kernel.project_dir%/templates/frontOffice/%thelia_front_template%/assets/vendor',
+            'importmap_path' => '%kernel.project_dir%/templates/frontOffice/%thelia_front_template%/importmap.php',
+            'public_prefix' => '/assets/frontOffice/%thelia_front_template%/',
+            'excluded_patterns' => ['*/*.html.twig'],
+        ],
+    ]);
 }
-
-Encore
-  .setOutputPath('dist/')
-  .setPublicPath('/templates-assets/frontOffice/' + path.basename(__dirname) + '/dist')
-  .setManifestKeyPrefix('dist/')
-
-  // Main entry: ./assets/app.js -> dist/app.js (+ app.css if it imports CSS)
-  .addEntry('app', './assets/app.js')
-  // Per-page CSS entries
-  .addEntry('category-css', './assets/css/pages/category.css')
-  .addEntry('product-css', './assets/css/pages/product.css')
-
-  .splitEntryChunks()
-  .enableSingleRuntimeChunk()
-  .cleanupOutputBeforeBuild()
-  .enableSourceMaps(!Encore.isProduction())
-  .enableVersioning(Encore.isProduction());
-
-Encore.enablePostCssLoader();
-Encore.enableTypeScriptLoader();
-Encore.enableReactPreset();
-Encore.enableStimulusBridge('./assets/controllers.json');
-
-module.exports = Encore.getWebpackConfig();
 ```
 
-:::note
-`setOutputPath('dist/')` writes compiled assets inside the theme directory, and the public path resolves to `/templates-assets/frontOffice/<theme>/dist`. Read the full file at `templates/frontOffice/flexy/webpack.config.js` for the image/favicon copy rules and the dev-server settings before adapting it.
-:::
+Keys that must follow the active theme are written with the `%thelia_front_template%` parameter.
+`paths` is the exception: those entries designate this bundle's own directories, so they stay on
+`dirname(__DIR__)`.
 
-Build the assets from the theme directory:
+Build the assets:
 
 ```bash
-cd templates/frontOffice/my-theme
-npm install
-npm run build      # or: npm run watch during development
+php Thelia importmap:install
+php Thelia tailwind:build
 ```
+
+`bin/install` runs both at the end of an install, so a fresh project has nothing to do. Run them
+again after a `composer update`, which reinstalls the theme package.
 
 ## Using Flexy components
 
