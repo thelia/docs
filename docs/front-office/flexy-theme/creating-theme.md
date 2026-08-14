@@ -19,7 +19,18 @@ the guide below follows it.
 
 ## A theme is a bundle
 
-The Flexy theme registers itself as a Symfony bundle. The whole theme (services, Twig components, Live components, controllers) is autowired from the bundle's `src/` directory.
+The Flexy theme registers itself as a Symfony bundle. Services and controllers are autowired from `src/`, components from `components/`, and both directories are declared as PSR-4 roots in the theme's `composer.json`:
+
+```json
+{
+    "autoload": {
+        "psr-4": {
+            "FlexyBundle\\": "src/",
+            "FlexyBundle\\Components\\": "components/"
+        }
+    }
+}
+```
 
 ```php
 // templates/frontOffice/flexy/src/FlexyBundle.php
@@ -28,52 +39,51 @@ namespace FlexyBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-use Thelia\Core\Template\TemplateDefinition;
-use Thelia\Model\ConfigQuery;
 
 class FlexyBundle extends AbstractBundle
 {
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
-        $serviceConfigurator = $container->services();
+        $container->import('../config/services.yaml');
 
-        $resourcePath = $this->getResourcePath();
-        if (is_dir($resourcePath)) {
-            $serviceConfigurator->load('FlexyBundle\\', $resourcePath)
-                ->autowire()
-                ->autoconfigure();
-        }
-
-        $serviceConfigurator->load('FlexyBundle\\UiComponents\\', $this->getUiComponentsPath())
+        $container->services()
+            ->defaults()
             ->autowire()
             ->autoconfigure();
     }
 
     public function prependExtension(ContainerConfigurator $container, ContainerBuilder $builder): void
     {
-        if (!is_dir($this->getResourcePath())) {
-            return;
-        }
-        $container->import('../config/packages/*.yaml');
-    }
+        $builder->prependExtensionConfig('twig', [
+            'paths' => [
+                \dirname(__DIR__).'/components' => 'Flexy',
+                \dirname(__DIR__).'/form' => 'FlexyForm',
+            ],
+            'globals' => [
+                'flexy_form_themes' => ['@FlexyForm/flexy_form_theme.html.twig'],
+            ],
+        ]);
 
-    private function getResourcePath(): string
-    {
-        return THELIA_TEMPLATE_DIR.TemplateDefinition::FRONT_OFFICE_SUBDIR.DS.ConfigQuery::read(TemplateDefinition::FRONT_OFFICE_CONFIG_NAME, 'default').DS.'src';
-    }
+        $builder->prependExtensionConfig('twig_component', [
+            'anonymous_template_directory' => 'frontOffice/%thelia_front_template%/components/',
+            'defaults' => [
+                'FlexyBundle\\Components\\' => [
+                    'template_directory' => '@Flexy',
+                    'name_prefix' => '',
+                ],
+            ],
+        ]);
 
-    private function getUiComponentsPath(): string
-    {
-        return THELIA_TEMPLATE_DIR.TemplateDefinition::FRONT_OFFICE_SUBDIR.DS.ConfigQuery::read(TemplateDefinition::FRONT_OFFICE_CONFIG_NAME, 'default').DS.'src'.DS.'UiComponents';
+        // AssetMapper, UX Icons, Tailwind and Stimulus are configured the same way.
     }
 }
 ```
 
 What this does:
 
-- `loadExtension()` registers every class under `FlexyBundle\` (the bundle's `src/`) and `FlexyBundle\UiComponents\` as autowired, autoconfigured services. `autoconfigure()` is what makes `#[Route]` controllers, `#[AsTwigComponent]` and `#[AsLiveComponent]` classes work without any XML.
-- `prependExtension()` imports the theme's own `config/packages/*.yaml` so the theme can ship its own framework configuration.
-- The resource path is resolved at runtime from the *active* front-office template (the `default` config key), so the bundle always points at the theme currently selected in the back office.
+- `loadExtension()` imports `config/services.yaml`, which registers both PSR-4 roots as autowired, autoconfigured services. `autoconfigure()` is what makes `#[Route]` controllers, `#[AsTwigComponent]` and `#[AsLiveComponent]` classes work without any XML.
+- `prependExtension()` configures the framework for the theme: Twig namespaces and globals, the TwigComponent defaults, AssetMapper, UX Icons, Tailwind and the Stimulus controller paths. `name_prefix: ''` is what makes component names carry no prefix.
+- Keys that must follow the *active* front-office template are written with the `%thelia_front_template%` parameter, so a theme that is installed but not active does not register its own paths.
 
 The bundle is enabled in `config/bundles.php`:
 
@@ -86,12 +96,12 @@ return [
 ```
 
 :::note
-For your own theme, create a `MyThemeBundle` class following this pattern (adjust the namespace and the `psr-4` autoload entry in `composer.json`), register it in `config/bundles.php`, and point its resource paths at your theme directory. Without a Bundle class, controllers, Twig components and Live components in your theme will never be discovered.
+For your own theme, create a `MyThemeBundle` class following this pattern (adjust the namespaces and the two `psr-4` entries in `composer.json`), register it in `config/bundles.php`, and point its Twig and component paths at your theme directory. Without a Bundle class, controllers, Twig components and Live components in your theme will never be discovered.
 :::
 
 ## Directory structure
 
-The Flexy theme lives in `templates/frontOffice/flexy/`. A theme combines flat page templates at the root, a `src/` PHP tree (the bundle code) and an `assets/` pipeline:
+The Flexy theme lives in `templates/frontOffice/flexy/`. A theme combines flat page templates at the root, a `components/` tree, a `src/` PHP tree (the bundle code) and an `assets/` pipeline:
 
 ```
 templates/frontOffice/my-theme/
@@ -129,17 +139,17 @@ templates/frontOffice/my-theme/
 ├── 404.html.twig
 ├── error.html.twig
 ├── maintenance.html.twig
-├── components/                # Twig partials (Atomic Design)
+├── components/                # Components, PHP-backed or anonymous (namespace @Flexy)
 │   ├── Atoms/
-│   ├── Layout/
+│   ├── Fields/
+│   ├── Forms/
+│   ├── Layouts/
 │   ├── Molecules/
-│   ├── Organisms/
-│   └── Page/
-├── form/                      # Form theme(s)
-├── src/                       # The bundle: Bundle class, Controllers, UiComponents
+│   └── Organisms/
+├── form/                      # Form theme (namespace @FlexyForm)
+├── src/                       # The bundle: Bundle class, Controllers, Services, DTOs
 │   ├── MyThemeBundle.php
-│   ├── Controller/
-│   └── UiComponents/          # TwigComponents and LiveComponents (PHP + .html.twig)
+│   └── Controller/
 └── assets/
     ├── app.js
     ├── controllers.json
@@ -197,7 +207,7 @@ The tags, in order:
   tag: it would point at a `dist` directory no build ever produces.
 
 :::caution
-There is no `<name>`, flat `<author>`, `<description>`, `<parent>` or `<required_version>` tag. The descriptor does not declare theme inheritance. To reuse Flexy from your own theme, render Flexy's components directly (`{{ component('Flexy:...') }}`, see [Using Flexy components](#using-flexy-components)) rather than declaring a parent.
+There is no `<name>`, flat `<author>`, `<description>`, `<parent>` or `<required_version>` tag. The descriptor does not declare theme inheritance. To reuse Flexy from your own theme, render Flexy's components directly (see [Using Flexy components](#using-flexy-components)) rather than declaring a parent.
 :::
 
 ## Creating the base layout
@@ -223,7 +233,7 @@ There is no `<name>`, flat `<author>`, `<description>`, `<parent>` or `<required
 
 <body class="{% block body_class %}{% endblock %}">
     {% block header %}
-        {{ include('@components/Layout/Header/Header.html.twig') }}
+        <twig:Layouts:Header:Base />
     {% endblock %}
 
     <main {% block main_attributes %}{% endblock %}>
@@ -231,7 +241,7 @@ There is no `<name>`, flat `<author>`, `<description>`, `<parent>` or `<required
     </main>
 
     {% block footer %}
-        {{ include('@components/Layout/Footer/Footer.html.twig') }}
+        <twig:Layouts:Footer:Base />
     {% endblock %}
 
     {% block body_js %}{% endblock %}
@@ -243,7 +253,7 @@ There is no `<name>`, flat `<author>`, `<description>`, `<parent>` or `<required
 `app` entrypoint declared in the theme's `importmap.php`. Both come from AssetMapper.
 
 :::note
-`@components` is a Twig namespace the theme registers in `config/packages/twig.yaml`, pointing at the theme's `components/` directory (Flexy also registers `@UiComponents` for `src/UiComponents` and `@assets` for `assets`). Always reference partials through the namespace (`@components/Layout/...`) as Flexy does, rather than a bare relative path.
+Flexy registers exactly two Twig namespaces from its bundle class: `@Flexy` for `components/` and `@FlexyForm` for `form/`. Components are usually rendered by name (`<twig:Layouts:Header:Base />`), and the namespace is used when one component template references another (`{% extends '@Flexy/Organisms/AddressCard/Base.html.twig' %}`).
 :::
 
 ## Essential pages
@@ -286,9 +296,7 @@ The homepage is served at `/` by the route named `index`. Fetch data with `resou
 
         <div class="product-grid">
             {% for product in products %}
-                {{ include('@components/Molecules/ProductCard/ProductCard.html.twig', {
-                    product: product
-                }) }}
+                <twig:Molecules:ProductCard:Base :product="product" />
             {% endfor %}
         </div>
     </section>
@@ -320,13 +328,13 @@ The current category id is read from the request attributes with `attr()`. The t
         </header>
 
         {# Delegate product listing + filters + pagination to a LiveComponent #}
-        {{ component('Flexy:CategoryFilters', {initialCategoryId: categoryId}) }}
+        <twig:Layouts:ProductListing:Base :categoryId="categoryId" />
     </div>
 {% endblock %}
 ```
 
 :::tip
-Filtering, sorting and paginating a product grid is stateful work. Flexy delegates it to the `Flexy:CategoryFilters` LiveComponent rather than rebuilding pagination by hand in the template. See [LiveComponents](/docs/front-office/live-components).
+Filtering, sorting and paginating a product grid is stateful work. Flexy delegates it to the `Layouts:ProductListing:Base` LiveComponent rather than rebuilding pagination by hand in the template. See [LiveComponents](/docs/front-office/live-components).
 :::
 
 ### Product page (product.html.twig)
@@ -347,7 +355,7 @@ Filtering, sorting and paginating a product grid is stateful work. Flexy delegat
         <h1>{{ product.i18ns.title }}</h1>
 
         {# The add-to-cart UI (price, PSE selection, quantity) is a LiveComponent #}
-        {{ component('Flexy:Pages:Product', {product: product}) }}
+        <twig:Layouts:ProductDetails:Base :product="product" />
 
         {% if product.i18ns.description %}
             <section class="product-description">
@@ -360,20 +368,24 @@ Filtering, sorting and paginating a product grid is stateful work. Flexy delegat
 ```
 
 :::caution
-Adding to the cart is handled by the `Flexy:Pages:Product` LiveComponent, not by a plain HTML `<form>` posting to a `cart_add` route. No such route exists. If you build your own add-to-cart UI, model it on the Flexy Live component in `src/UiComponents/Pages/Product/`.
+Adding to the cart is handled by the `Layouts:ProductDetails:Base` LiveComponent, not by a plain HTML `<form>` posting to a `cart_add` route. No such route exists. If you build your own add-to-cart UI, model it on the Flexy Live component in `components/Layouts/ProductDetails/`.
 :::
 
 ## Creating components
 
 Flexy splits its UI in two places:
 
-- `components/` holds plain Twig partials organized with Atomic Design (`Atoms/`, `Molecules/`, `Organisms/`, `Layout/`, `Page/`). You `include` them through the `@components` namespace.
-- `src/UiComponents/` holds TwigComponents and LiveComponents: a PHP class plus its `.html.twig` template, rendered by name with `{{ component('Flexy:...') }}`. Flexy's own product card is one of these: `Flexy:ProductCard` (`src/UiComponents/ProductCard/`), which fetches its own price and image data.
+Everything lives in `components/`, organized with Atomic Design (`Atoms/`, `Molecules/`, `Organisms/`, `Layouts/`, `Fields/`, `Forms/`). A component is a directory:
 
-For a custom theme you can either reuse `Flexy:ProductCard` or build your own partial. The hand-built version below links to the product with `product.publicUrl` and resolves the image the same way the real Flexy `ProductCard` component does:
+- an anonymous component is a `.html.twig` file on its own;
+- a PHP-backed one adds a class next to its template, carrying a bare `#[AsTwigComponent]` or `#[AsLiveComponent]`.
+
+Either way the component is named after its path: `components/Organisms/ProductCard/Base.php` is rendered as `<twig:Organisms:ProductCard:Base />`. Flexy's own product card is one of these, and it fetches its own price and image data.
+
+For a custom theme you can either reuse `Organisms:ProductCard:Base` or build your own. The hand-built version below links to the product with `product.publicUrl` and resolves the image the same way the real one does:
 
 ```twig
-{# templates/frontOffice/my-theme/components/Molecules/ProductCard/ProductCard.html.twig #}
+{# templates/frontOffice/my-theme/components/Molecules/ProductCard/Base.html.twig #}
 <article class="product-card">
     <a href="{{ product.publicUrl }}">
         <div class="product-card-image">
@@ -401,7 +413,7 @@ For a custom theme you can either reuse `Flexy:ProductCard` or build your own pa
 The header links to real, named routes (the back-office and the Flexy controllers register them via `#[Route]` attributes):
 
 ```twig
-{# templates/frontOffice/my-theme/components/Layout/Header/Header.html.twig #}
+{# templates/frontOffice/my-theme/components/Layouts/Header/Base.html.twig #}
 <header class="site-header">
     <div class="container">
         {# Homepage route is named "index" #}
@@ -427,8 +439,8 @@ The header links to real, named routes (the back-office and the Flexy controller
                 <a href="{{ path('customer_login') }}">Login</a>
             {% endif %}
 
-            {# Cart link. Flexy renders this with its Flexy:HeaderButton TwigComponent,
-               which requires at least `text` (and usually `href`, `icon`). #}
+            {# Cart link. Flexy renders this with its Molecules:HeaderButton:Base
+               TwigComponent, which takes `text` and usually `href` and `icon`. #}
             <a href="{{ path('checkout_cart') }}" class="cart-link">Cart</a>
         </div>
     </div>
@@ -595,9 +607,9 @@ A custom theme can reuse Flexy's components instead of declaring inheritance in 
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    {{ component('Flexy:Pages:Product', {product: product}) }}
-    {{ component('Flexy:CategoryFilters', {initialCategoryId: categoryId}) }}
-    {{ component('Flexy:HeaderButton', {href: path('checkout_cart'), icon: 'cart', text: 'Cart'|trans}) }}
+    <twig:Layouts:ProductDetails:Base :product="product" />
+    <twig:Layouts:ProductListing:Base :categoryId="categoryId" />
+    <twig:Molecules:HeaderButton:Base href="{{ path('checkout_cart') }}" icon="cart" text="{{ 'Cart'|trans }}" />
 {% endblock %}
 ```
 

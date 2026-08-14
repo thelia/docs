@@ -126,41 +126,36 @@ Use it whenever a partial exposes block slots like `_page_header.html.twig` does
 
 ## The form theme
 
-`bo_form_theme.html.twig` is a custom Bootstrap 5 Symfony form theme. It is registered
-globally under its own `@BackOfficeDefaultTwigForm` namespace in
-`config/packages/twig.yaml`, which the bundle imports during `prependExtension()`:
+`bo_form_theme.html.twig` is a custom Bootstrap 5 Symfony form theme. It is **not** registered
+globally: neither theme is. Each side declares its own list as a Twig global, and each template
+that renders a form opts in. The back-office list is declared in `config/packages/twig.yaml`,
+which the bundle imports during `prependExtension()`:
 
 ```yaml
 # templates/backOffice/default-twig/config/packages/twig.yaml
 twig:
   paths:
     "%kernel.project_dir%/templates/backOffice/default-twig/form": BackOfficeDefaultTwigForm
-  form_themes:
-    - "@BackOfficeDefaultTwigForm/bo_form_theme.html.twig"
+  globals:
+    bo_form_themes:
+      - "bootstrap_5_layout.html.twig"
+      - "@BackOfficeDefaultTwigForm/bo_form_theme.html.twig"
 ```
 
-Because `form_themes` applies to every form rendered by the active Twig environment,
-including front-office Flexy templates, each block in `bo_form_theme.html.twig` is scoped
-to admin requests. It applies the Bootstrap 5 markup only when the request path starts with
-`/admin`, and otherwise defers to the Flexy front-office theme:
+`bootstrap_5_layout.html.twig` comes first, so it supplies the complete Bootstrap base, and
+`bo_form_theme.html.twig` only carries the admin refinements on top. Render a form with:
 
 ```twig
-{# templates/backOffice/default-twig/form/bo_form_theme.html.twig #}
-{%- block form_widget_simple -%}
-    {%- if app is defined and app.request and app.request.pathInfo starts with '/admin' -%}
-        {{- block('form_widget_simple', 'bootstrap_5_layout.html.twig') -}}
-    {%- else -%}
-        {{- block('form_widget_simple', '@formTwig/flexy_form_theme.html.twig') -}}
-    {%- endif -%}
-{%- endblock form_widget_simple -%}
+{% form_theme form with bo_form_themes only %}
 ```
 
-:::caution Mirror every Flexy-overridden block
-The Flexy front-office theme overrides several widgets (`password`, `textarea`, `money`,
-`percent`, `choice`, `radio`, `range`, `file`, `submit`). The back-office theme must mirror
-all of them with the same `/admin` short-circuit. Otherwise a back-office form picks up a
-Flexy wrapper. For example, the `<div data-controller="password">` wrapper breaks the
-Bootstrap input-group layout on the login form.
+The `only` keyword excludes every other theme, so an admin form can never pick up a front-office
+Flexy widget. The isolation is structural: no block has to test the request path.
+
+:::caution Every admin form needs the tag
+Without `{% form_theme form with bo_form_themes only %}`, the form renders with Symfony's default
+markup instead of the Bootstrap 5 admin widgets. Put the tag in the block that renders the form,
+before `form_start`.
 :::
 
 ## Forms are standard Symfony forms
@@ -213,11 +208,14 @@ final class BrandType extends AbstractType
 }
 ```
 
-In the template, render the form with `form_start` / `form_end`. The `bo_form_theme`
-supplies the Bootstrap 5 markup, so you only point each widget at the right field:
+In the template, opt into the admin form theme, then render the form with `form_start` /
+`form_end`. The theme supplies the Bootstrap 5 markup, so you only point each widget at the
+right field:
 
 ```twig
 {# @BackOfficeDefaultTwig/catalog/brand/edit.html.twig #}
+{% form_theme form with bo_form_themes only %}
+
 {{ form_start(form, {
     action: path('admin.brand.save', { brand_id: brand.id }),
     method: 'post',

@@ -21,46 +21,45 @@ For complete LiveComponents documentation, see [symfony.com/bundles/ux-live-comp
 ## Basic structure
 
 :::info TwigComponent vs LiveComponent
-The Flexy theme uses both kinds of component, roughly half and half: `#[AsTwigComponent]` for static, render-once UI (24 components, like `ProductCard`) and `#[AsLiveComponent]` for reactive, AJAX-powered UI (25 components, like `CategoryFilters`, `Pages:Product` and `Checkout:Cart`). Reach for a LiveComponent only when the UI must re-render after the initial load. See [Stimulus](./stimulus) and the [Flexy theme overview](./flexy-theme/) for the static side.
+The Flexy theme uses both kinds of component: `#[AsTwigComponent]` for static, render-once UI (67 components, like `Organisms:ProductCard:Base`) and `#[AsLiveComponent]` for reactive, AJAX-powered UI (21 components, like `Layouts:ProductListing:Base`, `Layouts:ProductDetails:Base` and `Organisms:Cart:Base`). Reach for a LiveComponent only when the UI must re-render after the initial load. See [Stimulus](./stimulus) and the [Flexy theme overview](./flexy-theme/) for the static side.
 :::
 
-Each component lives in its own folder, which holds both the PHP class and its Twig template:
+Each component lives in its own folder under `components/`, which holds the PHP class, its Twig template and, when it needs them, its CSS and Stimulus controller:
 
 ```
-templates/frontOffice/flexy/src/UiComponents/
-    CategoryFilters/
-        CategoryFilters.php
-        CategoryFilters.html.twig
-    Pages/Product/
-        Product.php
-        Product.html.twig
-    Checkout/Cart/
-        Cart.php
-        Cart.html.twig
+templates/frontOffice/flexy/components/
+    Layouts/ProductListing/
+        Base.php
+        Base.html.twig
+        Base.css
+        base_controller.js
+    Layouts/ProductDetails/
+        Base.php
+        Base.html.twig
+    Organisms/Cart/
+        Base.php
+        Base.html.twig
 ```
 
-The PHP namespace mirrors that folder layout (`FlexyBundle\UiComponents\<Path>`), and the `template:` option points at the same folder through the `@UiComponents` Twig namespace registered by Flexy.
+The PHP namespace mirrors that folder layout (`FlexyBundle\Components\<Path>`), and the attribute needs no argument: the bundle sets `name_prefix: ''` and `template_directory: '@Flexy'`, so the component name and its template are both derived from the class path. `FlexyBundle\Components\Layouts\ProductListing\Base` is the component `Layouts:ProductListing:Base`.
 
 ### PHP component
 
 ```php
 <?php
-// templates/frontOffice/flexy/src/UiComponents/CategoryFilters/CategoryFilters.php
+// templates/frontOffice/flexy/components/Layouts/ProductListing/Base.php
 
 declare(strict_types=1);
 
-namespace FlexyBundle\UiComponents\CategoryFilters;
+namespace FlexyBundle\Components\Layouts\ProductListing;
 
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 
-#[AsLiveComponent(
-    name: 'Flexy:CategoryFilters',
-    template: '@UiComponents/CategoryFilters/CategoryFilters.html.twig'
-)]
-class CategoryFilters
+#[AsLiveComponent]
+class Base
 {
     use DefaultActionTrait;
 
@@ -76,10 +75,15 @@ class CategoryFilters
 }
 ```
 
+:::caution Never pass `name:` or `template:` in this theme
+No component in Flexy does. Passing them would break the convention the whole theme relies on, and
+the name would no longer match the file the template sits next to.
+:::
+
 ### Twig template
 
 ```twig
-{# templates/frontOffice/flexy/src/UiComponents/CategoryFilters/CategoryFilters.html.twig #}
+{# templates/frontOffice/flexy/components/Layouts/ProductListing/Base.html.twig #}
 <div {{ attributes }}>
     <div class="product-grid">
         {% for product in products %}
@@ -99,7 +103,7 @@ LiveComponents need `{{ attributes }}` on the single root tag to wire up the AJA
 ### Usage
 
 ```twig
-{{ component('Flexy:CategoryFilters', {categoryId: categoryId, page: 1}) }}
+<twig:Layouts:ProductListing:Base :categoryId="categoryId" :page="1" />
 ```
 
 ## Key concepts
@@ -158,11 +162,11 @@ Use `ComponentWithFormTrait` to embed a Symfony Form. Build the Thelia form by n
 
 ```php
 <?php
-// templates/frontOffice/flexy/src/UiComponents/Pages/Product/Product.php
+// templates/frontOffice/flexy/components/Layouts/ProductDetails/Base.php
 
 declare(strict_types=1);
 
-namespace FlexyBundle\UiComponents\Pages\Product;
+namespace FlexyBundle\Components\Layouts\ProductDetails;
 
 use Symfony\Component\Form\FormInterface;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
@@ -174,11 +178,8 @@ use Symfony\UX\LiveComponent\DefaultActionTrait;
 use Thelia\Core\Form\FormServiceInterface;
 use Thelia\Form\Definition\FrontForm;
 
-#[AsLiveComponent(
-    name: 'Flexy:Pages:Product',
-    template: '@UiComponents/Pages/Product/Product.html.twig'
-)]
-class Product
+#[AsLiveComponent]
+class Base
 {
     use ComponentToolsTrait;
     use ComponentWithFormTrait;
@@ -225,17 +226,14 @@ LiveComponents talk to each other with `emit()` / `#[LiveListener]`. Flexy uses 
 
 ### Emitting events
 
-The product page (`Flexy:Pages:Product`) emits an `addToCart` event after adding the line to the cart:
+The product details component (`Layouts:ProductDetails:Base`) emits an `addToCart` event after adding the line to the cart:
 
 ```php
-// templates/frontOffice/flexy/src/UiComponents/Pages/Product/Product.php
+// templates/frontOffice/flexy/components/Layouts/ProductDetails/Base.php
 use Symfony\UX\LiveComponent\ComponentToolsTrait;
 
-#[AsLiveComponent(
-    name: 'Flexy:Pages:Product',
-    template: '@UiComponents/Pages/Product/Product.html.twig'
-)]
-class Product
+#[AsLiveComponent]
+class Base
 {
     use ComponentToolsTrait;
 
@@ -253,18 +251,15 @@ class Product
 
 ### Listening to events
 
-A separate component, `Flexy:AddToCartToast`, listens for that event and refreshes itself to show the confirmation toast:
+A separate component, `Organisms:AddToCartToast:Base`, listens for that event and refreshes itself to show the confirmation toast:
 
 ```php
-// templates/frontOffice/flexy/src/UiComponents/AddToCartToast/AddToCartToast.php
+// templates/frontOffice/flexy/components/Organisms/AddToCartToast/Base.php
 use Symfony\UX\LiveComponent\Attribute\LiveArg;
 use Symfony\UX\LiveComponent\Attribute\LiveListener;
 
-#[AsLiveComponent(
-    name: 'Flexy:AddToCartToast',
-    template: '@UiComponents/AddToCartToast/AddToCartToast.html.twig'
-)]
-class AddToCartToast
+#[AsLiveComponent]
+class Base
 {
     use DefaultActionTrait;
 
@@ -277,12 +272,12 @@ class AddToCartToast
 ```
 
 :::note Pick a unique event name
-The listener name must match the emitted name exactly (`'addToCart'` here). Flexy also uses constants for the checkout flow (see `FlexyBundle\UiComponents\Checkout\CheckoutEvents`) to avoid magic strings between many cooperating components.
+The listener name must match the emitted name exactly (`'addToCart'` here). Flexy also uses constants for the checkout flow (see `FlexyBundle\Event\CheckoutEvents`) to avoid magic strings between many cooperating components.
 :::
 
 ### Browser events
 
-To trigger client-side JavaScript (a [Stimulus](./stimulus) controller, for instance) rather than another component, dispatch a browser event. `Flexy:Pages:Product` does this when the selected product sale element changes:
+To trigger client-side JavaScript (a [Stimulus](./stimulus) controller, for instance) rather than another component, dispatch a browser event. `Layouts:ProductDetails:Base` does this when the selected product sale element changes:
 
 ```php
 $this->dispatchBrowserEvent('change:pse', ['pseId' => $this->currentPse['id']]);
@@ -391,13 +386,15 @@ A Thelia 3 module must declare its service namespace via the static `configureSe
 
 ### Option B: drop into the Flexy theme (simple, theme-coupled)
 
-If you only target the Flexy theme, place the component directly under the theme's `UiComponents` folder so it resolves through the existing `@UiComponents` namespace:
+If you only target the Flexy theme, place the component directly under the theme's `components/` folder so it resolves through the theme's own naming convention and the `@Flexy` namespace:
 
 ```
-templates/frontOffice/flexy/src/UiComponents/NewsletterForm/
-    NewsletterForm.php
-    NewsletterForm.html.twig
+templates/frontOffice/flexy/components/Organisms/NewsletterForm/
+    Base.php
+    Base.html.twig
 ```
+
+It is then rendered as `<twig:Organisms:NewsletterForm:Base />`, with a bare `#[AsLiveComponent]` and no `template:` argument.
 
 This is simpler but couples the component to the `flexy` theme. To override an existing Flexy template from a module instead, drop your file under `local/modules/MyModule/templates/frontOffice/flexy/`. The kernel scans that directory at boot and adds it after the active theme.
 

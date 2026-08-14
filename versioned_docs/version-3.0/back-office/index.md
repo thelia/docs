@@ -77,9 +77,9 @@ templates/backOffice/default-twig/
 │   └── _delete_modal.html.twig
 ├── components/                # reusable Twig component templates (DataTable, Dashboard, ...)
 ├── form/
-│   └── bo_form_theme.html.twig    # Bootstrap 5 form theme, scoped to /admin
+│   └── bo_form_theme.html.twig    # Bootstrap 5 form theme, opted into per form
 ├── config/
-│   └── packages/twig.yaml         # registers the form theme namespace + form_themes
+│   └── packages/twig.yaml         # form theme namespace + the bo_form_themes global
 ├── assets/                    # SCSS + JS + img + flags
 │   ├── app.js
 │   ├── controllers/           # Stimulus controllers
@@ -152,8 +152,8 @@ Symfony 7 removed Doctrine annotations. Always use the PHP 8 attribute
 ## Back-office forms
 
 Build admin forms with Symfony's form component and let the bundle's `bo_form_theme.html.twig`
-render them with Bootstrap 5 markup. The theme is registered globally and scopes itself to the
-`/admin` path, so any form rendered under `/admin` gets the back-office styling automatically.
+render them with Bootstrap 5 markup. The theme is not global: a template opts into it with
+`{% form_theme form with bo_form_themes only %}`, which also keeps the front-office widgets out.
 
 ```php
 // local/modules/MyModule/src/Form/ConfigType.php
@@ -185,6 +185,8 @@ Render the form in a Twig template with the standard Symfony form helpers:
 
 ```twig
 {# local/modules/MyModule/templates/config.html.twig #}
+{% form_theme form with bo_form_themes only %}
+
 {{ form_start(form, { action: path('mymodule.admin.config.save'), method: 'post' }) }}
     {{ form_row(form.apiKey) }}
     {{ form_row(form.enabled) }}
@@ -192,15 +194,17 @@ Render the form in a Twig template with the standard Symfony form helpers:
 {{ form_end(form) }}
 ```
 
-The form theme is wired in the bundle's Twig configuration:
+The list the tag refers to is a Twig global declared in the bundle's Twig configuration:
 
 ```yaml
 # templates/backOffice/default-twig/config/packages/twig.yaml
 twig:
   paths:
     "%kernel.project_dir%/templates/backOffice/default-twig/form": BackOfficeDefaultTwigForm
-  form_themes:
-    - "@BackOfficeDefaultTwigForm/bo_form_theme.html.twig"
+  globals:
+    bo_form_themes:
+      - "bootstrap_5_layout.html.twig"
+      - "@BackOfficeDefaultTwigForm/bo_form_theme.html.twig"
 ```
 
 ## Extending the back-office with hooks

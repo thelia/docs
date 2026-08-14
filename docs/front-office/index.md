@@ -44,7 +44,7 @@ Front-Office Request Flow
 │    │  → DataAccessService → API Platform → Propel        │      │
 │    └─────────────────────────────────────────────────────┘      │
 │    ┌─────────────────────────────────────────────────────┐      │
-│    │  {{ component('Flexy:ProductCard', {...}) }}        │      │
+│    │  <twig:Organisms:ProductCard:Base :product=... />   │      │
 │    │  → LiveComponent (reactive)                         │      │
 │    └─────────────────────────────────────────────────────┘      │
 └─────────────────────────────────────────────────────────────────┘
@@ -79,7 +79,7 @@ LiveComponents give you reactive UI without writing JavaScript:
 
 ```twig
 {# Render a reactive product component #}
-{{ component('Flexy:Pages:Product', {product: product}) }}
+<twig:Layouts:ProductDetails:Base :product="product" />
 ```
 
 The component automatically handles:
@@ -113,12 +113,14 @@ templates/frontOffice/flexy/
 ├── product.html.twig           # Product page template
 ├── checkout-*.html.twig        # Checkout page templates
 ├── account*.html.twig          # Customer account page templates
-├── components/                 # Anonymous Twig components
+├── components/                 # Every component, namespace @Flexy
 │   ├── Atoms/                  # Smallest UI primitives (Icon, Font, ...)
+│   ├── Fields/                 # Form field markup, rendered by the form theme
+│   ├── Forms/                  # Form components (LiveComponents)
+│   ├── Layouts/                # Header, Footer, listings, ...
 │   ├── Molecules/              # Reusable UI elements
 │   ├── Organisms/              # Complex components
-│   ├── Layout/                 # Header, Footer, Hero, ...
-│   └── Page/                   # Page-level building blocks
+│   └── Toolkit/                # Component showcase pages
 ├── src/                        # PHP code (autoconfigured by FlexyBundle)
 │   ├── Controller/             # Front-office controllers
 │   ├── DTO/                    # Data Transfer Objects
@@ -127,9 +129,8 @@ templates/frontOffice/flexy/
 │   ├── Form/                   # Symfony form types
 │   ├── Service/                # Services (DeliveryService, FormService, ...)
 │   ├── Twig/                   # Twig extensions (DataAccessExtension)
-│   ├── UiComponents/           # Twig/Live components (.php + colocated .html.twig)
 │   └── FlexyBundle.php         # Bundle class (loadExtension / prependExtension)
-├── form/                       # Form theme (flexy_form_theme.html.twig + fields/)
+├── form/                       # Form theme (flexy_form_theme.html.twig), namespace @FlexyForm
 ├── assets/                     # styles, icons, images
 │   └── controllers/            # Stimulus controllers
 ├── config/
@@ -140,7 +141,7 @@ templates/frontOffice/flexy/
 ```
 
 :::note Components: anonymous vs. PHP-backed
-`components/` holds anonymous Twig components (Atoms/Molecules/Organisms/Layout/Page): pure `.html.twig` files with no PHP class. `src/UiComponents/` holds PHP-backed TwigComponents and LiveComponents, where each one is a PHP class with a colocated `.html.twig` template in the same folder.
+Both kinds live in `components/`, side by side. An anonymous component is a `.html.twig` file on its own; a PHP-backed one adds a class next to its template, in the same folder. `FlexyBundle\Components\` maps to that directory, and a component's name is its path under it: `components/Organisms/ProductCard/Base.php` is `Organisms:ProductCard:Base`.
 :::
 
 ## Section contents
@@ -177,15 +178,12 @@ A minimal category page that uses all of these concepts together:
     <h1>{{ category.i18ns.title }}</h1>
 
     {# Use a LiveComponent for filtering #}
-    {{ component('Flexy:CategoryFilters', {
-        initialCategoryId: categoryId,
-        initialPage: 1
-    }) }}
+    <twig:Layouts:ProductListing:Base :categoryId="categoryId" :page="1" />
 
     {# Or render products directly #}
     <div class="product-grid">
         {% for product in products %}
-            {{ component('Flexy:ProductCard', {product: product}) }}
+            <twig:Organisms:ProductCard:Base :product="product" />
         {% endfor %}
     </div>
 {% endblock %}
