@@ -29,7 +29,7 @@ Both Twig themes are Symfony bundles: their templates, components, Stimulus cont
 
 ## Front-office: Twig + Symfony UX
 
-The front-office ships as the `FlexyBundle`. Templates live at the theme root, components and PHP under `src/`.
+The front-office ships as the `FlexyBundle`. Page templates live at the theme root, components under `components/`, and the rest of the PHP under `src/`.
 
 ### Template location
 
@@ -40,10 +40,10 @@ templates/frontOffice/flexy/
 ├── product.html.twig         # product page
 ├── category.html.twig        # category page
 ├── checkout-cart.html.twig   # cart step
+├── components/               # TwigComponent / LiveComponent (namespace @Flexy)
 └── src/
-    ├── Twig/
-    │   └── DataAccessExtension.php   # registers resources() and attr()
-    └── UiComponents/         # TwigComponent / LiveComponent
+    └── Twig/
+        └── DataAccessExtension.php   # registers resources() and attr()
 ```
 
 ### Data retrieval
@@ -90,27 +90,24 @@ Read a value derived from the current route with the `attr()` Twig function (als
 
 ### Components
 
-Flexy ships TwigComponents (server-rendered) and LiveComponents (reactive, re-render on the server without a page reload). Render them with the `component()` function, using the names declared in the `#[AsTwigComponent]` / `#[AsLiveComponent]` attributes under `src/UiComponents/`:
+Flexy ships TwigComponents (server-rendered) and LiveComponents (reactive, re-render on the server without a page reload). Both live under `components/`, and both are rendered with the `<twig:...>` tag syntax:
 
 ```twig
-{# Product page LiveComponent - receives the product array #}
-{{ component('Flexy:Pages:Product', { product: product }) }}
+{# Product details LiveComponent - receives the product array #}
+<twig:Layouts:ProductDetails:Base :product="product" />
 
 {# Category listing with filters (LiveComponent) #}
-{{ component('Flexy:CategoryFilters', {
-    initialCategoryId: categoryId,
-    initialPage: page
-}) }}
+<twig:Layouts:ProductListing:Base :categoryId="categoryId" :page="page" />
 
 {# Cart step (LiveComponent) #}
-{{ component('Flexy:Checkout:Cart') }}
+<twig:Organisms:Cart:Base />
 
 {# Order summary (LiveComponent) #}
-{{ component('Flexy:Checkout:Summary') }}
+<twig:Organisms:Summary:Checkout />
 ```
 
 :::tip
-Component names are namespaced with colons (`Flexy:Checkout:Cart`), mirroring their folder under `src/UiComponents/`. Grep the bundle for `AsLiveComponent` / `AsTwigComponent` to discover the available components and their props.
+A component is named after its class path under `FlexyBundle\Components\`, with `\` written as `:` and no prefix: `components/Organisms/Cart/Base.php` is `Organisms:Cart:Base`. The `#[AsTwigComponent]` and `#[AsLiveComponent]` attributes carry no `name:` argument. Browse `components/` to discover what is available and read each class for its props.
 :::
 
 See [LiveComponents](../front-office/live-components.md) for building your own.

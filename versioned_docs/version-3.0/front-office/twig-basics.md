@@ -22,14 +22,19 @@ All pages extend a base layout:
 <!DOCTYPE html>
 <html lang="{{ lang_code }}">
     <head>
-        <title>{% block title %}{{ SEOnePageTitle() }}{% endblock %}</title>
-        {% block stylesheets %}{{ encore_entry_link_tags('app') }}{% endblock %}
-        {% block javascripts %}{{ encore_entry_script_tags('app') }}{% endblock %}
+        {# The title, meta and canonical tags are rendered by whoever answers this hook #}
+        {{ theme_hook('layout.head.top', {
+            title: block('title') is defined ? block('title')|trim : null,
+        }) }}
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('styles/app.css') }}" blocking="render">
+        {% endblock %}
+        {% block javascripts %}{{ importmap('app') }}{% endblock %}
     </head>
     <body>
-        {% block header %}{{ include('@components/Layout/Header.html.twig') }}{% endblock %}
+        {% block header %}<twig:Layouts:Header:Base />{% endblock %}
         <main>{% block body %}{% endblock %}</main>
-        {% block footer %}{{ include('@components/Layout/Footer.html.twig') }}{% endblock %}
+        {% block footer %}<twig:Layouts:Footer:Base />{% endblock %}
     </body>
 </html>
 ```
@@ -83,18 +88,36 @@ Get URL parameters using `attr()`:
 {% set categoryId = attr('category', 'id') %}
 ```
 
-### SEO functions
+### SEO tags
+
+A theme does not render its SEO tags itself. It opens a hook in the `<head>` and passes what the
+current page knows:
 
 ```twig
-<title>{{ SEOnePageTitle() }}</title>
-<meta name="description" content="{{ SEOnePageDesc() }}">
-<link rel="canonical" href="{{ SEOnePageCanonical() }}">
-{{ SEOneBreadcrumbJsonLd(breadcrumb)|raw }}
-{{ SEOneHreflang()|raw }}
+{{ theme_hook('layout.head.top', {
+    breadcrumb,
+    title:       block('title') is defined ? block('title')|trim : null,
+    description: block('meta_description') is defined ? block('meta_description')|trim : null,
+    og_type:     block('og_type') is defined ? block('og_type')|trim : null,
+}) }}
+```
+
+The SEOne module answers that hook and renders the title, the meta description, the canonical link,
+the hreflang tags and the breadcrumb JSON-LD, falling back to its own values for anything the page
+left unset. See [Theme hooks](./theme-hooks).
+
+Its Twig functions (`SEOneBreadcrumb`, `SEOnePageH1`, `SEOnePageCanonical`, `SEOneWebSite`,
+`SEOneWebPage`, `SEOneLocalBusiness`, ...) stay available for the values a page wants to read
+directly:
+
+```twig
+<h1>{{ SEOnePageH1()|default(null) ?: attr('product', 'title') }}</h1>
 ```
 
 :::note
-The `SEOne*` functions (`SEOnePageTitle`, `SEOnePageDesc`, `SEOnePageCanonical`, `SEOneBreadcrumbJsonLd`, `SEOneHreflang`, `SEOneBreadcrumb`) are **not** core Twig functions. They are provided by the SEOne module (`thelia/seone-module`), which Flexy declares as a dependency. A theme built from scratch without that module would not have these functions available.
+The `SEOne*` functions are **not** core Twig functions. They come from the SEOne module
+(`thelia/seone-module`), which Flexy declares as a dependency. A theme built without that module
+renders the head through the hook and simply gets nothing back.
 :::
 
 ### Translation
@@ -115,37 +138,41 @@ The `SEOne*` functions (`SEOnePageTitle`, `SEOnePageDesc`, `SEOnePageCanonical`,
 
 ### Twig components
 
-```twig
-{{ component('Flexy:ProductCard', {product: product}) }}
+Components are named after their class path under `components/`, with no prefix. The tag syntax is
+what Flexy uses everywhere; `:` prefixes an attribute whose value is a Twig expression rather than a
+string:
 
-{% component 'Flexy:Card' %}
-    {% block header %}Card Title{% endblock %}
-    {% block content %}Card content{% endblock %}
-{% endcomponent %}
+```twig
+<twig:Organisms:ProductCard:Base :product="product" />
+
+<twig:Molecules:Accordion:Base id="product-details" multiple>
+    <twig:Molecules:Accordion:Item value="description" open>
+        {# ... #}
+    </twig:Molecules:Accordion:Item>
+</twig:Molecules:Accordion:Base>
 ```
 
 ### LiveComponents
 
 ```twig
-{{ component('Flexy:CategoryFilters', {
-    initialCategoryId: categoryId,
-    initialPage: 1
-}) }}
+<twig:Layouts:ProductListing:Base :categoryId="categoryId" />
 ```
 
 See [LiveComponents](./live-components) for details.
 
 ## Asset management
 
+Assets are served by AssetMapper, and paths resolve inside the theme's `assets/` directory:
+
 ```twig
 {# CSS #}
-{{ encore_entry_link_tags('app') }}
+<link rel="stylesheet" href="{{ asset('styles/app.css') }}" blocking="render">
 
 {# JavaScript #}
-{{ encore_entry_script_tags('app') }}
+{{ importmap('app') }}
 
 {# Single asset #}
-{{ asset('build/images/logo.png') }}
+{{ asset('images/logo.png') }}
 ```
 
 ## Stimulus controllers
@@ -181,7 +208,7 @@ See [LiveComponents](./live-components) for details.
 
 ```twig
 {# Good - logic in component #}
-{{ component('Flexy:ProductPrice', {product: product}) }}
+<twig:Organisms:ProductCard:Base :product="product" />
 
 {# Avoid - complex business logic in template #}
 {% if someComplexCondition and anotherCondition %}

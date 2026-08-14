@@ -47,11 +47,11 @@ Inject `Thelia\Core\Form\FormServiceInterface`. A no-op default implementation i
 
 ## A LiveComponent form
 
-The Flexy theme exposes its forms as LiveComponents. A good example is `AccountCustomerUpdate`, the "edit my profile" component:
+The Flexy theme exposes its forms as LiveComponents, grouped under `components/Forms/`. A good example is `Forms:Customer:Update`, the "edit my profile" component:
 
 ```php
-// templates/frontOffice/flexy/src/UiComponents/AccountCustomerUpdate/AccountCustomerUpdate.php
-namespace FlexyBundle\UiComponents\AccountCustomerUpdate;
+// templates/frontOffice/flexy/components/Forms/Customer/Update.php
+namespace FlexyBundle\Components\Forms\Customer;
 
 use FlexyBundle\Form\CustomerUpdateForm;
 use Symfony\Component\Form\FormInterface;
@@ -59,14 +59,11 @@ use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\ComponentWithFormTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
-use Thelia\Controller\Front\BaseFrontController;
 use Thelia\Core\Form\FormServiceInterface;
+use Thelia\Domain\Customer\CustomerFacade;
 
-#[AsLiveComponent(
-    name: 'Flexy:AccountCustomerUpdate',
-    template: '@UiComponents/AccountCustomerUpdate/AccountCustomerUpdate.html.twig'
-)]
-class AccountCustomerUpdate extends BaseFrontController
+#[AsLiveComponent]
+class Update
 {
     use ComponentWithFormTrait;
     use DefaultActionTrait;
@@ -76,6 +73,7 @@ class AccountCustomerUpdate extends BaseFrontController
 
     public function __construct(
         private readonly FormServiceInterface $formService,
+        private readonly CustomerFacade $customerFacade,
     ) {
     }
 
@@ -88,23 +86,25 @@ class AccountCustomerUpdate extends BaseFrontController
 
 Three pieces make this a form component:
 
-- `#[AsLiveComponent]` registers it and binds it to a Twig template.
+- `#[AsLiveComponent]` registers it. It carries no argument: the component is named after its class path (`Forms:Customer:Update`) and its template is the `Update.html.twig` sitting next to it.
 - `ComponentWithFormTrait` wires the Symfony form lifecycle (rendering, hydration, submission) and requires you to implement `instantiateForm()`.
 - `DefaultActionTrait` provides the default re-render action triggered by LiveProp changes.
 
 `instantiateForm()` returns the form built by `$this->formService->getFormByName(...)`. Here the name comes from a Flexy form class constant (`CustomerUpdateForm::FORM_NAME`), but it can equally be a `FrontForm` constant.
 
-:::caution Prefer constructor injection over `extends BaseFrontController`
-Flexy components extend `Thelia\Controller\Front\BaseFrontController`. That base class exposes container helpers (a service-locator style). It is convenient, but it hides dependencies, so treat it as an anti-pattern. For your own components, prefer plain constructor injection of the exact services you need, as shown above with `FormServiceInterface`. Extending `BaseFrontController` is documented here only because it is what the current Flexy theme does.
+:::tip Inject, do not inherit
+A form component needs no base class. Inject the exact services you need, as above with
+`FormServiceInterface` and `CustomerFacade`. A few Flexy components extend Symfony's
+`AbstractController`, but only where they genuinely use its helpers.
 :::
 
 ## Handling submission with a LiveAction
 
-Add a `#[LiveAction]` method that calls `submitForm()` then checks validity. The `PromoCodeForm` checkout component shows the pattern:
+Add a `#[LiveAction]` method that calls `submitForm()` then checks validity. The `Forms:PromoCode:Base` component shows the pattern:
 
 ```php
-// templates/frontOffice/flexy/src/UiComponents/Checkout/PromoCodeForm/PromoCodeForm.php
-namespace FlexyBundle\UiComponents\Checkout\PromoCodeForm;
+// templates/frontOffice/flexy/components/Forms/PromoCode/Base.php
+namespace FlexyBundle\Components\Forms\PromoCode;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormInterface;
@@ -112,18 +112,14 @@ use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\ComponentWithFormTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
-use Thelia\Controller\Front\BaseFrontController;
 use Thelia\Core\Event\Coupon\CouponConsumeEvent;
 use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Form\FormServiceInterface;
 use Thelia\Domain\Cart\CartFacade;
 use Thelia\Form\CouponCode;
 
-#[AsLiveComponent(
-    name: 'Flexy:Checkout:PromoCodeForm',
-    template: '@UiComponents/Checkout/PromoCodeForm/PromoCodeForm.html.twig'
-)]
-class PromoCodeForm extends BaseFrontController
+#[AsLiveComponent]
+class Base
 {
     use ComponentWithFormTrait;
     use DefaultActionTrait;
@@ -177,7 +173,9 @@ public function save(): void
 ### Template
 
 ```twig
-{# templates/frontOffice/flexy/src/UiComponents/.../SomeForm.html.twig #}
+{# templates/frontOffice/flexy/components/Forms/SomeForm/Base.html.twig #}
+{% form_theme form with flexy_form_themes only %}
+
 <div {{ attributes }}>
     {{ form_start(form) }}
         {{ form_widget(form) }}
@@ -246,25 +244,44 @@ LiveComponents can validate fields as the user types, using `data-model` binding
 
 ## Flexy form theme
 
-The Flexy theme registers its form theme globally, so widgets are styled automatically. You do not need a `{% form_theme %}` tag in each template. This is configured in the bundle's `config/packages/twig.yaml`:
-
-```yaml
-# templates/frontOffice/flexy/config/packages/twig.yaml
-twig:
-  paths:
-    "%kernel.project_dir%/templates/frontOffice/%thelia_front_template%/form": formTwig
-  form_themes:
-    - "frontOffice/%thelia_front_template%/form/flexy_form_theme.html.twig"
-```
-
-The `formTwig` Twig namespace points at the theme's `form/` directory, which is why partials reference the theme as `@formTwig/flexy_form_theme.html.twig`:
+Flexy ships its form theme at `@FlexyForm/flexy_form_theme.html.twig`. It is **not** registered as a
+global `twig.form_themes` entry: a global theme would also restyle the back-office forms. Instead the
+bundle exposes the list as a Twig global, and every template that renders a form opts in:
 
 ```twig
-{% use '@formTwig/flexy_form_theme.html.twig' %}
+{% form_theme form with flexy_form_themes only %}
 ```
 
-:::note
-Because the theme is applied via `form_themes` in `twig.yaml`, every front-office form is rendered with the Flexy widgets by default. Only add an explicit `{% form_theme form '@formTwig/flexy_form_theme.html.twig' %}` when you render a form in a context where the global theme does not apply.
+The `only` keyword keeps every other theme out, so the widgets rendered below are Flexy's and nothing
+else. Put the tag inside the block that renders the form, before `form_start`.
+
+The global and the `@FlexyForm` namespace are both declared by the bundle, in
+`FlexyBundle::prependExtension()`:
+
+```php
+// templates/frontOffice/flexy/src/FlexyBundle.php
+$containerBuilder->prependExtensionConfig('twig', [
+    'paths' => [
+        \dirname(__DIR__).'/components' => 'Flexy',
+        \dirname(__DIR__).'/form' => 'FlexyForm',
+    ],
+    'globals' => [
+        'flexy_form_themes' => [
+            '@FlexyForm/flexy_form_theme.html.twig',
+        ],
+    ],
+]);
+```
+
+A field template that reuses the theme's blocks imports them by namespace:
+
+```twig
+{% use '@FlexyForm/flexy_form_theme.html.twig' %}
+```
+
+:::caution
+A front-office form rendered without the `{% form_theme %}` tag gets Symfony's bare default markup,
+not the Flexy widgets. The back office works the same way, with its own `bo_form_themes` global.
 :::
 
 ## Plain Symfony fallback
@@ -272,7 +289,7 @@ Because the theme is applied via `form_themes` in `twig.yaml`, every front-offic
 If you need a one-off form that has no Thelia definition, you can build it inline with Symfony's `createFormBuilder()`. This is standard Symfony, not the Thelia way. Prefer a named Thelia form whenever one exists:
 
 :::caution `createFormBuilder()` requires `AbstractController`
-`createFormBuilder()` is a helper provided by Symfony's `Symfony\Bundle\FrameworkBundle\Controller\AbstractController`. Thelia's `BaseFrontController` (used by the components above) does not extend it, so the call below only works in a component that extends `AbstractController`, as the Flexy `CategoryFilters` component does. Otherwise, inject `Symfony\Component\Form\FormFactoryInterface` and call `$this->formFactory->createBuilder()`.
+`createFormBuilder()` is a helper provided by Symfony's `Symfony\Bundle\FrameworkBundle\Controller\AbstractController`, so the call below only works in a component that extends it, as `Layouts:ProductListing:Base` does. Otherwise, inject `Symfony\Component\Form\FormFactoryInterface` and call `$this->formFactory->createBuilder()`.
 :::
 
 ```php

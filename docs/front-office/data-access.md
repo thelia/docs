@@ -319,15 +319,15 @@ final readonly class ProductService
 
 declare(strict_types=1);
 
-namespace FlexyBundle\UiComponents\CategoryFilters;
+namespace FlexyBundle\Components\Layouts\ProductListing;
 
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 use Thelia\Api\Service\DataAccess\DataAccessService;
 
-#[AsLiveComponent(name: 'Flexy:CategoryFilters')]
-class CategoryFilters
+#[AsLiveComponent]
+class Base
 {
     use DefaultActionTrait;
 
@@ -494,7 +494,7 @@ if ($product === null) {
 {% endfor %}
 
 {# Good - fetch all at once if possible, or use component #}
-{{ component('Flexy:ProductCard', {product: product}) }}
+<twig:Organisms:ProductCard:Base :product="product" />
 ```
 
 ### Use pagination

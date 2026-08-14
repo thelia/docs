@@ -54,34 +54,49 @@ Or pass it to the installer when you (re)install:
 php Thelia thelia:install --frontoffice_theme=myCustomTheme
 ```
 
-:::caution Namespace and component-prefix collisions
+:::caution Namespace and component-name collisions
 Flexy registers three project-global identifiers:
 
 - the Composer package name `thelia/flexy` (`composer.json`)
-- the PSR-4 namespace root `FlexyBundle\` (`composer.json`, `autoload.psr-4`)
-- the Twig component name prefix `Flexy` (`config/packages/twig_component.yaml`, under `FlexyBundle\UiComponents\`)
+- the PSR-4 roots `FlexyBundle\` (on `src/`) and `FlexyBundle\Components\` (on `components/`)
+- the Twig namespaces `@Flexy` and `@FlexyForm`
 
-If you install your copy alongside the original Flexy, both register `FlexyBundle\` and the `Flexy:` Twig component prefix. Symfony will load one class definition over the other, and component names like `Flexy:ProductCard` become ambiguous.
+Component names carry no prefix at all: Flexy sets `name_prefix: ''`, so a component is named after
+its class path under `FlexyBundle\Components\`. `Organisms:ProductCard:Base` is one name in the
+project, whichever theme declares it.
+
+If you install your copy alongside the original Flexy, both register the same PSR-4 roots, the same
+Twig namespaces and the same component names. Symfony loads one class definition over the other.
 
 To run both side by side, rename them in your copy:
 
-1. In `composer.json`, change the package `name` and the `autoload.psr-4` root (for example `MyThemeBundle\`).
-2. Rename the `FlexyBundle\` namespace in every PHP file under `src/` to your new root.
-3. In `config/packages/twig_component.yaml`, change the `name_prefix` and the namespace key:
+1. In `composer.json`, change the package `name` and both `autoload.psr-4` roots (for example `MyThemeBundle\` and `MyThemeBundle\Components\`).
+2. Rename the `FlexyBundle\` namespace in every PHP file under `src/` and `components/`.
+3. In your bundle class, change the Twig namespaces and the `twig_component` defaults key:
 
-```yaml
-# templates/frontOffice/myCustomTheme/config/packages/twig_component.yaml
-twig_component:
-    anonymous_template_directory: 'frontOffice/%thelia_front_template%/components/'
-    defaults:
-        MyThemeBundle\UiComponents\:
-            name_prefix: MyTheme
-            template_directory: '%kernel.project_dir%/templates/frontOffice/%thelia_front_template%/src/UiComponents'
+```php
+// templates/frontOffice/myCustomTheme/src/MyThemeBundle.php
+$builder->prependExtensionConfig('twig', [
+    'paths' => [
+        \dirname(__DIR__).'/components' => 'MyTheme',
+        \dirname(__DIR__).'/form' => 'MyThemeForm',
+    ],
+]);
+
+$builder->prependExtensionConfig('twig_component', [
+    'anonymous_template_directory' => 'frontOffice/%thelia_front_template%/components/',
+    'defaults' => [
+        'MyThemeBundle\\Components\\' => [
+            'template_directory' => '@MyTheme',
+            'name_prefix' => 'MyTheme',
+        ],
+    ],
+]);
 ```
 
-4. Update every `{{ component('Flexy:...') }}` call in your templates to the new prefix.
+4. Update the component calls in your templates to the prefix you chose (`<twig:MyTheme:Organisms:ProductCard:Base />`).
 
-If you only need one active front-office theme (the common case), you do not have to rename anything: keep `FlexyBundle\` and `Flexy:`, and do not require the upstream `thelia/flexy` package at the same time.
+If you only need one active front-office theme (the common case), you do not have to rename anything: keep the Flexy identifiers, and do not require the upstream `thelia/flexy` package at the same time.
 :::
 
 ## Customization strategies
@@ -97,33 +112,20 @@ If you only need one active front-office theme (the common case), you do not hav
 
 ### Tailwind configuration
 
-Flexy's `tailwind.config.js` scans the bundle's own files. The real `content` globs are relative to the theme directory:
+Tailwind v4 is CSS-first: there is no `tailwind.config.js`. `assets/styles/app.css` is the
+configuration, and it lists the directories Tailwind scans with `@source`. They are spelled out
+because the theme directory is git-ignored from the project root, which makes Tailwind's automatic
+source detection skip it:
 
-```javascript
-// templates/frontOffice/myCustomTheme/tailwind.config.js
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-    content: [
-        './components/**/*.{twig,ts,js,json}',
-        './src/UiComponents/**/*.{twig,ts,js,json}',
-        './form/**/*.twig',
-        './*.twig',
-    ],
-    theme: {
-        extend: {
-            colors: {
-                // Flexy maps Tailwind colors to CSS variables.
-                // Override the variables in your CSS (see below), or add new colors here.
-                'brand': {
-                    50: '#f0f9ff',
-                    500: '#0ea5e9',
-                    700: '#0369a1',
-                },
-            },
-        },
-    },
-    plugins: [],
-};
+```css
+/* templates/frontOffice/myCustomTheme/assets/styles/app.css */
+@import "tailwindcss";
+
+@source "../../components";
+@source "../../partials";
+@source "../../*.html.twig";
+@source "../../form";
+@source "../../blocks";
 ```
 
 :::note
@@ -132,10 +134,11 @@ Flexy's default theme colors (`theme`, `theme-dark`, `grey`, `error`, ...) are d
 
 ### Custom CSS
 
-Edit the theme stylesheets under `templates/frontOffice/myCustomTheme/assets/css/`.
+Edit the theme stylesheets under `templates/frontOffice/myCustomTheme/assets/styles/`. Component CSS
+lives next to the component it styles, and `app.css` imports it.
 
 ```css
-/* templates/frontOffice/myCustomTheme/assets/css/app.css */
+/* templates/frontOffice/myCustomTheme/assets/styles/variables.css */
 
 /* Override Flexy theme variables */
 :root {
@@ -190,21 +193,23 @@ templates/frontOffice/myCustomTheme/
 ├── index.html.twig           # Homepage
 ├── product.html.twig         # Product page
 ├── category.html.twig        # Category page
-├── components/               # Anonymous Twig components (atoms / molecules / organisms)
-│   ├── Layout/
+├── components/               # Every component, PHP-backed or anonymous (namespace @Flexy)
+│   ├── Layouts/
 │   │   ├── Header/
-│   │   │   └── Header.html.twig
+│   │   │   ├── Base.php
+│   │   │   └── Base.html.twig
 │   │   └── Footer/
+│   ├── Molecules/
 │   └── Organisms/
-│       └── CategoryCard/
-│           └── CategoryCard.html.twig
-└── src/
-    └── UiComponents/         # Twig / Live components (PHP + template)
-        ├── ProductCard/
-        ├── CrossSelling/
-        └── Pages/
-            └── Product/
+│       └── ProductCard/
+│           ├── Base.php
+│           ├── Base.css
+│           └── Base.html.twig
+└── src/                      # Bundle class, controllers, DTOs, services
 ```
+
+A component is a directory holding its PHP class, its Twig template, its CSS and, when it needs one,
+its Stimulus controller. Anonymous components (no PHP class) sit in the same tree, template only.
 
 ### Modify page templates
 
@@ -222,7 +227,7 @@ templates/frontOffice/myCustomTheme/
         </div>
 
         <div class="product-info">
-            {{ component('Flexy:Pages:Product', {product: product}) }}
+            <twig:Layouts:ProductDetails:Base :product="product" />
         </div>
 
         {# Custom sections #}
@@ -242,7 +247,7 @@ templates/frontOffice/myCustomTheme/
 Categories and products are linked through their rewritten URLs, not through route-name-with-id helpers. The API resource exposes a `publicUrl` field (`Category::getPublicUrl()`, `Product::getPublicUrl()`, serialized in the `front:*:read` group). The homepage route is named `index`.
 
 ```twig
-{# templates/frontOffice/myCustomTheme/components/Layout/Header/Header.html.twig #}
+{# templates/frontOffice/myCustomTheme/components/Layouts/Header/Base.html.twig #}
 <header class="site-header">
     <div class="container">
         {# Logo points to the homepage #}
@@ -268,63 +273,67 @@ Categories and products are linked through their rewritten URLs, not through rou
         </nav>
 
         {# Cart / account actions #}
-        {{ include('@components/Organisms/HeaderNav/HeaderNav.html.twig') }}
+        <twig:Organisms:HeaderNav:Base />
     </div>
 </header>
 ```
 
 :::caution Do not build catalog links from route + id
-There is no `product_show` or `category` route taking an `{id}`. Catalog pages are served from SEO-friendly rewritten URLs. Always render a category or product link from its `publicUrl` field. For a ready-made card, feed the resource to the `CategoryCard` organism, which reads `category.publicUrl` internally:
+There is no `product_show` or `category` route taking an `{id}`. Catalog pages are served from SEO-friendly rewritten URLs. Always render a category or product link from its `publicUrl` field. For a ready-made card, pass that URL to the `CategoryCard` organism:
 
 ```twig
-{{ include('@components/Organisms/CategoryCard/CategoryCard.html.twig', {
-    category: category,
-    id: category.id
-}) }}
+<twig:Organisms:CategoryCard:Base
+    id="{{ category.id }}"
+    title="{{ category.i18ns.title }}"
+    href="{{ category.publicUrl }}"
+/>
 ```
 :::
 
 ## Component customization
 
-Flexy ships two kinds of server-rendered components under `src/UiComponents/`:
+Flexy ships two kinds of server-rendered components under `components/`:
 
-- Twig components (`#[AsTwigComponent]`) are stateless and rendered once. Example: `ProductCard`, `CrossSelling`.
-- Live components (`#[AsLiveComponent]`) are reactive and can re-render on user interaction. Example: `Pages\Product`, `CategoryFilters`.
+- Twig components (`#[AsTwigComponent]`) are stateless and rendered once. Example: `Organisms:ProductCard:Base`, `Layouts:CrossSelling:Base`.
+- Live components (`#[AsLiveComponent]`) are reactive and can re-render on user interaction. Example: `Layouts:ProductDetails:Base`, `Layouts:ProductListing:Base`.
 
 ### Modify an existing component
 
-`ProductCard` is a Twig component. It accepts either a `productId` (it then fetches the product itself) or a `product` (a `ProductDTO` or a raw array). Here is its real signature:
+`Organisms:ProductCard:Base` is a Twig component. It accepts either a `productId` (it then fetches the product itself) or a `product` (a `ProductDTO` or a raw array). Here is its real signature:
 
 ```php
 <?php
-// templates/frontOffice/myCustomTheme/src/UiComponents/ProductCard/ProductCard.php
+// templates/frontOffice/myCustomTheme/components/Organisms/ProductCard/Base.php
 
 declare(strict_types=1);
 
-namespace FlexyBundle\UiComponents\ProductCard;
+namespace FlexyBundle\Components\Organisms\ProductCard;
 
 use FlexyBundle\DTO\ProductDTO;
+use FlexyBundle\Service\ProductImageResolver;
+use FlexyBundle\Service\ProductTaxationResolver;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 use Symfony\UX\TwigComponent\Attribute\PreMount;
 use Thelia\Api\Service\DataAccess\DataAccessService;
-use Thelia\Domain\Taxation\TaxEngine\TaxEngine;
 
-#[AsTwigComponent(name: 'Flexy:ProductCard', template: '@UiComponents/ProductCard/ProductCard.html.twig')]
-class ProductCard
+#[AsTwigComponent]
+class Base extends AbstractProductCard
 {
     public ?int $productId = null;
 
     public function __construct(
-        private readonly DataAccessService $dataAccessService,
-        private TaxEngine $taxEngine,
+        DataAccessService $dataAccessService,
+        ProductImageResolver $productImageResolver,
+        private readonly ProductTaxationResolver $productTaxationResolver,
     ) {
+        parent::__construct($dataAccessService, $productImageResolver);
     }
 
     #[PreMount]
     public function preMount(?array $data): void
     {
         if (isset($data['productId']) && $data['productId']) {
-            $this->productId = $data['productId'];
+            $this->productId = (int) $data['productId'];
         }
     }
 
@@ -335,31 +344,33 @@ class ProductCard
 }
 ```
 
-To customize it, edit the file in your theme: add helper methods, change the price logic, or edit the template at `src/UiComponents/ProductCard/ProductCard.html.twig`.
+To customize it, edit the file in your theme: add helper methods, change the price logic, or edit the template next to it, `components/Organisms/ProductCard/Base.html.twig`.
 
 :::caution
-`ProductCard` is a Twig component (`#[AsTwigComponent]`), not a Live component, and its data property is a typed `ProductDTO` (resolved in `mount()`), not a public `array $product` LiveProp. If you need reactivity (a property writable from the browser that triggers a re-render), create a Live component instead.
+`Organisms:ProductCard:Base` is a Twig component (`#[AsTwigComponent]`), not a Live component, and its data property is a typed `ProductDTO` (resolved in `mount()`), not a public `array $product` LiveProp. If you need reactivity (a property writable from the browser that triggers a re-render), create a Live component instead.
 :::
 
 ### Add a new Live component
 
-Create reactive components under `src/UiComponents/`. The Twig component prefix is `Flexy` (from `twig_component.yaml`), and the template directory resolves to `src/UiComponents`:
+Create reactive components under `components/`. The attribute stays bare: Flexy sets `name_prefix: ''`
+and `template_directory: '@Flexy'`, so both the component name and its template are derived from the
+class path.
 
 ```php
 <?php
-// templates/frontOffice/myCustomTheme/src/UiComponents/Newsletter/Newsletter.php
+// templates/frontOffice/myCustomTheme/components/Organisms/Newsletter/Base.php
 
 declare(strict_types=1);
 
-namespace FlexyBundle\UiComponents\Newsletter;
+namespace FlexyBundle\Components\Organisms\Newsletter;
 
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 
-#[AsLiveComponent(name: 'Flexy:Newsletter', template: '@UiComponents/Newsletter/Newsletter.html.twig')]
-class Newsletter
+#[AsLiveComponent]
+class Base
 {
     use DefaultActionTrait;
 
@@ -377,6 +388,9 @@ class Newsletter
     }
 }
 ```
+
+Its template is `components/Organisms/Newsletter/Base.html.twig`, and it renders as
+`<twig:Organisms:Newsletter:Base />`.
 
 See [Live Components](/docs/front-office/live-components) for the full reference.
 
@@ -430,12 +444,12 @@ See [Stimulus](/docs/front-office/stimulus) for more.
 
 ### Related products
 
-Use the `Flexy:ProductCard` Twig component to render a grid of products. To exclude the current product, use the `not_in` filter exposed by the API resource.
+Use the `Organisms:ProductCard:Base` Twig component to render a grid of products. To exclude the current product, use the `not_in` filter exposed by the API resource.
 
 ```twig
 {# product.html.twig #}
 {% block body %}
-    {{ component('Flexy:Pages:Product', {product: product}) }}
+    <twig:Layouts:ProductDetails:Base :product="product" />
 
     {# Related products in the same category #}
     <section class="related-products">
@@ -447,7 +461,7 @@ Use the `Flexy:ProductCard` Twig component to render a grid of products. To excl
         }) %}
         <div class="product-grid">
             {% for p in related %}
-                {{ component('Flexy:ProductCard', {product: p}) }}
+                <twig:Organisms:ProductCard:Base :product="p" />
             {% endfor %}
         </div>
     </section>
@@ -455,26 +469,41 @@ Use the `Flexy:ProductCard` Twig component to render a grid of products. To excl
 ```
 
 :::caution NotInFilter syntax
-The Thelia `NotInFilter` is keyed `not_in[<property>]` and expects an array of values, for example `'not_in[id]': [product.id]`. This matches the core `Flexy:CrossSelling` component, which queries `'not_in[id]' => $this->productIdsToIgnore`. The reverse form `id[not_in]` is not supported and will be ignored.
+The Thelia `NotInFilter` is keyed `not_in[<property>]` and expects an array of values, for example `'not_in[id]': [product.id]`. This matches the `Layouts:CrossSelling:Base` component, which queries `'not_in[id]' => $this->productIdsToIgnore`. The reverse form `id[not_in]` is not supported and will be ignored.
 :::
 
-`Flexy:ProductCard` accepts a `product` (a `ProductDTO` or a raw array), both handled by its `mount()` method, or a `productId` if you only have the id.
+`Organisms:ProductCard:Base` accepts a `product` (a `ProductDTO` or a raw array), both handled by its `mount()` method, or a `productId` if you only have the id.
 
 ## Form customization
 
-Flexy ships a form theme at `form/flexy_form_theme.html.twig`. To customize form rendering in your theme, edit that file (or create your own and register it). It overrides the standard Symfony form blocks:
+Flexy ships a form theme at `form/flexy_form_theme.html.twig`, reached as `@FlexyForm/flexy_form_theme.html.twig`. Each of its blocks delegates the markup to an anonymous component under `components/Fields/`, so restyling an input usually means editing the component rather than the theme:
 
 ```twig
 {# templates/frontOffice/myCustomTheme/form/flexy_form_theme.html.twig #}
 {% use 'form_div_layout.html.twig' %}
 
-{% block form_row %}
-    <div class="form-group {{ errors|length ? 'has-error' : '' }}">
-        {{ form_label(form) }}
-        {{ form_widget(form) }}
-        {{ form_errors(form) }}
-    </div>
-{% endblock %}
+{# The widget components render their own label and error, so the row adds no wrapper #}
+{%- block form_row -%}
+    {{- form_widget(form) -}}
+{%- endblock form_row -%}
+
+{%- block form_widget_simple -%}
+    {{ component('Fields:Input:Base', {
+        label: label,
+        name: full_name,
+        id: id,
+        type: type|default('text'),
+        value: value,
+        error: errors|first.message|default(false),
+        required: required,
+    }) }}
+{%- endblock form_widget_simple -%}
+```
+
+Templates apply the theme explicitly, one form at a time:
+
+```twig
+{% form_theme form with flexy_form_themes only %}
 ```
 
 See [Forms](/docs/front-office/forms) for the front-office form workflow.

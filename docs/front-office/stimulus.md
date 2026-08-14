@@ -97,7 +97,7 @@ Stimulus works alongside LiveComponents for client-side animations and effects:
 <div {{ attributes }}
      data-controller="animation"
      data-action="addToCart->animation#pulse">
-    {{ component('Flexy:ProductCard', {product: product}) }}
+    <twig:Organisms:ProductCard:Base :product="product" />
 </div>
 ```
 
