@@ -438,7 +438,7 @@ internal:
 ```
 
 A request naming one of these views gets a 404. A controller rendering the same template is not
-affected. See [Creating a theme](./creating-theme#declaring-internal-views) for the rules.
+affected. See [Creating a theme](./creating-theme.md#declaring-internal-views) for the rules.
 
 ## PHP 8.3 and 8.4
 

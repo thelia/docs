@@ -20,7 +20,7 @@ Thelia 3 builds its front office on Twig templates and Symfony UX components. Co
 
 The theme also carries the front-office routes, including the catch-all that renders category,
 product, content and folder pages. No Thelia module is required to serve a page. See
-[Serving the pages](./flexy-theme/creating-theme#serving-the-pages).
+[Serving the pages](./flexy-theme/creating-theme.md#serving-the-pages).
 
 ## Architecture overview
 
