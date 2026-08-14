@@ -172,15 +172,13 @@ To customize a file without modifying the original:
 
 ### Modify styles
 
-For Flexy theme customization:
+Edit the files in the theme's `assets/` directory. Flexy is served through AssetMapper, so a change
+to a template, an image or a Stimulus controller shows up on the next request. Only the Tailwind
+stylesheet is compiled:
 
 ```bash
-cd templates/frontOffice/flexy
-npm install
-npm run dev  # Watch mode for development
+php Thelia tailwind:build --watch
 ```
-
-Edit files in `assets/` directory.
 
 ## Add a simple page
 

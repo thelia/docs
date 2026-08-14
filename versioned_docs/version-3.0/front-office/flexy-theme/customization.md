@@ -152,16 +152,32 @@ Edit the theme stylesheets under `templates/frontOffice/myCustomTheme/assets/css
 
 ### Rebuild assets
 
-Flexy uses Webpack Encore. After CSS or JS changes, rebuild the assets from the theme directory:
+Flexy is served through Symfony AssetMapper. There is no bundler and no Node build: a change to a
+Twig template, a Stimulus controller, an image or an icon is live on the next request. Only the
+Tailwind stylesheet is compiled, by `symfonycasts/tailwind-bundle`:
 
 ```bash
-cd templates/frontOffice/myCustomTheme
-npm install
-npm run build
+php Thelia tailwind:build            # once
+php Thelia tailwind:build --watch    # while you work on the CSS
 ```
 
-:::note Output directory is `dist/`
-Flexy's `webpack.config.js` sets the output path to `dist/` (not `public/build/`). The compiled assets are served from `/templates-assets/frontOffice/<theme>/dist`. Reference the placeholder image as `asset('dist/images/placeholder.webp')`, as the core components do.
+The bundle downloads a standalone Tailwind binary on first use, so nothing has to be installed
+beforehand.
+
+Two other commands matter after a `composer update`, which reinstalls the theme package and wipes
+what it had compiled:
+
+```bash
+php Thelia importmap:install    # restore the JavaScript dependencies in assets/vendor
+php Thelia tailwind:build
+```
+
+`bin/install` runs both at the end of a fresh install, so a new project needs neither.
+
+:::note Referencing an asset
+Files under the theme's `assets/` are addressed by their path inside that directory:
+`asset('styles/app.css')`, `asset('favicons/favicon.svg')`. There is no `dist/` prefix and no
+`dist/` directory, and `template.xml` declares no `<assets>` tag.
 :::
 
 ## Template customization
@@ -368,7 +384,9 @@ See [Live Components](/docs/front-office/live-components) for the full reference
 
 ### Add Stimulus controllers
 
-Flexy enables the Stimulus bridge in `webpack.config.js`. Add controllers under `templates/frontOffice/myCustomTheme/assets/controllers/`:
+The theme registers `assets/controllers/` and `components/` as Stimulus controller paths. Drop a
+controller in either and it is picked up, with no build step. Add controllers under
+`templates/frontOffice/myCustomTheme/assets/controllers/`:
 
 ```javascript
 // templates/frontOffice/myCustomTheme/assets/controllers/quick_view_controller.js
@@ -467,7 +485,7 @@ See [Forms](/docs/front-office/forms) for the front-office form workflow.
 2. Override CSS variables rather than rewriting the Tailwind palette.
 3. Link catalog pages via `publicUrl`, never via a route + id.
 4. Keep component changes minimal: override only what you need.
-5. Rebuild assets (`npm run build`) after every CSS/JS change.
+5. Run `tailwind:build --watch` while you edit the CSS. Nothing else needs a build.
 6. Test after Thelia updates. Pull upstream Flexy, then re-test.
 
 ## Learn more
