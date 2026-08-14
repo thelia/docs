@@ -48,12 +48,24 @@ The Flexy theme includes several Stimulus controllers you can use directly:
 | `simple-slider` | Image slider |
 | `tooltip` | Tooltip display |
 
-Location: `templates/frontOffice/flexy/assets/controllers/`. Controllers are registered through `assets/controllers.json` and the Stimulus bridge enabled in `webpack.config.js`:
+Location: `templates/frontOffice/flexy/assets/controllers/`. A file named `*_controller.js` dropped
+there is registered, with no build step. The theme declares the directories it scans from its
+bundle class:
 
-```js
-// templates/frontOffice/flexy/webpack.config.js
-Encore.enableStimulusBridge('./assets/controllers.json');
+```php
+// templates/frontOffice/flexy/src/FlexyBundle.php
+$builder->prependExtensionConfig('stimulus', [
+    'controller_paths' => [
+        '%kernel.project_dir%/templates/frontOffice/%thelia_front_template%/assets/controllers',
+        '%kernel.project_dir%/templates/frontOffice/%thelia_front_template%/components',
+    ],
+    'controllers_json' => '%kernel.project_dir%/templates/frontOffice/%thelia_front_template%/assets/controllers.json',
+]);
 ```
+
+`controller_paths` is a list, so a module can add its own directory to it. `controllers_json` is a
+single value: it names the manifest that enables Symfony UX packages, and the theme owns it.
+`php Thelia debug:config stimulus` prints the resolved paths.
 
 :::note
 The table above lists the most commonly used controllers. The Flexy theme ships around 20 controllers; the authoritative list is always the `assets/controllers/` folder of the theme bundle.

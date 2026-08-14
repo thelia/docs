@@ -22,9 +22,28 @@ The script runs in two phases:
 
 **Kernel phase** (boots Symfony for these steps only):
 
-7. Configures and installs templates
-8. Imports demo data (if `--with-demo`)
-9. Creates admin user (if `--with-admin`)
+7. Generates the JWT key pair the API authenticates with
+8. Configures and installs templates
+9. Runs the post-activation hooks of the modules
+10. Imports demo data (if `--with-demo`)
+11. Creates admin user (if `--with-admin`)
+12. Builds the front-office assets
+
+## Front-office assets
+
+The last step runs `importmap:install`, then `tailwind:build`. Both read the template that step 8
+selected, which is why they run at the end.
+
+Neither command belongs to the core: they come from packages a template requires, `symfony/asset-mapper`
+and `symfonycasts/tailwind-bundle`. `bin/install` skips whichever one the console does not carry, so a
+template built on another pipeline installs without an error.
+
+A Twig back-office such as `default-twig` is outside this: it is built with Webpack Encore, ships no
+`dist/` directory, and is built once by hand.
+
+```bash
+cd templates/backOffice/default-twig && npm install && npm run build
+```
 
 ## Options
 

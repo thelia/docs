@@ -5,7 +5,7 @@ sidebar_position: 1
 
 # Flexy Theme
 
-Flexy is the default front-office theme for Thelia 3. It is a Symfony bundle (`FlexyBundle`) that ships its PHP classes, Twig templates, components, form theme and front-end assets together. It is built on the modern Thelia stack: Twig, Symfony UX (Live/Twig Components, Stimulus) and Webpack Encore.
+Flexy is the default front-office theme for Thelia 3. It is a Symfony bundle (`FlexyBundle`) that ships its PHP classes, Twig templates, components, form theme and front-end assets together. It is built on the modern Thelia stack: Twig, Symfony UX (Live/Twig Components, Stimulus), AssetMapper and Tailwind CSS.
 
 ## Overview
 
@@ -15,6 +15,10 @@ Flexy provides:
 - Around 50 components (25 LiveComponents + 24 TwigComponents), all auto-discovered from `src/UiComponents/`
 - A full e-commerce flow (catalog, cart, checkout, account)
 - Server-rendered reactivity through Symfony UX LiveComponents and Stimulus
+- The routes that serve the front office, including the catch-all that renders catalog pages
+
+The theme requires no Thelia module to serve a page. It carries the front-office routes itself and
+depends only on the core.
 
 ## Theme structure
 
@@ -48,9 +52,11 @@ templates/frontOffice/flexy/
 ├── components/                # anonymous Twig components (Atoms / Molecules / Organisms / Layout)
 ├── form/                      # form theme + custom field templates
 │   └── flexy_form_theme.html.twig
-├── config/packages/           # bundle config (twig, twig_component, encore, …)
-├── assets/                    # JS, CSS, images, Stimulus controllers
-└── webpack.config.js          # Webpack Encore build
+├── config/
+│   ├── views.yaml             # root templates that are not pages of their own
+│   └── packages/              # bundle config imported by the theme
+├── assets/                    # styles, icons, images, Stimulus controllers
+└── importmap.php              # AssetMapper entrypoints and JavaScript dependencies
 ```
 
 :::note
@@ -301,59 +307,161 @@ Flexy is styled with Tailwind CSS, configured in `tailwind.config.js`:
 
 ### Custom CSS
 
-Per-page CSS is added as dedicated Webpack entries (see below). Put your stylesheets under `assets/css/` and reference them from an entry.
+Stylesheets live under `assets/styles/`. `assets/styles/app.css` is the single input Tailwind
+compiles, and it imports the rest.
 
 ## Assets
 
-### Webpack Encore
+### AssetMapper and Tailwind
 
-Assets are built with Webpack Encore. The real configuration lives in `templates/frontOffice/flexy/webpack.config.js`:
+Flexy is served through Symfony AssetMapper. There is no bundler, no `package.json` and no `dist/`
+directory. JavaScript dependencies are declared in the theme's own `importmap.php`, and the theme
+points AssetMapper at itself from `FlexyBundle::prependExtension()`:
 
-```javascript
-// templates/frontOffice/flexy/webpack.config.js (excerpt)
-const Encore = require('@symfony/webpack-encore');
-const path = require('path');
+| Configuration key | Value |
+|---|---|
+| `framework.asset_mapper.paths` | the theme's `assets/`, `assets/styles/` and `components/` |
+| `framework.asset_mapper.vendor_dir` | `templates/frontOffice/%thelia_front_template%/assets/vendor` |
+| `framework.asset_mapper.importmap_path` | `templates/frontOffice/%thelia_front_template%/importmap.php` |
+| `symfonycasts_tailwind.input_css` | `templates/frontOffice/%thelia_front_template%/assets/styles/app.css` |
 
-Encore
-    // compiled assets go to dist/, served from /templates-assets/frontOffice/flexy/dist
-    .setOutputPath('dist/')
-    .addAliases({
-        '@components': path.resolve(__dirname, './components'),
-        '@js': path.resolve(__dirname, './assets/js'),
-        '@assets': path.resolve(__dirname, './assets'),
-    })
+`base.html.twig` loads them with the AssetMapper functions:
 
-    // main entry + per-page CSS entries
-    .addEntry('app', './assets/app.js')
-    .addEntry('category-css', './assets/css/pages/category.css')
-    .addEntry('product-css', './assets/css/pages/product.css')
+```twig
+{# templates/frontOffice/flexy/base.html.twig (excerpt) #}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/app.css') }}" blocking="render">
+{% endblock %}
 
-    .splitEntryChunks()
-    .enableSingleRuntimeChunk()
-    .cleanupOutputBeforeBuild()
-    .enableSourceMaps(!Encore.isProduction())
-    .enableVersioning(Encore.isProduction())
-;
-
-Encore.enablePostCssLoader();
-Encore.enableTypeScriptLoader();
-Encore.enableReactPreset();
-Encore.enableStimulusBridge('./assets/controllers.json');
-
-module.exports = Encore.getWebpackConfig();
+{% block javascripts %}
+    {% block importmap %}{{ importmap('app') }}{% endblock %}
+{% endblock %}
 ```
 
-:::note
-Output goes to `dist/` (not `public/build/`), and is served under `/templates-assets/frontOffice/flexy/dist`. Templates reference built assets with `encore_entry_link_tags('app')` / `encore_entry_script_tags('app')`, as in `base.html.twig`.
-:::
+An `asset()` path is relative to the theme's `assets/` directory: `asset('favicons/favicon.svg')`
+resolves `assets/favicons/favicon.svg`.
 
 ### Building assets
 
+`bin/install` runs both commands at the end of an install, so a fresh project has nothing to do.
+Run them by hand after a `composer update`, which reinstalls the theme package and removes what it
+had compiled:
+
 ```bash
-ddev exec bash -c "cd templates/frontOffice/flexy && npm install && npm run build"
+php Thelia importmap:install
+php Thelia tailwind:build
 ```
 
-For development you can also run `npm run dev` or `npm run watch` from the same directory.
+While working on the CSS, keep a watcher running:
+
+```bash
+php Thelia tailwind:build --watch
+```
+
+`symfonycasts/tailwind-bundle` downloads a standalone Tailwind binary on first use.
+
+## Routes the theme carries
+
+Flexy declares the front-office routes in `src/Controller/`, with `#[Route]` attributes. Two of
+them deserve a mention.
+
+### The catch-all view
+
+`FlexyBundle\Controller\ViewController` reads the last segment of a URL as the name of a view and
+lets the core render it:
+
+```php
+#[Route(
+    '/{_view}',
+    name: 'flexy_view',
+    requirements: ['_view' => '^(?!admin|api)[^/]+'],
+    defaults: ['_view' => 'index'],
+    priority: -1000,
+)]
+public function view(Request $request): void
+{
+    $this->noAction($request);
+}
+```
+
+Every page that is not a route of its own arrives here, either named directly or through the
+rewriting router, which resolves a SEO URL and hands over the view it points at. Category, product,
+content and folder pages all come through it. The controller extends
+`Thelia\Controller\Front\DefaultController`, so the rendering work stays in the core and the theme
+only carries the route.
+
+The route is declared last on purpose: the pattern swallows any single segment, and a route
+declared after it would never be reached. `admin` and `api` are excluded by the pattern.
+
+This route used to be declared by the `thelia/front-module` package. The theme no longer requires
+it, and no module is needed to serve a front-office page.
+
+### Downloading a virtual product
+
+`/account/order/download/{orderProductId}` serves the file bought with a virtual product. The theme
+never reads that file. It checks that the order line belongs to the logged-in customer and that the
+order is paid, then dispatches `TheliaEvents::VIRTUAL_PRODUCT_ORDER_DOWNLOAD_RESPONSE` and returns
+whatever a listener puts on the event.
+
+The module that stores the file answers, VirtualProductDelivery being the usual one. When no module
+answers, the route returns 404, not 500, so a shop with no virtual product module is not broken by
+it. An unknown id, someone else's order line and an unpaid order all return the same 404.
+
+## Internal views
+
+Root templates such as `base.html.twig` or `checkout-delivery.html.twig` are not pages. They render
+only with the context a controller prepares, or they exist to be extended. Without a declaration,
+the catch-all above would serve them under a URL made of their own name, which can only produce a
+broken page.
+
+Flexy lists them in `config/views.yaml`:
+
+```yaml
+# templates/frontOffice/flexy/config/views.yaml
+internal:
+    # Layouts, only ever extended
+    - base
+    - checkout-base
+
+    # Rendered by the error handler with its own status code
+    - error
+    # Quoted: unquoted, YAML reads it as an integer, and the core rejects a non-string entry
+    - '404'
+
+    # Customer area: the controller checks authentication and resolves the entity
+    - account
+    - account-orders
+
+    # Checkout steps, each guarded by the cart state its controller checks
+    - checkout-cart
+    - checkout-delivery
+```
+
+A request naming one of these views gets a 404. A controller rendering the same template is not
+affected. See [Creating a theme](./creating-theme.md#declaring-internal-views) for the rules.
+
+## PHP 8.3 and 8.4
+
+Flexy accepts `symfony/ux-twig-component` in `^2.36 || ^3.1`. The 3.x series requires PHP 8.4, so a
+shop on 8.3 resolves the 2.x line, which does not ship the `provide()` and `inject()` Twig
+functions the theme's compound components use.
+
+`FlexyBundle\Twig\ComponentContextExtension` declares those two functions, and only when the
+installed package does not:
+
+```php
+private function packageProvidesThem(): bool
+{
+    if (!class_exists(InstalledVersions::class)) {
+        return false;
+    }
+
+    return InstalledVersions::satisfies(new VersionParser(), 'symfony/ux-twig-component', '>=3.0');
+}
+```
+
+There is one implementation in play at any time, never two answering the same name, and the theme
+renders the same on both PHP versions.
 
 ## Form theme
 

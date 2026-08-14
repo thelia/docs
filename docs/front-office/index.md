@@ -15,8 +15,12 @@ Thelia 3 builds its front office on Twig templates and Symfony UX components. Co
 | Symfony UX LiveComponents | Reactive UI components |
 | Symfony UX TwigComponent | Static reusable components |
 | Stimulus | JavaScript controllers |
-| Webpack Encore | Asset management |
+| AssetMapper + Tailwind CSS | Asset management, no bundler and no Node build |
 | `DataAccessService` | API data fetching |
+
+The theme also carries the front-office routes, including the catch-all that renders category,
+product, content and folder pages. No Thelia module is required to serve a page. See
+[Serving the pages](./flexy-theme/creating-theme.md#serving-the-pages).
 
 ## Architecture overview
 
@@ -126,11 +130,13 @@ templates/frontOffice/flexy/
 │   ├── UiComponents/           # Twig/Live components (.php + colocated .html.twig)
 │   └── FlexyBundle.php         # Bundle class (loadExtension / prependExtension)
 ├── form/                       # Form theme (flexy_form_theme.html.twig + fields/)
-├── assets/                     # JS, CSS, images
+├── assets/                     # styles, icons, images
 │   └── controllers/            # Stimulus controllers
-├── config/                     # Bundle config (config/packages/*.yaml)
+├── config/
+│   ├── views.yaml              # root templates that are not pages of their own
+│   └── packages/               # framework config the theme ships
 ├── template.xml                # Theme manifest
-└── webpack.config.js           # Webpack Encore build config
+└── importmap.php               # AssetMapper entrypoints and JavaScript dependencies
 ```
 
 :::note Components: anonymous vs. PHP-backed

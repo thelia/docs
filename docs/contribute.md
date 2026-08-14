@@ -18,18 +18,26 @@ git clone https://github.com/thelia/thelia.git
 cd thelia
 
 ddev start
+ddev composer config --global github-oauth.github.com <your-token>
 ddev composer install
 ddev exec php bin/install --frontoffice_theme=flexy --with-demo --with-admin
-ddev exec bash -c "cd templates/frontOffice/flexy && npm install && npm run build"
 ddev exec bash -c "cd templates/backOffice/default-twig && npm install && npm run build"
 ```
+
+The GitHub token is not optional: Composer reads the Thelia Flex recipes through the GitHub API,
+and an anonymous call is rate-limited. Flex then falls back on auto-generated recipes without
+saying so, and the install fails later on a message that names none of this. Any token works, no
+scope needed.
+
+`bin/install` builds the front-office assets itself. The `default-twig` back-office is the one
+build left to do by hand, because it uses Webpack Encore and ships no `dist/`.
 
 See [DDEV Installation](./getting-started/ddev.md) for the full setup, or
 [Standard Installation](./getting-started/installation.md) if you prefer a local PHP and MySQL stack.
 
 ## Coding standards
 
-Thelia 3 targets PHP 8.3 and follows [PSR-12](https://www.php-fig.org/psr/psr-12/), through the
+Thelia 3 runs on PHP 8.3 and 8.4, and follows [PSR-12](https://www.php-fig.org/psr/psr-12/), through the
 Symfony ruleset of [PHP CS Fixer](https://cs.symfony.com/). The configuration lives in
 `.php-cs-fixer.dist.php` at the root of the repository, so you never have to configure the rules
 yourself:

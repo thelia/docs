@@ -31,11 +31,18 @@ This command applies database schema updates, new migrations, and any required d
 
 ## Update assets
 
-Rebuild front-office assets after updates:
+Composer reinstalls the template packages, so whatever they had compiled is gone. Rebuild the
+front-office assets:
 
 ```bash
-npm install
-npm run build
+php Thelia importmap:install
+php Thelia tailwind:build
+```
+
+If the Twig back-office is active, rebuild it too. It uses Webpack Encore and ships no `dist/`:
+
+```bash
+cd templates/backOffice/default-twig && npm install && npm run build
 ```
 
 ## Clear the cache
