@@ -117,7 +117,8 @@ The default Flexy theme declares the following points. Names use the `page.zone.
 
 | Point | Location |
 |-------|----------|
-| `layout.head` | `<head>` of every page |
+| `layout.head.top` | Start of `<head>`, before anything the theme emits |
+| `layout.head.bottom` | End of `<head>` |
 | `layout.body.top` | Start of `<body>` |
 | `layout.header.bottom` | Below the header |
 | `layout.footer.top` | Above the footer |
@@ -135,6 +136,10 @@ The default Flexy theme declares the following points. Names use the `page.zone.
 | `checkout.bottom` | Bottom of the checkout page |
 | `account.top` | Top of the customer account page |
 | `account.bottom` | Bottom of the customer account page |
+| `account-order.top` | Top of an order in the account |
+| `account-order.item.top` | Above an order line |
+| `account-order.item.bottom` | Below an order line |
+| `account-order.bottom` | Bottom of an order in the account |
 | `order-placed.top` | Top of the order confirmation page |
 | `order-placed.bottom` | Bottom of the order confirmation page |
 
@@ -144,7 +149,8 @@ The page-level points pass their main entity as a parameter (`product`, `categor
 
 The layout points are designed with tracking and SEO modules in mind:
 
-- `layout.head`: meta tags, JSON-LD structured data, analytics loader scripts (Google Tag Manager, Matomo, ...)
+- `layout.head.top`: the `<title>`, the meta description, the canonical link, hreflang tags and JSON-LD structured data
+- `layout.head.bottom`: analytics loader scripts (Google Tag Manager, Matomo, ...)
 - `layout.body.top`: the `noscript` counterpart a tag manager requires right after the opening `body` tag
 - `layout.body.bottom`: deferred scripts
 
@@ -155,17 +161,21 @@ final readonly class TagManagerThemeHook implements ThemeHookInterface
 {
     public function supports(string $hookName): bool
     {
-        return \in_array($hookName, ['layout.head', 'layout.body.top'], true);
+        return \in_array($hookName, ['layout.head.bottom', 'layout.body.top'], true);
     }
 
     public function render(string $hookName, array $parameters): string
     {
         return match ($hookName) {
-            'layout.head' => $this->twig->render('@AcmeTagManagerModule/theme-hook/script.html.twig'),
+            'layout.head.bottom' => $this->twig->render('@AcmeTagManagerModule/theme-hook/script.html.twig'),
             'layout.body.top' => $this->twig->render('@AcmeTagManagerModule/theme-hook/noscript.html.twig'),
         };
     }
 }
 ```
 
-The layout points pass no parameters. A handler that needs to know which page is being rendered (an SEO module emitting page-specific tags, for instance) injects Symfony's `RequestStack` and reads the current request itself.
+The head points are how Flexy renders its own SEO tags: it emits none of them itself. It passes
+`breadcrumb`, and the `title`, `description` and `og_type` blocks the current page defined, so a
+handler can honour a page-level value and compute the rest. The SEOne module does exactly that. The
+remaining layout points pass no parameters; a handler that needs to know which page is being
+rendered injects Symfony's `RequestStack` and reads the current request itself.
