@@ -161,6 +161,26 @@ php Thelia template:set frontOffice flexy
 php Thelia template:set backOffice default-twig
 ```
 
+### Overriding a stored variable from the environment
+
+Every variable of the `config` table can be overridden by an environment variable, which is handy for values that differ between your machines and your servers without touching the database.
+
+The name is derived from the variable name: uppercase, with `.` and `-` replaced by `_`. So `store_name` is overridden by `STORE_NAME`, and `rewriting_enable` by `REWRITING_ENABLE`.
+
+```bash
+# .env.local
+STORE_NAME="My shop, staging"
+REWRITING_ENABLE=0
+```
+
+The override happens when the value is read (`Config::getValue()`), so it applies to `ConfigQuery::read()` and to everything built on it, including the `{config}` Smarty function and the `config` loop. The database row is left untouched: remove the environment variable and the stored value applies again.
+
+One thing to know: the resolved values are kept in the shared configuration cache, so changing an environment variable is not enough on its own.
+
+```bash
+php Thelia cache:clear
+```
+
 ## Caching
 
 ### Clear cache
