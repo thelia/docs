@@ -13,7 +13,7 @@ Thelia 3 runs on Symfony and adds the pieces an e-commerce application needs on 
 
 | Layer | Technology | Purpose |
 |-------|------------|---------|
-| Language | PHP 8.3+ | `composer.json` requires `>= 8.3` |
+| Language | PHP 8.3 or 8.4 | `composer.json` requires `>= 8.3`, and the CI matrix runs both |
 | Framework | Symfony 7.4 LTS | HTTP handling, DI, routing, security |
 | ORM | Propel ORM (not Doctrine) | Database abstraction and queries |
 | API | API Platform 4.3 (standalone) | RESTful API generation (`api-platform/symfony`) |
@@ -114,7 +114,7 @@ Both the front-office and the back-office reference themes are Twig bundles:
 | Twig + LiveComponents | Twig + LiveComponents |
 | DataAccessService (`resources()`) | Repositories / Services |
 | Stimulus controllers | Stimulus controllers |
-| Webpack Encore + Tailwind | Webpack Encore + Bootstrap 5 |
+| AssetMapper + Tailwind CSS | Webpack Encore + Bootstrap 5 |
 
 :::caution
 The legacy Smarty `default` back-office is still shipped for backward compatibility, but it is deprecated. New back-office work should target the `default-twig` bundle.

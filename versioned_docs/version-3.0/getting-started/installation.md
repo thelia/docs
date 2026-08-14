@@ -13,12 +13,14 @@ For local development, use **[DDEV](./ddev)**. It gives a faster and more consis
 
 ## Prerequisites
 
-### PHP 8.3+
+### PHP 8.3 or 8.4
 
 ```bash
 php -v
 # PHP 8.3.x (cli) ...
 ```
+
+Both versions are supported and covered by the test matrix.
 
 **Required extensions:**
 
@@ -42,6 +44,31 @@ date.timezone = Europe/Paris
 ```bash
 composer --version
 ```
+
+### A GitHub token for Composer
+
+Thelia publishes its Symfony Flex recipes in the `thelia/thelia-recipes` repository, and Composer
+reads them through the GitHub API. Without a token that API answers with a rate limit. Flex then
+falls back on auto-generated recipes without reporting anything: the `config/packages/*.yaml` files
+the recipes carry are never written, and the theme bundles they register never reach
+`config/bundles.php`. The install fails much later, on a message that says nothing about recipes:
+
+```
+You must either configure a "public_key" or a "secret_key"
+```
+
+That message comes from `lexik/jwt-authentication-bundle`, whose configuration file was one of the
+recipes that never ran.
+
+Create a token on [github.com/settings/tokens](https://github.com/settings/tokens). No scope is
+needed, the recipes are public. Give it to Composer once, before installing anything:
+
+```bash
+composer config --global github-oauth.github.com <your-token>
+```
+
+The value is written to your global `auth.json`. After `composer install`, check that
+`config/packages/lexik_jwt_authentication.yaml` exists. If it does not, the recipes did not run.
 
 ### Database
 
@@ -73,7 +100,7 @@ cd my-shop
 ```
 
 :::note Beta release
-Thelia 3.0.0-beta1 is a pre-release. Composer only selects it when the beta stability is allowed,
+Thelia 3.0.0-beta3 is a pre-release. Composer only selects it when the beta stability is allowed,
 which is what `--stability=beta` does above. Alternatively, set the following in your project
 `composer.json` before requiring Thelia packages:
 
@@ -153,20 +180,21 @@ default. Host and name are required.
 
 See [Install Reference](./install-reference) for what `--skip-demo-images` and `--strict-themes` do.
 
-### 4. Build the theme assets
+### 4. Build the back-office assets
 
-The front-office theme (`flexy`) and any Twig back-office theme ship their assets as
-source. They must be compiled with Webpack Encore, otherwise the corresponding pages
-fail with *"Could not find the entrypoints file from Webpack"*.
+The front office needs no manual step. `bin/install` runs `importmap:install` and `tailwind:build`
+for you, once the active front-office template is set, and skips whichever of the two the template
+does not provide. A theme served through AssetMapper, as Flexy is, is ready when the installer
+returns.
+
+The `default-twig` back-office is built with Webpack Encore and its `dist/` directory is not part of
+the package, so it has to be built once:
 
 ```bash
-# Front-office (flexy) — always required
-cd templates/frontOffice/flexy && npm install && npm run build && cd -
-
-# Back-office, only when using a Twig template such as default-twig
 cd templates/backOffice/default-twig && npm install && npm run build && cd -
 ```
 
+Until that build has run, `/admin` fails with *"Could not find the entrypoints file from Webpack"*.
 The Smarty back-office template (`default`) needs no build step.
 
 ### 5. Start the development server

@@ -6,7 +6,7 @@ sidebar_position: 1
 
 # Thelia 3
 
-Thelia is an open-source e-commerce platform built on **PHP 8.3+**, **Symfony 7.4 LTS**, **API Platform 4.3** (standalone), and **Propel ORM**.
+Thelia is an open-source e-commerce platform built on **PHP 8.3 and 8.4**, **Symfony 7.4 LTS**, **API Platform 4.3** (standalone), and **Propel ORM**.
 
 Version 3 introduces a modern front-office powered by Twig and Symfony UX, a full REST API, and a domain-layer architecture. The back-office has been ported to a Twig bundle (`default-twig`) on the same stack.
 
@@ -88,7 +88,7 @@ The sections build on each other, from installation to reference:
 
 ## Requirements
 
-- PHP 8.3+ with extensions: PDO_MySQL, openssl, intl, gd, curl, dom
+- PHP 8.3 or 8.4 with extensions: PDO_MySQL, openssl, intl, gd, curl, dom
 - MySQL 8.0+ or MariaDB 10.6+
 - Composer 2+
 
