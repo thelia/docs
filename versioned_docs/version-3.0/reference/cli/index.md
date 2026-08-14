@@ -11,11 +11,11 @@ Thelia ships a console application built on the [Symfony Console component](http
 php Thelia <command>
 ```
 
-`./Thelia` is a small shim that boots Symfony Runtime and the `Thelia\Core\Application` (wrapping `App\Kernel`, or `KernelInstall` when Thelia is not installed yet). Symfony's own built-in commands (for example `lint:twig`, `debug:router`, `debug:event-dispatcher`) are available through the standard console:
+`./Thelia` is a small shim that boots Symfony Runtime and the `Thelia\Core\Application` (wrapping `App\Kernel`, or `KernelInstall` when Thelia is not installed yet). Symfony's own built-in commands (for example `lint:twig`, `debug:router`, `debug:event-dispatcher`) are registered on that same application, so they run through `php Thelia` as well.
 
-```shell
-php bin/console <command>
-```
+:::note There is no `bin/console`
+The `thelia/thelia` repository ships no `bin/console`. Projects created with `composer create-project thelia/thelia-project` do ship one, but it only requires the very same `Thelia` shim. Use `php Thelia <command>`: it works in every layout.
+:::
 
 :::tip
 List every available command and its description with `php Thelia list`. Add `--help` to any command (`php Thelia module:list --help`) to see its arguments and options.
@@ -48,7 +48,8 @@ All commands below live in `Thelia\Command\` (core: `core/lib/Thelia/Command/`).
 | `image-cache:clear` | Empty part or all of the web-space image cache. |
 
 :::note
-`php Thelia cache:clear` purges the Thelia caches more completely than `php bin/console cache:clear`. Prefer the Thelia variant when in doubt.
+`cache:clear` empties the Symfony cache; `image-cache:clear` empties the images generated in the web
+space. Clearing one does not clear the other.
 :::
 
 ### Installation and database

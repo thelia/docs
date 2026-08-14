@@ -55,7 +55,7 @@ when it is the active admin template. `isActive()` compares its own name against
 
 Both `loadExtension()` and `prependExtension()` early-return when `isActive()` is `false`. The
 back-office you select with `bin/install --backoffice_theme=default-twig` (or
-`bin/console template:set backOffice default-twig`) is the only one whose services enter the
+`php Thelia template:set backOffice default-twig`) is the only one whose services enter the
 container.
 
 :::tip

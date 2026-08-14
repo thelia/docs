@@ -149,8 +149,8 @@ ddev exec php bin/install \
   --with-demo --with-admin
 
 # already installed: switch active back-office template
-ddev exec bin/console template:set backOffice default-twig
-ddev exec bin/console cache:warmup -e dev
+ddev exec php Thelia template:set backOffice default-twig
+ddev exec php Thelia cache:warmup -e dev
 
 # build assets
 ddev exec bash -c "cd templates/backOffice/default-twig && npm install && npm run build"

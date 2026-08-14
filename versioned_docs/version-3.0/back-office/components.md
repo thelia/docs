@@ -270,7 +270,7 @@ ddev exec bash -c "cd templates/backOffice/default-twig && npm run watch"
 :::caution Rebuild after editing assets
 A SCSS or controller change is only visible after an Encore rebuild
 (`npm run build` or a running `npm run watch`). After editing a Twig template,
-clear the cache: `ddev exec bin/console cache:clear -e dev`.
+clear the cache: `ddev exec php Thelia cache:clear -e dev`.
 :::
 
 ## Learn more
