@@ -84,12 +84,11 @@ had compiled is gone:
 ```bash
 php Thelia importmap:install
 php Thelia tailwind:build
-
-cd templates/backOffice/default-twig && npm install && npm run build
+php Thelia sass:build
 ```
 
-The first two rebuild the front-office assets, and are what `bin/install` runs on a fresh install.
-The last one rebuilds the Twig back-office, which is on Webpack Encore and ships no `dist/`.
+The first two rebuild the front-office assets, the last one the Twig back-office stylesheet. These
+are the commands `bin/install` runs on a fresh install.
 
 Then open the front office and `/admin`, and check that both render.
 

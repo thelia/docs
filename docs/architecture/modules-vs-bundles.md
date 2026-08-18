@@ -245,7 +245,7 @@ public function loadExtension(array $config, ContainerConfigurator $container, C
 
 ### The back-office theme: BackOfficeDefaultTwigBundle
 
-The Twig back-office is also a bundle. It lives at `templates/backOffice/default-twig/`, its class is `BackOfficeDefaultTwigBundle\BackOfficeDefaultTwigBundle`, and it carries its own `composer.json` (`"type": "thelia-backoffice-template"`). It owns its routes (`#[Route]` attributes on its controllers), hooks, Twig templates, forms and compiled assets, following the same "themes are bundles" model.
+The Twig back-office is also a bundle. It lives at `templates/backOffice/default-twig/`, its class is `BackOfficeDefaultTwigBundle\BackOfficeDefaultTwigBundle`, and it carries its own `composer.json` (`"type": "thelia-backoffice-template"`). It owns its routes (`#[Route]` attributes on its controllers), hooks, Twig templates, forms and assets, following the same "themes are bundles" model.
 
 ```
 templates/backOffice/default-twig/
@@ -259,7 +259,7 @@ templates/backOffice/default-twig/
 │   ├── Twig/
 │   └── UiComponents/
 ├── components/
-├── dist/                        # Compiled assets (Webpack Encore)
+├── assets/                      # JS, SCSS and images, served through AssetMapper
 ├── composer.json                # "type": "thelia-backoffice-template"
 └── README.md
 ```

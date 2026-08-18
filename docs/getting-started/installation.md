@@ -180,22 +180,12 @@ default. Host and name are required.
 
 See [Install Reference](./install-reference) for what `--skip-demo-images` and `--strict-themes` do.
 
-### 4. Build the back-office assets
+### 4. Assets
 
-The front office needs no manual step. `bin/install` runs `importmap:install` and `tailwind:build`
-for you, once the active front-office template is set, and skips whichever of the two the template
-does not provide. A theme served through AssetMapper, as Flexy is, is ready when the installer
-returns.
-
-The `default-twig` back-office is built with Webpack Encore and its `dist/` directory is not part of
-the package, so it has to be built once:
-
-```bash
-cd templates/backOffice/default-twig && npm install && npm run build && cd -
-```
-
-Until that build has run, `/admin` fails with *"Could not find the entrypoints file from Webpack"*.
-The Smarty back-office template (`default`) needs no build step.
+There is no manual step. `bin/install` runs `importmap:install` and `tailwind:build` for the
+active front-office template, and `sass:build` for the back-office stylesheet, and skips whichever
+command the installed templates do not provide. Both the storefront and `/admin` are ready when
+the installer returns. The Smarty back-office template (`default`) needs no build step either.
 
 ### 5. Start the development server
 

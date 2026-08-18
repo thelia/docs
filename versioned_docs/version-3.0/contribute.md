@@ -21,7 +21,6 @@ ddev start
 ddev composer config --global github-oauth.github.com <your-token>
 ddev composer install
 ddev exec php bin/install --frontoffice_theme=flexy --with-demo --with-admin
-ddev exec bash -c "cd templates/backOffice/default-twig && npm install && npm run build"
 ```
 
 The GitHub token is not optional: Composer reads the Thelia Flex recipes through the GitHub API,
@@ -29,8 +28,9 @@ and an anonymous call is rate-limited. Flex then falls back on auto-generated re
 saying so, and the install fails later on a message that names none of this. Any token works, no
 scope needed.
 
-`bin/install` builds the front-office assets itself. The `default-twig` back-office is the one
-build left to do by hand, because it uses Webpack Encore and ships no `dist/`.
+`bin/install` builds the assets itself: `importmap:install` and `tailwind:build` for the front
+office, `sass:build` for the back-office stylesheet. There is no npm step, and Node.js is not
+needed.
 
 See [DDEV Installation](./getting-started/ddev.md) for the full setup, or
 [Standard Installation](./getting-started/installation.md) if you prefer a local PHP and MySQL stack.

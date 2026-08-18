@@ -27,23 +27,18 @@ The script runs in two phases:
 9. Runs the post-activation hooks of the modules
 10. Imports demo data (if `--with-demo`)
 11. Creates admin user (if `--with-admin`)
-12. Builds the front-office assets
+12. Builds the assets
 
-## Front-office assets
+## Assets
 
-The last step runs `importmap:install`, then `tailwind:build`. Both read the template that step 8
-selected, which is why they run at the end.
+The last step runs `importmap:install`, `tailwind:build`, then `sass:build`. All three read the
+templates that step 8 selected, which is why they run at the end. `importmap:install` and
+`tailwind:build` build the front-office assets; `sass:build` compiles the back-office stylesheet.
 
-Neither command belongs to the core: they come from packages a template requires, `symfony/asset-mapper`
-and `symfonycasts/tailwind-bundle`. `bin/install` skips whichever one the console does not carry, so a
-template built on another pipeline installs without an error.
-
-A Twig back-office such as `default-twig` is outside this: it is built with Webpack Encore, ships no
-`dist/` directory, and is built once by hand.
-
-```bash
-cd templates/backOffice/default-twig && npm install && npm run build
-```
+None of these commands belongs to the core: they come from packages the templates require,
+`symfony/asset-mapper` and `symfonycasts/tailwind-bundle` for the Flexy front office,
+`symfonycasts/sass-bundle` for the `default-twig` back office. `bin/install` skips whichever one
+the console does not carry, so a template built on another pipeline installs without an error.
 
 ## Options
 

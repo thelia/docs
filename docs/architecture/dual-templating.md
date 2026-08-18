@@ -149,8 +149,8 @@ ddev exec php bin/install \
 ddev exec php Thelia template:set backOffice default-twig
 ddev exec php Thelia cache:warmup -e dev
 
-# build assets
-ddev exec bash -c "cd templates/backOffice/default-twig && npm install && npm run build"
+# build the stylesheet (bin/install runs it on a fresh install)
+ddev exec php bin/console sass:build
 ```
 
 ### Bundle layout

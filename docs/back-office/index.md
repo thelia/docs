@@ -47,16 +47,16 @@ ddev exec php bin/install \
 ddev exec php Thelia template:set backOffice default-twig
 ddev exec php Thelia cache:warmup -e dev
 
-# build the bundle assets (SCSS + JS)
-ddev exec bash -c "cd templates/backOffice/default-twig && npm install && npm run build"
+# build the bundle stylesheet (bin/install runs it on a fresh install)
+ddev exec php bin/console sass:build
 ```
 
 The admin is then available at `https://<your-site>.ddev.site/admin`.
 
-:::tip Watch assets during development
-While editing SCSS or Stimulus controllers, run `npm run watch` from
-`templates/backOffice/default-twig/` so the bundle assets rebuild automatically. After editing a
-Twig template, clear the cache with `ddev exec php Thelia cache:clear -e dev`.
+:::tip Watch the stylesheet during development
+While editing SCSS, run `ddev exec php bin/console sass:build --watch` so the stylesheet rebuilds
+automatically. Stimulus controllers are served as-is by AssetMapper and need no build. After
+editing a Twig template, clear the cache with `ddev exec php Thelia cache:clear -e dev`.
 :::
 
 ## Bundle structure

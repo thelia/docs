@@ -71,7 +71,7 @@ It is a full Symfony bundle, autonomous from the core:
 - `src/Form/`: Symfony form types
 - `src/Hook/`: back-office hooks, declared with the bundle's `#[AsHook]` attribute (auto-tagged at bundle build)
 - `form/bo_form_theme.html.twig`: a Bootstrap 5 form theme
-- `assets/`: SCSS, Stimulus controllers, images, built with npm
+- `assets/`: SCSS, Stimulus controllers, images, served through AssetMapper (the stylesheet is compiled by `sass:build`)
 
 :::caution The Smarty back-office is deprecated
 The legacy Smarty back-office (`templates/backOffice/default/`) still ships side by side with `default-twig` during the transition, but it is **no longer recommended** and is expected to be dropped in Thelia 3.1. Build new back-office work on the `default-twig` bundle.
