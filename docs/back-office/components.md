@@ -241,36 +241,34 @@ for any element inside its scope, replacing the historical jQuery
 It imports `Tooltip` and `Popover` from `bootstrap` and disposes them on
 `disconnect()`, so the bridge plays nicely with dynamically inserted DOM.
 
-:::tip Controllers are auto-registered, not listed
-`assets/controllers.json` is empty on purpose. The Stimulus app is started in
-`assets/bootstrap.js` with `startStimulusApp(require.context('…/lazy-controller-loader!./controllers', …))`,
-so every `*_controller.js` in `assets/controllers/` is lazily loaded by
-identifier. You never edit `controllers.json` to register a back-office
-controller. Just add the file.
+:::tip Controllers are registered explicitly
+The Stimulus app is started in `assets/bootstrap.js`, which imports every
+controller from `assets/controllers/` and registers it under its identifier.
+AssetMapper serves these files as-is, with no build-time discovery: a new
+controller must be imported and registered in `bootstrap.js`.
 :::
 
 ## Building the assets
 
-The bundle builds its SCSS and JS with Webpack Encore. The entry point is
-`assets/app.js` (which imports `bootstrap.js`, the SCSS, Bootstrap and HTMX),
-declared in `webpack.config.js` and bridged to Stimulus with
-`.enableStimulusBridge('./assets/controllers.json')`.
+The bundle serves its assets through Symfony AssetMapper: no Node.js, no
+bundler. The entry point is `assets/app.js` (which imports `bootstrap.js`,
+Bootstrap and HTMX), loaded as an ES module, and the third-party libraries are
+committed as ES modules under `assets/vendor/`. Only the SCSS is compiled, by
+[symfonycasts/sass-bundle](https://github.com/SymfonyCasts/sass-bundle), which
+downloads a standalone `dart-sass` binary on first use:
 
 ```bash
-# install once
-ddev exec bash -c "cd templates/backOffice/default-twig && npm install"
+# build the stylesheet (bin/install runs it on a fresh install)
+ddev exec php bin/console sass:build
 
-# production build (encore production)
-ddev exec bash -c "cd templates/backOffice/default-twig && npm run build"
-
-# rebuild on change during development (encore dev --watch)
-ddev exec bash -c "cd templates/backOffice/default-twig && npm run watch"
+# rebuild on change during development
+ddev exec php bin/console sass:build --watch
 ```
 
-:::caution Rebuild after editing assets
-A SCSS or controller change is only visible after an Encore rebuild
-(`npm run build` or a running `npm run watch`). After editing a Twig template,
-clear the cache: `ddev exec php Thelia cache:clear -e dev`.
+:::caution Rebuild after editing SCSS
+A SCSS change is only visible after `sass:build` (or with a running
+`sass:build --watch`). JavaScript changes need no build. After editing a Twig
+template, clear the cache: `ddev exec php Thelia cache:clear -e dev`.
 :::
 
 ## Learn more

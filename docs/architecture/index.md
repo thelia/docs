@@ -114,7 +114,7 @@ Both the front-office and the back-office reference themes are Twig bundles:
 | Twig + LiveComponents | Twig + LiveComponents |
 | DataAccessService (`resources()`) | Repositories / Services |
 | Stimulus controllers | Stimulus controllers |
-| AssetMapper + Tailwind CSS | Webpack Encore + Bootstrap 5 |
+| AssetMapper + Tailwind CSS | AssetMapper + Sass + Bootstrap 5 |
 
 :::caution
 The legacy Smarty `default` back-office is still shipped for backward compatibility, but it is deprecated. New back-office work should target the `default-twig` bundle.
