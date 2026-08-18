@@ -12,7 +12,6 @@ Install Thelia 3 and get your store running.
 - **PHP 8.3 or 8.4** with extensions: PDO_MySQL, openssl, intl, gd, curl, dom
 - **Composer 2+**
 - **MySQL 8.0+** or **MariaDB 10.6+**
-- **Node.js and npm**, only to build the Twig back-office theme
 - A **GitHub token** for Composer, see the next section
 
 ## Give Composer a GitHub token
@@ -59,14 +58,12 @@ cd thelia
 ddev start
 ddev composer install
 ddev exec php bin/install --frontoffice_theme=flexy
-ddev exec bash -c "cd templates/backOffice/default-twig && npm install && npm run build"
 ddev launch
 ```
 
-`bin/install` builds the assets the active front-office theme needs, so the front office answers
-right after the install. The `default-twig` back-office is the exception: it is built with Webpack
-Encore, its `dist/` directory is not shipped in the package, and until `npm run build` has run,
-`/admin` fails with *"Could not find the entrypoints file from Webpack"*.
+`bin/install` builds the assets the active templates need — the front-office importmap and
+Tailwind stylesheet, and the back-office Sass stylesheet — so the storefront and `/admin` both
+answer right after the install.
 
 Your store is at https://thelia.ddev.site, with the back-office at `/admin`. DDEV derives that
 hostname from the directory name, so a project created in `my-shop/` answers on
@@ -90,8 +87,6 @@ composer install
 php bin/install --database_host=localhost --database_name=thelia \
     --database_user=root --database_password=secret \
     --frontoffice_theme=flexy --with-demo --with-admin
-
-(cd templates/backOffice/default-twig && npm install && npm run build)
 
 php -S localhost:8000 -t public
 ```

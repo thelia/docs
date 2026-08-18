@@ -72,10 +72,10 @@ config/packages/
 ├── monolog.yaml
 ├── nelmio_cors.yaml
 ├── security.yaml
+├── symfonycasts_sass.yaml
 ├── translation.yaml
 ├── twig.yaml
 ├── twig_component.yaml
-├── webpack_encore.yaml
 └── web_profiler.yaml
 ```
 

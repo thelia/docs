@@ -59,9 +59,6 @@ ddev composer install
 # Install Thelia (Twig front-office + Twig back-office)
 ddev exec php bin/install --frontoffice_theme=flexy
 
-# Build the back-office assets
-ddev exec bash -c "cd templates/backOffice/default-twig && npm install && npm run build"
-
 # Open in browser
 ddev launch
 ```
@@ -75,12 +72,10 @@ gives you `https://thelia.ddev.site`; a `my-shop/` directory gives you `https://
 Run `ddev describe` to see the URLs of the current project.
 :::
 
-:::warning Build the back-office assets
-`bin/install` builds the front-office assets itself, by running `importmap:install` and
-`tailwind:build` for the active template. The `default-twig` back-office is not covered: it is
-built with Webpack Encore and its `dist/` directory is not shipped in the package, so it has to be
-built once with `npm install && npm run build`. Until then, `/admin` fails with *"Could not find
-the entrypoints file from Webpack"*.
+:::note The installer builds the assets
+`bin/install` runs `importmap:install` and `tailwind:build` for the active front-office template,
+and `sass:build` for the back-office stylesheet, so the storefront and `/admin` both answer right
+after the install.
 :::
 
 :::tip
@@ -176,10 +171,11 @@ rebuilds it as you type:
 ddev exec php Thelia tailwind:build --watch
 ```
 
-The `default-twig` back-office keeps its Webpack Encore build:
+The `default-twig` back-office follows the same model: it is served through AssetMapper, only its
+Sass stylesheet is compiled, and a watcher rebuilds it as you type:
 
 ```bash
-ddev exec bash -c "cd templates/backOffice/default-twig && npm run watch"
+ddev exec php Thelia sass:build --watch
 ```
 
 ## Troubleshooting
