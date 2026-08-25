@@ -185,6 +185,35 @@ Forms include CSRF protection by default. Always include hidden fields in your t
 {{ form_end(form) }}
 ```
 
+### Session-bound or stateless tokens
+
+By default a `BaseForm` token is bound to the visitor's session: it is generated once, stored in the session and compared on submit. This is the right choice for forms that are always rendered fresh (account pages, checkout steps).
+
+A form rendered inside a **cache** must not use a session token: a Turbo Drive snapshot, a Varnish page cache, a Twig fragment cache or an ESI block will replay a token that belongs to another session, and the submit fails with `The CSRF token is invalid`. For those forms, switch to Symfony's stateless validation, which checks the request origin (`Sec-Fetch-Site`, `Origin` or `Referer`) instead of a stored value. A stateless form renders a constant token, so the cached HTML stays valid for every visitor.
+
+Two ways to opt in:
+
+- pass a stateless token id when creating the form:
+
+  ```php
+  $form = $this->createForm(CartAdd::class, options: ['csrf_token_id' => 'submit']);
+  ```
+
+  `submit`, `authenticate` and `logout` are declared stateless by the `config/packages/csrf.yaml` that the framework-bundle recipe installs in every project.
+
+- or declare the form's own name as stateless, without touching any PHP code. This is how a theme marks the forms it renders in cacheable zones:
+
+  ```yaml
+  # config/packages/csrf.yaml
+  framework:
+      csrf_protection:
+          stateless_token_ids:
+              - thelia_cart_add
+              - thelia_coupon_code
+  ```
+
+Session-bound tokens stay the default. `'csrf_protection' => false` still disables the protection entirely; prefer a stateless id over disabling it.
+
 ## Next steps
 
 - [Front-Office Forms](/docs/front-office/forms) - LiveComponent forms with real-time validation
