@@ -7,27 +7,37 @@ sidebar_position: 2
 
 ## Update components
 
-Update Thelia and its dependencies:
+A project depends on `thelia/thelia-skeleton`, which brings in `thelia/core` and the templates. Set
+the version you want in your `composer.json`:
 
-```bash
-composer update thelia/thelia
+```json
+"thelia/thelia-skeleton": "^3.0"
 ```
 
-For a specific version:
+Then run:
 
 ```bash
-composer require thelia/thelia:^3.1
+composer update
 ```
 
 ## Update the database
 
-After updating, apply database migrations:
+New files on an old database will break: a release can ship an SQL script that alters the schema.
+Run the update script from the root of your installation:
 
 ```bash
-php Thelia thelia:install
+php local/setup/update.php
 ```
 
-This command applies database schema updates, new migrations, and any required data updates.
+It reads the `thelia_version` configuration variable from your database and replays every update
+script between that version and the one your files are at, in order. Several versions at once are
+applied in a single run. The script offers to back up your database first and restores that backup
+if a script fails, but on a large database prefer a manual `mysqldump` taken before you start.
+
+:::danger Never run `thelia:install` on an existing shop
+That command is the initial installer, not a migration tool. It replays `thelia.sql`, which starts
+by dropping every table.
+:::
 
 ## Update assets
 
@@ -45,11 +55,22 @@ command the console does not carry: each comes from a package the corresponding 
 
 ## Clear the cache
 
-Always clear the cache after an update:
+In development:
 
 ```bash
 php Thelia cache:clear
 ```
+
+In production, delete the directory and warm it up again instead of calling `cache:clear`, which
+boots the very container it is about to remove:
+
+```bash
+rm -rf var/cache/prod
+php bin/console cache:warmup --env=prod
+```
+
+Do not skip the warmup. The production kernel does not build the LiveComponent template map on
+demand, and every back-office page that renders a live component returns a 500 without it.
 
 ## Updating modules
 
@@ -59,7 +80,8 @@ Update modules separately:
 composer update thelia/module-name
 ```
 
-After module updates:
+Then let Thelia compare the version in `module.xml` with the one stored in the database and run the
+module's own `update()` method:
 
 ```bash
 php Thelia module:refresh
