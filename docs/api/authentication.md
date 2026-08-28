@@ -52,9 +52,15 @@ On successful authentication:
 
 ```json
 {
-    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...",
+    "refresh_token": "9f2c...64 random bytes, hex encoded...",
+    "refresh_token_ttl": 2592000
 }
 ```
+
+`token` is the JWT to send on every authenticated request. `refresh_token` is an opaque
+value that buys a new one when it expires, and `refresh_token_ttl` is its own lifetime in
+seconds.
 
 ### Using the token
 
@@ -79,6 +85,63 @@ The JWT token contains:
 ```
 
 The `type` field indicates whether the user is an Admin or a Customer.
+
+## Refresh tokens
+
+A short-lived JWT keeps the damage of a leaked token small, but it forces the client to
+send the credentials again every hour. The refresh token solves that: it is issued
+alongside the JWT at login, and exchanged for a fresh pair when the JWT expires.
+
+### Refresh endpoints
+
+```http
+POST /api/admin/token/refresh
+POST /api/front/token/refresh
+Content-Type: application/json
+
+{
+    "refresh_token": "9f2c..."
+}
+```
+
+The endpoints also accept a form-encoded body (`refresh_token=9f2c...`). The response has
+the same shape as a login response:
+
+```json
+{
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...",
+    "refresh_token": "1a7e...",
+    "refresh_token_ttl": 2592000
+}
+```
+
+### How it behaves
+
+- **Opaque, not a JWT.** The value is 64 random bytes, hex encoded. It carries no
+  information and cannot be decoded.
+- **Single use.** Consuming a refresh token deletes it before the payload is returned, and
+  the response carries a new one. Replaying the same value fails.
+- **Scoped.** A token issued on `/api/admin/login` only works on
+  `/api/admin/token/refresh`, and a token issued on `/api/front/login` only on
+  `/api/front/token/refresh`. Presenting one on the other endpoint returns `401`.
+- **Stored in the cache pool.** Eviction invalidates the token and forces a new login. In
+  production, back the pool with a persistent adapter (Redis, filesystem) rather than an
+  in-memory one.
+
+| Response | Meaning |
+| --- | --- |
+| `400` | No `refresh_token` in the request body |
+| `401` | Unknown, expired, already used, or wrong-scope token |
+| `200` | New JWT and new refresh token |
+
+The lifetime is set by `JWT_REFRESH_TOKEN_TTL` (default `2592000`, i.e. 30 days). See
+[JWT configuration](#jwt-configuration).
+
+:::tip
+Store the refresh token where the access token is not: it is the credential that survives.
+On a browser client, prefer a same-site cookie set by your own backend over
+`localStorage`.
+:::
 
 ## Front routes (public)
 
@@ -118,10 +181,12 @@ JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem
 JWT_PASSPHRASE=your-passphrase
 # Token lifetime in seconds (read by lexik_jwt_authentication.token_ttl)
 JWT_TOKEN_TTL=3600
+# Refresh token lifetime in seconds
+JWT_REFRESH_TOKEN_TTL=2592000
 ```
 
 :::note
-The bundle configuration (`config/packages/lexik_jwt_authentication.yaml`) maps these variables directly: `secret_key`, `public_key`, `pass_phrase` and `token_ttl: '%env(int:JWT_TOKEN_TTL)%'`. Tokens expire after `JWT_TOKEN_TTL` seconds (default `3600`, i.e. one hour).
+The bundle configuration (`config/packages/lexik_jwt_authentication.yaml`) maps these variables directly: `secret_key`, `public_key`, `pass_phrase` and `token_ttl: '%env(int:JWT_TOKEN_TTL)%'`. Tokens expire after `JWT_TOKEN_TTL` seconds (default `3600`, i.e. one hour). `JWT_REFRESH_TOKEN_TTL` is read by Thelia itself, not by the bundle, and drives the [refresh tokens](#refresh-tokens).
 :::
 
 ## CORS configuration
@@ -182,6 +247,7 @@ Or for invalid/expired tokens:
 2. Configure a token lifetime suited to your use case.
 3. Keep the JWT private keys out of version control and restrict access to them.
 4. Validate tokens on the server. Never trust client-side validation.
+5. Treat the refresh token as the credential that survives: store it apart from the access token, and discard it on logout.
 
 ## OpenAPI documentation
 
