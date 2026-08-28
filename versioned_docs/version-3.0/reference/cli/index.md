@@ -44,12 +44,14 @@ All commands below live in `Thelia\Command\` (core: `core/lib/Thelia/Command/`).
 
 | Command | Description |
 | --- | --- |
-| `cache:clear` | Invalidate all caches. |
+| `thelia:cache:clear` | Invalidate the application, assets, image and document caches. |
 | `image-cache:clear` | Empty part or all of the web-space image cache. |
+| `hook:clean` | Delete all hooks, then recreate them from the module declarations. |
 
 :::note
-`cache:clear` empties the Symfony cache; `image-cache:clear` empties the images generated in the web
-space. Clearing one does not clear the other.
+`thelia:cache:clear` empties the Thelia caches; `image-cache:clear` empties the images generated in
+the web space. Clearing one does not clear the other. Symfony's own `cache:clear` is also available
+through `php Thelia`, and empties the Symfony cache only.
 :::
 
 ### Installation and database
@@ -88,13 +90,31 @@ space. Clearing one does not clear the other.
 | Command | Description |
 | --- | --- |
 | `thelia:config` | Manage configuration variables. |
-| `maintenance:purge` | Purge old data: carts without orders, anonymous carts, and admin logs. |
+| [`maintenance:purge`](./maintenance_purge.md) | Purge old data: carts without orders, anonymous carts, admin logs, form firewall records, and the identity of accounts nobody uses anymore. |
 | `sale:check-activation` | Check the activation/deactivation dates of sales and apply the required action. |
 | `currency:update-rates` | Update currency exchange rates. |
+| `thelia:order:rounding-mode` | Show or switch how order line totals are rounded, freezing the orders already placed. |
+| `sequence:set` | Set a gapless sequence counter (`order_ref`, `invoice_ref_<year>`, ...) to a given value. |
+| `import-export:clean` | Delete the exports and imports whose handler class is no longer available. |
+
+`thelia:order:rounding-mode` writes a pivot in the same run, so the orders already invoiced keep the
+amounts they were invoiced with. `sequence:set` is what you reach for when a shop moves to Thelia
+with an existing invoice numbering to continue.
 
 :::note
-`maintenance:purge` still declares its name with `setName()` in `configure()` rather than the `#[AsCommand]` attribute. Both styles work; new commands should use the attribute.
+`maintenance:purge`, `customer:anonymize` and `customer:export-personal-data` still declare their name with `setName()` in `configure()` rather than the `#[AsCommand]` attribute. Both styles work; new commands should use the attribute.
 :::
+
+### Customers and personal data
+
+| Command | Description |
+| --- | --- |
+| [`customer:anonymize`](./customer_anonymize.md) | Erase the identifying data of a customer, keeping the accounting record of the orders. |
+| [`customer:export-personal-data`](./customer_export_personal_data.md) | Export everything the shop knows about one customer, as JSON. |
+
+These two commands answer a right of access and a right to erasure. Both are also available from the
+back-office, on the customer sheet, and both call the modules that declare personal data. See
+[Personal data](../../security/personal-data.md).
 
 ### Templates, e-mail, PDF and i18n
 
