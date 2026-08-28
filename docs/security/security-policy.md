@@ -61,6 +61,39 @@ repository (Watch → Custom → Security alerts) and enable
 on your own project so GitHub warns you when a Thelia package you depend on is affected
 by a published advisory.
 
+## Regulatory reporting
+
+Thelia is stewarded by OpenStudio as an open source software steward within the meaning of
+article 24 of the EU Cyber Resilience Act (regulation 2024/2847), not as a manufacturer:
+no CE marking and no conformity assessment apply. What does apply is a coordinated
+vulnerability disclosure policy, cooperation with market surveillance authorities, and the
+notification of actively exploited vulnerabilities and severe incidents.
+
+Two situations trigger a notification: a vulnerability under **active exploitation**
+(exploitation observed in the wild, not a theoretical report), and a **severe incident**
+affecting the development or distribution infrastructure, such as a compromise of the
+GitHub organisations, of the release pipeline, or of the published packages.
+
+Notifications go to the [ENISA single reporting platform](https://www.enisa.europa.eu/),
+which routes them to the coordinating CSIRT of the member state (CERT-FR for France),
+on the article 14 timeline:
+
+| Deadline | Notification |
+| --- | --- |
+| 24 hours from awareness | Early warning |
+| 72 hours from awareness | Vulnerability or incident notification, with severity, impact and mitigations |
+| 14 days from the fix being available | Final report (one month for a severe incident) |
+
+The reporting obligations of the regulation apply from 11 September 2026. The full
+process, including the internal checklist, lives in
+[`docs/security/cra-incident-response.md`](https://github.com/thelia/thelia/blob/main/docs/security/cra-incident-response.md)
+in the main repository.
+
+:::note
+Notification duties sit with the steward. They never delay the fix: the remediation work
+runs in parallel, and a release is not held back waiting for a notification.
+:::
+
 ## Keeping your installation secure
 
 - Stay on the most recent release of your series: security fixes only target the
@@ -68,4 +101,8 @@ by a published advisory.
 - Run [`composer audit`](https://getcomposer.org/doc/03-cli.md#audit) regularly (or in
   your CI): it checks every installed package, Thelia included, against known security
   advisories.
-- Report anything suspicious privately — see above.
+- Report anything suspicious privately, as described above.
+
+## See also
+
+- [Personal data](./personal-data.md): export, anonymization and retention of customer data.
