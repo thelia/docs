@@ -9,10 +9,14 @@ Install Thelia 3 and get your store running.
 
 ## Prerequisites
 
-- **PHP 8.3 or 8.4** with extensions: PDO_MySQL, openssl, intl, gd, curl, dom
-- **Composer 2+**
-- **MySQL 8.0+** or **MariaDB 10.6+**
-- A **GitHub token** for Composer, see the next section
+| Requirement | Supported |
+| --- | --- |
+| PHP | 8.3, 8.4 or 8.5 (8.3 recommended) |
+| Database | MariaDB 10.11 or later (recommended), or MySQL 8.x |
+
+PHP extensions: PDO_MySQL, openssl, intl, gd, curl, dom. You also need Composer 2+ and a GitHub token for Composer, described in the next section.
+
+How long each release series receives security fixes is described in the [security policy](../security/security-policy.md).
 
 ## Give Composer a GitHub token
 
