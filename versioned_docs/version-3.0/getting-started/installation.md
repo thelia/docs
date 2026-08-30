@@ -13,14 +13,14 @@ For local development, use **[DDEV](./ddev)**. It gives a faster and more consis
 
 ## Prerequisites
 
-### PHP 8.3 or 8.4
+### PHP 8.3, 8.4 or 8.5
 
 ```bash
 php -v
 # PHP 8.3.x (cli) ...
 ```
 
-Both versions are supported and covered by the test matrix.
+Thelia 3 supports PHP 8.3, 8.4 and 8.5, and 8.3 is recommended. All three are covered by the test matrix.
 
 **Required extensions:**
 
@@ -72,7 +72,7 @@ The value is written to your global `auth.json`. After `composer install`, check
 
 ### Database
 
-MySQL 8.0+ or MariaDB 10.6+:
+MariaDB 10.11 or later (recommended), or MySQL 8.x:
 
 ```sql
 CREATE DATABASE thelia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
