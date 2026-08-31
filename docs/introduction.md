@@ -98,4 +98,4 @@ The sections build on each other, from installation to reference:
 - [Forum](https://forum.thelia.net): community discussions
 - [Discord](https://discord.gg/YgwpYEE3y3): real-time chat
 
-Thelia is licensed under [LGPL v3](https://www.gnu.org/licenses/lgpl-3.0.en.html).
+Thelia is licensed under [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.en.html).
