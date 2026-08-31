@@ -29,11 +29,10 @@ ddev composer config --global github-oauth.github.com <your-token>
 
 ### Building a store
 
-Start from the project skeleton. Thelia 3.0.0-beta3 is a pre-release, so Composer only selects it
-when the beta stability is allowed:
+Start from the project skeleton:
 
 ```bash
-composer create-project thelia/thelia-project my-shop --stability=beta
+composer create-project thelia/thelia-project my-shop
 cd my-shop
 
 ddev config --project-type=symfony --docroot=public

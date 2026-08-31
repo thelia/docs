@@ -95,22 +95,9 @@ cd thelia
 **With Composer (project):**
 
 ```bash
-composer create-project thelia/thelia-project my-shop --stability=beta
+composer create-project thelia/thelia-project my-shop
 cd my-shop
 ```
-
-:::note Beta release
-Thelia 3.0.0-beta3 is a pre-release. Composer only selects it when the beta stability is allowed,
-which is what `--stability=beta` does above. Alternatively, set the following in your project
-`composer.json` before requiring Thelia packages:
-
-```json
-{
-    "minimum-stability": "beta",
-    "prefer-stable": true
-}
-```
-:::
 
 ### 2. Install dependencies
 

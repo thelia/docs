@@ -43,11 +43,10 @@ ddev composer config --global github-oauth.github.com <your-token>
 ## Start a new store
 
 ```bash
-composer create-project thelia/thelia-project my-shop --stability=beta
+composer create-project thelia/thelia-project my-shop
 cd my-shop
 ```
 
-Thelia 3.0.0-beta3 is a pre-release, so `--stability=beta` is required for Composer to select it.
 The skeleton gives you a project without the core sources in your repository. From there, follow
 either of the two setups below, starting at `bin/install`.
 
