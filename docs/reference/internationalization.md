@@ -115,7 +115,7 @@ A domain is a named set of messages. Splitting translations by domain keeps a mo
 | `<module_code>.fo.<template>` | A module's front-office template strings |
 | `global` | The local override layer (see [below](#the-base-and-override-model)) |
 
-Two translators coexist in Thelia 3. The Twig front-office and back-office, and the email and PDF templates, use the **Symfony translator** (`|trans`, domains `messages` / `email` / `pdf`). The core and the modules still use the **Thelia translator** (`Translator::getInstance()`, domains `core` / `<module_code>`, and the `global` override layer). Converging on a single translator is planned after the beta.
+Two translators coexist in Thelia 3. The Twig front-office and back-office, and the email and PDF templates, use the **Symfony translator** (`|trans`, domains `messages` / `email` / `pdf`). The core and the modules still use the **Thelia translator** (`Translator::getInstance()`, domains `core` / `<module_code>`, and the `global` override layer). Converging on a single translator is planned for a future release.
 
 ## The base and override model
 
