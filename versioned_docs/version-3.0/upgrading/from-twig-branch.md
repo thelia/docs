@@ -11,18 +11,18 @@ moving branch. Replace them with the released versions.
 
 ## Update the constraints
 
-`thelia/core` and the project skeleton are released as `3.0.0-beta3`, the templates on the
-`1.0.0-beta` series. A caret constraint on the first beta accepts every later one:
+`thelia/core` and the project skeleton are released as `3.0.0`, the templates on the `1.0`
+series. A caret constraint accepts every later release of the same major version:
 
 ```json
 {
     "require": {
-        "thelia/thelia-skeleton": "^3.0.0-beta3",
-        "thelia/core": "^3.0.0-beta3",
-        "thelia/flexy": "^1.0.0-beta1",
-        "thelia/backoffice-default-twig-template": "^1.0.0-beta1",
-        "thelia/email-default-template": "^1.0.0-beta1",
-        "thelia/pdf-default-template": "^1.0.0-beta1"
+        "thelia/thelia-skeleton": "^3.0",
+        "thelia/core": "^3.0",
+        "thelia/flexy": "^1.0",
+        "thelia/backoffice-default-twig-template": "^1.0",
+        "thelia/email-default-template": "^1.0",
+        "thelia/pdf-default-template": "^1.0"
     }
 }
 ```
@@ -43,20 +43,11 @@ differs from one module to the next, so read it on the module page on
 }
 ```
 
-## Allow the beta stability
+## Remove the beta stability flag
 
-`3.0.0-beta3` and `1.0.0-beta1` are pre-releases. Stability flags are not transitive: a dependency
-accepting a beta is not enough, the root `composer.json` has to allow it.
-
-```json
-{
-    "minimum-stability": "beta",
-    "prefer-stable": true
-}
-```
-
-`prefer-stable` keeps every package that has a stable release on that stable release, so only the
-Thelia packages resolve to a beta.
+Installing the Thelia 3 betas required allowing the beta stability in the root `composer.json`.
+Every Thelia package now has a stable release: remove the `"minimum-stability": "beta"` line if
+the project still carries it.
 
 ## Run the update
 
@@ -95,8 +86,7 @@ Then open the front office and `/admin`, and check that both render.
 ## Custom modules
 
 A module declares the Thelia version it requires in `Config/module.xml`. The running version is
-`3.0.0-beta3` and the comparison drops the pre-release suffix, so `3.0.0` is the highest value a
-module can ask for:
+`3.0.0`, so `3.0.0` is the highest value a module can ask for:
 
 ```xml
 <thelia>3.0.0</thelia>
