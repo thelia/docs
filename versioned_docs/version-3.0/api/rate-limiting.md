@@ -34,25 +34,25 @@ All figures are per minute. Set them in `.env.local`, in the web server's enviro
 
 | Variable | Default | Counted per | Applies to |
 |----------|---------|-------------|------------|
-| `THELIA_API_RATE_LIMIT_LOGIN_ATTEMPTS` | `5` | caller and identifier | `POST /api/front/login`, `POST /api/admin/login` |
-| `THELIA_API_RATE_LIMIT_LOGIN_ATTEMPTS_PER_CLIENT` | `25` | caller | the same two endpoints |
-| `THELIA_API_RATE_LIMIT_TOKEN_REFRESH` | `10` | caller | `POST /api/front/token/refresh`, `POST /api/admin/token/refresh` |
-| `THELIA_API_RATE_LIMIT_ANONYMOUS` | `120` | caller address | `/api/**` when the caller is not authenticated |
-| `THELIA_API_RATE_LIMIT_FRONT_AUTHENTICATED` | `600` | customer account | `/api/**` for a logged-in customer |
-| `THELIA_API_RATE_LIMIT_ADMIN` | `1200` | administrator account | `/api/**` for a logged-in administrator |
+| `THELIA_API_RATE_LIMIT_LOGIN_ATTEMPTS` | `10` | caller and identifier | `POST /api/front/login`, `POST /api/admin/login` |
+| `THELIA_API_RATE_LIMIT_LOGIN_ATTEMPTS_PER_CLIENT` | `50` | caller | the same two endpoints |
+| `THELIA_API_RATE_LIMIT_TOKEN_REFRESH` | `20` | caller | `POST /api/front/token/refresh`, `POST /api/admin/token/refresh` |
+| `THELIA_API_RATE_LIMIT_ANONYMOUS` | `200` | caller address | `/api/**` when the caller is not authenticated |
+| `THELIA_API_RATE_LIMIT_FRONT_AUTHENTICATED` | `800` | customer account | `/api/**` for a logged-in customer |
+| `THELIA_API_RATE_LIMIT_ADMIN` | `2000` | administrator account | `/api/**` for a logged-in administrator |
 | `THELIA_API_RATE_LIMIT_ALLOWLIST` | *(empty)* | n/a | see [Exempting a caller](#exempting-a-caller) |
 
 ```bash
 # .env.local
-THELIA_API_RATE_LIMIT_ANONYMOUS=240
-THELIA_API_RATE_LIMIT_LOGIN_ATTEMPTS=3
+THELIA_API_RATE_LIMIT_ANONYMOUS=400
+THELIA_API_RATE_LIMIT_LOGIN_ATTEMPTS=5
 ```
 
 All windows are sliding: a caller cannot spend a whole budget twice by straddling the moment a fixed window would roll over.
 
 ### Why login has two figures
 
-`THELIA_API_RATE_LIMIT_LOGIN_ATTEMPTS` is counted per caller and per identifier, so five wrong passwords on one account is the ceiling. `THELIA_API_RATE_LIMIT_LOGIN_ATTEMPTS_PER_CLIENT` is counted per caller alone, so trying one password across many accounts hits a wall too.
+`THELIA_API_RATE_LIMIT_LOGIN_ATTEMPTS` is counted per caller and per identifier, so ten wrong passwords on one account is the ceiling. `THELIA_API_RATE_LIMIT_LOGIN_ATTEMPTS_PER_CLIENT` is counted per caller alone, so trying one password across many accounts hits a wall too.
 
 Keep the second well above the first. An office behind one address shares it, and a figure set too close to the first locks the whole office out the moment a couple of colleagues mistype.
 
@@ -82,6 +82,14 @@ What it costs, and what it does not cover:
 - An exempt address is uncapped, and so is anything that can reach the API from it: another container on the same host, a compromised job, a proxy that forwards on its behalf. Keep the list to addresses you control, and as narrow as your network allows.
 
 Prefer giving the integration its own account and raising `THELIA_API_RATE_LIMIT_FRONT_AUTHENTICATED` over exempting an address: the budget still exists, and the integration is still visible in the logs.
+
+### A headless storefront rendered on the server
+
+A storefront that renders on the server, a Next.js or Nuxt front in front of Thelia, calls `/api/front` anonymously on behalf of every visitor it serves, and it does so from its own address. Thelia sees one caller, so the whole storefront shares the anonymous budget of 200 a minute. A handful of simultaneous visitors is enough to reach it, and Thelia then answers `429` to the storefront, which turns into an error page for people who never called the API themselves.
+
+Put the storefront's address in `THELIA_API_RATE_LIMIT_ALLOWLIST`. If you would rather keep a ceiling on it, raise `THELIA_API_RATE_LIMIT_ANONYMOUS` to something the storefront cannot reach at its expected traffic instead, and measure it under load rather than guessing.
+
+Either way, the storefront still has to cap its own visitors, because Thelia cannot tell them apart any more. They all reach it as one address, so nothing on the Thelia side notices or refuses a single visitor calling the storefront a thousand times a minute. Only the storefront sees the visitor addresses, so that is where the cap on them has to live.
 
 ## Behind a proxy or a load balancer
 
