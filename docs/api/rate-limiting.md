@@ -136,10 +136,10 @@ Two more things follow from the counters living in a cache:
 
 ## The log of refused authentications
 
-Every refused authentication is written at `warning` level on the `security` channel, which ships to a file of its own. A wrong password, an account that does not exist, a caller over its login budget and a refused token refresh all land there:
+Every refused authentication is written at `warning` level on the `security` channel, which ships to a file of its own. A wrong password, an account that does not exist, a caller over its login budget and a refused token refresh all land there. The handler rotates the file daily and keeps thirty days, so the file on disk carries the date:
 
 ```
-var/log/security-<env>.log
+var/log/security-<env>-<YYYY-MM-DD>.log
 ```
 
 ```
