@@ -170,6 +170,10 @@ THELIA_API_RATE_LIMIT_ADMIN=100000
 
 The counters outlive a single test, so a test that reaches a cap should clear the `cache.rate_limiter` pool in its `setUp()` and use a caller address of its own. Otherwise it passes alone and fails when the suite replays it inside the same minute.
 
+## Calls refused before they are counted
+
+The general budget is spent by calls that reach the API after the firewall has said who is calling. A call the firewall turns down first is not counted: a request without a valid token on a route that needs one gets its `401` and spends nothing, and a request for a path that does not exist gets its `404` the same way. Neither reads the database or serializes anything, which is what the budget protects. A caller that only ever collects `401` and `404` answers is a matter for the web server or a proxy in front of it, which see every request, not for the application.
+
 ## The shop does not cap itself
 
 A theme reads its data through the API, so a busy shop would be the first thing to hit the anonymous cap if those reads were counted. The busier it got, the harder it would refuse.
