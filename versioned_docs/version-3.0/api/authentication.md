@@ -253,7 +253,12 @@ Or for invalid/expired tokens:
 
 The `/api/docs` endpoint documents JWT authentication and provides an "Authorize" button for testing authenticated endpoints.
 
+## Rate limiting
+
+Failed login attempts and token refreshes are capped per caller, and a capped caller gets `429` with a `Retry-After` header instead of another `401`. Every refused authentication is written to a log of its own. See [Rate Limiting](./rate-limiting), and read its proxy section before deploying behind a load balancer.
+
 ## Next steps
 
+- [Rate Limiting](./rate-limiting) - Login attempt caps and API budgets
 - [Resources](./resources) - Creating API resources
 - [Endpoints Reference](./endpoints) - Available endpoints
