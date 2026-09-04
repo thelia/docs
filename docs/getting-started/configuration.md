@@ -66,16 +66,23 @@ These are written to `.env.local` by `bin/install` during setup. With DDEV, they
 config/packages/
 ├── api_platform.yaml
 ├── cache.yaml
+├── csrf.yaml
+├── debug.yaml
 ├── framework.yaml
 ├── lexik_jwt_authentication.yaml
+├── liip_imagine.yaml
+├── lock.yaml
 ├── mailer.yaml
 ├── monolog.yaml
 ├── nelmio_cors.yaml
+├── property_info.yaml
+├── routing.yaml
 ├── security.yaml
 ├── symfonycasts_sass.yaml
 ├── translation.yaml
 ├── twig.yaml
 ├── twig_component.yaml
+├── validator.yaml
 └── web_profiler.yaml
 ```
 
