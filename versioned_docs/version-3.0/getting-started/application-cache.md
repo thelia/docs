@@ -85,11 +85,12 @@ php Thelia cache:pool:list
 | `thelia.cache.data_access` | Normalized catalog payloads read by the front, when `THELIA_DATA_ACCESS_CACHE=1` | The next pages are slower until the pool refills |
 | `thelia.cache.security` | API refresh tokens | Every API client has to sign in again |
 | `cache.rate_limiter` | Request counters of the API rate limits | Counters restart from zero |
+| `cache.http_client.pool` | Responses of the Symfony HTTP client, when a caller asks it to cache them | The next outgoing call is made again instead of being read back |
 | `cache.system` and the pools built on it | Metadata Thelia derives from the code: API resources, validation, Twig components | Nothing visible; rebuilt on the next request |
 
 ### Emptying
 
-Three commands are easy to mistake for one another.
+Four commands are easy to mistake for one another.
 
 ```bash
 # The container cache only. No application pool is touched.
