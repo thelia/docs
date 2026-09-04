@@ -203,7 +203,13 @@ php Thelia cache:clear --env=prod
 ddev exec php Thelia cache:clear
 ```
 
-Cache is stored in `var/cache/`. Configuration in `config/packages/cache.yaml` defaults to filesystem adapter.
+`cache:clear` empties the container cache, in `var/cache/<env>`: the compiled service
+container, the routes, the translations, the compiled templates.
+
+What the shop computed and reads back later — catalog payloads, API refresh tokens, rate
+limit counters — is the application cache, held in separate pools that survive
+`cache:clear`. `THELIA_CACHE_DSN` moves those pools to a shared server such as Redis, and
+each pool is emptied on its own. See [Application cache](./application-cache.md).
 
 ## Debug mode
 
