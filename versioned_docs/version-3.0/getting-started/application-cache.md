@@ -14,10 +14,10 @@ code of the shop.
 Most of the confusion around caching in Thelia comes from three different things sharing the
 word.
 
-| | What it holds | Where it lives | How it is emptied |
+| | What it holds | Where it lives | What empties it |
 | --- | --- | --- | --- |
-| Container cache | The compiled service container, routes, translations, compiled templates | `var/cache/<env>` | `php Thelia cache:clear` |
-| Application cache | What the shop computed and wants to read back: catalog payloads, API refresh tokens, rate limit counters | `var/pools/<env>`, or a cache server | `php Thelia cache:pool:clear <pool>` |
+| Container cache | The compiled service container, routes, translations, compiled templates | `var/cache/<env>` | `php Thelia cache:clear`, `php Thelia thelia:cache:clear`, the back office button |
+| Application cache | What the shop computed and wants to read back: catalog payloads, API refresh tokens, rate limit counters | `var/pools/<env>`, or a cache server | `php Thelia cache:pool:clear <pool>`, and for the catalog pool only, `php Thelia thelia:cache:clear` and the back office button |
 | HTTP cache | Whole pages, held by a reverse proxy in front of Thelia | The proxy | The proxy |
 
 This page is about the second one. The container cache is rebuilt from the code and is
@@ -87,15 +87,32 @@ php Thelia cache:pool:list
 | `cache.rate_limiter` | Request counters of the API rate limits | Counters restart from zero |
 | `cache.system` and the pools built on it | Metadata Thelia derives from the code: API resources, validation, Twig components | Nothing visible; rebuilt on the next request |
 
-Clear one pool at a time:
+### Emptying
+
+Three commands are easy to mistake for one another.
 
 ```bash
+# The container cache only. No application pool is touched.
+php Thelia cache:clear
+
+# The container cache, the web assets, and the catalog pool
+# (it dispatches the shop's own cache clear event). The API
+# refresh tokens and the rate limit counters are left alone.
+# This is what the back office button under
+# Configuration > Advanced configuration does.
+php Thelia thelia:cache:clear
+
+# One named pool, and nothing else.
 php Thelia cache:pool:clear thelia.cache.data_access
+
+# Expired entries in every pool, without emptying anything valid.
+php Thelia cache:pool:prune
 ```
 
-Emptying the shop cache, from **Configuration › Advanced configuration** in the back office
-or with `php Thelia cache:clear`, takes the container cache and the catalog pool. It leaves
-`thelia.cache.security` alone, so a deployment no longer signs the API clients out.
+`cache:clear` rebuilds `var/cache/<env>` and leaves every application pool as it was: the
+pools live in `var/pools/<env>`, outside that directory, or on a cache server. Nothing in
+either command empties `thelia.cache.security`, which is what keeps a deployment from
+signing the API clients out.
 
 ## Keeping installations apart
 
@@ -125,6 +142,10 @@ seed is read when the container is compiled, so a change takes effect after
   than sharing one with a queue or a session store that has different durability needs.
 - **Token lifetime.** `JWT_REFRESH_TOKEN_TTL` (default 30 days) sets how long a refresh token
   stays valid. A shorter lifetime lowers what an evicted or stolen token is worth.
+- **Pruning, on the file system.** An entry that expires and is never read again stays on
+  the disk. `php Thelia cache:pool:prune` removes those, and nothing valid, so it belongs in
+  a nightly cron on a shop that keeps its cache on disk. On a cache server it has nothing to
+  do, since the server expires its own keys, and reports so without failing.
 - **Measure before concluding.** On a single server, the file system cache backed by opcache
   can beat a remote cache on small keys. What a shared cache buys is that several front ends
   see the same entries, and that they survive a deployment. Compare page timings on your own
@@ -160,9 +181,10 @@ redis-cli -h localhost monitor
 ## Troubleshooting
 
 **A page shows data that no longer exists.** Clear the catalog pool:
-`php Thelia cache:pool:clear thelia.cache.data_access`. That pool is also flushed on its own
-whenever a catalog record changes, so a lasting staleness points at an import that writes
-around the models rather than at the cache.
+`php Thelia cache:pool:clear thelia.cache.data_access`, or `php Thelia thelia:cache:clear`,
+which takes that pool with the container cache. `php Thelia cache:clear` will not do it. The
+pool is also flushed on its own whenever a catalog record changes, so a lasting staleness
+points at an import that writes around the models rather than at the cache.
 
 **A template change does not show up.** That is the container cache, not this one:
 `php Thelia cache:clear`.

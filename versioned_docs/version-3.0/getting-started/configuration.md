@@ -206,10 +206,12 @@ ddev exec php Thelia cache:clear
 `cache:clear` empties the container cache, in `var/cache/<env>`: the compiled service
 container, the routes, the translations, the compiled templates.
 
-What the shop computed and reads back later — catalog payloads, API refresh tokens, rate
-limit counters — is the application cache, held in separate pools that survive
-`cache:clear`. `THELIA_CACHE_DSN` moves those pools to a shared server such as Redis, and
-each pool is emptied on its own. See [Application cache](./application-cache.md).
+What the shop computed and reads back later, so catalog payloads, API refresh tokens and
+rate limit counters, is the application cache. It is held in separate pools that survive
+`cache:clear`, and `THELIA_CACHE_DSN` moves those pools to a shared server such as Redis.
+`php Thelia thelia:cache:clear`, and the button under Configuration > Advanced configuration,
+also empty the catalog pool; `php Thelia cache:pool:clear <pool>` empties one pool and
+nothing else. See [Application cache](./application-cache.md).
 
 ## Debug mode
 
