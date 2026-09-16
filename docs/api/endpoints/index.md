@@ -7,6 +7,11 @@ sidebar_position: 1
 
 Reference documentation for Thelia's core API endpoints.
 
+:::note Order returns are behind a setting
+The order return resources answer 404, rather than 403, while `order_return_enabled` is off. See
+[Order Returns](../../features/order-returns.md).
+:::
+
 ## Endpoint overview
 
 ### Admin endpoints (`/api/admin/`)
@@ -28,6 +33,15 @@ Full CRUD operations requiring authentication.
 | Currencies | `/api/admin/currencies` | GET, POST, PUT, PATCH, DELETE |
 | Countries | `/api/admin/countries` | GET, POST, PUT, PATCH, DELETE |
 | Modules | `/api/admin/modules` | GET, POST, PUT, DELETE |
+| Sales | `/api/admin/sales` | GET (collection, item) |
+| Order returns | `/api/admin/order_returns` | GET, POST, PUT, PATCH, DELETE |
+| Order return lines | `/api/admin/order_return_lines` | GET, POST, PATCH |
+| Order return reasons | `/api/admin/order_return_reasons` | GET, POST, PUT, PATCH, DELETE |
+| Order return statuses | `/api/admin/order_return_statutes` | GET (collection, item) |
+| Product relation types | `/api/admin/product_association_types` | GET, POST, PUT, PATCH, DELETE |
+| Product relations | `/api/admin/product_associations` | GET, POST, DELETE |
+| Customer tags | `/api/admin/tags` | GET, POST, PUT, PATCH, DELETE |
+| Customer tag attachments | `/api/admin/tag-elements` | GET, POST, DELETE |
 
 ### Front endpoints (`/api/front/`)
 
@@ -47,6 +61,11 @@ Mostly read-only public access. A few operations write data (cart management, ac
 | Orders | `/api/front/account/orders` | GET (collection) |
 | Order detail | `/api/front/account/orders/{id}` | GET |
 | Countries | `/api/front/countries` | GET (collection, item) |
+| Sales | `/api/front/sales` | GET (collection, item) |
+| Product relation types | `/api/front/product_association_types` | GET (collection, item) |
+| Product relations | `/api/front/product_associations` | GET (collection, item) |
+| Account order returns | `/api/front/account/order_returns` | GET (collection, item), POST |
+| Guest account conversion | `/api/front/guest-customers/{id}/convert` | POST |
 
 :::note
 The current-cart shortcut `/api/front/cart` returns the cart bound to the current session through a dedicated controller, so you do not need to know its `id`. The collection-style `/api/front/carts/{id}` operations require customer authentication.
@@ -63,6 +82,36 @@ Customer and order personal-data routes (`/api/front/account/customers/{id}`, `/
 ```http
 GET /api/front/products?visible=true&itemsPerPage=20&page=1
 Accept: application/ld+json
+```
+
+### Sorting a collection
+
+Sorting is asked for with the `order` parameter, keyed by the property to sort on, with `asc` or
+`desc` as its value:
+
+```http
+GET /api/front/products?order[createdAt]=desc&itemsPerPage=20
+```
+
+The product collection, both on `/api/admin/products` and on `/api/front/products`, sorts on:
+
+| Property | Sorts by |
+| --- | --- |
+| `ref` | The product reference |
+| `position` | The manual position |
+| `productCategories.position` | The manual position inside a category |
+| `createdAt` | The date the product was created |
+| `updatedAt` | The date the product was last written |
+| `title` | The product title in the requested language |
+
+`order[title]` is a filter of its own rather than the generic one, because a title lives in the
+translation rows of the product: sorting through the plain relation path would multiply the rows
+of the collection. It takes the same `asc` and `desc` values as the others.
+
+Several keys can be combined, and they apply in the order they are written:
+
+```http
+GET /api/front/products?order[position]=asc&order[title]=asc
 ```
 
 ### Collection response
