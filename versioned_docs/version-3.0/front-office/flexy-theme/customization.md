@@ -474,6 +474,70 @@ The Thelia `NotInFilter` is keyed `not_in[<property>]` and expects an array of v
 
 `Organisms:ProductCard:Base` accepts a `product` (a `ProductDTO` or a raw array), both handled by its `mount()` method, or a `productId` if you only have the id.
 
+### Typed relation blocks
+
+Since Thelia 3.1 a relation between two products carries a type: `accessory`, `cross_selling`, `up_selling`, or any the merchant added. A theme reads the types the shop declares, then the relations of the product, and renders one block per type that has something under it:
+
+```twig
+{# product.html.twig #}
+{% set relationTypes = resources('/api/front/product_association_types', {
+    'visible': true,
+    'order[position]': 'asc',
+}) %}
+
+{% for type in relationTypes %}
+    {% set relations = resources('/api/front/product_associations', {
+        'product.id': product.id,
+        'type.code': type.code,
+        'order[position]': 'asc',
+    }) %}
+
+    {% if relations|length %}
+        <section class="product-relations">
+            <h2>{{ type.i18ns.title }}</h2>
+            <div class="product-grid">
+                {% for relation in relations %}
+                    <twig:Organisms:ProductCard:Base :productId="relation.associatedProduct.id" />
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endfor %}
+```
+
+The titles come from the types themselves, translated, so adding a type in the back office adds a block on the page without touching the template. See [Product Relation Types](../../features/product-relation-types.md).
+
+## Brand pages
+
+A brand carries a rewritten URL, and the core resolves it to the `brand` view with the brand id published as a URL parameter, the way a category or a product URL resolves. A theme serves it with a `brand.html.twig` at its root, read through `attr()` and `resources()` like any other page:
+
+```twig
+{# brand.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% set brandId = attr('brand', 'id') %}
+{% set brand = resources('/api/front/brands/' ~ brandId) %}
+
+{% block body %}
+    <h1>{{ brand.i18ns.title }}</h1>
+    {{ brand.i18ns.description|raw }}
+
+    {% set products = resources('/api/front/products', {
+        'brand.id': brandId,
+        'visible': true,
+        'itemsPerPage': 30,
+    }) %}
+
+    <div class="product-grid">
+        {% for product in products %}
+            <twig:Organisms:ProductCard:Base :product="product" />
+        {% endfor %}
+    </div>
+{% endblock %}
+```
+
+A brand that is not visible never reaches the template: the core turns the request down before the view is rendered.
+
 ## Form customization
 
 Flexy ships a form theme at `form/flexy_form_theme.html.twig`, reached as `@FlexyForm/flexy_form_theme.html.twig`. Each of its blocks delegates the markup to an anonymous component under `components/Fields/`, so restyling an input usually means editing the component rather than the theme:
