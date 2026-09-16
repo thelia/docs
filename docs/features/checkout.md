@@ -150,7 +150,9 @@ deleted.
 
 The `terms_and_conditions` consent is created on install and on update, taking over the content
 the `terms_conditions_content_id` setting points at, so a shop that already had terms keeps
-them.
+them. A fresh install creates it mandatory; a shop updating from 3.0 gets it optional, so that
+a theme which does not render the consent box yet cannot block the checkout. Switch it to
+mandatory from the consent screen once the theme shows it.
 
 A mandatory active consent left unanswered stops the order: `ConsentGuard` throws a
 `MissingConsentException` naming the consent by the wording the buyer was shown, rather than by

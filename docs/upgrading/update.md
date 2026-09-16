@@ -27,21 +27,21 @@ relies on, and a module or a template you depend on may need its own bump in
 
 ## 1. Update the code
 
-Thelia 3 is a set of Composer packages, so you update the code with Composer. The core
-packages `thelia/core`, `thelia/setup` and `thelia/config` share one version number, and the
-themes follow the core, so they move together. From the root of your project:
+A project installed with `composer create-project thelia/thelia-project` depends on
+`thelia/thelia-skeleton`, which brings in the core packages and the themes. Updating it pulls
+the whole set:
+
+```bash
+composer update thelia/thelia-skeleton --with-all-dependencies
+```
+
+To move the packages one by one instead, name them explicitly. `thelia/core`, `thelia/setup`
+and `thelia/config` are the core, and the themes follow it:
 
 ```bash
 composer update thelia/core thelia/setup thelia/config thelia/flexy \
   thelia/backoffice-default-twig-template thelia/email-default-template \
   thelia/pdf-default-template --with-all-dependencies
-```
-
-A project that depends on the `thelia/thelia` metapackage rather than on the individual
-packages updates it instead, which pulls the same set:
-
-```bash
-composer update thelia/thelia --with-all-dependencies
 ```
 
 Drop from the list any theme your project does not use, and add the themes you replaced
@@ -50,16 +50,19 @@ them with.
 ## 2. Update the database
 
 A release can ship an SQL script that alters the schema, so new files on an old database
-will break. Run the update script from the root of your project:
+will break. Run the update script from the root of your project. `thelia/setup` installs
+under `local/`, so the script is at `local/setup/update.php`:
 
 ```bash
-php setup/update.php
+php local/setup/update.php
 ```
 
-It reports the version it starts from and the one it moves to, then applies each database
-migration in order. Several versions at once are applied in a single run. The script offers
-to back the database up first and restores that backup if a migration fails; on a large
-database, take the manual `mysqldump` above instead.
+It starts by removing the compiled container and the generated Propel models of the release
+you are leaving, so the new schema is the one it reads. There is nothing to purge by hand
+beforehand. It then reports the version it starts from and the one it moves to, and applies
+each database migration in order. Several versions at once are applied in a single run. The
+script offers to back the database up first and restores that backup if a migration fails; on
+a large database, take the manual `mysqldump` above instead.
 
 :::danger Never run `thelia:install` on an existing shop
 That command is the initial installer, not a migration tool. It replays `thelia.sql`, which
@@ -137,8 +140,13 @@ environment variable, and a list of addresses and CIDR ranges exempts trusted ca
 is what a payment gateway or a data feed needs. See
 [Rate limiting](https://doc.thelia.net/docs/api/rate-limiting).
 
-Two more points to check before you update:
+Three more points to check before you update:
 
+- An updated shop and a fresh install differ on one row. The terms and conditions consent is
+  created mandatory on a fresh install, and optional on an updated shop, so that a theme
+  which does not render the consent box yet cannot block the checkout. Switch it to mandatory
+  from the consent configuration screen once the theme shows it. See
+  [Consents at payment](../features/checkout.md#consents-at-payment).
 - The connection now names its character set in the DSN, `utf8mb4`, when the DSN named none.
   A DSN written in a `database.yml` is taken as it is, so a shop that picked its own keeps
   it. A database inherited from a Thelia 2 migration whose tables stayed in `latin1` has to
@@ -146,6 +154,10 @@ Two more points to check before you update:
 - Every response carries `X-Frame-Options: SAMEORIGIN` unless the shop already sets the
   header. A shop displayed in an iframe on another domain has to write its own value. See
   [Default response headers](../security/http-headers.md).
+
+`thelia/setup` and `thelia/config` ship as 3.1.1 with this core: their 3.1.0 tags were
+published early and lack the last tables of the release. Updating through
+`thelia/thelia-skeleton` picks the right ones on its own.
 
 The themes follow the core. Flexy 1.1.0, default-twig 1.1.0, email 1.1.0 and pdf 1.1.0 need a
 3.1 core: they render the checkout steps, the consent boxes, the offered cart lines, the
