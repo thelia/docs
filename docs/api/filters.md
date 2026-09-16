@@ -262,16 +262,39 @@ GET /api/front/products?depth=2&productCategories.category.id=5
 
 ### Query parameters
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `page` | Page number (1-based) | 1 |
-| `itemsPerPage` | Items per page | 30 |
+| Parameter | Description | Default | Maximum |
+|-----------|-------------|---------|---------|
+| `page` | Page number (1-based) | 1 | n/a |
+| `itemsPerPage` | Items per page | 30 | 100 |
 
 **Usage:**
 
 ```http
 GET /api/front/products?page=2&itemsPerPage=20
 ```
+
+### The page ceiling
+
+A page never returns more than 100 items, whatever `itemsPerPage` asks for. `itemsPerPage=100000` returns 100, and `hydra:totalItems` still reports the real size of the collection, so a client walks the pages instead of asking for everything at once.
+
+Without a ceiling, a single anonymous call can make the shop load, hydrate and serialize a whole table into one response. A hundred is well above what the shipped themes ask for: thirty on the front, twenty-five in the back-office.
+
+Change it for the whole API in your own configuration:
+
+```yaml
+# config/packages/api_platform.yaml
+api_platform:
+    defaults:
+        pagination_maximum_items_per_page: 200
+```
+
+Or for one operation, on its metadata:
+
+```php
+#[GetCollection(paginationMaximumItemsPerPage: 500)]
+```
+
+See [Rate Limiting](./rate-limiting) for the other caps on API use.
 
 ### Response format
 
@@ -423,6 +446,7 @@ new GetCollection(
 
 ## Next steps
 
+- [Rate Limiting](./rate-limiting) - The caps on API use
 - [Endpoints Reference](./endpoints) - Complete API endpoints
 - [Resources](./resources) - Creating API resources
 - [DataAccess Service](/docs/front-office/data-access) - Using filters in templates
