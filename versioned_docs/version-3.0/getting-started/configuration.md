@@ -66,16 +66,23 @@ These are written to `.env.local` by `bin/install` during setup. With DDEV, they
 config/packages/
 ├── api_platform.yaml
 ├── cache.yaml
+├── csrf.yaml
+├── debug.yaml
 ├── framework.yaml
 ├── lexik_jwt_authentication.yaml
+├── liip_imagine.yaml
+├── lock.yaml
 ├── mailer.yaml
 ├── monolog.yaml
 ├── nelmio_cors.yaml
+├── property_info.yaml
+├── routing.yaml
 ├── security.yaml
 ├── symfonycasts_sass.yaml
 ├── translation.yaml
 ├── twig.yaml
 ├── twig_component.yaml
+├── validator.yaml
 └── web_profiler.yaml
 ```
 
@@ -196,7 +203,15 @@ php Thelia cache:clear --env=prod
 ddev exec php Thelia cache:clear
 ```
 
-Cache is stored in `var/cache/`. Configuration in `config/packages/cache.yaml` defaults to filesystem adapter.
+`cache:clear` empties the container cache, in `var/cache/<env>`: the compiled service
+container, the routes, the translations, the compiled templates.
+
+What the shop computed and reads back later, so catalog payloads, API refresh tokens and
+rate limit counters, is the application cache. It is held in separate pools that survive
+`cache:clear`, and `THELIA_CACHE_DSN` moves those pools to a shared server such as Redis.
+`php Thelia thelia:cache:clear`, and the button under Configuration > Advanced configuration,
+also empty the catalog pool; `php Thelia cache:pool:clear <pool>` empties one pool and
+nothing else. See [Application cache](./application-cache.md).
 
 ## Debug mode
 

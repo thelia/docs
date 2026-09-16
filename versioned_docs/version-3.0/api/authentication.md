@@ -124,9 +124,11 @@ the same shape as a login response:
 - **Scoped.** A token issued on `/api/admin/login` only works on
   `/api/admin/token/refresh`, and a token issued on `/api/front/login` only on
   `/api/front/token/refresh`. Presenting one on the other endpoint returns `401`.
-- **Stored in the cache pool.** Eviction invalidates the token and forces a new login. In
-  production, back the pool with a persistent adapter (Redis, filesystem) rather than an
-  in-memory one.
+- **Stored in its own cache pool.** Refresh tokens live in `thelia.cache.security`, which
+  nothing empties on a deployment or on a cache clear, so releasing a new version does not
+  sign the clients out. Eviction still invalidates a token and forces a new login: see
+  [Application cache](../getting-started/application-cache.md) for the backend and the
+  eviction policy to use in production.
 
 | Response | Meaning |
 | --- | --- |
