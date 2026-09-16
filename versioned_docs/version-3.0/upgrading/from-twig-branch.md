@@ -85,18 +85,21 @@ Then open the front office and `/admin`, and check that both render.
 
 ## Custom modules
 
-A module declares the Thelia version it requires in `Config/module.xml`. The running version is
-`3.0.0`, so `3.0.0` is the highest value a module can ask for:
+A module declares the Thelia version it requires in `Config/module.xml`. The constraint is a
+minimum, compared with `>=` against the running core, so the highest value a module can ask for
+is the version the shop runs:
 
 ```xml
 <thelia>3.0.0</thelia>
 ```
 
-Anything above it, `3.0.1` for instance, makes the module fail to activate with `The module
-<name> requires Thelia 3.0.1 or newer`.
+Anything above the running version, `3.2.0` on a 3.1 shop for instance, makes the module fail to
+activate with `The module <name> requires Thelia 3.2.0 or newer`.
 
-The constraint is a minimum, so a module still declaring `<thelia>2.5.0</thelia>` keeps working.
-Raise it to `3.0.0` once the module no longer supports Thelia 2.
+Because the constraint is a minimum, a module still declaring `<thelia>2.5.0</thelia>` keeps
+working, and a module declaring `<thelia>3.0.0</thelia>` keeps activating on 3.1 and later. Raise
+it to `3.0.0` once the module no longer supports Thelia 2, and beyond that only when the module
+starts using something a later release added. See [Release Policy](./release-policy.md).
 
 ## Thelia 2 projects
 
