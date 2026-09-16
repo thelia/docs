@@ -23,12 +23,17 @@ Plus the [global arguments](./global_arguments) and [search arguments](./searchA
 | Variable               | Value                                                                         |
 |:-----------------------|:------------------------------------------------------------------------------|
 | $ACTIVE                | true if the sale is active, false otherwise                                   |
+| $AUDIENCE_MODE         | 0 for a public sale, 1 for a sale reserved for named customers                |
 | $CHAPO                 | the sale chapo                                                                |
 | $DESCRIPTION           | the sale description                                                          |
+| $COUNTDOWN_LEAD_HOURS  | the number of hours before the end date the countdown starts, in mode 1       |
+| $COUNTDOWN_MODE        | 0 never, 1 from the lead hours before the end, 2 from the opening             |
+| $COUNTDOWN_REMAINING_SECONDS | the seconds left before the end date, or nothing when there is no countdown to show |
 | $DISPLAY_INITIAL_PRICE | true if the products initial price should be displayed, false otherwise       |
 | $END_DATE              | the sale end date                                                             |
 | $HAS_END_DATE          | true if the sale has a end date, false otherwise                              |
 | $HAS_START_DATE        | true if the sale has a start date, false otherwise                            |
+| $HIDE_PRODUCTS         | 1 if a reserved sale hides its products from everyone it is not open to       |
 | $ID                    | the content id                                                                |
 | $IS_TRANSLATED         | check if the content is translated                                            |
 | $LOCALE                | the locale (e.g. fr_FR) of the returned data                                  |
@@ -37,8 +42,17 @@ Plus the [global arguments](./global_arguments) and [search arguments](./searchA
 | $PRICE_OFFSET_TYPE     | the price offset type, P for a percentage, A for an amount                    |
 | $PRICE_OFFSET_VALUE    | the price offset value, as a percentage (0-100) or a constant amount.         |
 | $SALE_LABEL            | the sale advertising label                                                    |
+| $SHOULD_DISPLAY_COUNTDOWN | 1 if the countdown has to be shown right now                               |
 | $START_DATE            | the sale start date                                                           |
 | $TITLE                 | the sale title                                                                |
+| $URL                   | the rewritten url of the sale page                                            |
+
+:::note Reserved sales
+Since Thelia 3.1 a sale can be reserved for named customers, and the loop only returns a
+reserved sale to a customer it is open to. Price sorting still reads the raw catalogue columns,
+so the price of a reserved sale does not take part in it. See
+[Reserved Sales and Countdown](../../features/reserved-sales.md).
+:::
 
 Plus the [global outputs](./global_outputs)
 

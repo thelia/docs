@@ -30,7 +30,8 @@ In the third mode, a product is kept out of the guest tunnel by the
 It is what a subscription, a downloadable licence or anything whose after-sales needs an
 account should carry.
 
-**Back office:** Configuration > System > Store info carries the `guest_checkout_mode` field.
+In the back office, the `guest_checkout_mode` field is on the Store info screen, under
+Configuration > System.
 
 ### Finding the order again
 
@@ -71,9 +72,9 @@ Four steps are seeded, with the codes `cart`, `delivery`, `payment` and `confirm
 merchant can turn off a step the shop does not use, and a download-only shop drops the delivery
 step, which is why `delivery` is the only one of the four that is not mandatory.
 
-**Turning a step off removes its screen, never its check.** When the order is placed, the check
-of every registered step provider runs, in declared-position order, whatever the `active` flag
-says. A shop cannot sell its way around a guard by hiding a screen.
+Turning a step off removes its screen while its check still runs. When the order is placed, the
+check of every registered step provider runs, in declared-position order, whatever the `active`
+flag says. A shop cannot sell its way around a guard by hiding a screen.
 
 The tunnel keeps a shape: the cart opens it, the payment comes next to last, the confirmation
 closes it. The back office refuses any other arrangement, and a configuration broken behind its
@@ -91,7 +92,7 @@ providers' defaults with a log warning rather than breaking the checkout, but a 
 run on that fallback.
 :::
 
-**Back office:** the configuration screen is at `/admin/configuration/checkout-step`, behind the
+The back-office screen is at `/admin/configuration/checkout-step`, behind the
 `admin.configuration.checkout-step` resource.
 
 ### Display mode
@@ -155,8 +156,8 @@ A mandatory active consent left unanswered stops the order: `ConsentGuard` throw
 `MissingConsentException` naming the consent by the wording the buyer was shown, rather than by
 its code.
 
-**Back office:** Configuration > Order path > Checkout consents, at
-`/admin/configuration/consent`.
+In the back office, the consents are managed under Configuration > Order path > Checkout
+consents, at `/admin/configuration/consent`.
 
 ### What the order keeps
 
