@@ -5,6 +5,14 @@ title: Order status
 Order status loop displays order status information.  
 `{loop type="order_status" name="the-loop-name" [argument="value"], [...]}`
 
+:::note Transitions are not loop data
+Since Thelia 3.1 a merchant can declare which statuses an order may move to, and what runs when
+it does. The loop still lists the statuses themselves; the graph and the actions live in the
+`order_status_transition` and `order_status_action` tables and are enforced by the core when an
+order changes status. See
+[Order Status Transitions](../../features/order-status-transitions.md).
+:::
+
 ## Arguments {#order-arguments}
 
 | Argument | Description                                                       | Default | Example            |
