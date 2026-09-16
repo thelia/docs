@@ -171,6 +171,32 @@ final class AccountController extends BaseFrontController
 The argument-based form `checkAuth($resources, $modules, $accesses)` exists **only** on `BaseAdminController`. On `BaseFrontController`, `checkAuth()` is argument-less. Do not pass `AccessManager` constants to a front controller's `checkAuth()`.
 :::
 
+### Coming back to the page after signing in
+
+Since Thelia 3.1, a visitor bounced to the login page comes back to where they were instead of landing on their account. `checkAuth()` appends the page it is leaving as a `redirect` query parameter, and `Thelia\Domain\Customer\Service\AuthenticationReturnUrl` is what a theme uses on the other end:
+
+```php
+use Thelia\Domain\Customer\Service\AuthenticationReturnUrl;
+
+public function __construct(
+    private readonly AuthenticationReturnUrl $returnUrl,
+) {
+}
+
+// On the sign-in and registration screens: remember where the visitor came from
+$this->returnUrl->capture();
+
+// Once the customer is signed in, or registered
+return $this->generateRedirect($this->returnUrl->consume('/account'));
+```
+
+- `of($request)` gives the value a sign-in link should carry for the page it sits on.
+- `capture()` stores the parameter of the current request in the session, under `thelia.authentication_return_url`, so it survives the POST that signs the customer in and the detour through the registration form. A request without the parameter leaves what is remembered untouched.
+- `consume()` reads the destination back and clears it, the parameter of the current request winning over the remembered one, and falls back to the URL you pass when there is nothing to come back to.
+- `forget()` drops it, for a flow that decides its destination itself.
+
+Every URL that goes through the service is checked by `Thelia\Tools\RedirectUrl::isSafe()`: an empty value, a protocol-relative `//host` target, a backslash, a scheme other than `http` or `https`, or an absolute URL on another host is refused, and the fallback applies. An open redirect on the login form is the classic phishing lever, so do not bypass the check by reading the parameter yourself.
+
 ### Redirects
 
 ```php
