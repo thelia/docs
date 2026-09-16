@@ -5,6 +5,13 @@ title: Accessory
 The accessory loop lists products accessories. As an accessory is itself a product, this loop behaves like a product loop. Therefore you can use all [product loop](./Product.md) arguments and outputs.  
 `{loop type="accessory" name="the-loop-name" [argument="value"], [...]}`
 
+:::note Typed relations
+Since Thelia 3.1 a relation between two products carries a type, and this loop returns the
+relations of the `accessory` type only. The other types, `cross_selling` and `up_selling`, and
+any the merchant added, are read through the `product_associations` API resources. See
+[Product Relation Types](../../features/product-relation-types.md).
+:::
+
 ## Arguments {#pse-arguments}
 
 | Argument | Description | Default | Example |
