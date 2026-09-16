@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.10.2">
 <title data-rh="true">Authentication | Thelia Documentation</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://doc.thelia.net/docs/next/api/authentication"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Authentication | Thelia Documentation"><meta data-rh="true" name="description" content="The Thelia 3 API uses JWT (JSON Web Token) authentication via the lexik/jwt-authentication-bundle."><meta data-rh="true" property="og:description" content="The Thelia 3 API uses JWT (JSON Web Token) authentication via the lexik/jwt-authentication-bundle."><link data-rh="true" rel="icon" href="/img/favicon.png"><link data-rh="true" rel="canonical" href="https://doc.thelia.net/docs/next/api/authentication"><link data-rh="true" rel="alternate" href="https://doc.thelia.net/docs/next/api/authentication" hreflang="en"><link data-rh="true" rel="alternate" href="https://doc.thelia.net/docs/next/api/authentication" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://AOX4BR07WS-dsn.algolia.net" crossorigin="anonymous"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"API","item":"https://doc.thelia.net/docs/next/api/"},{"@type":"ListItem","position":2,"name":"Authentication","item":"https://doc.thelia.net/docs/next/api/authentication"}]}</script><link rel="search" type="application/opensearchdescription+xml" title="Thelia Documentation" href="/opensearch.xml"><link rel="stylesheet" href="/assets/css/styles.3890d491.css">
-<script src="/assets/js/runtime~main.926462c5.js" defer="defer"></script>
-<script src="/assets/js/main.625dc807.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.16402abb.js" defer="defer"></script>
+<script src="/assets/js/main.f9ee4ca5.js" defer="defer"></script>
 </head>
 <body>
 <svg style="display: none;"><defs>
@@ -57,9 +57,11 @@ the response carries a new one. Replaying the same value fails.</li>
 <li class=""><strong>Scoped.</strong> A token issued on <code>/api/admin/login</code> only works on
 <code>/api/admin/token/refresh</code>, and a token issued on <code>/api/front/login</code> only on
 <code>/api/front/token/refresh</code>. Presenting one on the other endpoint returns <code>401</code>.</li>
-<li class=""><strong>Stored in the cache pool.</strong> Eviction invalidates the token and forces a new login. In
-production, back the pool with a persistent adapter (Redis, filesystem) rather than an
-in-memory one.</li>
+<li class=""><strong>Stored in its own cache pool.</strong> Refresh tokens live in <code>thelia.cache.security</code>, which
+nothing empties on a deployment or on a cache clear, so releasing a new version does not
+sign the clients out. Eviction still invalidates a token and forces a new login: see
+<a class="" href="/docs/next/getting-started/application-cache">Application cache</a> for the backend and the
+eviction policy to use in production.</li>
 </ul>
 <table><thead><tr><th>Response</th><th>Meaning</th></tr></thead><tbody><tr><td><code>400</code></td><td>No <code>refresh_token</code> in the request body</td></tr><tr><td><code>401</code></td><td>Unknown, expired, already used, or wrong-scope token</td></tr><tr><td><code>200</code></td><td>New JWT and new refresh token</td></tr></tbody></table>
 <p>The lifetime is set by <code>JWT_REFRESH_TOKEN_TTL</code> (default <code>2592000</code>, i.e. 30 days). See
