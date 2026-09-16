@@ -15,6 +15,14 @@ retention policy. Modules plug into all three through a single interface.
 customer: the account, the address book, the orders with their frozen order addresses
 and products, the carts, and the newsletter subscription.
 
+Since Thelia 3.1 it also carries the consents answered at payment, with the wording as it was
+displayed, the answer, the date and the IP address the answer came from, and the order returns,
+with their reference, status, reason, comment, refund amount and lines.
+
+Customer tags are deliberately left out: a tag is an internal marker the shop wrote about the
+customer, not something the customer told the shop, and the export handed to a person should
+carry no trace of it.
+
 ```shell
 php Thelia customer:export-personal-data customer@example.com --output-file=export.json
 ```
@@ -37,6 +45,9 @@ erases the identity and leaves the accounting record intact.
 | Address book (`address`) and cart addresses (`cart_address`) | Country and state of the order address, which justify the VAT rate applied |
 | Identity frozen on the order addresses (`order_address`): title, company, SIRET, VAT number, name, address, postcode, city, phone numbers | The order itself, still attached to the now anonymous account |
 | Carts, newsletter subscription, account version history (`customer_version`) | Admin log entries: which administrator did what, and when |
+| The IP address recorded next to each consent answered at payment (`order_consent.ip_address`) | The consent wording, the answer and its date: what was agreed to, and when |
+| The free text of the order returns: the customer comment and the refusal reason, and the version history that still held them | The returns and their lines: reference, status, quantities and refund amounts |
+| Customer tag attachments, which only mean something against an identified person | |
 | Identity copied into the admin log: the message and the posted request payload | |
 
 ```shell
