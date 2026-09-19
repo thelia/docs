@@ -206,18 +206,66 @@ Authorization: Bearer {token}
 
 ### Update request (admin)
 
+Use `PATCH` to change part of a resource. Properties the payload leaves out keep
+their value.
+
+```http
+PATCH /api/admin/products/1
+Content-Type: application/merge-patch+json
+Authorization: Bearer {token}
+
+{
+    "visible": false
+}
+```
+
+The `Content-Type` matters: a `PATCH` sent as `application/json` answers `415`.
+
+### PUT replaces the whole resource
+
+`PUT` writes the resource the payload describes, so every writable property the
+payload omits is emptied. Sending only the property you want to change deletes
+the rest:
+
 ```http
 PUT /api/admin/products/1
 Content-Type: application/json
 Authorization: Bearer {token}
 
 {
-    "visible": false,
-    "i18ns": {
-        "en_US": {
-            "title": "Updated Title"
-        }
-    }
+    "visible": false
+}
+```
+
+That request answers `422` naming `taxRule`, `ref` and `i18ns`, the writable
+properties it left out. Use `PUT` when you send the complete resource, and
+`PATCH` otherwise.
+
+### Nested collections are replaced, not merged
+
+A collection sent inside its parent replaces the collection that was there, for
+`PATCH` as well as for `PUT`. This follows the JSON merge patch rules, where an
+array is replaced as a whole.
+
+The practical consequences on a product and its sale elements:
+
+- A sale element absent from `productSaleElements` is deleted, along with its
+  attribute combinations and its customer family prices.
+- A sale element present but carrying no `productPrices` ends up with no price.
+- A sale element with no `id` is matched on its `ref` under the same product, so
+  a client holding its own references keeps addressing the same row. Two rows
+  sharing a reference are ambiguous, and a new one is created instead.
+
+To update a sale element on its own, address it directly and leave
+`productSaleElements` out of the product payload:
+
+```http
+PATCH /api/admin/product_sale_elements/42
+Content-Type: application/merge-patch+json
+Authorization: Bearer {token}
+
+{
+    "quantity": 12
 }
 ```
 
