@@ -66,6 +66,7 @@ Mostly read-only public access. A few operations write data (cart management, ac
 | Product relations | `/api/front/product_associations` | GET (collection, item) |
 | Account order returns | `/api/front/account/order_returns` | GET (collection, item), POST |
 | Guest account conversion | `/api/front/guest-customers/{id}/convert` | POST |
+| Checkout | `/api/front/account/checkout/{cartId}` | POST (`delivery_address`, `invoice_address`, `delivery_module`, `payment_module`, `place`), GET (`validation`) |
 
 :::note
 The current-cart shortcut `/api/front/cart` returns the cart bound to the current session through a dedicated controller, so you do not need to know its `id`. The collection-style `/api/front/carts/{id}` operations require customer authentication.
@@ -74,6 +75,8 @@ The current-cart shortcut `/api/front/cart` returns the cart bound to the curren
 :::caution
 Customer and order personal-data routes (`/api/front/account/customers/{id}`, `/api/front/account/orders`, `/api/front/account/orders/{id}`) require a customer JWT and only expose the authenticated customer's own data. The `POST /api/front/customers` operation is the public account-creation endpoint.
 :::
+
+The checkout operations are documented on their own page: [Checkout over the front API](../checkout.md).
 
 ## Common patterns
 
