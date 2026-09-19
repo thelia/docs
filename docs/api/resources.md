@@ -385,6 +385,16 @@ GET /api/admin/my_project_items?isActive=true
 4. Include related data only when you need it.
 5. Document the API by adding descriptions to operations and properties.
 
+## Product videos
+
+`ProductVideo`, `ProductVideoI18n` and `ProductSaleElementsProductVideo` follow the
+same pattern as the image resources: `ProductVideo` is a translatable resource exposed
+at `/admin/product_videos` and `/front/product_videos`, with a file operation at
+`/product_videos/{id}/file` for hosted videos, and `ProductSaleElementsProductVideo`
+attaches a video to a product sale element the same way `ProductSaleElementsProductImage`
+attaches an image. See [Product media](../front-office/product-media) for the front-office
+behavior these resources support.
+
 ## Next steps
 
 - [Translatable Resources](./translatable-resources) - Resources with i18n support
