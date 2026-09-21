@@ -30,7 +30,9 @@ themselves.
 
 ## Videos
 
-A product can attach videos alongside its images. A video comes from one of two
+A product can attach videos alongside its images. In the back office they are added and
+managed from the Images tab of the product, in the same grid as the images, and moved
+around in that grid: images and videos share one order. A video comes from one of two
 sources:
 
 - a platform video: the merchant pastes a YouTube, Vimeo or Dailymotion address, and
@@ -61,7 +63,7 @@ visitor clicks it. Nothing loads from the video platform before that click.
 
 | Setting | Default | Purpose |
 | --- | --- | --- |
-| `video_providers` | `youtube,vimeo,dailymotion` | Comma-separated list of platforms Thelia recognizes when a merchant pastes a video address. An address from a platform not in this list is refused. |
+| `video_providers` | `youtube,vimeo,dailymotion` | Comma-separated list of platforms Thelia recognizes when a merchant pastes a video address. An address from a platform not in this list is refused. A video already stored for a platform taken off the list keeps its row but is served without an embed address, so the gallery shows nothing for it; putting the platform back brings it back. |
 | `videos_library_path` | `local/media/videos` | Where hosted video files are stored. |
 | `video_upload_allowed_mime_types` | `video/mp4, video/webm, video/ogg` | Accepted MIME types for a hosted video upload, same mechanism as `image_upload_allowed_mime_types`. |
 
