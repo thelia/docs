@@ -72,7 +72,7 @@ A project created with `thelia/thelia-project` depends on `thelia/thelia-skeleto
 composer update
 ```
 
-Update the whole project rather than a theme alone. A theme that no longer requires these modules refuses to install next to a skeleton older than 3.2, so `composer update thelia/flexy` on such a project stops on a conflict message instead of removing modules.
+Update the whole project rather than a theme alone. A theme that no longer requires these modules declares a conflict with any skeleton older than 3.2, so `composer update thelia/flexy` on a project still on skeleton 3.1 keeps the current theme version instead of removing modules. The new theme version comes with the full update that also brings skeleton 3.2.
 
 A project that requires the themes directly, without the skeleton, has to declare the six modules itself:
 
