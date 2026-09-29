@@ -5,7 +5,7 @@ sidebar_position: 2.5
 
 # What a fresh install contains
 
-A new shop created with `composer create-project thelia/thelia-skeleton` comes with the core, four themes (Flexy for the front office, the Twig back office, the e-mail and PDF templates) and the modules listed below. The list is declared in two places you can read without installing anything: the `require` section of [thelia/thelia-skeleton](https://github.com/thelia/thelia-skeleton/blob/main/composer.json) for the modules the distribution ships on its own, and the `composer.json` of each theme for the modules its rendering depends on.
+A new shop created with `composer create-project thelia/thelia-project` comes with the core, four themes (Flexy for the front office, the Twig back office, the e-mail and PDF templates) and the modules listed below. The project depends on a single package, [thelia/thelia-skeleton](https://github.com/thelia/thelia-skeleton/blob/main/composer.json), and the list is declared in two places you can read without installing anything: the `require` section of the skeleton for the modules the distribution ships on its own, and the `composer.json` of each theme for the modules its rendering depends on.
 
 ## Shipped and active are two different things
 
@@ -61,6 +61,29 @@ php Thelia module:activate <ModuleCode>
 ```
 
 The list of official modules and their package names is on [Packagist](https://packagist.org/packages/thelia/) and in the [thelia-modules](https://github.com/thelia-modules) organization.
+
+## Shops installed before skeleton 3.2
+
+Until skeleton 3.2, Cheque, CustomDelivery, FreeOrder, VirtualProductDelivery, HeaderHighlights and RecentlyViewed reached a shop through the `composer.json` of the themes. They now come from the skeleton, and the themes no longer require them.
+
+A project created with `thelia/thelia-project` depends on `thelia/thelia-skeleton`, so a full update brings skeleton 3.2 and the six modules with it. The shop keeps them, and their active or inactive state is not touched:
+
+```bash
+composer update
+```
+
+Update the whole project rather than a theme alone. A theme that no longer requires these modules refuses to install next to a skeleton older than 3.2, so `composer update thelia/flexy` on such a project stops on a conflict message instead of removing modules.
+
+A project that requires the themes directly, without the skeleton, has to declare the six modules itself:
+
+```json
+"thelia/cheque-module": "^3.0",
+"thelia/custom-delivery-module": "^4.0",
+"thelia/free-order-module": "^3.0",
+"thelia/virtual-product-delivery-module": "^3.0",
+"thelia/header-highlights-module": "^2.0",
+"thelia/recently-viewed-module": "^2.1"
+```
 
 ## Checking your own install
 
