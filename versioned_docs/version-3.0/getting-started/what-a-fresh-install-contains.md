@@ -74,17 +74,6 @@ composer update
 
 Update the whole project rather than a theme alone. A theme that no longer requires these modules declares a conflict with any skeleton older than 3.2, so `composer update thelia/flexy` on a project still on skeleton 3.1 keeps the current theme version instead of removing modules. The new theme version comes with the full update that also brings skeleton 3.2.
 
-A project that requires the themes directly, without the skeleton, has to declare the six modules itself:
-
-```json
-"thelia/cheque-module": "^3.0",
-"thelia/custom-delivery-module": "^4.0",
-"thelia/free-order-module": "^3.0",
-"thelia/virtual-product-delivery-module": "^3.0",
-"thelia/header-highlights-module": "^2.0",
-"thelia/recently-viewed-module": "^2.1"
-```
-
 ## Checking your own install
 
 On an installed shop, the effective list is:
