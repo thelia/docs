@@ -13,10 +13,10 @@ LiveComponent/TwigComponent).
 The bundle lives at `templates/backOffice/default-twig/`. It declares its own routes with PHP 8
 `#[Route]` attributes, along with its own hooks, templates, forms, and assets.
 
-:::caution The Smarty back-office is legacy
-The previous Smarty `default` back-office theme is no longer recommended and will likely be dropped
-in Thelia 3.1. New development targets the `default-twig` bundle. The two themes can run side by
-side during the transition, but build any new admin screen on the Twig bundle.
+:::caution The Smarty back-office is retired
+The previous Smarty `default` back-office theme (`thelia/backoffice-default-template`) is no longer
+installed or maintained in Thelia 3. `default-twig` is the only back-office the core installs, and
+every new admin screen targets it.
 :::
 
 ## Back-office vs front-office
@@ -310,7 +310,7 @@ theme and the back-office bundle.
 
 ### Do
 
-- Build new admin screens on the `default-twig` bundle, not the Smarty theme.
+- Build admin screens on the `default-twig` bundle; the Smarty theme is retired.
 - Keep controllers thin: dispatch an event and let an `Action` listener persist.
 - Fetch data through Repositories and present lists with the DataTable UiComponent.
 - Use hooks (`safe_hook` / `hook_block`) to extend existing screens instead of editing core

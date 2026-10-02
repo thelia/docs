@@ -7,10 +7,10 @@ sidebar_position: 2
 
 Thelia 3 renders its interfaces with Twig. The front-office (Flexy theme) and the modern back-office (`default-twig` theme) are Twig bundles built on Symfony UX (Stimulus, TwigComponent, LiveComponent) and Bootstrap 5, and the transactional emails and order PDF are Twig themes too.
 
-A second engine, Smarty, still ships for the legacy `default` back-office theme. It is kept only for the transition and is not the recommended path for new development.
+Smarty, the engine of Thelia 2, is no longer part of a default install: it only served the legacy `default` back-office theme, which is retired.
 
-:::caution The Smarty back-office is being phased out
-The Smarty `default` back-office theme is legacy and will likely be dropped in Thelia 3.1. Build new admin screens and module admin extensions against the `default-twig` bundle conventions. Smarty examples below are documented for reference only.
+:::caution The Smarty back-office is retired
+The Smarty `default` back-office theme (`thelia/backoffice-default-template`) is no longer installed or maintained, and neither is `thelia/smarty-module`. Build admin screens and module admin extensions against the `default-twig` bundle conventions. The Smarty examples below are kept to help you read and port Thelia 2 code.
 :::
 
 ## Overview
@@ -236,16 +236,16 @@ ACL resources live in `core/lib/Thelia/Core/Security/Resource/AdminResources.php
 
 Transactional emails and order documents (invoice, delivery slip) are Twig themes as well, installed under `templates/email/` and `templates/pdf/`. They render through the same `TwigParser` as the rest of the site, selected by the `ParserResolver`.
 
-The `ParserResolver` picks a parser by file extension, not by a global setting: `TwigParser` claims `.html.twig` and `.txt.twig`, the legacy `SmartyParser` claimed `.html` and `.tpl`. An email message is a `.html.twig` (HTML body) plus a `.txt.twig` (text body); a PDF document is a single `.html.twig`. Because the choice is per file, a Twig theme and a Smarty theme can coexist during a migration without any core change.
+The `ParserResolver` picks a parser by file extension, not by a global setting: `TwigParser` claims `.html.twig` and `.txt.twig`, the `SmartyParser` of Thelia 2 claimed `.html` and `.tpl`. An email message is a `.html.twig` (HTML body) plus a `.txt.twig` (text body); a PDF document is a single `.html.twig`. Because the choice is per file, the parser follows the template it is given, not a global setting.
 
 Since a mail or a PDF is often rendered with no HTTP request behind it (from a worker, or the `mail:render` / `pdf:render` console commands), these themes use the CLI-safe helpers the `TwigEngine` module provides (`loop`, `format_money`, `format_date`, `format_address`, `config`, `thelia_url`, `media_url`, `hook` and `hook_block`) rather than request-bound functions. The PDF theme renders HTML that is then converted to PDF by dompdf.
 
 See [Emails and PDF](../reference/emails-and-pdf.md) for the full reference.
 
-## Legacy back-office: Smarty (transitional)
+## Legacy back-office: Smarty (retired)
 
 :::caution
-This section documents the legacy `default` (Smarty) back-office. It is kept for the transition only and is expected to be dropped in Thelia 3.1. Do not target it for new work. Use the `default-twig` bundle conventions above.
+This section documents the legacy `default` (Smarty) back-office, which is no longer installed or maintained. It stays here so you can read Thelia 2 code and port it. Do not target it for new work. Use the `default-twig` bundle conventions above.
 :::
 
 The legacy admin uses Smarty templates with Thelia's loop system for data retrieval.
@@ -302,8 +302,7 @@ The legacy admin uses Smarty templates with Thelia's loop system for data retrie
 
 ### Back-office (Smarty), legacy only
 
-- Maintaining existing modules that still render Smarty admin templates.
-- Not recommended for new development; plan migration to the `default-twig` conventions.
+- No longer supported. A module that still renders Smarty admin templates has to be ported to the `default-twig` conventions.
 
 ## Comparison: displaying a product list
 

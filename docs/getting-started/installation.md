@@ -131,7 +131,7 @@ php bin/install \
 
 :::note The back-office theme defaults to `default-twig`
 `--backoffice_theme` defaults to `default-twig`, the Twig back-office, so most installs do not need
-to pass it. Pass `--backoffice_theme=default` only if you deliberately want the legacy Smarty admin.
+to pass it. The Smarty back-office (`default`) is no longer installed or maintained.
 :::
 
 #### All options
@@ -152,7 +152,7 @@ default. Host and name are required.
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--frontoffice_theme` | `flexy` | Front-office template |
-| `--backoffice_theme` | `default-twig` | Back-office template (`default` is the legacy Smarty back-office) |
+| `--backoffice_theme` | `default-twig` | Back-office template (`default-twig` is the only back-office the core installs) |
 | `--pdf_theme` | `default` | PDF template |
 | `--email_theme` | `default` | Email template |
 | `--with-demo` | - | Import demo catalog |
@@ -172,7 +172,7 @@ See [Install Reference](./install-reference) for what `--skip-demo-images` and `
 There is no manual step. `bin/install` runs `importmap:install` and `tailwind:build` for the
 active front-office template, and `sass:build` for the back-office stylesheet, and skips whichever
 command the installed templates do not provide. Both the storefront and `/admin` are ready when
-the installer returns. The Smarty back-office template (`default`) needs no build step either.
+the installer returns.
 
 ### 5. Start the development server
 
