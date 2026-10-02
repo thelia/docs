@@ -616,6 +616,105 @@ Test Cards (Sandbox):
 - 3D Secure: 4000 0000 0000 3220
 ```
 
+## Thelia 3.2
+
+Thelia 3.2 changes what a payment module sees when the buyer pays a second time, and which cart and amount it works on. A module that extends `AbstractPaymentModule` keeps working without a line changed; the sections below say when to act.
+
+### Payment retries
+
+A buyer whose card was declined, or who closed the gateway tab, comes back to the same cart and pays again. `Thelia\Domain\Checkout\Service\CheckoutPaymentService` decides what happens to the unpaid order of that cart. It compares a fingerprint of the cart lines, both addresses, the delivery module and its postage, the payment module, the currency and the discounts:
+
+| Cart since the last attempt | `supportsPaymentRetry()` | Result |
+|-----------------------------|--------------------------|--------|
+| Unchanged | `true` | The same order is presented to `pay()` again, with the same reference and no second confirmation e-mail |
+| Unchanged | `false` (default) | The unpaid order is cancelled, a new order is placed |
+| Changed | any | The unpaid order is cancelled, a new order is placed |
+
+A cart never carries more than one live unpaid order.
+
+`PaymentModuleInterface` declares the method, and `AbstractPaymentModule` answers `false`:
+
+```php
+public function supportsPaymentRetry(): bool;
+```
+
+Return `true` only when both conditions hold:
+
+- the provider reference varies at each attempt (a new session or payment intent per `pay()` call);
+- your callback finds the order back by the order's own reference, not by a single provider key stored on the order.
+
+A module that writes one provider key on the order and overwrites it at each attempt must keep the default. With a retry, a late notification of the first attempt would land on the wrong transaction, or on none.
+
+```php
+final class MyPayment extends AbstractPaymentModule
+{
+    public function supportsPaymentRetry(): bool
+    {
+        return true; // callbacks look the order up by $order->getRef()
+    }
+}
+```
+
+A module that implements `PaymentModuleInterface` directly, without extending `AbstractPaymentModule`, has to declare the method itself.
+
+### The cart stays until the payment is confirmed
+
+Placing an order no longer empties the cart. `Thelia\Action\Order::create()` stops raising `ORDER_CART_CLEAR`, and the cart is consumed when it is read again while the order that names it is paid. A declined card, a cancelled payment or a closed tab leaves the shopper with the cart they had.
+
+For your module this means that `pay()` now runs with the cart the shopper filled, where it used to find an empty one. `AbstractPaymentModule::cartItemCount()` still answers zero when there is no session. A module that raises `ORDER_CART_CLEAR` itself still empties the cart.
+
+### Amount checked by `isValidPayment()` and `pay()`
+
+`BaseModule::getCurrentOrderTotalAmount()` prices the cart the payment is about:
+
+- while a module is asked whether it accepts the payment, the cart carried by `MODULE_PAYMENT_IS_VALID`;
+- while it is asked to pay, the cart the order is built from, held by `Thelia\Domain\Module\Payment\PaymentCartContext`;
+- the session cart only when no payment is under way;
+- `0` outside any request (a console command, a worker), instead of an exception.
+
+The cart is taxed in the country of its delivery address, or in the country of its customer's default address when it has no delivery address yet. The amount includes the postage when `$with_postage` is `true`, which is the default:
+
+```php
+public function getCurrentOrderTotalAmount(bool $with_tax = true, bool $with_discount = true, bool $with_postage = true): float|int
+```
+
+The postage used to be read from a session order that nothing writes in 3.x, so the amount a module checked never included the delivery. A module that compares this amount to a minimum or a maximum now compares what the order will carry. This is also what lets a module judge an order placed through the front API on the cart being ordered.
+
+`PaymentCartContext` exposes two methods:
+
+```php
+public function within(Cart $cart, callable $call): mixed;
+public function cart(): ?Cart;
+```
+
+You rarely call them: the core wraps `MODULE_PAY` in `within()`. If you instantiate `Thelia\Action\Order` or `Thelia\Action\Payment` yourself, pass the context to the constructor.
+
+### Cancelling an order
+
+`Thelia\Model\Order::setCancelled()` now goes through `ORDER_UPDATE_STATUS` instead of writing the status on the row, so cancelling gives the stock back and runs the status listeners. It takes the event dispatcher:
+
+```php
+$order->setCancelled($this->getDispatcher());
+```
+
+### Stock shortage
+
+A stock shortage while an order is being written is raised as `Thelia\Domain\Order\Exception\StockShortageException`. It extends `TheliaProcessException` and carries the product reference:
+
+```php
+use Thelia\Domain\Order\Exception\StockShortageException;
+
+try {
+    // ...
+} catch (StockShortageException $shortage) {
+    $reference = $shortage->productReference; // ?string
+}
+```
+
+Match the class instead of the wording of the message to tell a shortage from any other order failure. A shortage is a conflict with the state of the shop, a retry may succeed; any other `TheliaProcessException` is a defect.
+
+See [Breaking changes](../upgrading/breaking-changes.md#thelia-32) for the constructors that changed.
+
 ## Best practices
 
 ### Do

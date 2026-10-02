@@ -1123,6 +1123,8 @@ Order linked event.
 
 **ORDER_CART_CLEAR** = 'action.order.cartClear'  
 
+_The core no longer raises this event itself. The cart is kept after the order is placed and is consumed when an order that names it is paid, so a buyer whose payment is declined still finds the cart. The event stays declared and listened to (it empties the session cart and order) for the modules that raise it at a moment of their own._  
+
 **ORDER_CREATE_MANUAL** = 'action.order.createManual'  
 
 **ORDER_UPDATE_STATUS** = 'action.order.updateStatus'  
@@ -1289,6 +1291,34 @@ __________________
 -  ProductSaleElementEvent -> $product_sale_element   
 -  ProductSaleElementUpdateEvent -> $product $product_sale_element_id   
 
+**ProductSearchedEvent** (no constant)  
+
+_Added in 3.2. `Thelia\Core\Event\Product\ProductSearchedEvent` is raised by a front theme once per product search a shopper submits, so a module can keep a search log whatever runs the search. It is dispatched under its class name: subscribe to `ProductSearchedEvent::class`. Flexy raises it on the first page of results only. Suggestions shown while typing and further pages of the same results are not searches._  
+
+-  ProductSearchedEvent -> $term $locale $hits (getters `getTerm()`, `getLocale()`, `getHits()`: the submitted term, the locale of the search and the number of products found)  
+
+```php
+<?php
+
+namespace MyModule\EventListener;
+
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Thelia\Core\Event\Product\ProductSearchedEvent;
+
+class SearchLogListener implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents(): array
+    {
+        return [ProductSearchedEvent::class => 'onProductSearched'];
+    }
+
+    public function onProductSearched(ProductSearchedEvent $event): void
+    {
+        // $event->getTerm(), $event->getLocale(), $event->getHits()
+    }
+}
+```
+
 
 </details>
 
@@ -1406,6 +1436,10 @@ __________________
 
 **CHECK_SALE_ACTIVATION_EVENT** = 'action.checkSaleActivationEvent'  
 
+**SALE_PRODUCTS_QUERY** = 'action.saleProductsQuery'  
+
+_Added in 3.2. Raised by `Thelia\Action\Sale::updateProductsSaleStatus()` once the query selecting the products of a sale is built and before it is read. A listener narrows `SaleProductsQueryEvent::getQuery()` (a `SaleProductQuery`, already filtered by the sale) in place with a SQL condition, to keep products out of the sale. The promo status is still reset on every product of the sale, so an excluded product loses the status it had. Nothing changes without a listener._  
+
 __________________
 
 -  ProductSaleStatusUpdateEvent -> no constructor found in this file  
@@ -1415,6 +1449,7 @@ __________________
 -  SaleDeleteEvent -> $saleId   
 - **⚠️ Warning**
  >  SaleEvent is **deprecated**, please use thelia/core/lib/Thelia/Core/Event/Sale/SaleEvent.php
+-  SaleProductsQueryEvent -> $sale $query   
 -  SaleToggleActivityEvent -> no constructor found in this file  
 -  SaleUpdateEvent -> $saleId   
 
