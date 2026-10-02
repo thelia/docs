@@ -21,7 +21,8 @@ Back up your files and your database. `mysqldump` is enough for the database:
 mysqldump -u <user> -p <database> > backup.sql
 ```
 
-Read the release notes of the version you move to. A release can change behaviour a shop
+Read the release notes of the version you move to, and the matching page in
+[Notes for each version](#notes-for-each-version). A release can change behaviour a shop
 relies on, and a module or a template you depend on may need its own bump in
 `composer.json`.
 
@@ -59,7 +60,9 @@ php local/setup/update.php
 
 It starts by removing the compiled container and the generated Propel models of the release
 you are leaving, so the new schema is the one it reads. There is nothing to purge by hand
-beforehand. It then reports the version it starts from and the one it moves to, and applies
+beforehand. From 3.2, the script also purges `var/cache/<env>` and `var/propel/<env>` itself,
+accepts `-n` or `--no-interaction`, and exits with code 0 when the database is already up to
+date. It then reports the version it starts from and the one it moves to, and applies
 each database migration in order. Several versions at once are applied in a single run. The
 script offers to back the database up first and restores that backup if a migration fails; on
 a large database, take the manual `mysqldump` above instead.
@@ -116,53 +119,14 @@ php Thelia module:refresh
 php Thelia cache:clear
 ```
 
-## Moving from 3.0 to 3.1
+## Notes for each version
 
-Two changes of the 3.1.0 release show up in production without anything being asked for, and
-both concern integrations that call the API.
+Each release can ask for something the generic procedure above does not cover: a setting to
+change, a module to bump, a behaviour that moves. Read the page for every minor version you
+cross, in order:
 
-The API caps a page at one hundred items. A caller asking for more receives one hundred items
-and no error, so an integration that walks a catalogue in a single call has to move to
-paginated reads. A project that needs another ceiling redefines
-`pagination_maximum_items_per_page` in its own `api_platform` configuration:
-
-```yaml
-# config/packages/api_platform.yaml
-api_platform:
-    defaults:
-        pagination_maximum_items_per_page: 500
-```
-
-The API also limits its rate: two hundred requests a minute for an anonymous caller, eight
-hundred for an authenticated customer, two thousand for the administration, ten failed login
-attempts and twenty token refreshes. Each ceiling is set by a `THELIA_API_RATE_LIMIT_*`
-environment variable, and a list of addresses and CIDR ranges exempts trusted callers, which
-is what a payment gateway or a data feed needs. See
-[Rate limiting](https://doc.thelia.net/docs/api/rate-limiting).
-
-Three more points to check before you update:
-
-- An updated shop and a fresh install differ on one row. The terms and conditions consent is
-  created mandatory on a fresh install, and optional on an updated shop, so that a theme
-  which does not render the consent box yet cannot block the checkout. Switch it to mandatory
-  from the consent configuration screen once the theme shows it. See
-  [Consents at payment](../features/checkout.md#consents-at-payment).
-- The connection now names its character set in the DSN, `utf8mb4`, when the DSN named none.
-  A DSN written in a `database.yml` is taken as it is, so a shop that picked its own keeps
-  it. A database inherited from a Thelia 2 migration whose tables stayed in `latin1` has to
-  name its set in the DSN before updating.
-- Every response carries `X-Frame-Options: SAMEORIGIN` unless the shop already sets the
-  header. A shop displayed in an iframe on another domain has to write its own value. See
-  [Default response headers](../security/http-headers.md).
-
-`thelia/setup` and `thelia/config` ship as 3.1.1 with this core: their 3.1.0 tags were
-published early and lack the last tables of the release. Updating through
-`thelia/thelia-skeleton` picks the right ones on its own.
-
-The themes follow the core. Flexy 1.1.0, default-twig 1.1.0, email 1.1.0 and pdf 1.1.0 need a
-3.1 core: they render the checkout steps, the consent boxes, the offered cart lines, the
-reserved sales and the order returns this release adds. Rebuild the cache and the theme
-assets as described above.
+- [Updating from 3.0 to 3.1](./from-3.0-to-3.1.md), patch release 3.1.1 included.
+- [Updating from 3.1 to 3.2](./from-3.1-to-3.2.md).
 
 ## Recommendations
 
