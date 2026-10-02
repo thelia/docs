@@ -29,7 +29,7 @@ The Thelia version numbers here come from the root `composer.json` (`php: ">= 8.
 
 The two changes that surprise people coming from Thelia 2:
 
-- **The back-office is now Twig, not Smarty.** Thelia 2's `default` Smarty back-office still ships in Thelia 3 *during the transition*, but the reference is the `default-twig` bundle (see below).
+- **The back-office is now Twig, not Smarty.** Thelia 2's `default` Smarty back-office is not installed or maintained in Thelia 3; `default-twig` is the only back-office (see below).
 - **The API is the same API Platform, upgraded.** Thelia 2 already shipped API Platform 3.4 with the Propel bridge. Thelia 3 does *not* introduce API Platform; it moves it from 3.4 to 4.3 standalone. The work is upgrading existing resources, not rewriting a custom API.
 
 ## Front-office: Smarty → Twig (FlexyBundle)
@@ -73,8 +73,8 @@ It is a full Symfony bundle, autonomous from the core:
 - `form/bo_form_theme.html.twig`: a Bootstrap 5 form theme
 - `assets/`: SCSS, Stimulus controllers, images, served through AssetMapper (the stylesheet is compiled by `sass:build`)
 
-:::caution The Smarty back-office is deprecated
-The legacy Smarty back-office (`templates/backOffice/default/`) still ships side by side with `default-twig` during the transition, but it is **no longer recommended** and is expected to be dropped in Thelia 3.1. Build new back-office work on the `default-twig` bundle.
+:::caution The Smarty back-office is retired
+The legacy Smarty back-office (`thelia/backoffice-default-template`) is no longer required, installed or maintained in Thelia 3. A module that renders Smarty admin templates or extends the classes that came with that theme has to be rebuilt on the `default-twig` bundle. See [Breaking changes](./breaking-changes.md#thelia-32).
 :::
 
 Activate it at install time with `--backoffice_theme=default-twig`:
@@ -312,7 +312,7 @@ You do **not** rewrite these. They carry over unchanged:
 
 ### Back-office
 
-- [ ] Rebuild back-office screens on the `default-twig` bundle (the Smarty `default` theme is deprecated)
+- [ ] Rebuild back-office screens on the `default-twig` bundle (the Smarty `default` theme is retired)
 - [ ] Move controllers to `#[Route]` attributes, queries to `Repository/`, presenters to `Service/`
 - [ ] Declare hooks with the bundle's `#[AsHook]` attribute
 

@@ -47,7 +47,7 @@ the console does not carry, so a template built on another pipeline installs wit
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--frontoffice_theme` | `flexy` | Front-office template |
-| `--backoffice_theme` | `default-twig` | Back-office template. `default-twig` is the Twig admin; `default` is the legacy Smarty back-office |
+| `--backoffice_theme` | `default-twig` | Back-office template. `default-twig` is the Twig admin and the only back-office the core installs; the Smarty `default` one is no longer installed or maintained |
 | `--pdf_theme` | `default` | PDF template |
 | `--email_theme` | `default` | Email template |
 
@@ -68,8 +68,7 @@ without downloading or copying the product images, which makes the install notic
 no effect without `--with-demo`.
 
 `--strict-themes` is off by default so that several templates of the same type can sit side by side
-in one installation, which is what lets the Twig and Smarty back-offices coexist during the
-migration. With the flag on, `bin/install` scans `templates/<type>/` and removes from
+in one installation, for instance to switch a front-office theme without reinstalling. With the flag on, `bin/install` scans `templates/<type>/` and removes from
 `config/bundles.php` every bundle belonging to a template other than the selected one. Use it for a
 lean production install, not on a development checkout where you switch templates.
 

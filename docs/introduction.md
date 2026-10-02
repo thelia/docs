@@ -71,7 +71,7 @@ Compared to [Thelia 2](/docs/2.x):
 - `bin/install` is a standalone installer that runs without the Symfony kernel.
 - A testing framework ships with `IntegrationTestCase` and `FixtureFactory`.
 
-The back-office has been ported to a Twig bundle (`default-twig`) built on Bootstrap 5, Twig and Stimulus. This is the reference back-office. The legacy Smarty back-office (`default`) is transitional and likely to be dropped in a future release.
+The back-office has been ported to a Twig bundle (`default-twig`) built on Bootstrap 5, Twig and Stimulus. It is the only back-office Thelia 3 installs. The Smarty back-office of Thelia 2 (`thelia/backoffice-default-template`) is no longer installed or maintained.
 
 ## Documentation structure
 

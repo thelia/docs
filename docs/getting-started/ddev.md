@@ -95,9 +95,8 @@ ddev exec php bin/install \
 
 :::note The back-office theme defaults to `default-twig`
 `--backoffice_theme` defaults to `default-twig`, the Twig back-office, so you do not need to pass it.
-Pass `--backoffice_theme=default` only if you deliberately want the legacy Smarty admin; that admin
-is not built on the Twig hook functions, and a Twig template that calls `safe_hook()` throws
-`Unknown "safe_hook" function` when the Twig back-office bundle is not the active one.
+Since Thelia 3.2 it is the only back-office theme the distribution ships: the Smarty admin
+(`thelia/backoffice-default-template`) is retired and no longer maintained.
 :::
 
 See [Install Reference](./install-reference) for all available options and environment variables.
