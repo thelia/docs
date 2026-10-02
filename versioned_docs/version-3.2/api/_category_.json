@@ -1,0 +1,11 @@
+{
+  "label": "API",
+  "position": 7,
+  "link": {
+    "type": "doc",
+    "id": "api/index"
+  },
+  "customProps": {
+    "description": "REST API powered by API Platform"
+  }
+}

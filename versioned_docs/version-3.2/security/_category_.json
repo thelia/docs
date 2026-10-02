@@ -1,0 +1,7 @@
+{
+  "label": "Security",
+  "position": 12,
+  "customProps": {
+    "description": "How Thelia handles security vulnerabilities"
+  }
+}

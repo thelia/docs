@@ -1,0 +1,11 @@
+{
+  "label": "Back-Office",
+  "position": 6,
+  "link": {
+    "type": "doc",
+    "id": "back-office/index"
+  },
+  "customProps": {
+    "description": "Admin interface built on the Twig default-twig bundle (Symfony UX + Bootstrap 5)"
+  }
+}
