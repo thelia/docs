@@ -1,0 +1,11 @@
+{
+  "label": "Reference",
+  "position": 9,
+  "link": {
+    "type": "doc",
+    "id": "reference/index"
+  },
+  "customProps": {
+    "description": "Events, forms, i18n, CLI commands, legacy loop and Smarty references"
+  }
+}
