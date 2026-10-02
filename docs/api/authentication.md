@@ -86,6 +86,57 @@ The JWT token contains:
 
 The `type` field indicates whether the user is an Admin or a Customer.
 
+## Two-factor authentication
+
+An administrator account with a [second factor](../back-office/two-factor-authentication.md) needs a `code` field next to the username and the password:
+
+```http
+POST /api/admin/login
+Content-Type: application/json
+
+{
+    "username": "admin@example.com",
+    "password": "your-password",
+    "code": "123456"
+}
+```
+
+`code` is either the six-digit code of the authenticator app or one of the account's backup codes. It must be a JSON string: `"code": 123456` (a number) is read as no code, and would lose the leading zeros of a code like `012345` anyway. An account without a second factor ignores the field, and `/api/front/login` has no such field.
+
+A missing, empty or wrong code gets exactly the answer of a wrong password, body included, so a caller cannot tell from the response whether the password was the part that failed:
+
+```http
+HTTP/1.1 401 Unauthorized
+
+{
+    "code": 401,
+    "message": "Invalid credentials."
+}
+```
+
+The same `401` answers a code that was already used (a code is accepted once, so a second login in the same 30-second step needs the next code), and any code once ten wrong ones have been sent for the account within ten minutes. A failed code is a failed login for the [login attempt caps](./rate-limiting), which answer `429` when they are reached.
+
+On success the response is the usual `token`, `refresh_token` and `refresh_token_ttl`.
+
+### Refresh tokens and the second factor
+
+A refresh token remembers the second factor the account had when it was issued. `POST /api/admin/token/refresh` answers `401` (`Invalid or expired refresh token.`) for a token issued before the second factor was enabled, and for a token issued under a second factor that was since removed, reset or replaced. The client has to log in again, with a code.
+
+### When the shop requires a second factor
+
+If the shop turns on [the obligation for every administrator](../back-office/two-factor-authentication.md#requiring-it-for-every-administrator), an administrator who has no second factor yet:
+
+- gets `401` (`Invalid credentials.`) from `POST /api/admin/login`, whatever the password, and `401` (`Invalid or expired refresh token.`) from the refresh endpoint;
+- gets `403` on `/api/admin/*` with a token issued before the setting was turned on:
+
+```json
+{
+    "message": "The second factor of this account must be enabled from the back office first."
+}
+```
+
+The administrator has to sign in to the back office and enable the second factor before the API gives them a token again.
+
 ## Refresh tokens
 
 A short-lived JWT keeps the damage of a leaked token small, but it forces the client to
@@ -124,6 +175,7 @@ the same shape as a login response:
 - **Scoped.** A token issued on `/api/admin/login` only works on
   `/api/admin/token/refresh`, and a token issued on `/api/front/login` only on
   `/api/front/token/refresh`. Presenting one on the other endpoint returns `401`.
+- **Bound to the second factor.** For an administrator, the token carries the state of the second factor at the time it was issued. See [Refresh tokens and the second factor](#refresh-tokens-and-the-second-factor).
 - **Stored in its own cache pool.** Refresh tokens live in `thelia.cache.security`, which
   nothing empties on a deployment or on a cache clear, so releasing a new version does not
   sign the clients out. Eviction still invalidates a token and forces a new login: see
