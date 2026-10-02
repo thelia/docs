@@ -11,7 +11,7 @@ It requires obviously [docker](https://docker.com/) and [docker compose](http://
 
 ### With composer
 
-Run the composer command shown in the [dedicated page](/docs/getting_started/Installation).
+Run the composer command shown in the [dedicated page](./Installation).
 
 ### Or download the archive
 
@@ -46,7 +46,7 @@ To be able to run PHP command, you first need to execute this if you need :
 docker compose exec php-fpm bash
 ```
 
-You will be inside the php docker container. From here, you have to follow the classic installation process of Thelia ( cf: [installation page](/docs/getting_started/Installation) )
+You will be inside the php docker container. From here, you have to follow the classic installation process of Thelia ( cf: [installation page](./Installation) )
 
 A few differences :
 - you have to use the database host `docker-thelia-mariadb` instead of `localhost`
