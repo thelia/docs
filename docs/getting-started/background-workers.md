@@ -22,9 +22,12 @@ Run one worker per transport. A single process can consume both
 (`messenger:consume async scheduler_thelia`), but then a long import holds up the mails and
 the scheduled tasks behind it.
 
-Consume `async` only once `MESSENGER_TRANSPORT_DSN` names a queue. Left empty, the transport is
-synchronous and there is nothing for a worker to read. The scheduler worker is useful either
-way, if the shop runs its recurring tasks from the schedule rather than from a crontab.
+A worker on `async` is only useful once `MESSENGER_TRANSPORT_DSN` names a queue. Started on a
+shop without a queue, it sits idle and does nothing, because every job already ran in the
+request that dispatched it: harmless, but useless. `php Thelia messenger:stats` and the
+Background jobs screen of the back office ("Queue: None") tell whether a queue is configured.
+The scheduler worker is useful either way, if the shop runs its recurring tasks from the
+schedule rather than from a crontab.
 
 `--time-limit` and `--memory-limit` make the worker exit cleanly after an hour or once it uses
 256 MB, and the process manager starts a fresh one. A PHP process that runs for days grows in
@@ -75,7 +78,7 @@ supervisorctl status
 ```
 
 `stopwaitsecs` is how long supervisor waits for the current message before killing the
-process. Set it above the duration of your longest job, a large export for instance.
+process. Set it above the duration of your longest job, a large export or import for instance.
 
 ## systemd
 
@@ -120,7 +123,7 @@ only.
 ## DDEV
 
 In development, the synchronous default is usually all you need: mails reach Mailpit during
-the request, exports are served at once. To try the queue, set
+the request, exports are served and imports run at once. To try the queue, set
 `MESSENGER_TRANSPORT_DSN=doctrine://default` in `.env.local` and let DDEV run the worker:
 
 ```yaml
@@ -175,7 +178,8 @@ application cache, and a worker only sees it in the cache it reads: when each re
 own `var/` directory, run the command from the release the workers were started from.
 
 Messages queued during the deployment wait in the queue and are handled once the workers are
-back.
+back. The file of a queued import is kept in `var/data-transfer/import/`, outside the cache,
+so rebuilding the cache does not lose it.
 
 ## Personal data in the queue
 
