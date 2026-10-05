@@ -42,8 +42,9 @@ default) lists the exact names of the message classes that a project queues from
 | `failed` | none | Replay with `messenger:failed:retry` or from the back office. |
 | `scheduler_thelia` | none | The recurring tasks of the `thelia` schedule. |
 
-The core routes `Symfony\Component\Mailer\Messenger\SendEmailMessage` and
-`Thelia\Domain\DataTransfer\Job\RunExportJob` to `async`.
+The core routes `Symfony\Component\Mailer\Messenger\SendEmailMessage`,
+`Thelia\Domain\DataTransfer\Job\RunExportJob` and `Thelia\Domain\DataTransfer\Job\RunImportJob`
+to `async`.
 
 ## Commands
 
@@ -66,7 +67,7 @@ Configuration > System > Background jobs (`/admin/configuration/background-jobs`
 - whether a queue is configured, and how many jobs wait in it,
 - how many jobs failed, and the list of failed jobs with their description, the reason of the
   failure, the date and the number of attempts,
-- the last 20 exports.
+- the last 20 exports and the last 20 imports.
 
 Each failed job can be replayed or deleted. Replay puts the job back on the transport it
 failed on. Without a queue, it runs at once, and a job that fails again stays in the failed
@@ -75,6 +76,32 @@ list.
 The screen answers to the resource `admin.configuration.background-jobs`. Grant `VIEW` to read
 it, `UPDATE` to replay and `DELETE` to delete. The description of a mail names its recipient
 and a failure reason may quote personal data, so give it only to the profiles that need it.
+
+## Back-office exports and imports
+
+Exports and imports started from the back office are jobs. Both use the status enum
+`Thelia\Domain\DataTransfer\Job\JobStatus` (`queued`, `running`, `done`, `failed`).
+
+| | Export | Import |
+| --- | --- | --- |
+| Launcher | `ExportJobLauncher::launch(...)` | `ImportJobLauncher::launch(Import $import, File $file, string $originalName, ?Lang $language = null, ?int $adminId = null)` |
+| Message | `RunExportJob(int $exportJobId)` | `RunImportJob(int $importJobId)` |
+| Row | `export_job` | `import_job`: status, file name, rows imported, refused rows with their reason, error |
+| Without a queue | Runs in the request, the file is served at once | Runs in the request, the page shows the rows imported and the rows refused |
+| With a queue | `/admin/export/job/{id}`: waiting, running with the rows written, done with the download, failed with the reason | `/admin/import/job/{id}`: waiting, running, done with the rows changed and refused, failed with the reason |
+| Replay of a failed job | Starts the export over | Runs again from the first row |
+| Files | Deleted after a day | Kept in `var/data-transfer/import/<Ymd>/` until the import is done, kept while it may be replayed |
+| `maintenance:purge` | Deletes the jobs older than 7 days | Deletes the jobs older than 7 days and their files |
+
+The classes live in `Thelia\Domain\DataTransfer\Job\`. Both job pages refresh every 3 seconds,
+and a finished job is never run twice.
+
+`ImportJobLauncher::launch()` checks the extension of the file in the request, so a wrong file
+is refused before anything is queued. The file is moved out of the upload directory to
+`var/data-transfer/import/`, not to the cache, which a deployment empties.
+
+An import writes each row on its own. Replaying a failed import writes again the rows written
+before the failure, with the same values, which leaves them as they were.
 
 ## Recurring tasks
 

@@ -35,7 +35,7 @@ See [Emails and PDF](./emails-and-pdf.md) for the theme reference and the previe
 
 ### Background jobs
 
-Mail delivery, back-office exports and the work of modules can run in a queue consumed by a worker, and recurring tasks run from a schedule.
+Mail delivery, back-office exports and imports, and the work of modules can run in a queue consumed by a worker, and recurring tasks run from a schedule.
 
 See [Background jobs](./background-jobs.md) for the settings, the commands and a complete module example.
 
