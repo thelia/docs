@@ -26,6 +26,8 @@ Read the release notes of the version you move to, and the matching page in
 relies on, and a module or a template you depend on may need its own bump in
 `composer.json`.
 
+If the shop runs background workers, stop them before you start and restart them at the end, as described in [Deploying](../getting-started/background-workers.md#deploying).
+
 ## 1. Update the code
 
 A project installed with `composer create-project thelia/thelia-project` depends on
