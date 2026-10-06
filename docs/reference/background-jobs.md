@@ -18,7 +18,8 @@ hosting.
 
 | Variable | Default | Effect |
 | --- | --- | --- |
-| `MESSENGER_TRANSPORT_DSN` | empty | The queue of the `async` transport. Empty means no queue: every job runs at once. `doctrine://default`, a Redis DSN or an AMQP DSN names a queue that a worker consumes. |
+| `MESSENGER_TRANSPORT_DSN` | empty | The queue of the `async` transport, from which the `async_heavy` queue is derived. Empty means no queue: every job runs at once. `doctrine://default`, a Redis DSN or an AMQP DSN names a queue that a worker consumes. |
+| `MESSENGER_HEAVY_TRANSPORT_DSN` | derived | Overrides the queue of `async_heavy`. |
 | `MESSENGER_FAILURE_TRANSPORT_DSN` | `doctrine://default?queue_name=failed` | Where the jobs that failed every attempt are kept. |
 | `THELIA_SCHEDULE_SALE_CHECK` | `* * * * *` | Cron expression of `sale:check-activation`. Empty disables the task. |
 | `THELIA_SCHEDULE_MAINTENANCE_PURGE` | `30 3 * * *` | Cron expression of `maintenance:purge`. Empty disables the task. |
@@ -30,6 +31,16 @@ hosting.
 reached with the settings of the Propel connection. The table `messenger_messages` is created
 by the installer and by the 3.3.0 update script.
 
+A Redis or AMQP DSN needs its Messenger bridge, which the core does not ship:
+`composer require symfony/redis-messenger` (with the `redis` PHP extension) or
+`composer require symfony/amqp-messenger` (with the `amqp` extension).
+
+`async_heavy` takes its DSN from `MESSENGER_TRANSPORT_DSN` through
+`Thelia\Messenger\HeavyTransportDsnProcessor`: empty gives `sync://`, a `doctrine://` DSN gives
+the same table with `queue_name=heavy`, a Redis DSN gives the stream `<stream>_heavy`
+(`messages_heavy` when it names no stream), and any other DSN is used as is, so both transports
+share one queue.
+
 The container parameter `thelia.messenger.allowed_message_classes` (an array, empty by
 default) lists the exact names of the message classes that a project queues from outside
 `Thelia\` and the namespaces of the active modules.
@@ -39,18 +50,20 @@ default) lists the exact names of the message classes that a project queues from
 | Transport | Retries | Notes |
 | --- | --- | --- |
 | `async` | 3, after 30 s, 2 min and 8 min (multiplier 4, with jitter) | Then the message goes to `failed`. |
+| `async_heavy` | none for exports and imports, which go to `failed` on their first failure | Back-office exports and imports. |
 | `failed` | none | Replay with `messenger:failed:retry` or from the back office. |
 | `scheduler_thelia` | none | The recurring tasks of the `thelia` schedule. |
 
-The core routes `Symfony\Component\Mailer\Messenger\SendEmailMessage`,
+The core routes `Symfony\Component\Mailer\Messenger\SendEmailMessage` to `async`, and
 `Thelia\Domain\DataTransfer\Job\RunExportJob` and `Thelia\Domain\DataTransfer\Job\RunImportJob`
-to `async`.
+to `async_heavy`.
 
 ## Commands
 
 | Command | Use |
 | --- | --- |
-| `messenger:consume async scheduler_thelia --time-limit=3600 --memory-limit=256M` | Run a worker. Prefer one worker per transport. |
+| `messenger:consume async async_heavy --time-limit=3600 --memory-limit=256M` | Run a worker. It takes the mails first, then the exports and imports. |
+| `messenger:consume scheduler_thelia --time-limit=3600 --memory-limit=256M` | Run the recurring tasks. |
 | `messenger:stats` | Count the messages waiting in each transport. |
 | `messenger:failed:show` | List the failed jobs, or show one with its error. |
 | `messenger:failed:retry` | Replay failed jobs. |
@@ -94,12 +107,13 @@ Exports and imports started from the back office are jobs. Both use the status e
 
 | | Export | Import |
 | --- | --- | --- |
+| Transport | `async_heavy` | `async_heavy` |
 | Launcher | `ExportJobLauncher::launch(...)` | `ImportJobLauncher::launch(Import $import, File $file, string $originalName, ?Lang $language = null, ?int $adminId = null)` |
 | Message | `RunExportJob(int $exportJobId)` | `RunImportJob(int $importJobId)` |
 | Row | `export_job` | `import_job`: status, file name, rows imported, refused rows with their reason, error |
 | Without a queue | Runs in the request, the file is served at once | Runs in the request, the page shows the rows imported and the rows refused |
 | With a queue | `/admin/export/job/{id}`: waiting, running with the rows written, done with the download, failed with the reason | `/admin/import/job/{id}`: waiting, running, done with the rows changed and refused, failed with the reason |
-| Replay of a failed job | Starts the export over | Runs again from the first row |
+| Replay of a failed job | Starts the export over | Starts over from the first row |
 | Files | Deleted after a day | Kept in `var/data-transfer/import/<Ymd>/` until the import is done, kept while it may be replayed |
 | `maintenance:purge` | Deletes the jobs older than 7 days, failed ones after 30 days | Deletes the jobs older than 7 days and their files, failed ones after 30 days |
 | Job page access | The administrator who started it and super-administrators, download included | The administrator who started it and super-administrators |
@@ -122,8 +136,11 @@ is refused before anything is queued. The file is moved out of the upload direct
 `var/data-transfer/import/`, not to the cache, which a deployment empties. Its path is stored
 relative to the project, and its name is cut to 100 characters.
 
-An import writes each row on its own. Replaying a failed import writes again the rows written
-before the failure, with the same values, which leaves them as they were.
+An import runs in a single Propel transaction: stopped half way (an error, a killed worker, a
+deployment), it leaves the catalog as it was, and replaying it starts over from the first row.
+A row the import refuses (a missing combination, an invalid GTIN) is listed with the job as a
+refusal, and the other rows are kept. Its sign of life goes through a second database
+connection (`JobHeartbeat`), so a long import is never taken from its worker.
 
 ## Recurring tasks
 
@@ -188,8 +205,8 @@ local/modules/StockSync/
 ### The module class
 
 `configureServices()` registers every class of the module, which makes the handler, the
-listener and the command discovered. `configureContainer()` routes the message to `async`, in
-the same way the core routes its own messages. `postActivation()` creates the tables.
+listener and the command discovered. `configureContainer()` routes the message to `async`, in the
+same way the core routes its own messages. `postActivation()` creates the tables.
 
 ```php
 // local/modules/StockSync/StockSync.php
@@ -257,6 +274,33 @@ framework:
         routing:
             'StockSync\Message\PushStock': async
 ```
+
+### A queue of its own
+
+Routed to `async`, the pushes wait behind the mails of the shop. A module whose work is
+plentiful can give it a transport of its own, still synchronous by default:
+
+```php
+public static function configureContainer(ContainerConfigurator $containerConfigurator): void
+{
+    $containerConfigurator->parameters()->set('stock_sync.inline_transport_dsn', 'sync://');
+    $containerConfigurator->extension('framework', [
+        'messenger' => [
+            'transports' => [
+                'stock_sync' => '%env(default:stock_sync.inline_transport_dsn:STOCK_SYNC_TRANSPORT_DSN)%',
+            ],
+            'routing' => [
+                PushStock::class => 'stock_sync',
+            ],
+        ],
+    ], prepend: true);
+}
+```
+
+With `STOCK_SYNC_TRANSPORT_DSN` empty or unset, the pushes stay synchronous. A shop that wants
+them queued sets, for instance, `STOCK_SYNC_TRANSPORT_DSN=doctrine://default?queue_name=stock_sync`
+and runs a worker with `php Thelia messenger:consume stock_sync`. Pushes that fail every
+attempt still go to the `failed` transport of the shop.
 
 ### Metadata and dependencies
 

@@ -15,14 +15,23 @@ a worker and this page only matters for the recurring tasks. The model is explai
 
 ```bash
 php Thelia messenger:consume async --time-limit=3600 --memory-limit=256M
+php Thelia messenger:consume async_heavy --time-limit=3600 --memory-limit=256M
 php Thelia messenger:consume scheduler_thelia --time-limit=3600 --memory-limit=256M
 ```
 
-Run one worker per transport. A single process can consume both
-(`messenger:consume async scheduler_thelia`), but then a long import holds up the mails and
-the scheduled tasks behind it.
+Mails and the messages of modules go to `async`, back-office exports and imports to
+`async_heavy`, so a large import does not hold up the mails. One worker per transport keeps
+them fully apart: a mail never waits behind an import, and the scheduled tasks never wait
+behind either. A smaller setup can run a single worker on
+`messenger:consume async async_heavy`, which takes the mails first, then the heavy jobs, plus
+the scheduler worker.
 
-A worker on `async` is only useful once `MESSENGER_TRANSPORT_DSN` names a queue. Started on a
+A Redis or AMQP queue needs its Messenger bridge, which the core does not ship:
+`composer require symfony/redis-messenger` (with the `redis` PHP extension) or
+`composer require symfony/amqp-messenger` (with the `amqp` extension). The queue in the shop
+database (`doctrine://default`) needs nothing more.
+
+A worker on `async` or `async_heavy` is only useful once `MESSENGER_TRANSPORT_DSN` names a queue. Started on a
 shop without a queue, it sits idle and does nothing, because every job already ran in the
 request that dispatched it: harmless, but useless. `php Thelia messenger:stats` and the
 Background jobs screen of the back office ("Queue: None") tell whether a queue is configured.
@@ -57,11 +66,26 @@ stopwaitsecs=300
 redirect_stderr=true
 stdout_logfile=/var/www/shop/var/log/worker-async.log
 
+[program:thelia-async-heavy]
+command=php /var/www/shop/Thelia messenger:consume async_heavy --time-limit=3600 --memory-limit=256M
+directory=/var/www/shop
+user=www-data
+numprocs=1
+process_name=%(program_name)s_%(process_num)02d
+autostart=true
+autorestart=true
+startsecs=0
+stopsignal=TERM
+stopwaitsecs=300
+redirect_stderr=true
+stdout_logfile=/var/www/shop/var/log/worker-async-heavy.log
+
 [program:thelia-scheduler]
 command=php /var/www/shop/Thelia messenger:consume scheduler_thelia --time-limit=3600 --memory-limit=256M
 directory=/var/www/shop
 user=www-data
 numprocs=1
+process_name=%(program_name)s_%(process_num)02d
 autostart=true
 autorestart=true
 startsecs=0
@@ -78,7 +102,8 @@ supervisorctl status
 ```
 
 `stopwaitsecs` is how long supervisor waits for the current message before killing the
-process. Set it above the duration of your longest job, a large export or import for instance.
+process. Set it above the duration of your longest job: on `async_heavy`, a large export or
+import.
 
 ## systemd
 
@@ -103,7 +128,7 @@ WantedBy=multi-user.target
 
 ```bash
 systemctl daemon-reload
-systemctl enable --now thelia-worker@async thelia-worker@scheduler_thelia
+systemctl enable --now thelia-worker@async thelia-worker@async_heavy thelia-worker@scheduler_thelia
 ```
 
 `Restart=always` starts a new worker each time one exits on its time or memory limit.
@@ -113,7 +138,7 @@ systemctl enable --now thelia-worker@async thelia-worker@scheduler_thelia
 A hosting that does not allow long processes can still consume the queue from cron:
 
 ```bash
-* * * * * cd /var/www/shop && php Thelia messenger:consume async scheduler_thelia --time-limit=55
+* * * * * cd /var/www/shop && php Thelia messenger:consume async async_heavy scheduler_thelia --time-limit=55
 ```
 
 Each run consumes for 55 seconds, then exits before the next one starts. Jobs wait up to a
@@ -130,11 +155,13 @@ the request, exports are served and imports run at once. To try the queue, set
 # .ddev/config.yaml
 web_extra_daemons:
   - name: "messenger"
-    command: "php Thelia messenger:consume async scheduler_thelia --time-limit=3600"
+    command: "php Thelia messenger:consume async async_heavy --time-limit=3600 --memory-limit=256M"
     directory: /var/www/html
 ```
 
-Run `ddev restart` to start it. The worker runs the code it loaded at start: after changing a
+Run `ddev restart` to start it. Set `MESSENGER_TRANSPORT_DSN` in `.env.local`, not under
+`web_environment` in `.ddev/config.yaml`: a value set there wins over the `.env` files, for
+every command run in the container. The worker runs the code it loaded at start: after changing a
 handler, run `ddev exec php Thelia messenger:stop-workers` so it restarts on the new code.
 
 ## Monitoring
@@ -143,17 +170,19 @@ handler, run `ddev exec php Thelia messenger:stop-workers` so it restarts on the
 
 ```bash
 php Thelia messenger:stats
-php Thelia messenger:stats async failed
+php Thelia messenger:stats async async_heavy failed
 ```
 
 Wire it into the monitoring of the hosting and alert on two signals:
 
 - `async` above a threshold for several minutes in a row (for instance more than 100 messages
-  for 10 minutes): the workers are stopped or cannot keep up,
+  for 10 minutes): the workers are stopped or cannot keep up. `async_heavy` holds few, long
+  jobs; alert when a job waits there longer than your longest export or import should take,
 - `failed` above zero: a job failed every attempt and needs someone to read its reason
   (`php Thelia messenger:failed:show`) and replay or remove it.
 
-The back office shows the same counts under Configuration > System > Background jobs.
+The back office shows the same counts under Configuration > System > Background jobs, where
+the waiting count adds both queues.
 
 ## Deploying
 
@@ -162,13 +191,13 @@ consumes the messages of the new version with the old code. Stop the workers bef
 the cache, and start them once the new release is ready:
 
 1. Stop the workers through the process manager, which sends `SIGTERM` and waits for the
-   current message: `supervisorctl stop thelia-async thelia-scheduler`, or
-   `systemctl stop thelia-worker@async thelia-worker@scheduler_thelia`.
+   current message: `supervisorctl stop thelia-async:* thelia-async-heavy:* thelia-scheduler:*`, or
+   `systemctl stop thelia-worker@async thelia-worker@async_heavy thelia-worker@scheduler_thelia`.
 2. Deploy the code and run the update script (see [Updating](../upgrading/update.md)).
 3. Rebuild the cache: remove `var/cache/prod` and `var/propel/prod`, then run
    `php Thelia cache:warmup --env=prod`. Never run `cache:clear` while a worker runs.
-4. Start the workers: `supervisorctl start thelia-async thelia-scheduler`, or
-   `systemctl start thelia-worker@async thelia-worker@scheduler_thelia`.
+4. Start the workers: `supervisorctl start thelia-async:* thelia-async-heavy:* thelia-scheduler:*`, or
+   `systemctl start thelia-worker@async thelia-worker@async_heavy thelia-worker@scheduler_thelia`.
 
 When the release is switched atomically (a symlink pointing to the new release directory),
 the workers can instead be restarted after the switch with
@@ -196,12 +225,13 @@ everything it was dispatched with.
   a committed file.
 - Do not share one Redis between environments unless each one has its own stream: a staging
   worker would otherwise send the mails of production. Give each environment its own stream
-  name in the DSN (`redis://host:6379/messages_staging`) or its own Redis database.
+  name in the DSN (`redis://host:6379/messages_staging`, whose heavy jobs then go to the stream
+  `messages_staging_heavy`) or its own Redis database.
 
 ## Sizing
 
-- One worker per transport is enough for most shops. Add `async` workers (`numprocs` in
-  supervisor) when `messenger:stats` shows the queue growing.
+- One worker per transport is enough for most shops. Add `async` or `async_heavy` workers
+  (`numprocs` in supervisor) when `messenger:stats` shows that queue growing.
 - Every worker is a PHP process. Count them against the PHP processes the server can run and
   the connections MySQL accepts: workers that take every slot leave the web requests waiting.
 - Keep `--memory-limit` below the `memory_limit` of PHP CLI, so the worker exits on its own
