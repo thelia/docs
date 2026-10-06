@@ -58,8 +58,9 @@ go together.
 ## The queue in the shop database
 
 `doctrine://default` is served by `Thelia\Messenger\Transport\ShopDatabaseTransportFactory`.
-It opens a DBAL connection with the settings of the Propel connection, so the queue lives in
-the same database as the shop, with no extra service. Only the connection name `default` is
+It opens a DBAL connection with the settings of the Propel connection, its PDO options and
+attributes included (TLS certificates, for instance), so the queue lives in the same database
+as the shop, with no extra service. Only the connection name `default` is
 accepted.
 
 The `messenger_messages` table is created by the installer and by the 3.3.0 update script.
@@ -132,6 +133,10 @@ of the shop before each message (`Thelia\Messenger\EventListener\WorkerStateRese
   the price currency are forgotten,
 - the translator is set back to the default language.
 
+Before each message, the Propel connection is also checked and reopened if MySQL closed it
+after its `wait_timeout`. Propel instance pooling is disabled for the whole life of the worker,
+so a handler never reads a model object kept in memory by a previous message.
+
 Symfony also resets the services tagged `kernel.reset` between messages, unless the worker is
 started with `--no-reset`.
 
@@ -152,8 +157,10 @@ ready to be sent again.
 
 The order history line `email_sent` is written when the mail server accepted the mail. A
 listener on the Symfony Mailer `SentMessageEvent` reads the `X-Thelia-Order-Id` and
-`X-Thelia-Message-Code` headers of the mail. With a worker, the line appears when the worker
-delivered the mail, and its author is `system`.
+`X-Thelia-Message-Code` headers of the mail. These headers travel through the queue with the
+mail and are removed right before it is handed to the mail server, so the customer never
+receives them. With a worker, the line appears when the worker delivered the mail, and its
+author is `system`.
 
 With a queue, `MailerFactory::send*OrFail()` only throws when the mail could not be built or
 queued. A delivery failure happens later, in the worker.
@@ -168,8 +175,7 @@ the job page (`/admin/export/job/{id}`): waiting, running with the number of row
 (refreshed every 3 seconds), done with a download link, or failed with the reason.
 
 A finished export is never run twice. A failed one is recorded on its row and goes straight to
-`failed`; replaying it starts it over. `maintenance:purge` deletes the jobs older than 7 days,
-and the export files are deleted after a day.
+`failed`; replaying it starts it over. The export files are deleted after a day.
 
 An import started from the back office is a job too.
 `Thelia\Domain\DataTransfer\Job\ImportJobLauncher::launch()` checks the file extension in the
@@ -184,11 +190,25 @@ rows changed and the rows refused, or failed with the reason.
 A finished import is never run twice. A failed one goes to `failed`, and replaying it runs it
 again from the first row. Each row is written on its own, so the rows written before the
 failure are written again, with the same values. The uploaded file is deleted once the import
-is done, and kept while the job may be replayed. `maintenance:purge` deletes the import jobs
-older than 7 days and their files.
+is done, and kept while the job may be replayed. The path of the file is stored relative to
+the project, and its name is cut to 100 characters.
 
 Both jobs share the status enum `Thelia\Domain\DataTransfer\Job\JobStatus`: `queued`,
-`running`, `done`, `failed`.
+`running`, `done`, `failed`. A worker claims a job atomically before running it
+(`Thelia\Domain\DataTransfer\Job\JobClaim`), so two workers handed the same job never run it
+at the same time. A job left `running` by a worker that died is taken again after one hour
+(`JobClaim::STALE_AFTER_SECONDS`, 3600 seconds, the default redelivery timeout of the Doctrine
+transport). A job whose row no longer exists fails for good and stays in `failed`, rather than
+passing for done. A job the queue refuses at dispatch is recorded as failed, and for an import
+the uploaded file is deleted.
+
+`maintenance:purge` deletes the export and import jobs older than 7 days, with the files of
+the imports. Failed jobs are kept 30 days, as long as the failed messages, so they can still
+be replayed.
+
+The page of a job, and the download of an export, are only open to the administrator who
+started it and to super-administrators (administrators without a profile). Other
+administrators get a 403, even with the export or import right.
 
 ## Recurring tasks
 
@@ -217,6 +237,14 @@ building anything:
 The check runs when a message is read and also when it is dispatched. A module dispatching a
 class the workers would refuse gets a `LogicException` ("is not one the shop queues") at
 dispatch time, not a queue that never empties.
+
+A job already queued can still become unreadable: its class is refused by the check, or it can
+no longer be built because its module was turned off, its class was removed, or its content no
+longer fits the class. The worker then reads it as `Thelia\Messenger\Message\UndecodableJob`,
+which keeps the original class (`originalType`), the reason and the original body, instead of
+letting it be dropped. Its handler throws `UnrecoverableMessageHandlingException`, so the job
+lands in `failed`. The Background jobs screen lists it as `Unreadable job: <reason>` with its
+original class, and it can be deleted there.
 
 For a module author, this means:
 
