@@ -196,9 +196,12 @@ the project, and its name is cut to 100 characters.
 Both jobs share the status enum `Thelia\Domain\DataTransfer\Job\JobStatus`: `queued`,
 `running`, `done`, `failed`. A worker claims a job atomically before running it
 (`Thelia\Domain\DataTransfer\Job\JobClaim`), so two workers handed the same job never run it
-at the same time. A job left `running` by a worker that died is taken again after one hour
-(`JobClaim::STALE_AFTER_SECONDS`, 3600 seconds, the default redelivery timeout of the Doctrine
-transport). A job whose row no longer exists fails for good and stays in `failed`, rather than
+at the same time. A job left `running` is taken again once it has given no sign of life for
+one hour (`JobClaim::STALE_AFTER_SECONDS`, 3600 seconds, the default redelivery timeout of the
+Doctrine transport): the claim compares the `updated_at` of the row, not the time the job
+started. An export refreshes it each time it reports its progress, and an import as it reads
+its rows (`ImportHandler::import()` takes an optional `$onProgress` closure), so a long export
+or import that is still working is never taken from under its worker. A job whose row no longer exists fails for good and stays in `failed`, rather than
 passing for done. A job the queue refuses at dispatch is recorded as failed, and for an import
 the uploaded file is deleted.
 

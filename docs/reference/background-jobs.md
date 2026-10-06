@@ -71,7 +71,9 @@ Configuration > System > Background jobs (`/admin/configuration/background-jobs`
 
 Each failed job can be replayed or deleted. Replay takes the job out of `failed` first, then
 puts it back on the transport it failed on; if that fails, the job is set aside again. A double
-click cannot send it twice. Without a queue, a replayed job runs at once, and a job that fails
+click cannot send it twice. If setting it aside fails too (queue and database both down), the
+administrator is shown both reasons and the content of the job is written to the log at
+critical level, so it can be dispatched again by hand. Without a queue, a replayed job runs at once, and a job that fails
 again stays in the failed list.
 
 A job the workers could no longer read (module turned off, class removed, content that no longer
@@ -107,8 +109,10 @@ and a finished job is never run twice. Other administrators get a 403 on a job p
 the export or import right.
 
 A worker claims a job atomically (`JobClaim`) before running it: two workers handed the same job
-never run it at the same time, and a job left `running` by a worker that died is taken again
-after one hour (`JobClaim::STALE_AFTER_SECONDS`, 3600). A job whose row was deleted fails for
+never run it at the same time. A job left `running` is taken again once its row has not been
+updated for one hour (`JobClaim::STALE_AFTER_SECONDS`, 3600). An export updates it as it
+reports its progress and an import as it reads its rows (`ImportHandler::import()` takes an
+optional `$onProgress` closure), so a long job that is still working keeps its worker. A job whose row was deleted fails for
 good and stays in `failed`. A job the queue refuses at dispatch is recorded as failed, and the
 file of such an import is deleted. Failed jobs are kept 30 days, as long as the failed messages,
 so they can still be replayed.
