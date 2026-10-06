@@ -69,9 +69,17 @@ Configuration > System > Background jobs (`/admin/configuration/background-jobs`
   failure, the date and the number of attempts,
 - the last 20 exports and the last 20 imports.
 
-Each failed job can be replayed or deleted. Replay puts the job back on the transport it
-failed on. Without a queue, it runs at once, and a job that fails again stays in the failed
-list.
+Each failed job can be replayed or deleted. Replay takes the job out of `failed` first, then
+puts it back on the transport it failed on; if that fails, the job is set aside again. A double
+click cannot send it twice. Without a queue, a replayed job runs at once, and a job that fails
+again stays in the failed list.
+
+A job the workers could no longer read (module turned off, class removed, content that no longer
+fits) is listed as `Unreadable job: <reason>` with its original class. Its handler always
+refuses it, so replaying it only sets it aside again; delete it once you know what it was.
+
+The "Details" link of an export or import is only shown to the administrator who started the
+job and to super-administrators.
 
 The screen answers to the resource `admin.configuration.background-jobs`. Grant `VIEW` to read
 it, `UPDATE` to replay and `DELETE` to delete. The description of a mail names its recipient
@@ -91,14 +99,24 @@ Exports and imports started from the back office are jobs. Both use the status e
 | With a queue | `/admin/export/job/{id}`: waiting, running with the rows written, done with the download, failed with the reason | `/admin/import/job/{id}`: waiting, running, done with the rows changed and refused, failed with the reason |
 | Replay of a failed job | Starts the export over | Runs again from the first row |
 | Files | Deleted after a day | Kept in `var/data-transfer/import/<Ymd>/` until the import is done, kept while it may be replayed |
-| `maintenance:purge` | Deletes the jobs older than 7 days | Deletes the jobs older than 7 days and their files |
+| `maintenance:purge` | Deletes the jobs older than 7 days, failed ones after 30 days | Deletes the jobs older than 7 days and their files, failed ones after 30 days |
+| Job page access | The administrator who started it and super-administrators, download included | The administrator who started it and super-administrators |
 
 The classes live in `Thelia\Domain\DataTransfer\Job\`. Both job pages refresh every 3 seconds,
-and a finished job is never run twice.
+and a finished job is never run twice. Other administrators get a 403 on a job page, even with
+the export or import right.
+
+A worker claims a job atomically (`JobClaim`) before running it: two workers handed the same job
+never run it at the same time, and a job left `running` by a worker that died is taken again
+after one hour (`JobClaim::STALE_AFTER_SECONDS`, 3600). A job whose row was deleted fails for
+good and stays in `failed`. A job the queue refuses at dispatch is recorded as failed, and the
+file of such an import is deleted. Failed jobs are kept 30 days, as long as the failed messages,
+so they can still be replayed.
 
 `ImportJobLauncher::launch()` checks the extension of the file in the request, so a wrong file
 is refused before anything is queued. The file is moved out of the upload directory to
-`var/data-transfer/import/`, not to the cache, which a deployment empties.
+`var/data-transfer/import/`, not to the cache, which a deployment empties. Its path is stored
+relative to the project, and its name is cut to 100 characters.
 
 An import writes each row on its own. Replaying a failed import writes again the rows written
 before the failure, with the same values, which leaves them as they were.
@@ -571,6 +589,20 @@ final class PushAllStockCommand extends Command
 The command only dispatches messages. With a queue, the pushes are spread over the `async`
 worker; without one, they run during the command. Combinations whose quantity did not change
 are skipped by the handler, so the nightly run only calls the API for real changes.
+
+### Turning the module off
+
+A queue accepts the messages of active modules only. Messages of `StockSync` still waiting when
+the module is turned off can no longer be read: the worker reads each of them as
+`Thelia\Messenger\Message\UndecodableJob` and sets it aside in `failed`. Nothing is lost and
+nothing loops. The Background jobs screen lists them as `Unreadable job: <reason>` with the
+original class `StockSync\Message\PushStock`. Delete them there, and let the nightly task push
+the stock again once the module is back.
+
+To avoid this, wait for `php Thelia messenger:stats async` to reach zero before turning the
+module off. The same happens when a message class is renamed or removed, or when its
+constructor changes so that queued content no longer fits: keep the old class until the queue
+is empty.
 
 ## Idempotence and replay
 
