@@ -179,7 +179,10 @@ register.
 The reason an administrator reads of a failed export or import, on its job page and on the
 Background jobs screen, does not quote the data: unless the exception was written for the
 administrator, it reads as a server error, and the error line Thelia writes to the log names it
-by its class, code and place in the code rather than by its message. See [Background jobs](../architecture/background-jobs.md#personal-data) and
+by its class, code and place in the code rather than by its message. The failed job kept in
+`failed` stores only that text: the original exception is not chained to it, since Symfony
+keeps the whole chain of an exception it sets aside. This holds for the exports and imports of
+the back office; a failed mail or module job keeps the exception its handler threw. See [Background jobs](../architecture/background-jobs.md#personal-data) and
 [`thelia:messenger:purge-failed`](../reference/cli/thelia_messenger_purge_failed.md).
 
 ## Adding a module purge to the same run

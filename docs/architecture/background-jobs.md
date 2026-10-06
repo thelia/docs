@@ -216,8 +216,9 @@ in `Thelia\Domain\DataTransfer\Exception`, `DataTransferNoDataFoundException`,
 `HandlerUnavailableException`, `MissingColumnsException` and `JobRefusedException`. Any other
 failure may quote SQL, the values of a row, paths or host names, so the row says "The job failed
 because of a server error. The details are in the server log."
-(`Thelia\Messenger\JobFailureMessage::SERVER_ERROR`). The error of the failed message set aside
-in `failed` is the same text, so the Background jobs screen shows nothing more. The log line of
+(`Thelia\Messenger\JobFailureMessage::SERVER_ERROR`). The failed message set aside in `failed`
+stores only that text, without the original exception, so neither the Background jobs screen
+nor `messenger:failed:show` shows anything more. The log line of
 the job names such a failure by the class, the code and the file and line of its first cause
 (`JobFailureMessage::forLog()`), never by a text that may hold the personal data of a customer.
 A module whose exception carries a message meant for the administrator implements
