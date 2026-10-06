@@ -36,7 +36,7 @@ reporter: details stay confidential until a fixed release is available.
    temporary private fork), so nothing leaks before the release.
 3. Like any change to Thelia, the fix is reviewed by a maintainer and must pass the
    full test suites and static analysis before it is merged.
-4. The fix is applied to every supported series (currently 3.0 and 2.6).
+4. The fix is applied to every supported series (see [Supported versions](#supported-versions)).
 
 ## How a fix is released
 
@@ -47,6 +47,19 @@ separate hotfix channel. Each release is:
   [Packagist](https://packagist.org/packages/thelia/thelia) immediately,
 - accompanied by a CycloneDX SBOM (software bill of materials) generated from
   `composer.lock` and attached to the GitHub release.
+
+## Supported versions
+
+| Series | Branch | Supported | End of support |
+| --- | --- | --- | --- |
+| 3.2 | `3.2` | Yes, security fixes | — |
+| 3.1 | `3.1` | Critical security fixes only: update to 3.2 | To be announced |
+| 3.0 | — | No: update to 3.2 | 16 September 2026, with the 3.1.0 release |
+| 2.6 | `2.6` | No: update to 3.2 | 6 October 2026, with the 3.2.1 release |
+| 2.5 and older | — | No | Ended |
+
+Support for Thelia 2.6 ended on 6 October 2026: it gets no further security fix. To move a
+2.6 shop to Thelia 3, follow [Migrating from Thelia 2](../upgrading/migrate.md).
 
 ## How you are informed
 
@@ -96,8 +109,9 @@ runs in parallel, and a release is not held back waiting for a notification.
 
 ## Keeping your installation secure
 
-- Stay on the most recent release of your series: security fixes only target the
-  latest 3.0 and 2.6 versions.
+- Stay on the most recent release of your series: security fixes only target the latest
+  release of each supported series. The 3.1 series gets critical fixes only, so plan the move
+  to 3.2.
 - Run [`composer audit`](https://getcomposer.org/doc/03-cli.md#audit) regularly (or in
   your CI): it checks every installed package, Thelia included, against known security
   advisories.
