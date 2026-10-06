@@ -146,13 +146,15 @@ An administrator can launch 10 exports and imports in 10 minutes, the two counte
 that, the launch is refused with a message asking to wait a few minutes.
 
 The job page passes the reason of a failed job through the translator, so the fixed messages
-below are shown in the language of the administrator. A database, transport or PHP error
+below are shown in the language of the administrator. A database, transport or PHP error, or
+a PHP warning or notice turned into an `\ErrorException` (severity other than `E_ERROR`),
 anywhere in the chain of the failure is shown as "The job failed because of a server error.
 The details are in the server log." (`Thelia\Messenger\JobFailureMessage::forAdministrator()`),
 and its text goes to the log; any other reason is kept, cut to 2000 characters.
 
 `JobLifecycle` dispatches a job, claims it and records its failure. A worker claims a job
-atomically (`JobClaim::claim(string $table, int $jobId)`, an injected service) before running it:
+atomically (`JobClaim::claim(string $table, int $jobId, bool $allowFailed = true)`, an injected
+service) before running it:
 two workers handed the same job never run it at the same time. A job left `running` is taken
 again once its row has not been updated for one hour (`JobClaim::STALE_AFTER_SECONDS`, 3600). An
 export updates it as it reports its progress and an import as it reads its rows, every 500 rows
@@ -164,7 +166,11 @@ A message that finds its job still `running` is dispatched again with a `DelaySt
 10 minutes (`JobLifecycle::POSTPONE_DELAY_SECONDS`, 600), at most 72 times
 (`JobLifecycle::MAX_POSTPONEMENTS`, 12 hours), each time with `$postponements` one higher. A job
 whose worker was killed is therefore taken again once its row is stale. After the last check
-the message logs a warning and stops. Without a queue it is never postponed.
+the message throws `UnrecoverableMessageHandlingException` and is set aside in `failed`;
+replaying it from there takes the job over once its worker has gone quiet. `JobLifecycle` passes
+`$allowFailed` only for the original message (`$postponements` at 0): a postponed message never
+restarts a job that failed in the meantime, while a failed job replayed by an administrator is
+taken again. Without a queue a message is never postponed.
 
 A job whose row was deleted fails for good and stays in `failed`. A job the queue refuses at
 dispatch is recorded as failed with "The job could not be queued. The details are in the
@@ -176,7 +182,8 @@ replayed.
 the jobs older than 7 days (`DataTransferJobPurger::JOB_RETENTION_DAYS`) are deleted, failed
 ones after 30 days. The file of an import is deleted with its row only when it lies inside
 `var/data-transfer/import`. The files of that directory older than 30 days are removed too,
-along with the directories they leave empty.
+and its empty directories once they are more than a day old, since a fresh one may be about to
+receive an upload.
 
 `ImportJobLauncher::launch()` checks the file in the request through
 `ImportHandler::validateUpload(string $fileName, ?File $file = null)`, so a wrong file is
