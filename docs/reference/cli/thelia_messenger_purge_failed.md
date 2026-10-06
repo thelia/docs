@@ -20,6 +20,13 @@ deletes the old ones.
  -    `--older-than=DAYS`  Age in days from which a failed job is deleted. Defaults to `30`. Takes a whole number of days.
  -    `--dry-run`  Count the jobs that would be deleted, and delete nothing.
 
+The age of a job is counted from the date it was set aside. When `failed` is in the shop
+database, the default (`doctrine://default?queue_name=failed`), that is the `created_at` of its
+row, and the old jobs are counted or deleted in one SQL statement however many there are. With
+any other failure transport, every job is read and dated by its last `RedeliveryStamp`; a job
+that carries none is kept. The default of `--older-than` is
+`Thelia\Messenger\FailedMessagePurger::RETENTION_DAYS`.
+
 The `thelia` schedule runs the command every day at 04:00 when a worker consumes
 `scheduler_thelia` (`THELIA_SCHEDULE_FAILED_JOBS_PURGE`, default `0 4 * * *`). A shop that runs
 its tasks from a crontab adds it there.

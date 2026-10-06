@@ -129,7 +129,9 @@ below.
 When a handler throws on the `async` transport, the message is retried three times, after
 30 seconds, 2 minutes and 8 minutes (a multiplier of 4, plus the random jitter Symfony adds).
 After the last attempt it goes to the `failed` transport. A message is never lost and never
-retried in a loop.
+retried in a loop. `async_heavy` has no retries (`max_retries: 0`): a message that fails there
+goes to `failed` at once, since running a whole export or import again unchanged would fail the
+same way.
 
 A handler that knows a retry cannot help, for instance because the remote service rejected
 the data, throws `Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException`
@@ -159,6 +161,12 @@ of the shop before each message (`Thelia\Messenger\EventListener\WorkerStateRese
 Before each message, the Propel connection is also checked and reopened if MySQL closed it
 after its `wait_timeout`. Propel instance pooling is disabled for the whole life of the worker,
 so a handler never reads a model object kept in memory by a previous message.
+
+Once a message is handled or has failed, and before the worker acknowledges it, the DBAL
+connection of the queue in the shop database is closed
+(`Thelia\Messenger\EventListener\ShopDatabaseConnectionReleaseListener`). The acknowledgement,
+or the retry, goes through a connection opened afresh, which MySQL cannot have closed while a
+long job kept the worker busy.
 
 Symfony also resets the services tagged `kernel.reset` between messages, unless the worker is
 started with `--no-reset`.
@@ -200,9 +208,18 @@ the job page (`/admin/export/job/{id}`): waiting, running with the number of row
 A finished export is never run twice. A failed one is recorded on its row and goes straight to
 `failed`; replaying it starts it over. The export files are deleted after a day.
 
+The reason recorded on the row is the one an administrator reads on the job page. A database,
+transport or PHP error quotes SQL, values and host names, so it is not shown: when a
+`PDOException`, a Propel or DBAL exception, a Messenger `TransportException` or a PHP `\Error`
+is anywhere in the chain of the failure, the row says "The job failed because of a server
+error. The details are in the server log." (`Thelia\Messenger\JobFailureMessage::SERVER_ERROR`)
+and the full reason goes to the log. Any other reason, such as an export with no data or a file
+that cannot be read, is kept as it is, cut to 2000 characters.
+
 An import started from the back office is a job too.
-`Thelia\Domain\DataTransfer\Job\ImportJobLauncher::launch()` checks the file extension in the
-request, moves the uploaded file to `var/data-transfer/import/<Ymd>/`, records an `import_job`
+`Thelia\Domain\DataTransfer\Job\ImportJobLauncher::launch()` checks the file in the request
+(its extension, and its content: an archive must be an archive of its kind, anything else must
+be text), moves the uploaded file to `var/data-transfer/import/<Ymd>/`, records an `import_job`
 row and dispatches `Thelia\Domain\DataTransfer\Job\RunImportJob`. The file is kept outside the
 cache on purpose: a deployment empties the cache, and a queued import would lose its file.
 Without a queue, the import runs in the request and the back office shows the outcome: the
@@ -211,9 +228,14 @@ number of rows imported and the rows refused with their reason. With a queue, th
 rows changed and the rows refused, or failed with the reason.
 
 An import runs in a single Propel transaction. Stopped half way, by an error, a killed worker
-or a deployment, it leaves the catalog as it was. A row the import refuses (a missing
-combination, an invalid GTIN) is not an error: it is listed with the job as a refusal, and the
-other rows are kept.
+or a deployment, it leaves the catalog as it was. Its outcome (the `done` status, the rows
+imported and the rows refused) is written to the job row inside the same transaction, so the
+catalog and the row never disagree. When the code that runs the import already holds a
+transaction, the import works inside it and leaves the commit or the rollback to that code. A
+row the import refuses (a missing combination, an invalid GTIN) is not an error: it is listed
+with the job as a refusal, and the other rows are kept. A refusal whose text is not valid UTF-8
+is stored with the invalid bytes replaced. An archive is extracted next to its file and the
+extracted copy is removed once the import is over.
 
 A finished import is never run twice. A failed one goes to `failed`, and replaying it starts
 over from the first row. The uploaded file is deleted once the import
@@ -221,22 +243,40 @@ is done, and kept while the job may be replayed. The path of the file is stored 
 the project, and its name is cut to 100 characters.
 
 Both jobs share the status enum `Thelia\Domain\DataTransfer\Job\JobStatus`: `queued`,
-`running`, `done`, `failed`. A worker claims a job atomically before running it
-(`Thelia\Domain\DataTransfer\Job\JobClaim`), so two workers handed the same job never run it
-at the same time. A job left `running` is taken again once it has given no sign of life for
+`running`, `done`, `failed`. Their messages, `RunExportJob` and `RunImportJob`, implement
+`Thelia\Domain\DataTransfer\Job\DataTransferJobMessage`, and their handlers go through
+`Thelia\Domain\DataTransfer\Job\JobLifecycle`, which dispatches a job, claims it and records
+its failure. A worker claims a job atomically before running it
+(`Thelia\Domain\DataTransfer\Job\JobClaim`, a service), so two workers handed the same job never
+run it at the same time. A job left `running` is taken again once it has given no sign of life for
 one hour (`JobClaim::STALE_AFTER_SECONDS`, 3600 seconds, the default redelivery timeout of the
 Doctrine transport): the claim compares the `updated_at` of the row, not the time the job
 started. An export refreshes it each time it reports its progress, and an import as it reads
 its rows (`ImportHandler::import()` takes an optional `$onProgress` closure), so a long export
 or import that is still working is never taken from under its worker. The import writes this
 sign of life through a second database connection (`Thelia\Domain\DataTransfer\Job\JobHeartbeat`),
-outside its own transaction, so the update is seen while the transaction is still open. A job whose row no longer exists fails for good and stays in `failed`, rather than
-passing for done. A job the queue refuses at dispatch is recorded as failed, and for an import
-the uploaded file is deleted.
+outside its own transaction, so the update is seen while the transaction is still open.
 
-`maintenance:purge` deletes the export and import jobs older than 7 days, with the files of
-the imports. Failed jobs are kept 30 days, as long as the failed messages, so they can still
-be replayed.
+A message that finds its job still `running`, held by another worker or left by a worker
+killed less than an hour ago, is not dropped: it is dispatched again with a `DelayStamp` of
+10 minutes (`JobLifecycle::POSTPONE_DELAY_SECONDS`, 600) and looks at the job again then, so a
+job whose worker died is taken again once its row turns stale. It does so at most 72 times
+(`JobLifecycle::MAX_POSTPONEMENTS`), 12 hours, then logs a warning and stops. The count travels
+in the message (`$postponements`). Without a queue the message is never postponed: the run that
+holds the job finishes it.
+
+A job whose row no longer exists fails for good and stays in `failed`, rather than
+passing for done. A job the queue refuses at dispatch is recorded as failed with "The job could
+not be queued. The details are in the server log.", and for an import the uploaded file is
+deleted.
+
+`maintenance:purge` deletes the export and import jobs older than 7 days
+(`Thelia\Domain\DataTransfer\Service\DataTransferJobPurger::JOB_RETENTION_DAYS`), with the files
+of the imports. Failed jobs are kept 30 days (`Thelia\Messenger\FailedMessagePurger::RETENTION_DAYS`),
+as long as the failed messages, so they can still be replayed. The file of an import is only
+deleted when it lies inside `var/data-transfer/import`, whatever path its row holds. The purge
+also removes the files of that directory older than 30 days, such as the extracted copy of an
+archive left by a killed worker, or a file whose row was deleted by hand.
 
 The page of a job, and the download of an export, are only open to the administrator who
 started it and to super-administrators (administrators without a profile). Other
@@ -256,6 +296,13 @@ locked through `LOCK_DSN`, so two workers never run a task twice, and a worker t
 after a missed run catches up the last one only. The tasks and their settings are listed in
 the [reference](../reference/background-jobs.md#recurring-tasks).
 
+A task of the schedule that fails does not go to `failed`: Messenger only sets aside what came
+from a queue, and the task runs again at its next time anyway.
+`Thelia\Scheduler\EventListener\RecurringTaskFailureListener` logs the failure and keeps the
+last one of each task (`Thelia\Scheduler\RecurringTaskFailures`, in the `cache.app` pool) until
+a run of that task goes through. The Background jobs screen lists them under "Recurring tasks
+that failed", the reason following the same rule as the reason of a failed export or import.
+
 ## Which classes a queue accepts
 
 A queued message is data that is turned back into objects when a worker reads it, and whoever
@@ -268,6 +315,11 @@ building anything:
   namespace named after the module code, such as `MyModule\Message\SyncStock`),
   `Symfony\Component\Mailer\Messenger\SendEmailMessage`, or listed by its exact name in the
   container parameter `thelia.messenger.allowed_message_classes`,
+- outside that parameter, a handler of the application must also take the message class, or
+  one of its parents or interfaces. The handled classes are collected when the container is
+  built (`Thelia\Core\DependencyInjection\Compiler\HandledMessageClassesPass`, parameter
+  `thelia.messenger.handled_message_classes`), so no other class of those namespaces is ever
+  built from a queue,
 - a stamp must be a Messenger stamp or come from those same namespaces, and `SerializerStamp`
   is refused, as it would let the queue change how the rest of the envelope is read.
 
@@ -286,6 +338,8 @@ original class, and it can be deleted there.
 For a module author, this means:
 
 - message classes live in the module namespace,
+- each message class has a handler: a message that no handler takes is refused when it is
+  dispatched to a queue,
 - they can be written and read as JSON by the Symfony serializer: public or promoted
   constructor properties with scalar types, such as ids and codes,
 - they never carry a Propel model. The handler reads the row again from its id.
