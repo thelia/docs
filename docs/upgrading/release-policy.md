@@ -45,6 +45,10 @@ later as on the day of the release, because a tag is a fixed point.
 
 Until then, a fix ships from the trunk, in the next patch or minor release.
 
+The `3.1` and `3.2` branches exist for this reason: 3.1.2 and 3.2.1 shipped from them, without
+what `main` held at the time. Which series still receive fixes is listed in the
+[security policy](../security/security-policy.md#supported-versions).
+
 ## Compatibility promise
 
 Within the 3.x line:
