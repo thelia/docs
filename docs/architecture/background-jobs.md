@@ -323,9 +323,12 @@ building anything:
 - a stamp must be a Messenger stamp or come from those same namespaces, and `SerializerStamp`
   is refused, as it would let the queue change how the rest of the envelope is read.
 
-The check runs when a message is read and also when it is dispatched. A module dispatching a
-class the workers would refuse gets a `LogicException` ("is not one the shop queues") at
-dispatch time, not a queue that never empties.
+The check runs when a message is read from a queue and when it is written to one. A module
+dispatching to a real queue a class the workers would refuse gets a `LogicException` ("is not
+one the shop queues") at dispatch time, not a queue that never empties. Without a queue
+(`sync://`), the message is handled in the same call and never serialized, so the check does
+not run: a message that no handler takes fails with Symfony's `NoHandlerForMessageException`
+instead, also at dispatch time.
 
 A job already queued can still become unreadable: its class is refused by the check, or it can
 no longer be built because its module was turned off, its class was removed, or its content no
@@ -338,8 +341,8 @@ original class, and it can be deleted there.
 For a module author, this means:
 
 - message classes live in the module namespace,
-- each message class has a handler: a message that no handler takes is refused when it is
-  dispatched to a queue,
+- each message class has a handler: a message that no handler takes fails at dispatch, with
+  a `LogicException` when it goes to a queue, with a `NoHandlerForMessageException` without one,
 - they can be written and read as JSON by the Symfony serializer: public or promoted
   constructor properties with scalar types, such as ids and codes,
 - they never carry a Propel model. The handler reads the row again from its id.
