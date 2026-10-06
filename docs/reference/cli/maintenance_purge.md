@@ -38,6 +38,13 @@ At the end of its run the command dispatches `TheliaEvents::MAINTENANCE_PURGE`: 
 listens to it, purges its own tables, and appends a line to the report with
 `$event->addResult()`.
 
+The core listens to the same event to purge the back-office exports and imports, through
+`Thelia\Domain\DataTransfer\Service\DataTransferJobPurger`: the jobs older than 7 days, the
+failed ones after 30 days (as long as the failed jobs they can be replayed from), the uploaded
+file of each deleted import when it lies inside `var/data-transfer/import`, the files of that
+directory older than 30 days. The same listener removes the export files of the cache older
+than a day. These periods are fixed. See [Background jobs](../background-jobs.md#back-office-exports-and-imports).
+
 ## Examples
 See what would be removed:
 ```shell

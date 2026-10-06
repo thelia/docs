@@ -41,7 +41,9 @@ schedule rather than from a crontab.
 `--time-limit` and `--memory-limit` make the worker exit cleanly after an hour or once it uses
 256 MB, and the process manager starts a fresh one. A PHP process that runs for days grows in
 memory, and recycling the worker keeps it in check. A connection that MySQL closed after its
-`wait_timeout` is reopened before the next message.
+`wait_timeout` is reopened before the next message. The connection of the queue in the shop
+database is closed after each message, before the worker acknowledges it, so a long export or
+import never leaves the acknowledgement on a connection MySQL has dropped.
 
 On `SIGTERM` or `SIGINT`, a worker finishes the message in hand, then stops. A worker killed
 hard (`SIGKILL`, out of memory) leaves its Doctrine message marked as delivered; the transport
@@ -182,7 +184,9 @@ Wire it into the monitoring of the hosting and alert on two signals:
   (`php Thelia messenger:failed:show`) and replay or remove it.
 
 The back office shows the same counts under Configuration > System > Background jobs, where
-the waiting count adds both queues.
+the waiting count adds both queues, or counts them once when `async` and `async_heavy` share the
+same DSN. The same screen lists the recurring tasks whose last run failed: a failed task of
+`scheduler_thelia` never reaches `failed`, so `messenger:stats` does not count it.
 
 ## Deploying
 
