@@ -74,6 +74,12 @@ its owner, and goes on. When it cannot even move the directory, it stops with co
 touching the database and prints that command: run it, or run the script as the web server
 user, then start again.
 
+This does not cover a shop that keeps serving requests during the update: the web server can
+recreate `var/cache/prod` between the move and the boot, and the script then dies before
+touching the database ([#4055](https://github.com/thelia/thelia/issues/4055)). Until that is
+fixed, put the shop in maintenance or stop the web server while `update.php` runs, or run it
+as the web server user.
+
 :::danger Never run `thelia:install` on an existing shop
 That command is the initial installer, not a migration tool. It replays `thelia.sql`, which
 starts by dropping every table.
