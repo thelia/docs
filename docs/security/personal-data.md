@@ -156,6 +156,27 @@ purge cannot hand a blocked IP address a fresh set of attempts.
 
 See [`maintenance:purge`](../reference/cli/maintenance_purge.md).
 
+### Background jobs
+
+Exports and imports started from the back office, and jobs that failed in the queue, hold
+personal data too: an import file can list customers, and a failed order mail keeps the address
+of the customer and the content of the order. Their retention periods are fixed in the code.
+
+| Data | Purged by | Kept |
+| --- | --- | --- |
+| Export and import jobs | `maintenance:purge` | 7 days |
+| Failed export and import jobs | `maintenance:purge` | 30 days, as long as the failed jobs they can be replayed from |
+| Uploaded import files | The import itself, then `maintenance:purge` | Deleted once the import is done; a file kept for a replay goes with its job, only when it lies under `var/data-transfer/import` |
+| Files left in `var/data-transfer/import` | `maintenance:purge` | 30 days |
+| Failed jobs of the queue | `thelia:messenger:purge-failed` | 30 days, `--older-than` to change it |
+
+The 30-day sweep of `var/data-transfer/import` removes what no job row points to any more, such
+as the extracted copy of an archive left by a worker that was killed, or a file whose row was
+deleted by hand. The `thelia` schedule runs `thelia:messenger:purge-failed` every day at 04:00;
+a shop that runs its tasks from a crontab adds it there. Record both retentions in the GDPR
+register. See [Background jobs](../architecture/background-jobs.md#personal-data) and
+[`thelia:messenger:purge-failed`](../reference/cli/thelia_messenger_purge_failed.md).
+
 ## Adding a module purge to the same run
 
 `maintenance:purge` dispatches `TheliaEvents::MAINTENANCE_PURGE` at the end of its run. A
@@ -188,4 +209,5 @@ To be explicit, so nobody promises it:
 - [Security policy](./security-policy.md)
 - [`customer:anonymize`](../reference/cli/customer_anonymize.md),
   [`customer:export-personal-data`](../reference/cli/customer_export_personal_data.md),
-  [`maintenance:purge`](../reference/cli/maintenance_purge.md)
+  [`maintenance:purge`](../reference/cli/maintenance_purge.md),
+  [`thelia:messenger:purge-failed`](../reference/cli/thelia_messenger_purge_failed.md)
