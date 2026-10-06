@@ -164,8 +164,8 @@ of the customer and the content of the order. Their retention periods are fixed 
 
 | Data | Purged by | Kept |
 | --- | --- | --- |
-| Export and import jobs | `maintenance:purge` | 7 days |
-| Failed export and import jobs | `maintenance:purge` | 30 days, as long as the failed jobs they can be replayed from |
+| Export and import jobs that are done | `maintenance:purge` | 7 days |
+| Other export and import jobs (failed, queued, running) | `maintenance:purge` | 30 days, as long as the failed jobs they can be replayed from |
 | Uploaded import files | The import itself, then `maintenance:purge` | Deleted once the import is done; a file kept for a replay goes with its job, only when it lies under `var/data-transfer/import` |
 | Files left in `var/data-transfer/import` | `maintenance:purge` | 30 days |
 | Failed jobs of the queue | `thelia:messenger:purge-failed` | 30 days, `--older-than` to change it |
@@ -174,7 +174,12 @@ The 30-day sweep of `var/data-transfer/import` removes what no job row points to
 as the extracted copy of an archive left by a worker that was killed, or a file whose row was
 deleted by hand. The `thelia` schedule runs `thelia:messenger:purge-failed` every day at 04:00;
 a shop that runs its tasks from a crontab adds it there. Record both retentions in the GDPR
-register. See [Background jobs](../architecture/background-jobs.md#personal-data) and
+register.
+
+The reason an administrator reads of a failed export or import, on its job page and on the
+Background jobs screen, does not quote the data: unless the exception was written for the
+administrator, it reads as a server error, and the error line Thelia writes to the log names it
+by its class, code and place in the code rather than by its message. See [Background jobs](../architecture/background-jobs.md#personal-data) and
 [`thelia:messenger:purge-failed`](../reference/cli/thelia_messenger_purge_failed.md).
 
 ## Adding a module purge to the same run
