@@ -31,8 +31,8 @@ schedule rather than from a crontab.
 
 `--time-limit` and `--memory-limit` make the worker exit cleanly after an hour or once it uses
 256 MB, and the process manager starts a fresh one. A PHP process that runs for days grows in
-memory, and MySQL closes connections left idle longer than its `wait_timeout`: recycling the
-worker avoids both.
+memory, and recycling the worker keeps it in check. A connection that MySQL closed after its
+`wait_timeout` is reopened before the next message.
 
 On `SIGTERM` or `SIGINT`, a worker finishes the message in hand, then stops. A worker killed
 hard (`SIGKILL`, out of memory) leaves its Doctrine message marked as delivered; the transport
