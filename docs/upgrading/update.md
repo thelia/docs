@@ -133,7 +133,7 @@ change, a module to bump, a behaviour that moves. Read the page for every minor 
 cross, in order:
 
 - [Updating from 3.0 to 3.1](./from-3.0-to-3.1.md), patch release 3.1.1 included.
-- [Updating from 3.1 to 3.2](./from-3.1-to-3.2.md).
+- [Updating from 3.1 to 3.2](./from-3.1-to-3.2.md), patch release 3.2.1 included.
 
 ## Recommendations
 
