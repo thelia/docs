@@ -210,11 +210,13 @@ A finished export is never run twice. A failed one is recorded on its row and go
 
 The reason recorded on the row is the one an administrator reads on the job page. A database,
 transport or PHP error quotes SQL, values and host names, so it is not shown: when a
-`PDOException`, a Propel or DBAL exception, a Messenger `TransportException` or a PHP `\Error`
+`PDOException`, a Propel or DBAL exception, a Messenger `TransportException`, a PHP `\Error`,
+or a PHP warning or notice turned into an `\ErrorException` (any severity other than `E_ERROR`)
 is anywhere in the chain of the failure, the row says "The job failed because of a server
 error. The details are in the server log." (`Thelia\Messenger\JobFailureMessage::SERVER_ERROR`)
 and the full reason goes to the log. Any other reason, such as an export with no data or a file
-that cannot be read, is kept as it is, cut to 2000 characters.
+that cannot be read, is kept as it is, cut to 2000 characters. An `\ErrorException` the core
+throws with a message of its own keeps the default `E_ERROR` severity, so its message is kept.
 
 An import started from the back office is a job too.
 `Thelia\Domain\DataTransfer\Job\ImportJobLauncher::launch()` checks the file in the request
@@ -261,8 +263,12 @@ A message that finds its job still `running`, held by another worker or left by 
 killed less than an hour ago, is not dropped: it is dispatched again with a `DelayStamp` of
 10 minutes (`JobLifecycle::POSTPONE_DELAY_SECONDS`, 600) and looks at the job again then, so a
 job whose worker died is taken again once its row turns stale. It does so at most 72 times
-(`JobLifecycle::MAX_POSTPONEMENTS`), 12 hours, then logs a warning and stops. The count travels
-in the message (`$postponements`). Without a queue the message is never postponed: the run that
+(`JobLifecycle::MAX_POSTPONEMENTS`), 12 hours. After the last check it throws
+`UnrecoverableMessageHandlingException` and is set aside in `failed`, where it is listed with
+the other failed jobs; replaying it takes the job over once its worker has gone quiet. The count
+travels in the message (`$postponements`). A postponed message never restarts a job that failed
+in the meantime: only the original message, for instance replayed by an administrator from the
+failed jobs, takes a failed job. Without a queue the message is never postponed: the run that
 holds the job finishes it.
 
 A job whose row no longer exists fails for good and stays in `failed`, rather than
