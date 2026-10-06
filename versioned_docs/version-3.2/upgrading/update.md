@@ -67,6 +67,13 @@ each database migration in order. Several versions at once are applied in a sing
 script offers to back the database up first and restores that backup if a migration fails; on
 a large database, take the manual `mysqldump` above instead.
 
+The web server user often owns `var/cache/<env>` and `var/propel/<env>`. From 3.2.1, when the
+script cannot delete some of their files, it moves the directory aside
+(`var/cache/<env>.previous-…`), where nothing loads it, prints the command that deletes it as
+its owner, and goes on. When it cannot even move the directory, it stops with code `8` before
+touching the database and prints that command: run it, or run the script as the web server
+user, then start again.
+
 :::danger Never run `thelia:install` on an existing shop
 That command is the initial installer, not a migration tool. It replays `thelia.sql`, which
 starts by dropping every table.
