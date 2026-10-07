@@ -29,7 +29,10 @@ the scheduler worker.
 A Redis or AMQP queue needs its Messenger bridge, which the core does not ship:
 `composer require symfony/redis-messenger` (with the `redis` PHP extension) or
 `composer require symfony/amqp-messenger` (with the `amqp` extension). The queue in the shop
-database (`doctrine://default`) needs nothing more.
+database (`doctrine://default`) needs nothing more. On AMQP, also set
+`MESSENGER_HEAVY_TRANSPORT_DSN` to a queue of its own: otherwise `async_heavy` shares the queue
+of `async`, its exports and imports are read by the `async` worker and tried again three times
+like the mails.
 
 A worker on `async` or `async_heavy` is only useful once `MESSENGER_TRANSPORT_DSN` names a queue. Started on a
 shop without a queue, it sits idle and does nothing, because every job already ran in the
@@ -214,6 +217,12 @@ Messages queued during the deployment wait in the queue and are handled once the
 back. The file of a queued import is kept in `var/data-transfer/import/`, outside the cache,
 so rebuilding the cache does not lose it.
 
+The web servers and the workers must share two directories: `var/data-transfer/import/`, where
+an uploaded import waits for its worker, and `var/cache/export/`, where a worker writes the
+export file the back office serves. When each release has its own `var/` directory, or the
+workers run on another machine, point both at the same storage, and never empty them in a
+deployment while jobs wait.
+
 ## Personal data in the queue
 
 Queued mails carry the recipient address and the content of the order, and a failed job keeps
@@ -223,6 +232,10 @@ everything it was dispatched with.
   when the schedule runs. Keep the same task in the crontab of a shop that does not consume
   the schedule. Record this retention in the GDPR register; see
   [Personal data](../security/personal-data.md).
+- A failed job keeps everything it was dispatched with, but its reason is cleaned before it is
+  shown or logged: the log of the workers names the exception of a failed job by its class,
+  code and place (`Thelia\Messenger\Log\FailedJobLogProcessor`), and the credentials of a
+  mail server are hidden in the reasons the back office shows.
 - A Redis or AMQP broker must not be reachable from the internet. Bind it to the private
   network of the hosting and protect it with a password.
 - Put the DSN and its credentials in `.env.local` or in the secrets of the hosting, never in

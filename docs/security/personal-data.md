@@ -166,7 +166,7 @@ of the customer and the content of the order. Their retention periods are fixed 
 | --- | --- | --- |
 | Export and import jobs that are done | `maintenance:purge` | 7 days |
 | Other export and import jobs (failed, queued, running) | `maintenance:purge` | 30 days, as long as the failed jobs they can be replayed from |
-| Uploaded import files | The import itself, then `maintenance:purge` | Deleted once the import is done; a file kept for a replay goes with its job, only when it lies under `var/data-transfer/import` |
+| Uploaded import files | The import itself, then `maintenance:purge` | Deleted once the import is done, or once it failed when there is no queue to replay it from; a file kept for a replay goes with its job, only when it lies under `var/data-transfer/import` |
 | Files left in `var/data-transfer/import` | `maintenance:purge` | 30 days |
 | Failed jobs of the queue | `thelia:messenger:purge-failed` | 30 days, `--older-than` to change it |
 
@@ -182,7 +182,14 @@ administrator, it reads as a server error, and the error line Thelia writes to t
 by its class, code and place in the code rather than by its message. The failed job kept in
 `failed` stores only that text: the original exception is not chained to it, since Symfony
 keeps the whole chain of an exception it sets aside. This holds for the exports and imports of
-the back office; a failed mail or module job keeps the exception its handler threw. See [Background jobs](../architecture/background-jobs.md#personal-data) and
+the back office; a failed mail or module job keeps the exception its handler threw, but the
+Background jobs screen only shows its reason when it was written for the administrator or is
+the answer of the mail server, credentials hidden, and the log of the workers names its
+exception by class, code and place (`Thelia\Messenger\Log\FailedJobLogProcessor`).
+
+A queued mail stores the content of its attachments in the queue, an attachment given by its
+path included: the queue, and `failed` for a mail that could not be delivered, hold the
+documents a mail carries, such as an invoice. See [Background jobs](../architecture/background-jobs.md#personal-data) and
 [`thelia:messenger:purge-failed`](../reference/cli/thelia_messenger_purge_failed.md).
 
 ## Adding a module purge to the same run
