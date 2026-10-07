@@ -142,7 +142,9 @@ and the message goes to `failed` at once.
 `failed` is `MESSENGER_FAILURE_TRANSPORT_DSN`, which defaults to
 `doctrine://default?queue_name=failed`: the failed jobs are always kept in the shop database,
 whatever queue `async` uses, so the back office has a single place to read them from. They
-stay there until someone replays them, removes them, or the purge task deletes them.
+stay there until someone replays them, removes them, or the purge task deletes them. A replay
+takes the job out of `failed` before sending it again, on a condition: two administrators, or a
+double click, replaying the same job at once send it once.
 
 Messenger writes the exception of a failed or retried job to the log of the workers, and a
 database error quotes the values of a row. `Thelia\Messenger\Log\FailedJobLogProcessor`, on
@@ -161,8 +163,12 @@ reference shows how in [Idempotence and replay](../reference/background-jobs.md#
 
 ## What a worker sees
 
-A handler running in a worker has no HTTP request, no visitor, no session and no cart. It
-runs in a long process that handles one message after another, so the core resets the state
+A handler running in a worker serves no page: there is no visitor, no cart and no HTTP
+request of a browser. Each message gets a request of its own on the address of the shop
+(`DEFAULT_URI`), with an empty session, so the loops of a template a handler renders, a mail
+of a module for instance, work as they do in a page
+(`Thelia\Messenger\EventListener\WorkerRequestListener`). It goes once the message is handled
+or has failed, so the next message starts without it. The handler still runs in a long process that handles one message after another, so the core resets the state
 of the shop before each message (`Thelia\Messenger\EventListener\WorkerStateResetListener`):
 
 - settings are read again from the database, so a change made in the back office since the
@@ -184,7 +190,7 @@ long job kept the worker busy.
 Symfony also resets the services tagged `kernel.reset` between messages, unless the worker is
 started with `--no-reset`.
 
-A handler therefore never relies on what a request would have set. It receives ids, reads its
+A handler therefore never relies on what a visitor would have set. It receives ids, reads its
 data again, chooses the locale explicitly, and builds absolute URLs from `DEFAULT_URI`.
 
 ## What the core sends through the queue
