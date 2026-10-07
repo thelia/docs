@@ -19,7 +19,7 @@ hosting.
 | Variable | Default | Effect |
 | --- | --- | --- |
 | `MESSENGER_TRANSPORT_DSN` | empty | The queue of the `async` transport, from which the `async_heavy` queue is derived. Empty means no queue: every job runs at once. `doctrine://default`, a Redis DSN or an AMQP DSN names a queue that a worker consumes. |
-| `MESSENGER_HEAVY_TRANSPORT_DSN` | derived | Overrides the queue of `async_heavy`. |
+| `MESSENGER_HEAVY_TRANSPORT_DSN` | derived | Overrides the queue of `async_heavy`. Set it on AMQP: otherwise the exports and imports share the queue of `async` and its three retries. |
 | `MESSENGER_FAILURE_TRANSPORT_DSN` | `doctrine://default?queue_name=failed` | Where the jobs that failed every attempt are kept. |
 | `THELIA_SCHEDULE_SALE_CHECK` | `* * * * *` | Cron expression of `sale:check-activation`. Empty disables the task. |
 | `THELIA_SCHEDULE_MAINTENANCE_PURGE` | `30 3 * * *` | Cron expression of `maintenance:purge`. Empty disables the task. |
@@ -41,9 +41,12 @@ the same table with `queue_name=heavy`, a Redis DSN gives the stream `<stream>_h
 (`messages_heavy` when it names no stream), and any other DSN is used as is, so both transports
 share one queue.
 
-The container parameter `thelia.messenger.allowed_message_classes` (an array, empty by
+The core configures Messenger for the whole application: its serializer, its bus, its
+`failure_transport` and the routing of its messages are loaded before the configuration of the
+project. The container parameter `thelia.messenger.allowed_message_classes` (an array, empty by
 default) lists the exact names of the message classes that a project queues from outside
-`Thelia\` and the namespaces of the active modules. Any other message class must also be taken
+`Thelia\` and the namespaces of the active modules: an application that queues its own
+`App\Message\…` classes gets a `LogicException` on dispatch until they are listed there. Any other message class must also be taken
 by a handler, or have a parent or an interface a handler takes: the parameter
 `thelia.messenger.handled_message_classes` is filled when the container is built and is not
 meant to be set by hand. A handler that takes any message (`*` or `object`) does not count.
@@ -84,7 +87,14 @@ Configuration > System > Background jobs (`/admin/configuration/background-jobs`
 - how many jobs failed, and the list of failed jobs, the newest first, with their description,
   the reason of the failure, the date and the number of attempts,
 - the recurring tasks whose last run failed, under "Recurring tasks that failed",
-- the last 20 exports and the last 20 imports.
+- the last 20 exports and the last 20 imports of the administrator looking at it, of every
+  administrator for a super-administrator.
+
+The reason of a failed job is shown when it was written for the administrator (an exception
+implementing `Thelia\Exception\UserFacingFailure`, `Thelia\Messenger\JobSetAsideException`
+among them) or when it is the answer of the mail server, with the credentials of any URL in it
+hidden by `Thelia\Mailer\TransportCredentials` (a password holding an `@` is hidden whole).
+Either is cut to 2000 characters. Any other reason reads as a server error.
 
 The waiting count adds the jobs of `async` and of `async_heavy`, and counts them once when both
 transports have the same DSN. When `failed` is in the shop database, the default, the list is
@@ -99,8 +109,8 @@ click cannot send it twice. Without a queue, a replayed job runs at once, and a 
 again stays in the failed list. A replay that fails shows "The job failed again. The details are
 in the server log." and the reason goes to the log. If setting it aside fails too (queue and
 database both down), the job is lost from the queues and a critical line of the log names it by
-its id and its class only: its description and its content may name a customer, and the log is
-kept far longer than the failed jobs.
+its id and its class, and the two failures by their class, code and place: its description and
+its content may name a customer, and the log is kept far longer than the failed jobs.
 
 A job the workers could no longer read (module turned off, class removed, content that no longer
 fits) is listed as `Unreadable job: <reason>` with its original class. Replayed, it would fail
@@ -137,14 +147,15 @@ Exports and imports started from the back office are jobs. Both use the status e
 | Replay of a failed job | Starts the export over | Starts over from the first row |
 | Files | Deleted after a day | Kept in `var/data-transfer/import/<Ymd>/` until the import is done, kept while it may be replayed |
 | `maintenance:purge` | Deletes the done jobs older than 7 days, any other after 30 days | Deletes the done jobs older than 7 days, any other after 30 days, with their files |
-| Right to launch | `VIEW` on the export resource | `UPDATE` on the import resource |
+| Right to launch | `VIEW` on the export resource | `UPDATE` on the import resource; `VIEW` only shows the imports and their jobs |
 | Job page access | The administrator who started it and super-administrators, download included | The administrator who started it and super-administrators |
 
 The classes live in `Thelia\Domain\DataTransfer\Job\`. Both messages implement
 `DataTransferJobMessage`, `Thelia\Messenger\Message\ReplayableJob` and
 `Thelia\Messenger\Message\DescribedJob` (they are listed as `Export #<id>` and `Import #<id>`
 among the failed jobs), and both models (`ExportJob`, `ImportJob`) implement `DataTransferJob`. Both job pages refresh every 3 seconds,
-and a finished job is never run twice. Other administrators get a 403 on a job page, even with
+at most 100 times (`JobPageRefresh::MAX_ROUNDS` in the theme), then offer a link to refresh by
+hand, and a finished job is never run twice. Other administrators get a 403 on a job page, even with
 the export or import right.
 
 An administrator can launch 10 exports and imports in 10 minutes, the two counted together
@@ -167,11 +178,15 @@ failure, gives its message, cut to 2000 characters. The core ones live in
 `Thelia\Domain\DataTransfer\Exception`: `UploadRefusedException` (a `FormValidationException`
 raised when an uploaded file is refused), `DataTransferNoDataFoundException`,
 `HandlerUnavailableException`, `MissingColumnsException` and `JobRefusedException`.
-`Thelia\Form\Exception\FormValidationException` itself does not implement it. An export whose year or month is
-malformed (`ExportHandler::resolveRangeDate()`, called by the launcher and by the export) or
-whose format is no longer available on the server is refused with a `JobRefusedException`,
-which the administrator reads as it is. Any other
-failure is shown as "The job failed because of a server error. The details are in the server
+`Thelia\Form\Exception\FormValidationException` itself does not implement it.
+
+An export whose year is not four digits or whose month is not 1 to 12
+(`ExportHandler::resolveRangeDate()`, called by the launcher and by the export) is refused with
+"The dates of the export are not valid.", and one whose format is no longer available on the
+server with `The format "<format>" is no longer available on this server.`. Both are a
+`JobRefusedException`, which the administrator reads as it is.
+
+Any other failure is shown as "The job failed because of a server error. The details are in the server
 log." (`JobFailureMessage::SERVER_ERROR`), both on the job row and as the error of the failed
 job on the Background jobs screen, and the error line the job writes to the log names it by
 class, code and file:line (`JobFailureMessage::forLog()`), or by its reason, on one line, when
@@ -241,7 +256,9 @@ archiver, anything else must be text. An archive is also looked into
 files (`MAX_ENTRIES`), more than 512 MB once extracted (`MAX_EXTRACTED_BYTES`), or a name that
 is absolute or contains `..`, or a link entry, zip and tar alike. A tar, gzip or bzip2 archive
 is read header by header through `compress.zlib://` or `compress.bzip2://`, never held in
-memory and never copied. `ImportHandler::import()` checks it again before extracting it, then
+memory and never copied. GNU long-name and pax records count against the limits like any
+entry, a pax record is read record by record, and a header record over 64 KB is refused.
+`ImportHandler::import()` checks it again before extracting it, then
 measures what the extraction wrote (`ArchiveInspector::assertExtractedSize()`).
 `ImportHandler` takes the inspector as an optional constructor argument. A file that does not
 parse in its format is refused with an `UploadRefusedException` asking to check its content,
@@ -256,7 +273,21 @@ The `done` status, the rows imported and the rows refused are written inside tha
 The handler opens and commits the transaction only when the caller holds none; otherwise the
 caller commits or rolls back. A row the import refuses (a missing combination, an invalid GTIN)
 is listed with the job as a refusal, and the other rows are kept; a refusal that is not valid
-UTF-8 is stored with the invalid bytes replaced. `ImportHandler::import()` removes the extracted
+UTF-8 is stored with the invalid bytes replaced. The refusals are kept up to 60,000 bytes
+(`ImportJob::ROW_ERRORS_MAX_BYTES`), the last line then saying `<n> more rows were refused.`
+
+A row whose save leaves the transaction unable to commit, even when a module catches the
+failure, stops the import with `Row <n> could not be saved: nothing was imported.`
+(`JobRefusedException`). A stock or a price is read from text or from a number, and must be
+below 10^10 in absolute value; a list, an object, a missing price or anything else refuses the
+row with its reason, and the price of a row is checked before anything is written for it.
+
+Without a queue, a failed import can never be replayed, so its file is deleted at once
+(`JobLifecycle::keepsFailedJobs()`). A file that cannot be deleted is logged and left to the
+purge; the job still ends as it did. When the job row cannot record its failure, the error is
+logged and the message is set aside in `failed` all the same.
+
+`ImportHandler::import()` removes the extracted
 copy of an archive once the import is over, whether it succeeded or not. The sign of life of an import goes through a second database
 connection (`JobHeartbeat`), so a long import is never taken from its worker.
 

@@ -74,7 +74,9 @@ waiting on `async`. Its DSN is derived from `MESSENGER_TRANSPORT_DSN` by
 | `redis://host:port/<stream>/...` | The stream `<stream>_heavy`, or `messages_heavy` when the DSN names no stream |
 | anything else | The same DSN: both transports share one queue |
 
-`MESSENGER_HEAVY_TRANSPORT_DSN` overrides the derived value. A worker started with
+`MESSENGER_HEAVY_TRANSPORT_DSN` overrides the derived value. On AMQP, or any queue other than
+Doctrine and Redis, set it: sharing the queue of `async`, the exports and imports are read by
+the worker of `async` and tried again three times like its jobs. A worker started with
 `messenger:consume async async_heavy` takes the mails first, then the heavy jobs; a shop can
 also run one worker per transport.
 
@@ -142,6 +144,17 @@ and the message goes to `failed` at once.
 whatever queue `async` uses, so the back office has a single place to read them from. They
 stay there until someone replays them, removes them, or the purge task deletes them.
 
+Messenger writes the exception of a failed or retried job to the log of the workers, and a
+database error quotes the values of a row. `Thelia\Messenger\Log\FailedJobLogProcessor`, on
+the `messenger` channel, takes the exception out of these log lines and names it by its class,
+code and place instead (`JobFailureMessage::forLog()`). The back office shows the reason of a
+failed job only when it was written for the administrator (an exception implementing
+`Thelia\Exception\UserFacingFailure`, such as `Thelia\Messenger\JobSetAsideException`, which
+the core throws to set a job aside), or when it is the answer of the mail server, with the
+credentials of any URL in it hidden (`Thelia\Mailer\TransportCredentials`, which hides the
+whole password even when it holds an `@`). Either is cut to 2000 characters; anything else
+reads as a server error.
+
 Because a failed job can be replayed, and because a retry runs a handler that may have done
 part of its work, a handler must be idempotent: run twice, its effect happens once. The
 reference shows how in [Idempotence and replay](../reference/background-jobs.md#idempotence-and-replay).
@@ -194,7 +207,24 @@ receives them. With a worker, the line appears when the worker delivered the mai
 author is `system`.
 
 With a queue, `MailerFactory::send*OrFail()` only throws when the mail could not be built or
-queued. A delivery failure happens later, in the worker.
+queued. A delivery failure happens later, in the worker. `MailerFactory::sendNow()` hands a mail
+to the mail server at once, queue or not: the back office uses it to test the mail
+configuration, whose only point is the answer of the server.
+
+A queued mail holds everything it is sent with, and names no file of the server
+(`Thelia\Messenger\Serializer\QueuedMailFiles`):
+
+- an attachment given by its path (`attachFromPath()`) is read when the mail is queued and
+  stored in the queue with its content. It is held in the memory of the request, and a large
+  one is bounded by the `max_allowed_packet` of the database,
+- a mail is read back from the queue only when its class is exactly `RawMessage`, `Message` or
+  `Email`, or a `TemplatedEmail` or `NotificationEmail` already rendered, and when every part is
+  one Symfony builds a mail with. A part that names a file, in the mail or in a mail it carries
+  (`MessagePart`), a part of another class, or a part that throws when it is looked at, makes
+  the job an `UndecodableJob`, never sent,
+- a mail that would be refused is refused when it is queued, with a `LogicException`. Symfony
+  queues a `TemplatedEmail` before rendering it, and the worker renders nothing: render it
+  first (`BodyRenderer`), or send it without a queue.
 
 ### Back-office exports and imports
 
@@ -249,13 +279,25 @@ catalog and the row never disagree. When the code that runs the import already h
 transaction, the import works inside it and leaves the commit or the rollback to that code. A
 row the import refuses (a missing combination, an invalid GTIN) is not an error: it is listed
 with the job as a refusal, and the other rows are kept. A refusal whose text is not valid UTF-8
-is stored with the invalid bytes replaced.
+is stored with the invalid bytes replaced. The refusals are kept up to 60,000 bytes
+(`ImportJob::ROW_ERRORS_MAX_BYTES`): past that, the first ones are kept and a last line says
+`<n> more rows were refused.`
+
+A row whose save fails inside the transaction of the import leaves the transaction unable to
+commit, even when a module catches the failure. The import stops at that row with
+`Row <n> could not be saved: nothing was imported.` rather than failing as a server error at the end;
+the stock import checks a GTIN and a part number before saving for that reason. A stock or a
+price must be a number, given as text or as a number, below 10^10 in absolute value: a list, an
+object, a missing price or anything else refuses the row with its reason, and the price is
+checked before anything is written for the row.
 
 An archive is looked into before it is extracted, both when it is uploaded and when it is
 imported (`Thelia\Domain\DataTransfer\ArchiveInspector`): it is refused when it holds more
 than 1000 files, more than 512 MB once extracted, a name that is absolute or contains `..`, or a
 link. A zip is read through its directory; a tar, compressed or not, is read header by header
-through its compression, never held in memory. It is then extracted next to its file, what the
+through its compression, never held in memory. The GNU long-name and pax records of a tar
+count against the limits like any entry, a pax record is read record by record for the name it
+gives, and a header record over 64 KB is refused. It is then extracted next to its file, what the
 extraction really wrote is measured against the same 512 MB, and the extracted copy is removed
 once the import is over, whatever came of it. A file that does not parse in its format is
 refused with a message asking to check its content. The import only reads a file that lies in
@@ -263,7 +305,10 @@ the import storage.
 
 A finished import is never run twice. A failed one goes to `failed`, and replaying it starts
 over from the first row. The uploaded file is deleted once the import
-is done, and kept while the job may be replayed. The path of the file is stored relative to
+is done, and kept while the job may be replayed; without a queue a failed job can never be
+replayed, so its file is deleted at once. A file that cannot be deleted is left to the purge
+and logged as a warning: the job is still reported as it ended. A failure the job row cannot
+record (the database gone) is logged, and the message is set aside in `failed` all the same. The path of the file is stored relative to
 the project, and its name is cut to 100 characters.
 
 Both jobs share the status enum `Thelia\Domain\DataTransfer\Job\JobStatus`: `queued`,
@@ -317,7 +362,11 @@ archive left by a killed worker, or a file whose row was deleted by hand.
 
 The page of a job, and the download of an export, are only open to the administrator who
 started it and to super-administrators (administrators without a profile). Other
-administrators get a 403, even with the export or import right.
+administrators get a 403, even with the export or import right, and the lists of recent
+exports and imports only show their own jobs. Launching an import takes the `UPDATE` right on
+`admin.import`; `VIEW` only shows the imports and their jobs. A job page refreshes itself
+every 3 seconds, at most 100 times, then stops and offers a link to refresh it by hand; a "Stop
+refreshing" link stops it earlier.
 
 An export or an import is one job for one file. It is not split into smaller jobs: a file is
 written by a single writer, and an import has to be atomic. Splitting work into smaller jobs
@@ -363,6 +412,10 @@ building anything:
 - a stamp must be a Messenger stamp or come from those same namespaces, and `SerializerStamp`
   is refused, as it would let the queue change how the rest of the envelope is read.
 
+Whether a message class belongs to an active module is read from the database each time. When
+MySQL closed the connection of the worker during a long wait, the Propel connection is opened
+again once and the module is read again.
+
 The check runs when a message is read from a queue and when it is written to one. A module
 dispatching to a real queue a class the workers would refuse gets a `LogicException` ("is not
 one the shop queues") at dispatch time, not a queue that never empties. Without a queue
@@ -374,8 +427,12 @@ A job already queued can still become unreadable: its class is refused by the ch
 no longer be built because its module was turned off, its class was removed, or its content no
 longer fits the class. The worker then reads it as `Thelia\Messenger\Message\UndecodableJob`,
 which keeps the original class (`originalType`), the reason and the original body, instead of
-letting it be dropped. Its handler throws `UnrecoverableMessageHandlingException`, so the job
-lands in `failed`. The Background jobs screen lists it as `Unreadable job: <reason>` with its
+letting it be dropped. Whatever the inner serializer throws while building the message, the
+reason is a fixed one, `Its content no longer fits the class <class>.`, and the exception is
+named in the log by its class, code and place (`JobFailureMessage::forLog()`): a message that
+cannot be built never stops the worker, however often it is delivered. The handler of an
+`UndecodableJob` throws `Thelia\Messenger\JobSetAsideException`, so the job lands in
+`failed`. The Background jobs screen lists it as `Unreadable job: <reason>` with its
 original class, and it can be deleted there.
 
 For a module author, this means:
