@@ -285,7 +285,8 @@ row with its reason, and the price of a row is checked before anything is writte
 Without a queue, a failed import can never be replayed, so its file is deleted at once
 (`JobLifecycle::keepsFailedJobs()`). With a queue, deleting the failed import from the back
 office dispatches `Thelia\Messenger\Event\FailedJobRemovedEvent` and its file is deleted with
-it; `messenger:failed:remove` leaves the file to the purge. A file that cannot be deleted is
+it, unless the import is still marked running; `messenger:failed:remove` and
+`thelia:messenger:purge-failed` leave the file to `maintenance:purge`, 30 days at most. A file that cannot be deleted is
 logged and left to the
 purge; the job still ends as it did. When the job row cannot record its failure, the error is
 logged and the message is set aside in `failed` all the same.
