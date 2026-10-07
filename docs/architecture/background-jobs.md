@@ -145,9 +145,11 @@ database, whatever queue `async` uses, so the back office has a single place to 
 They stay there until someone replays them, removes them, or the purge task deletes them. In the
 shop database, the back office takes a job out of `failed` on a condition before replaying or
 deleting it: two administrators, or a double click, acting on the same job at once act once, and
-a job a worker holds (`messenger:failed:retry` running it) is left to that worker until its
-redeliver timeout. With a failure queue elsewhere, the back office removes the job without that
-condition.
+a job a worker consuming `failed` holds (`messenger:consume failed`) is left to that worker until
+its redeliver timeout, the back office then answering that it found no such job.
+`messenger:failed:retry` holds nothing while it asks what to do with a job: replayed from the
+screen and from that command at the same moment, a job may be sent twice. With a failure queue
+elsewhere, the back office removes the job without that condition.
 
 Messenger writes the exception of a failed or retried job to the log of the workers, and a
 database error quotes the values of a row. `Thelia\Messenger\Log\FailedJobLogProcessor`, on
