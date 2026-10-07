@@ -140,11 +140,14 @@ the data, throws `Symfony\Component\Messenger\Exception\UnrecoverableMessageHand
 and the message goes to `failed` at once.
 
 `failed` is `MESSENGER_FAILURE_TRANSPORT_DSN`, which defaults to
-`doctrine://default?queue_name=failed`: the failed jobs are always kept in the shop database,
-whatever queue `async` uses, so the back office has a single place to read them from. They
-stay there until someone replays them, removes them, or the purge task deletes them. A replay
-takes the job out of `failed` before sending it again, on a condition: two administrators, or a
-double click, replaying the same job at once send it once.
+`doctrine://default?queue_name=failed`: by default the failed jobs are kept in the shop
+database, whatever queue `async` uses, so the back office has a single place to read them from.
+They stay there until someone replays them, removes them, or the purge task deletes them. In the
+shop database, the back office takes a job out of `failed` on a condition before replaying or
+deleting it: two administrators, or a double click, acting on the same job at once act once, and
+a job a worker holds (`messenger:failed:retry` running it) is left to that worker until its
+redeliver timeout. With a failure queue elsewhere, the back office removes the job without that
+condition.
 
 Messenger writes the exception of a failed or retried job to the log of the workers, and a
 database error quotes the values of a row. `Thelia\Messenger\Log\FailedJobLogProcessor`, on
@@ -165,11 +168,15 @@ reference shows how in [Idempotence and replay](../reference/background-jobs.md#
 
 A handler running in a worker serves no page: there is no visitor, no cart and no HTTP
 request of a browser. Each message gets a request of its own on the address of the shop
-(`DEFAULT_URI`), with an empty session, so the loops of a template a handler renders, a mail
-of a module for instance, work as they do in a page
-(`Thelia\Messenger\EventListener\WorkerRequestListener`). It goes once the message is handled
-or has failed, so the next message starts without it. The handler still runs in a long process that handles one message after another, so the core resets the state
-of the shop before each message (`Thelia\Messenger\EventListener\WorkerStateResetListener`):
+(`DEFAULT_URI`, its folder included), with an empty session, so the loops of a template a
+handler renders, a mail of a module for instance, can run
+(`Thelia\Messenger\EventListener\WorkerRequestListener`). Nothing a page sets up runs for it:
+the session language is the default language, the request is not one of the back office, and
+no customer or administrator is restored from a cookie. The request goes once the message is
+handled or has failed, and a message the worker skipped never hands its request to the next.
+
+The handler still runs in a long process that handles one message after another, so the core
+resets the state of the shop before each message (`Thelia\Messenger\EventListener\WorkerStateResetListener`):
 
 - settings are read again from the database, so a change made in the back office since the
   previous message is seen,
@@ -313,8 +320,10 @@ A finished import is never run twice. A failed one goes to `failed`, and replayi
 over from the first row. The uploaded file is deleted once the import
 is done, and kept while the job may be replayed; without a queue a failed job can never be
 replayed, so its file is deleted at once. Deleting the failed job from the back office deletes
-its file too (`FailedJobRemovedEvent`); `messenger:failed:remove` leaves it to the purge. A
-file that cannot be deleted is left to the purge
+its file too (`FailedJobRemovedEvent`), unless the import is still marked running.
+`messenger:failed:remove` and `thelia:messenger:purge-failed` leave the file to
+`maintenance:purge`, which deletes it after 30 days at most. A file that cannot be deleted is
+left to the purge
 and logged as a warning: the job is still reported as it ended. A failure the job row cannot
 record (the database gone) is logged, and the message is set aside in `failed` all the same. The path of the file is stored relative to
 the project, and its name is cut to 100 characters.
