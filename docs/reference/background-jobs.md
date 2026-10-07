@@ -283,7 +283,10 @@ below 10^10 in absolute value; a list, an object, a missing price or anything el
 row with its reason, and the price of a row is checked before anything is written for it.
 
 Without a queue, a failed import can never be replayed, so its file is deleted at once
-(`JobLifecycle::keepsFailedJobs()`). A file that cannot be deleted is logged and left to the
+(`JobLifecycle::keepsFailedJobs()`). With a queue, deleting the failed import from the back
+office dispatches `Thelia\Messenger\Event\FailedJobRemovedEvent` and its file is deleted with
+it; `messenger:failed:remove` leaves the file to the purge. A file that cannot be deleted is
+logged and left to the
 purge; the job still ends as it did. When the job row cannot record its failure, the error is
 logged and the message is set aside in `failed` all the same.
 

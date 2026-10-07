@@ -306,7 +306,9 @@ the import storage.
 A finished import is never run twice. A failed one goes to `failed`, and replaying it starts
 over from the first row. The uploaded file is deleted once the import
 is done, and kept while the job may be replayed; without a queue a failed job can never be
-replayed, so its file is deleted at once. A file that cannot be deleted is left to the purge
+replayed, so its file is deleted at once. Deleting the failed job from the back office deletes
+its file too (`FailedJobRemovedEvent`); `messenger:failed:remove` leaves it to the purge. A
+file that cannot be deleted is left to the purge
 and logged as a warning: the job is still reported as it ended. A failure the job row cannot
 record (the database gone) is logged, and the message is set aside in `failed` all the same. The path of the file is stored relative to
 the project, and its name is cut to 100 characters.
