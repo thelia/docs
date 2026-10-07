@@ -210,19 +210,26 @@ A finished export is never run twice. A failed one is recorded on its row and go
 
 The reason recorded on the row is the one an administrator reads on the job page. Only a
 reason written for the administrator is shown: an exception implementing
-`Thelia\Messenger\UserFacingFailure`, anywhere in the chain of the failure, gives its message,
-cut to 2000 characters. The core ones are `Thelia\Form\Exception\FormValidationException` and,
-in `Thelia\Domain\DataTransfer\Exception`, `DataTransferNoDataFoundException`,
-`HandlerUnavailableException`, `MissingColumnsException` and `JobRefusedException`. Any other
+`Thelia\Exception\UserFacingFailure`, anywhere in the chain of the failure, gives its message,
+cut to 2000 characters. The core ones are, in `Thelia\Domain\DataTransfer\Exception`,
+`UploadRefusedException` (the refusals of an uploaded file, a `FormValidationException`),
+`DataTransferNoDataFoundException`, `HandlerUnavailableException`, `MissingColumnsException`
+and `JobRefusedException`. A `FormValidationException` that does not implement the interface
+is not shown. Any other
 failure may quote SQL, the values of a row, paths or host names, so the row says "The job failed
 because of a server error. The details are in the server log."
 (`Thelia\Messenger\JobFailureMessage::SERVER_ERROR`). The failed message set aside in `failed`
 stores only that text, without the original exception, so neither the Background jobs screen
 nor `messenger:failed:show` shows anything more. The log line of
 the job names such a failure by the class, the code and the file and line of its first cause
-(`JobFailureMessage::forLog()`), never by a text that may hold the personal data of a customer.
-A module whose exception carries a message meant for the administrator implements
-`UserFacingFailure` on it.
+(`JobFailureMessage::forLog()`), never by a text that may hold the personal data of a customer;
+a reason written for the administrator is logged on one line. A module whose exception carries
+a message meant for the administrator implements `UserFacingFailure` on it.
+
+A message that fails before its job is taken (its row cannot be read, the claim fails, or the
+queue refuses the look-again message) is set aside through `JobLifecycle::reject()`, with the
+same sanitized text only. Its row is left as it is: it may be unreadable, or held by another
+run.
 
 An import started from the back office is a job too.
 `Thelia\Domain\DataTransfer\Job\ImportJobLauncher::launch()` checks the file in the request
@@ -246,9 +253,13 @@ is stored with the invalid bytes replaced.
 
 An archive is looked into before it is extracted, both when it is uploaded and when it is
 imported (`Thelia\Domain\DataTransfer\ArchiveInspector`): it is refused when it holds more
-than 1000 files, more than 512 MB once extracted, or a name that is absolute or contains `..`.
-It is then extracted next to its file, and the extracted copy is removed once the import is
-over, whatever came of it.
+than 1000 files, more than 512 MB once extracted, a name that is absolute or contains `..`, or a
+link. A zip is read through its directory; a tar, compressed or not, is read header by header
+through its compression, never held in memory. It is then extracted next to its file, what the
+extraction really wrote is measured against the same 512 MB, and the extracted copy is removed
+once the import is over, whatever came of it. A file that does not parse in its format is
+refused with a message asking to check its content. The import only reads a file that lies in
+the import storage.
 
 A finished import is never run twice. A failed one goes to `failed`, and replaying it starts
 over from the first row. The uploaded file is deleted once the import
@@ -260,7 +271,8 @@ Both jobs share the status enum `Thelia\Domain\DataTransfer\Job\JobStatus`: `que
 and their messages, `RunExportJob` and `RunImportJob`,
 `Thelia\Domain\DataTransfer\Job\DataTransferJobMessage`. The handlers go through
 `Thelia\Domain\DataTransfer\Job\JobLifecycle`, which dispatches a job, claims it or postpones
-it (`claimOrPostpone()`) and records its failure. A worker claims a job atomically before running it
+it (`claimOrPostpone()`, which returns `ClaimOutcome::Owned`, `Finished` or `Postponed`) and
+records its failure. A worker claims a job atomically before running it
 (`Thelia\Domain\DataTransfer\Job\JobClaim`, a service), so two workers handed the same job never
 run it at the same time. A job left `running` is taken again once it has given no sign of life for
 one hour (`JobClaim::STALE_AFTER_SECONDS`, 3600 seconds, the default redelivery timeout of the
@@ -325,8 +337,9 @@ A task of the schedule that fails does not go to `failed`: Messenger only sets a
 from a queue, and the task runs again at its next time anyway.
 `Thelia\Scheduler\EventListener\RecurringTaskFailureListener` logs the failure and keeps the
 last one of each task (`Thelia\Scheduler\RecurringTaskFailures`, in the `cache.app` pool) until
-a run of that task goes through, or for a month at most, so a task taken off the schedule does
-not stay listed forever. The Background jobs screen lists them under "Recurring tasks that
+a run of that task goes through, or for a month after the date of that failure, so a task
+taken off the schedule does not stay listed forever. The list is changed under a lock, as two
+workers may finish tasks at the same moment. The Background jobs screen lists them under "Recurring tasks that
 failed". A command that exits with an error code shows `Command "<input>" exited with code "<code>".`; any
 other failure follows the same rule as the reason of a failed export or import.
 
