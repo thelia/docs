@@ -207,6 +207,9 @@ modules active when it started. Clearing the cache of the shop (saving the mail 
 turning a module on or off, `thelia:cache:clear`) therefore asks every worker to stop once its
 current message is done, as `messenger:stop-workers` does
 (`Thelia\Messenger\WorkerRestartSignal`), and its supervisor starts it again on the new cache.
+A clear asked for by a job (a module handler that saves a setting) stops the worker running it
+once the job is acknowledged, and the cache is cleared when that worker exits: clearing it
+in the middle would delete the files the worker still loads its own listeners from.
 A clear of the image or document cache leaves the workers alone. The signal is written in the
 application cache pools, so workers running on another server only see it when
 `THELIA_CACHE_DSN` points to a cache server they share; otherwise, run
@@ -459,6 +462,12 @@ building anything:
   built from a queue. A handler that takes any message (`*` or `object`) does not count,
 - a stamp must be a Messenger stamp or come from those same namespaces, and `SerializerStamp`
   is refused, as it would let the queue change how the rest of the envelope is read.
+- a message that runs a console command, a process, an HTTP request or a scheduled service
+  call, or that dispatches another message (the classes under `Symfony\Component\Console\Messenger\`,
+  `Process\Messenger\`, `HttpClient\Messenger\`, `Scheduler\Messenger\`, `Cache\Messenger\` and
+  `Messenger\Message\`), is never built from a queue, even when a project lists it: whoever writes
+  to the queue would run anything on the server. The schedule of the shop is not affected, as
+  its messages never go through a queue.
 
 Whether a message class belongs to an active module is read from the database each time. When
 MySQL closed the connection of the worker during a long wait, the Propel connection is opened
@@ -494,6 +503,9 @@ For a module author, this means:
 
 A class from outside these namespaces, such as an application class under `App\`, is
 accepted only once a project adds its exact name to `thelia.messenger.allowed_message_classes`.
+The check for files a mail would make the worker read only applies to Symfony's
+`SendEmailMessage`: a listed class that carries an `Email` of its own must refuse attachments by
+path itself.
 
 ## Personal data
 
