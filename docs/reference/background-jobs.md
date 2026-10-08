@@ -158,7 +158,7 @@ Exports and imports started from the back office are jobs. Both use the status e
 | With a queue | `/admin/export/job/{id}`: waiting, running with the rows written, done with the download, failed with the reason | `/admin/import/job/{id}`: waiting, running, done with the rows changed and refused, failed with the reason |
 | Replay of a failed job | Starts the export over | Starts over from the first row |
 | Files | Deleted by `maintenance:purge` once older than a day | Kept in `var/data-transfer/import/<Ymd>/` until the import is done, kept while it may be replayed |
-| `maintenance:purge` | Deletes the done jobs older than 7 days, any other after 30 days | Deletes the done jobs older than 7 days, any other after 30 days, with their files |
+| `maintenance:purge` | Deletes the done jobs older than 7 days, any other after 31 days | Deletes the done jobs older than 7 days, any other after 31 days, with their files |
 | Right to launch | `VIEW` on the export resource | `UPDATE` on the import resource; `VIEW` only shows the imports and their jobs |
 | Job page access | The administrator who started it and super-administrators, download included | The administrator who started it and super-administrators |
 
@@ -252,10 +252,10 @@ so they can still be replayed.
 
 `maintenance:purge` delegates to `Thelia\Domain\DataTransfer\Service\DataTransferJobPurger`:
 the `done` jobs created more than 7 days ago (`DataTransferJobPurger::JOB_RETENTION_DAYS`) are
-deleted, any other (failed, queued, running) after 30 days. The file of an import is deleted
+deleted, any other (failed, queued, running) after 31 days, a day past the failed message it may be replayed from. The file of an import is deleted
 with its row only when it lies inside `var/data-transfer/import`
 (`Thelia\Domain\DataTransfer\Job\ImportStorage`, `ImportStorage::DIRECTORY`). The files of that
-directory older than 30 days are removed too,
+directory older than 31 days are removed too,
 and its empty directories once they are more than a day old, since a fresh one may be about to
 receive an upload.
 
@@ -298,7 +298,7 @@ Without a queue, a failed import can never be replayed, so its file is deleted a
 (`JobLifecycle::keepsFailedJobs()`). With a queue, deleting the failed import from the back
 office dispatches `Thelia\Messenger\Event\FailedJobRemovedEvent` and its file is deleted with
 it, unless the import is still marked running; `messenger:failed:remove` and
-`thelia:messenger:purge-failed` leave the file to `maintenance:purge`, 30 days at most. A file that cannot be deleted is
+`thelia:messenger:purge-failed` leave the file to `maintenance:purge`, 31 days at most. A file that cannot be deleted is
 logged and left to the
 purge; the job still ends as it did. When the job row cannot record its failure, the error is
 logged and the message is set aside in `failed` all the same.

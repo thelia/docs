@@ -120,6 +120,7 @@ import.
 # /etc/systemd/system/thelia-worker@.service
 [Unit]
 Description=Thelia worker (%i)
+# Name the unit of your database server, or drop it when the database runs elsewhere.
 After=network.target mariadb.service
 
 [Service]
@@ -162,10 +163,10 @@ the request, exports are served and imports run at once. To try the queue, set
 `MESSENGER_TRANSPORT_DSN=doctrine://default` in `.env.local` and let DDEV run the worker:
 
 ```yaml
-# .ddev/config.yaml
+# .ddev/config.worker.yaml, shipped with the core
 web_extra_daemons:
-  - name: "messenger"
-    command: "php Thelia messenger:consume async async_heavy --time-limit=3600 --memory-limit=256M"
+  - name: messenger-worker
+    command: "php bin/console messenger:consume async async_heavy --time-limit=3600 --memory-limit=256M"
     directory: /var/www/html
 ```
 
