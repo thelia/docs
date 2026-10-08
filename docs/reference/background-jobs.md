@@ -427,7 +427,9 @@ final class StockSync extends BaseModule
 }
 ```
 
-`Message/` is excluded from the service scan: a message is data, not a service.
+`Message/` is excluded from the service scan: a message is data, not a service. The message
+class may also carry the route itself, with `#[AsMessage('async')]`. A message routed nowhere runs
+in the request that dispatched it.
 
 A shop can also route the message itself, in `config/packages/messenger.yaml`, which takes
 precedence over the prepended module configuration:
@@ -464,7 +466,8 @@ public static function configureContainer(ContainerConfigurator $containerConfig
 
 With `STOCK_SYNC_TRANSPORT_DSN` empty or unset, the pushes stay synchronous. A shop that wants
 them queued sets, for instance, `STOCK_SYNC_TRANSPORT_DSN=doctrine://default?queue_name=stock_sync`
-and runs a worker with `php Thelia messenger:consume stock_sync`. Pushes that fail every
+and runs a worker of its own with `php Thelia messenger:consume stock_sync`: the workers of the
+shop do not consume it. Pushes that fail every
 attempt still go to the `failed` transport of the shop, and the back office lists them there,
 but it does not count the pushes waiting in `stock_sync`: watch that queue with
 `messenger:stats stock_sync`.

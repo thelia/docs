@@ -218,6 +218,11 @@ process manager starts new ones on the new release. The command leaves its signa
 application cache, and a worker only sees it in the cache it reads: when each release has its
 own `var/` directory, run the command from the release the workers were started from.
 
+Outside a deployment, a cache clear made by the shop (`php Thelia thelia:cache:clear`, saving
+the mail settings, turning a module on or off in the back office) stops the workers by itself
+once their current message is done, and the process manager starts them again on the new cache.
+Removing `var/cache/prod` by hand sends no such signal: stop the workers first, as above.
+
 Messages queued during the deployment wait in the queue and are handled once the workers are
 back. The file of a queued import is kept in `var/data-transfer/import/`, outside the cache,
 so rebuilding the cache does not lose it.
