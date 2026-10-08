@@ -29,11 +29,13 @@ The `default-twig` back-office theme requires `thelia/core ^3.3` in its `compose
 
 `processExport()` and `processImport()` keep their signature. `ImportHandler::import()` now extracts an archive through a private method, so an override of `extractArchive()` is no longer called by it.
 
+`ImportHandler` takes a fourth constructor argument, `Thelia\Domain\DataTransfer\ArchiveInspector`: a module that builds or extends it passes it. `AbstractArchiver` implements the new `Thelia\Core\Archiver\ClosableArchiverInterface` (`close(): bool`, `discard(): void`): an archiver of a module that declares either method with another signature must align it.
+
 ### Mails
 
 - The order history line `email_sent` is written once the mail server has taken the mail, by `Thelia\Mailer\EventListener\OrderEmailHistoryListener` on the Symfony Mailer `SentMessageEvent`, and no longer by `MailerFactory` right after handing the mail over. Without a queue this happens in the same request; with one, it is the worker that writes it, later, and the author of the line is `system`.
 - `MailerFactory` names the order in two headers of the mail, `X-Thelia-Order-Id` and `X-Thelia-Message-Code`. They travel through the queue and are removed right before the mail is handed to the mail server.
-- `MailerFactory` no longer takes an `OrderHistoryRecorder`. Its fourth constructor argument is now an optional `Symfony\Component\Mailer\Transport\TransportInterface`, used by `sendNow()`. A module that builds it with `new` and still passes the recorder gets a `TypeError`.
+- `MailerFactory` no longer takes an `OrderHistoryRecorder`. Its fourth constructor argument is now the required `Symfony\Component\Mailer\Transport\TransportInterface` (the `mailer.transports` service), used by `sendNow()`. A module that builds it with `new` and still passes the recorder gets a `TypeError`.
 - With a queue, `sendEmailMessageOrFail()` and the methods built on it only throw when the mail could not be built or queued. A delivery failure no longer reaches the caller: the mail is set aside in `failed`.
 - A `TemplatedEmail` that is not rendered yet is refused when it is queued, with a `LogicException`: the worker renders nothing. Render it before sending it (`BodyRenderer`), or send it without a queue.
 
