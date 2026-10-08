@@ -144,8 +144,12 @@ The recorder:
 The listeners that feed the journal are `RecordOrderHistoryListener` (order creation, payment,
 status, delivery and transaction references, address) and `RecordOrderReturnHistoryListener`.
 Invoice numbering is recorded where the reference is allocated, by the automatic path
-(`invoice_ref_auto`) and by the `allocate_invoice_ref` status action. `MailerFactory` records
-`email_sent` when the message parameters carry `order_id` or `order_ref`.
+(`invoice_ref_auto`) and by the `allocate_invoice_ref` status action. `email_sent` is recorded
+by `Thelia\Mailer\EventListener\OrderEmailHistoryListener` on the Symfony Mailer
+`SentMessageEvent`, once the mail server has accepted the mail; with a queue, the worker
+writes it, and its author is `system`. `MailerFactory` only names the order in the
+`X-Thelia-Order-Id` and `X-Thelia-Message-Code` headers of the mail, when the message
+parameters carry `order_id` or `order_ref`.
 
 A payment module that dispatches an `OrderEvent` should name itself with
 `OrderEvent::setSourceModuleCode()`, so the line is authored by the module. The base payment

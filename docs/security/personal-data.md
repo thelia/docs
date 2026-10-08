@@ -168,7 +168,7 @@ of the customer and the content of the order. Their retention periods are fixed 
 | Other export and import jobs (failed, queued, running) | `maintenance:purge` | 30 days, as long as the failed jobs they can be replayed from |
 | Uploaded import files | The import itself, then `maintenance:purge` | Deleted once the import is done, or once it failed when there is no queue to replay it from, or once its failed job is deleted from the back office (not by `messenger:failed:remove` nor `thelia:messenger:purge-failed`, which leave it to `maintenance:purge`, 30 days at most); a file kept for a replay goes with its job, only when it lies under `var/data-transfer/import` |
 | Files left in `var/data-transfer/import` | `maintenance:purge` | 30 days |
-| Failed jobs of the queue | `thelia:messenger:purge-failed` | 30 days, `--older-than` to change it |
+| Failed jobs of the queue | `thelia:messenger:purge-failed`, and `maintenance:purge` | 30 days; `--older-than` changes it for `thelia:messenger:purge-failed` |
 
 The 30-day sweep of `var/data-transfer/import` removes what no job row points to any more, such
 as the extracted copy of an archive left by a worker that was killed, or a file whose row was

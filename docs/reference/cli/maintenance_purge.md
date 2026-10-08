@@ -43,7 +43,11 @@ The core listens to the same event to purge the back-office exports and imports,
 any other (failed, queued, running) after 30 days, as long as the failed jobs they can be
 replayed from, the uploaded file of each deleted import when it lies inside
 `var/data-transfer/import`, and the files of that directory older than 30 days. The same listener removes the export files of the cache older
-than a day. These periods are fixed. See [Background jobs](../background-jobs.md#back-office-exports-and-imports).
+than a day. These periods are fixed.
+
+The failed jobs set aside in `failed` for more than 30 days are deleted on the same run
+(`Thelia\Messenger\EventListener\FailedJobsMaintenancePurgeListener`), as
+[`thelia:messenger:purge-failed`](./thelia_messenger_purge_failed.md) does with its default. See [Background jobs](../background-jobs.md#back-office-exports-and-imports).
 
 ## Examples
 See what would be removed:
