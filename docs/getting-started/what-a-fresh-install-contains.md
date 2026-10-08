@@ -23,6 +23,8 @@ An update never rewrites the state you chose. A module you activated stays activ
 
 These modules are useful to the shop whatever theme it uses, so the skeleton declares them directly. Changing the front theme does not remove them.
 
+The modules that need a key from a third party ship inactive. How to configure each of them, and what the shop does while a key is missing, is described by function in [Shipped Modules](../features/shipped-modules/index.md).
+
 | Code | What it does | Default state | Source |
 |------|--------------|---------------|--------|
 | Cheque | Payment by cheque | Active | [thelia-modules/Cheque](https://github.com/thelia-modules/Cheque) |
@@ -31,6 +33,21 @@ These modules are useful to the shop whatever theme it uses, so the skeleton dec
 | VirtualProductDelivery | Delivery of virtual products, no shipping | Active | [thelia-modules/VirtualProductDelivery](https://github.com/thelia-modules/VirtualProductDelivery) |
 | HeaderHighlights | Promotional messages and images in the header of the front office | Active | [thelia-modules/HeaderHighlights](https://github.com/thelia-modules/HeaderHighlights) |
 | RecentlyViewed | Records the products a customer viewed and exposes them to the front | Active | [thelia-modules/RecentlyViewed](https://github.com/thelia-modules/RecentlyViewed) |
+| WireTransfer | Payment by bank transfer, shows the shop's bank details to the customer | Active | [thelia-modules/WireTransfer](https://github.com/thelia-modules/WireTransfer) |
+| PayPal | Payment through PayPal, needs PayPal API credentials | Inactive | [thelia-modules/PayPal](https://github.com/thelia-modules/PayPal) |
+| StripePayment | Payment through Stripe, needs Stripe API keys | Inactive | [thelia-modules/StripePayment](https://github.com/thelia-modules/StripePayment) |
+| LocalPickup | Store pickup as a delivery method | Active | [thelia-modules/LocalPickup](https://github.com/thelia-modules/LocalPickup) |
+| AdminOrderCreation | Creates an order for a customer from the back office | Active | [thelia-modules/AdminOrderCreation](https://github.com/thelia-modules/AdminOrderCreation) |
+| DuplicateOrder | Lets a customer reorder the products of a past order | Active | [thelia-modules/DuplicateOrder](https://github.com/thelia-modules/DuplicateOrder) |
+| RewriteUrl | Redirects old URLs to the new ones, manual redirect rules | Active | [thelia-modules/RewriteUrl](https://github.com/thelia-modules/RewriteUrl) |
+| Sitemap | Priorities, change frequencies and language alternates of the XML sitemap | Active | [thelia-modules/Sitemap](https://github.com/thelia-modules/Sitemap) |
+| GoogleTagManager | Loads a Google Tag Manager container and sends e-commerce events, needs a container ID | Inactive | [thelia-modules/GoogleTagManager](https://github.com/thelia-modules/GoogleTagManager) |
+| WishList | Wish lists for customers and guests | Active | [thelia-modules/WishList](https://github.com/thelia-modules/WishList) |
+| StockAlert | Back-in-stock and price-drop e-mail alerts | Active | [thelia-modules/StockAlert](https://github.com/thelia-modules/StockAlert) |
+| TntSearch | Full-text search tolerant to typos | Active | [thelia-modules/TntSearch](https://github.com/thelia-modules/TntSearch) |
+| BestSellers | Best sellers sort and statistics | Active | [thelia-modules/BestSellers](https://github.com/thelia-modules/BestSellers) |
+| SiretManagement | SIRET and intra-community VAT number of business customers | Active | [thelia-modules/SiretManagement](https://github.com/thelia-modules/SiretManagement) |
+| ReCaptcha | Anti-spam check on the customer forms, needs reCAPTCHA keys | Inactive | [thelia-modules/ReCaptcha](https://github.com/thelia-modules/ReCaptcha) |
 
 ## Modules required by the themes
 
@@ -48,12 +65,18 @@ These modules stay in the `composer.json` of a theme because the theme cannot re
 
 ## What is not shipped
 
-The distribution ships what most shops need on day one and leaves the rest to Composer, so that a shop does not carry code it will never use. Two families of modules are deliberately absent:
+The distribution ships what most shops need on day one and leaves the rest to Composer, so that a shop does not carry code it will never use.
 
-- Structuring modules that change the data model or the checkout for a subset of shops, such as customer families or gift cards. Install them when the shop needs them.
-- Online payment connectors. Each shop picks the ones matching its contracts.
+Two modules stay out on purpose: CustomerFamily and TheliaGiftCard. Each one adds a notion to the data model of the shop: CustomerFamily introduces price segments per customer family, TheliaGiftCard introduces credit notes that carry a value. Notions of that kind call for a place in the core, not for a silent addition to every shop through the distribution. Until then, install them when the shop needs them:
 
-Adding a module is one Composer command, run at the root of the project:
+| Module | Package | Install |
+|--------|---------|---------|
+| [CustomerFamily](https://github.com/thelia-modules/CustomerFamily) | `thelia/customer-family-module` | `composer require thelia/customer-family-module` |
+| [TheliaGiftCard](https://github.com/thelia-modules/TheliaGiftCard) | `thelia/thelia-gift-card-module` | `composer require thelia/thelia-gift-card-module` |
+
+Payment connectors other than the ones listed above are not shipped either: each shop picks the ones matching its contracts.
+
+Adding a module is one Composer command, run at the root of the project, followed by its activation:
 
 ```bash
 composer require thelia/<module-name>-module
@@ -73,6 +96,16 @@ composer update
 ```
 
 Update the whole project rather than a theme alone. A theme that no longer requires these modules declares a conflict with any skeleton older than 3.2, so `composer update thelia/flexy` on a project still on skeleton 3.1 keeps the current theme version instead of removing modules. The new theme version comes with the full update that also brings skeleton 3.2.
+
+## Shops installed with skeleton 3.2.0 or earlier
+
+WireTransfer, PayPal, StripePayment, LocalPickup, AdminOrderCreation, DuplicateOrder, RewriteUrl, Sitemap, GoogleTagManager, WishList, StockAlert, TntSearch, BestSellers, SiretManagement and ReCaptcha are declared by the skeleton releases that follow 3.2.0. A full update of the project brings them:
+
+```bash
+composer update
+```
+
+A module the shop already had keeps its state. Check the state of the others with `php Thelia module:list` and activate the ones the shop needs.
 
 ## Checking your own install
 
