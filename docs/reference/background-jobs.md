@@ -25,7 +25,7 @@ hosting.
 | `THELIA_SCHEDULE_MAINTENANCE_PURGE` | `30 3 * * *` | Cron expression of `maintenance:purge`. Empty disables the task. |
 | `THELIA_SCHEDULE_FAILED_JOBS_PURGE` | `0 4 * * *` | Cron expression of `thelia:messenger:purge-failed`. Empty disables the task. |
 | `THELIA_SCHEDULE_CURRENCY_RATES` | empty | Cron expression of `currency:update-rates`. Off by default. |
-| `LOCK_DSN` | `flock` | The lock store that keeps two workers from running the same scheduled task. |
+| `LOCK_DSN` | `flock` in the `.env` of the core, `semaphore` in the `.env.dist` of `thelia-project` | The lock store that keeps two workers from running the same scheduled task. |
 
 `doctrine://default` is the only Doctrine connection name accepted: it is the shop database,
 reached with the settings of the Propel connection. The table `messenger_messages` is created
@@ -46,10 +46,22 @@ The core configures Messenger for the whole application: its serializer, its bus
 project. The container parameter `thelia.messenger.allowed_message_classes` (an array, empty by
 default) lists the exact names of the message classes that a project queues from outside
 `Thelia\` and the namespaces of the active modules: an application that queues its own
-`App\Message\…` classes gets a `LogicException` on dispatch until they are listed there. Any other message class must also be taken
-by a handler, or have a parent or an interface a handler takes: the parameter
-`thelia.messenger.handled_message_classes` is filled when the container is built and is not
-meant to be set by hand. A handler that takes any message (`*` or `object`) does not count.
+`App\Message\…` classes gets a `LogicException` on dispatch until they are listed there. The
+core declares it empty (`core/lib/Thelia/Config/Resources/parameters/messenger.php`). Any other
+message class must also be taken by a handler, or have a parent or an interface a handler
+takes: the parameter `thelia.messenger.handled_message_classes` is filled when the container is
+built and is not meant to be set by hand. A handler that takes any message (`*` or `object`)
+does not count.
+
+A project sets the list in `config/services.yaml`, which is loaded after the configuration of
+the core:
+
+```yaml
+# config/services.yaml
+parameters:
+    thelia.messenger.allowed_message_classes:
+        - App\Message\SyncInvoices
+```
 
 ### Transports
 
@@ -75,7 +87,7 @@ to `async_heavy`.
 | `messenger:failed:retry` | Replay failed jobs. |
 | `messenger:failed:remove` | Delete failed jobs. |
 | `messenger:stop-workers` | Ask every worker to stop after its current message. |
-| [`thelia:messenger:purge-failed`](./cli/thelia_messenger_purge_failed.md) | Delete the failed jobs set aside for more than `--older-than` days (30 by default). |
+| [`thelia:messenger:purge-failed`](./cli/thelia_messenger_purge_failed.md) | Delete the failed jobs set aside for more than `--older-than` days (30 by default). `maintenance:purge` deletes those older than 30 days too. |
 
 All of them run through `php Thelia`, for example `php Thelia messenger:stats`.
 
@@ -145,7 +157,7 @@ Exports and imports started from the back office are jobs. Both use the status e
 | Without a queue | Runs in the request, the file is served at once | Runs in the request, the page shows the rows imported and the rows refused |
 | With a queue | `/admin/export/job/{id}`: waiting, running with the rows written, done with the download, failed with the reason | `/admin/import/job/{id}`: waiting, running, done with the rows changed and refused, failed with the reason |
 | Replay of a failed job | Starts the export over | Starts over from the first row |
-| Files | Deleted after a day | Kept in `var/data-transfer/import/<Ymd>/` until the import is done, kept while it may be replayed |
+| Files | Deleted by `maintenance:purge` once older than a day | Kept in `var/data-transfer/import/<Ymd>/` until the import is done, kept while it may be replayed |
 | `maintenance:purge` | Deletes the done jobs older than 7 days, any other after 30 days | Deletes the done jobs older than 7 days, any other after 30 days, with their files |
 | Right to launch | `VIEW` on the export resource | `UPDATE` on the import resource; `VIEW` only shows the imports and their jobs |
 | Job page access | The administrator who started it and super-administrators, download included | The administrator who started it and super-administrators |

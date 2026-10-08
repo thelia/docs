@@ -151,8 +151,13 @@ Check these points when you cross it:
 - The core requires `symfony/messenger`. When Composer applies the Symfony recipe of that
   package instead of the Thelia one, it writes `config/packages/messenger.yaml` and adds
   `MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0` to `.env`, and every mail then waits
-  for a worker. Delete `config/packages/messenger.yaml`: the core configures Messenger itself.
-  Unless a worker runs, also delete that line, so `async` stays synchronous.
+  for a worker. Delete the `config/packages/messenger.yaml` the Symfony recipe wrote: the core
+  configures Messenger itself. A `messenger.yaml` of your own, such as one that routes a module
+  message, stays. Unless a worker runs, also delete that line, so `async` stays synchronous.
+- The Symfony recipe of `symfony/scheduler` writes `src/Schedule.php`. Delete it too: the core
+  declares its own `thelia` schedule.
+- Going back from a queue to no queue leaves the jobs still waiting in `messenger_messages`.
+  Let a worker empty the queues before you empty `MESSENGER_TRANSPORT_DSN`.
 - The core configures Messenger for the whole application: its serializer, its bus, its
   `failure_transport` and the routing of its messages come before the configuration of the
   project. An application that already queued messages of its own (`App\Message\…`) gets a

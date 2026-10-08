@@ -17,7 +17,7 @@ deletes the old ones.
 ```
 
 ## Options
- -    `--older-than=DAYS`  Age in days from which a failed job is deleted. Defaults to `30`. Takes a whole number of days.
+ -    `--older-than=DAYS`  Age in days from which a failed job is deleted. Defaults to `30`. Takes a whole number of days, from 1 to 3650; any other value ends with the `INVALID` exit code.
  -    `--dry-run`  Count the jobs that would be deleted, and delete nothing.
 
 The age of a job is counted from the date it was set aside. When `failed` is in the shop

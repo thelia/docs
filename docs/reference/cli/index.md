@@ -109,7 +109,7 @@ with an existing invoice numbering to continue.
 
 | Command | Description |
 | --- | --- |
-| `messenger:consume` | Run a worker on one or more transports (`async`, `scheduler_thelia`). |
+| `messenger:consume` | Run a worker on one or more transports (`async`, `async_heavy`, `scheduler_thelia`). |
 | `messenger:stats` | Count the messages waiting in each transport. |
 | `messenger:failed:show` | List the failed jobs, or show one with its error. |
 | `messenger:failed:retry` | Replay failed jobs. |
