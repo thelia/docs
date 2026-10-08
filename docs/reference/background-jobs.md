@@ -133,8 +133,8 @@ A recurring task of the `thelia` schedule that fails is not set aside in `failed
 at its next time. `Thelia\Scheduler\EventListener\RecurringTaskFailureListener` keeps its last
 failure in the `cache.app` pool (`Thelia\Scheduler\RecurringTaskFailures`) until a run of the
 task goes through, or for a month after the date of that failure, and the screen lists it with the task, the reason and
-the date. A command that exits with an error code gives `Command "<input>" exited with code
-"<code>".` as its reason.
+the date. A command that exits with an error code gives
+`Command "<input>" exited with code "<code>".` as its reason.
 
 The "Details" link of an export or import is only shown to the administrator who started the
 job and to super-administrators.
@@ -465,7 +465,9 @@ public static function configureContainer(ContainerConfigurator $containerConfig
 With `STOCK_SYNC_TRANSPORT_DSN` empty or unset, the pushes stay synchronous. A shop that wants
 them queued sets, for instance, `STOCK_SYNC_TRANSPORT_DSN=doctrine://default?queue_name=stock_sync`
 and runs a worker with `php Thelia messenger:consume stock_sync`. Pushes that fail every
-attempt still go to the `failed` transport of the shop.
+attempt still go to the `failed` transport of the shop, and the back office lists them there,
+but it does not count the pushes waiting in `stock_sync`: watch that queue with
+`messenger:stats stock_sync`.
 
 ### Metadata and dependencies
 

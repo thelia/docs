@@ -184,8 +184,9 @@ resets the state of the shop before each message (`Thelia\Messenger\EventListene
 
 - settings are read again from the database, so a change made in the back office since the
   previous message is seen,
-- the active languages, the default country, the module configuration, the rewritten URLs and
-  the price currency are forgotten,
+- the active languages, the default country and currency, the module configuration, the
+  rewritten URLs, the price currency, the taxes of a rule, the return statuses and the results
+  of the loops are forgotten,
 - the translator is set back to the default language.
 
 Before each message, the Propel connection is also checked and reopened if MySQL closed it
@@ -200,6 +201,12 @@ long job kept the worker busy.
 
 Symfony also resets the services tagged `kernel.reset` between messages, unless the worker is
 started with `--no-reset`.
+
+What a worker does not read again is its container: the mail settings and the handlers of the
+modules active when it started. Clearing the cache of the shop (saving the mail settings,
+turning a module on or off, `thelia:cache:clear`) therefore asks every worker to stop once its
+current message is done, as `messenger:stop-workers` does
+(`Thelia\Messenger\WorkerRestartSignal`), and its supervisor starts it again on the new cache.
 
 A handler therefore never relies on what a visitor would have set. It receives ids, reads its
 data again, chooses the locale explicitly, and builds absolute URLs from `DEFAULT_URI`.
@@ -295,8 +302,16 @@ An import runs in a single Propel transaction. Stopped half way, by an error, a 
 or a deployment, it leaves the catalog as it was. Its outcome (the `done` status, the rows
 imported and the rows refused) is written to the job row inside the same transaction, so the
 catalog and the row never disagree. When the code that runs the import already holds a
-transaction, the import works inside it and leaves the commit or the rollback to that code. A
-row the import refuses (a missing combination, an invalid GTIN) is not an error: it is listed
+transaction, the import works inside it and leaves the commit or the rollback to that code.
+
+The rows an import has written stay locked until it ends: an order or a back-office edit
+touching one of them waits, then fails after `innodb_lock_wait_timeout`. Run a large stock or
+price import outside trading hours. The listeners of `IMPORT_BEGIN`, `IMPORT_FINISHED` and
+`IMPORT_SUCCESS` run inside the transaction too: what they write is cancelled with the import,
+what they send is not, and a job they queue in the shop database is committed at once, so a
+worker may run it before the import is committed.
+
+A row the import refuses (a missing combination, an invalid GTIN) is not an error: it is listed
 with the job as a refusal, and the other rows are kept. A refusal whose text is not valid UTF-8
 is stored with the invalid bytes replaced. The refusals are kept up to 60,000 bytes
 (`ImportJob::ROW_ERRORS_MAX_BYTES`): past that, the first ones are kept and a last line says
