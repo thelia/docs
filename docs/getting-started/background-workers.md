@@ -150,7 +150,8 @@ A hosting that does not allow long processes can still consume the queue from cr
 * * * * * cd /var/www/shop && php Thelia messenger:consume async async_heavy scheduler_thelia --time-limit=55
 ```
 
-Each run consumes for 55 seconds, then exits before the next one starts. Jobs wait up to a
+Drop `scheduler_thelia` from this line if `maintenance:purge` and the other tasks stay in your
+crontab: each would run twice. Each run consumes for 55 seconds, then exits before the next one starts. Jobs wait up to a
 minute before they run. Two runs that overlap are safe: each message is handed to one worker
 only.
 
