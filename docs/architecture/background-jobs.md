@@ -333,7 +333,7 @@ checked before anything is written for the row.
 
 An archive is looked into before it is extracted, both when it is uploaded and when it is
 imported (`Thelia\Domain\DataTransfer\ArchiveInspector`): it is refused when it holds more
-than 1000 files, more than 512 MB once extracted, a name that is absolute or contains `..`, or a
+than 1000 entries (folders included), more than 512 MB once extracted, a name that is absolute or contains `..`, or a
 link. A zip is read through its directory; a tar, compressed or not, is read header by header
 through its compression, never held in memory. The GNU long-name and pax records of a tar
 count against the limits like any entry, a pax record is read record by record for the name it
@@ -349,7 +349,9 @@ is done, and kept while the job may be replayed; without a queue a failed job ca
 replayed, so its file is deleted at once. Deleting the failed job from the back office deletes
 its file too (`FailedJobRemovedEvent`), unless the import is still marked running.
 `messenger:failed:remove` and `thelia:messenger:purge-failed` leave the file to
-`maintenance:purge`, which deletes it after 30 days at most. A file that cannot be deleted is
+`maintenance:purge`, which deletes it after 31 days at most. A job deleted from the failed
+jobs before it ever ran is marked failed, "Deleted from the failed jobs before it ran.", so its
+row no longer reads as waiting for a worker. A file that cannot be deleted is
 left to the purge
 and logged as a warning: the job is still reported as it ended. A failure the job row cannot
 record (the database gone) is logged, and the message is set aside in `failed` all the same. The path of the file is stored relative to
@@ -396,12 +398,14 @@ deleted.
 
 `maintenance:purge` deletes the export and import jobs that are `done` and were created more
 than 7 days ago (`Thelia\Domain\DataTransfer\Service\DataTransferJobPurger::JOB_RETENTION_DAYS`),
-with the files of the imports. Any other job, failed, queued or running, is kept 30 days
-(`Thelia\Messenger\FailedMessagePurger::RETENTION_DAYS`), as long as the failed messages, so it
-can still be replayed. The file of an import is only deleted when it lies inside
+with the files of the imports. Any other job, failed, queued or running, is kept 31 days: the
+30 days of the failed messages (`Thelia\Messenger\FailedMessagePurger::RETENTION_DAYS`) and one
+more (`DataTransferJobPurger::REPLAY_MARGIN_DAYS`), since a failed message ages from the day it
+was set aside, up to half a day after its row was written, and must still find its row when it
+is replayed. The file of an import is only deleted when it lies inside
 `var/data-transfer/import` (`Thelia\Domain\DataTransfer\Job\ImportStorage::DIRECTORY`),
 whatever path its row holds. The purge
-also removes the files of that directory older than 30 days, such as the extracted copy of an
+also removes the files of that directory older than 31 days, such as the extracted copy of an
 archive left by a killed worker, or a file whose row was deleted by hand.
 
 The page of a job, and the download of an export, are only open to the administrator who
