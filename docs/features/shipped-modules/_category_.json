@@ -1,0 +1,11 @@
+{
+  "label": "Shipped Modules",
+  "position": 10,
+  "link": {
+    "type": "doc",
+    "id": "features/shipped-modules/index"
+  },
+  "customProps": {
+    "description": "Payments, SEO, tracking, search and the other functions the distribution ships as modules"
+  }
+}
