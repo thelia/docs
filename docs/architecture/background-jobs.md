@@ -207,6 +207,10 @@ modules active when it started. Clearing the cache of the shop (saving the mail 
 turning a module on or off, `thelia:cache:clear`) therefore asks every worker to stop once its
 current message is done, as `messenger:stop-workers` does
 (`Thelia\Messenger\WorkerRestartSignal`), and its supervisor starts it again on the new cache.
+A clear of the image or document cache leaves the workers alone. The signal is written in the
+application cache pools, so workers running on another server only see it when
+`THELIA_CACHE_DSN` points to a cache server they share; otherwise, run
+`php Thelia messenger:stop-workers` on their server.
 
 A handler therefore never relies on what a visitor would have set. It receives ids, reads its
 data again, chooses the locale explicitly, and builds absolute URLs from `DEFAULT_URI`.
@@ -302,7 +306,9 @@ An import runs in a single Propel transaction. Stopped half way, by an error, a 
 or a deployment, it leaves the catalog as it was. Its outcome (the `done` status, the rows
 imported and the rows refused) is written to the job row inside the same transaction, so the
 catalog and the row never disagree. When the code that runs the import already holds a
-transaction, the import works inside it and leaves the commit or the rollback to that code.
+transaction, the import works inside it and leaves the commit or the rollback to that code: an
+import that fails half way is then that code's to roll back, so do not launch an import inside a
+transaction of your own.
 
 The rows an import has written stay locked until it ends: an order or a back-office edit
 touching one of them waits, then fails after `innodb_lock_wait_timeout`. Run a large stock or
