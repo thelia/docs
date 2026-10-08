@@ -142,7 +142,9 @@ and the message goes to `failed` at once.
 `failed` is `MESSENGER_FAILURE_TRANSPORT_DSN`, which defaults to
 `doctrine://default?queue_name=failed`: by default the failed jobs are kept in the shop
 database, whatever queue `async` uses, so the back office has a single place to read them from.
-They stay there until someone replays them, removes them, or the purge task deletes them. In the
+They stay there until someone replays them, removes them, or a purge deletes them:
+`thelia:messenger:purge-failed`, and `maintenance:purge`, which deletes the failed jobs older
+than 30 days too (`Thelia\Messenger\EventListener\FailedJobsMaintenancePurgeListener`). In the
 shop database, the back office takes a job out of `failed` on a condition before replaying or
 deleting it: two administrators, or a double click, acting on the same job at once act once, and
 a job a worker consuming `failed` holds (`messenger:consume failed`) is left to that worker until
@@ -251,10 +253,12 @@ the job page (`/admin/export/job/{id}`): waiting, running with the number of row
 (refreshed every 3 seconds), done with a download link, or failed with the reason.
 
 A finished export is never run twice. A failed one is recorded on its row and goes straight to
-`failed`; replaying it starts it over. The export files are deleted after a day.
+`failed`; replaying it starts it over. The export files are deleted once older than a day,
+when `maintenance:purge` runs.
 
-The reason recorded on the row is the one an administrator reads on the job page. Only a
-reason written for the administrator is shown: an exception implementing
+The reason recorded on the row is the one an administrator reads on the job page. On that row,
+only a reason written for the administrator is shown (the answer of a mail server, which the
+Background jobs screen also shows for a failed mail, never comes from an export or an import): an exception implementing
 `Thelia\Exception\UserFacingFailure`, anywhere in the chain of the failure, gives its message,
 cut to 2000 characters. The core ones are, in `Thelia\Domain\DataTransfer\Exception`,
 `UploadRefusedException` (the refusals of an uploaded file, a `FormValidationException`),
@@ -475,7 +479,13 @@ queue like the database:
 - a Redis or AMQP broker must not be reachable from outside the hosting,
 - its credentials go in `.env.local` or the secrets of the hosting, never in Git,
 - the retention of failed jobs is a processing to record in the GDPR register. The
-  `thelia:messenger:purge-failed` task deletes them after 30 days by default.
+  `thelia:messenger:purge-failed` task deletes them after 30 days by default, and
+  `maintenance:purge` deletes those older than 30 days too.
+
+A Redis or AMQP queue is read by the workers as the queue of the shop: whoever can write to it
+can send mails through the mail server of the shop, and replay the exports and imports it
+names. This is an accepted risk, and the reason such a server must stay private. A queue in the
+shop database adds nothing to what access to that database already gives.
 
 See [Personal data](../security/personal-data.md) and
 [Running the workers](../getting-started/background-workers.md#personal-data-in-the-queue).
