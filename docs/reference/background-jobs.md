@@ -193,7 +193,7 @@ raised when an uploaded file is refused), `DataTransferNoDataFoundException`,
 `Thelia\Form\Exception\FormValidationException` itself does not implement it.
 
 An export whose year is not four digits or whose month is not 1 to 12
-(`ExportHandler::resolveRangeDate()`, called by the launcher and by the export) is refused with
+(`Thelia\Domain\DataTransfer\Export\ExportPeriod::resolve()`, called by the launcher and by the export) is refused with
 "The dates of the export are not valid.", and one whose format is no longer available on the
 server with `The format "<format>" is no longer available on this server.`. Both are a
 `JobRefusedException`, which the administrator reads as it is.
