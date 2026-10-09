@@ -209,8 +209,9 @@ current message is done, as `messenger:stop-workers` does
 (`Thelia\Messenger\WorkerRestartSignal`), and its supervisor starts it again on the new cache.
 A clear asked for by a job (a module handler that saves a setting), or by the command of a
 recurring task the worker runs, stops the worker running it once the job is acknowledged, and
-the cache is cleared when that worker's command ends, whatever stopped it: clearing it in the
-middle would delete the files the worker still loads its own listeners from.
+the cache is cleared when that worker's command ends, an exception included: clearing it in
+the middle would delete the files the worker still loads its own listeners from. A worker
+stopped by a fatal error or killed loses the clear: run `php Thelia thelia:cache:clear` then.
 A clear of the image or document cache leaves the workers alone. The signal is written in the
 application cache pools, so workers running on another server only see it when
 `THELIA_CACHE_DSN` points to a cache server they share; otherwise, run
