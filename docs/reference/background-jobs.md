@@ -215,12 +215,13 @@ final class WarehouseRefusedException extends \RuntimeException implements \Thel
 }
 ```
 
-`JobLifecycle` dispatches a job, claims it or postpones it
-(`claimOrPostpone(DataTransferJob $job, DataTransferJobMessage $message): ClaimOutcome`, the table
-coming from `DataTransferJob::tableName()`), sets aside a message that fails before its job is
-taken (`reject()`) and records the failure of a job (`fail()`); it reads from `Thelia\Messenger\Transport\ConfiguredQueues` whether the heavy jobs run
+`JobLifecycle` dispatches a job (`dispatch()`), takes it for a run
+(`take(DataTransferJobMessage $message, \Closure $find): ?DataTransferJob`: claimed, or looked at
+again later, the table coming from `DataTransferJobMessage::jobTable()`, a `JobTable`), sets
+aside a message that fails before its job is taken, and records the failure of a job
+(`fail(DataTransferJobMessage $message, DataTransferJob $job, \Throwable $exception)`); it reads from `Thelia\Messenger\Transport\ConfiguredQueues` whether the heavy jobs run
 without a queue (`heavyJobsRunInline()`). A worker claims a job
-atomically (`JobClaim::claim(string $table, int $jobId, bool $allowFailed = true)`, an injected
+atomically (`JobClaim::claim(JobTable $table, int $jobId, bool $allowFailed = true)`, an injected
 service) before running it:
 two workers handed the same job never run it at the same time. A job left `running` is taken
 again once its row has not been updated for one hour (`JobClaim::STALE_AFTER_SECONDS`, 3600). An
@@ -243,7 +244,7 @@ a failed job. Without a queue a message is never postponed.
 
 A job whose row was deleted fails for good and stays in `failed`. A message that fails before
 its job is taken (the row cannot be read, the claim fails, the look-again message is refused)
-goes to `failed` through `JobLifecycle::reject()` with the sanitized reason only, and its row is
+goes to `failed` through `JobLifecycle::take()` with the sanitized reason only, and its row is
 left untouched. A job the queue refuses at
 dispatch is recorded as failed with "The job could not be queued. The details are in the
 server log." (`JobLifecycle::NOT_QUEUED`), and the file of such an import is deleted. Failed
