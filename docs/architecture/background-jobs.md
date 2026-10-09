@@ -207,8 +207,8 @@ modules active when it started. Clearing the cache of the shop (saving the mail 
 turning a module on or off, `thelia:cache:clear`) therefore asks every worker to stop once its
 current message is done, as `messenger:stop-workers` does
 (`Thelia\Messenger\WorkerRestartSignal`), and its supervisor starts it again on the new cache.
-A clear asked for by a job (a module handler that saves a setting) stops the worker running it
-once the job is acknowledged, and the cache is cleared when that worker exits: clearing it
+A clear asked for by a job (a module handler that saves a setting), or by the command of a
+recurring task the worker runs, stops the worker running it once the job is acknowledged, and the cache is cleared when that worker exits: clearing it
 in the middle would delete the files the worker still loads its own listeners from.
 A clear of the image or document cache leaves the workers alone. The signal is written in the
 application cache pools, so workers running on another server only see it when
