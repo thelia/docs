@@ -91,6 +91,7 @@ through `php Thelia`, and empties the Symfony cache only.
 | --- | --- |
 | `thelia:config` | Manage configuration variables. |
 | [`maintenance:purge`](./maintenance_purge.md) | Purge old data: carts without orders, anonymous carts, admin logs, form firewall records, and the identity of accounts nobody uses anymore. |
+| [`order:remind-unpaid`](./order_remind_unpaid.md) | Send the payment reminders of the unpaid orders and cancel them, as the reminder schedule of the shop says. |
 | `sale:check-activation` | Check the activation/deactivation dates of sales and apply the required action. |
 | `currency:update-rates` | Update currency exchange rates. |
 | `thelia:order:rounding-mode` | Show or switch how order line totals are rounded, freezing the orders already placed. |
