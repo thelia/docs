@@ -234,6 +234,10 @@ export file the back office serves. When each release has its own `var/` directo
 workers run on another machine, point both at the same storage, and never empty them in a
 deployment while jobs wait.
 
+Run the web server and the workers under the same system user. The shop closes the export
+folder to every other account of the server (mode 0700), since its files hold the data of the
+customers: a worker running as another user writes exports the back office cannot serve.
+
 ## Personal data in the queue
 
 Queued mails carry the recipient address and the content of the order, and a failed job keeps
