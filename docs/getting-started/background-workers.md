@@ -234,9 +234,12 @@ export file the back office serves. When each release has its own `var/` directo
 workers run on another machine, point both at the same storage, and never empty them in a
 deployment while jobs wait.
 
-Run the web server and the workers under the same system user. The shop closes the export
-folder to every other account of the server (mode 0700), since its files hold the data of the
-customers: a worker running as another user writes exports the back office cannot serve.
+Run the web server, the workers and any crontab or script that exports or runs
+`maintenance:purge` under the same system user, or under users that share a group. The shop
+creates the exports, their archives and the uploaded imports readable by their owner and their
+group only (mode 0640, in folders it makes 0750), since they hold the data of the customers: an
+export written by a worker under a user outside that group could not be served by the back
+office, nor an import it stored read by a worker.
 
 ## Personal data in the queue
 
