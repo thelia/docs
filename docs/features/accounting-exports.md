@@ -37,13 +37,18 @@ them, the orders placed before the invoice numbering was switched on among them)
 Each invoice is a piece, balanced to the cent:
 
 - the customer is debited of the total of the invoice;
-- the products are credited excluding tax, one line per tax rate;
+- the products are credited excluding tax, one line per tax rate of the chart; an amount whose
+  frozen tax makes a rate a little off (19.90% for 0.83 of tax on 4.17) is filed under the
+  closest rate of the chart within a tenth of a point, and a line taxed twice under the sum of
+  its rates, which the chart needs a row for;
 - an order discount is spread over the rates in proportion of their amount excluding tax;
-- the shipping is credited excluding tax, on its own line, at the rate or rates of its tax;
+- the shipping is credited excluding tax on the shipping account, at the rate or rates of its
+  tax; untaxed shipping needs no rate row;
 - the tax collected is credited by rate, the shipping's included.
 
 The amounts are those of the invoice handed to the customer, under the rounding rule the
-order was priced with, older orders included: nothing is recomputed. An order in another
+order was priced with, older orders included: nothing is recomputed. An order priced before
+the rounding rules did not take its discount off the tax on its invoice, and is booked so. An order in another
 currency is booked in the shop currency at the rate of the order, with its own amount and
 currency beside it. An order that cannot be booked, for instance taxed at a rate the chart
 has no account for, is left out and named in the report.
@@ -66,12 +71,14 @@ The columns of the sales journal are the 18 fields of the French accounting entr
 | `Montantdevise`, `Idevise` | the amount and currency of an order in another currency |
 
 Choose the **FEC** format to get the file itself: tab separated, the field names on the first
-line, dates as YYYYMMDD, amounts with a decimal comma, UTF-8. Choose **CSV** to read it in a
-spreadsheet. The labels follow the language chosen for the export.
+line (even for a period without invoice), dates as YYYYMMDD, amounts with a decimal comma,
+UTF-8. Rename it `<SIREN>FEC<YYYYMMDD>.txt` before handing it to the tax administration. Choose
+**CSV** to read it in a spreadsheet. The labels follow the language chosen for the export.
 
 ## The tax summary
 
-Per month of invoice and per tax rate: the amount taxed, the tax and the number of invoices.
+Per month of invoice and per tax rate, the highest first: the amount taxed (products and
+shipping), the tax and the number of invoices.
 It is read from the same pieces as the sales journal, so its taxes add up to the tax lines of
 the journal, to the cent: the figures to check the tax return against.
 
