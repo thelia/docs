@@ -37,10 +37,10 @@ them, the orders placed before the invoice numbering was switched on among them)
 Each invoice is a piece, balanced to the cent:
 
 - the customer is debited of the total of the invoice;
-- the products are credited excluding tax, one line per tax rate of the chart; an amount whose
-  frozen tax makes a rate a little off (19.90% for 0.83 of tax on 4.17) is filed under the
-  closest rate of the chart within a tenth of a point, and a line taxed twice under the sum of
-  its rates, which the chart needs a row for;
+- the products are credited excluding tax, one line per tax rate of the chart; prices and taxes
+  being rounded to the cent, an amount is filed under the rate of the chart that gives its tax
+  within a cent (0.20 of tax on 0.99 makes 20.20%, filed at 20%), and a line taxed twice under
+  the sum of its rates, which the chart needs a row for;
 - an order discount is spread over the rates in proportion of their amount excluding tax;
 - the shipping is credited excluding tax on the shipping account, at the rate or rates of its
   tax; untaxed shipping needs no rate row;
