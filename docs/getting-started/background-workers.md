@@ -237,8 +237,10 @@ deployment while jobs wait.
 Run the web server, the workers and any crontab or script that exports or runs
 `maintenance:purge` under the same system user, or under users that share a group. The shop
 creates the exports, their archives and the uploaded imports readable by their owner and their
-group only (mode 0640, in folders it makes 0750), since they hold the data of the customers: an
-export written by a worker under a user outside that group could not be served by the back
+group only (mode 0640), since they hold the data of the customers, in folders it makes writable
+by their group (mode 0770), since a worker deletes the import the web server stored and the purge
+removes what either left. A folder made before keeps its mode: check it when the users differ.
+An export written by a worker under a user outside that group could not be served by the back
 office, nor an import it stored read by a worker.
 
 ## Personal data in the queue
