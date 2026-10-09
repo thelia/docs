@@ -239,7 +239,9 @@ Run the web server, the workers and any crontab or script that exports or runs
 creates the exports, their archives and the uploaded imports readable by their owner and their
 group only (mode 0640), since they hold the data of the customers, in folders it makes writable
 by their group (mode 0770), since a worker deletes the import the web server stored and the purge
-removes what either left. A folder made before keeps its mode: check it when the users differ.
+removes what either left; the group reads a file, it never rewrites one. A folder made before keeps
+its mode: when the users differ, check `var/data-transfer/import` and the export folder of the
+cache, and give them `chmod 0770` if they were made more open or more closed.
 An export written by a worker under a user outside that group could not be served by the back
 office, nor an import it stored read by a worker.
 
