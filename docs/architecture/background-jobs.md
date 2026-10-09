@@ -292,8 +292,8 @@ a reason written for the administrator is logged on one line. A module whose exc
 a message meant for the administrator implements `UserFacingFailure` on it.
 
 A message that fails before its job is taken (its row cannot be read, the claim fails, or the
-queue refuses the look-again message) is set aside through `JobLifecycle::reject()`, with the
-same sanitized text only. Its row is left as it is: it may be unreadable, or held by another
+queue refuses the look-again message) is set aside by `JobLifecycle::take()`, with the same
+sanitized text only. Its row is left as it is: it may be unreadable, or held by another
 run.
 
 An import started from the back office is a job too.
@@ -366,9 +366,9 @@ Both jobs share the status enum `Thelia\Domain\DataTransfer\Job\JobStatus`: `que
 `running`, `done`, `failed`. Their models implement `Thelia\Domain\DataTransfer\Job\DataTransferJob`
 and their messages, `RunExportJob` and `RunImportJob`,
 `Thelia\Domain\DataTransfer\Job\DataTransferJobMessage`. The handlers go through
-`Thelia\Domain\DataTransfer\Job\JobLifecycle`, which dispatches a job, claims it or postpones
-it (`claimOrPostpone()`, which returns `ClaimOutcome::Owned`, `Finished` or `Postponed`) and
-records its failure. A worker claims a job atomically before running it
+`Thelia\Domain\DataTransfer\Job\JobLifecycle`, which dispatches a job (`dispatch()`), takes it
+for a run (`take()`: the job when this run owns it, `null` when another run holds it or
+finished it, which is then looked at again later) and records its failure (`fail()`). A worker claims a job atomically before running it
 (`Thelia\Domain\DataTransfer\Job\JobClaim`, a service), so two workers handed the same job never
 run it at the same time. A job left `running` is taken again once it has given no sign of life for
 one hour (`JobClaim::STALE_AFTER_SECONDS`, 3600 seconds, the default redelivery timeout of the
