@@ -33,10 +33,20 @@ of the shop declared equivalent to it.
 - **Once.** Each step done is written to the order history, `payment_reminder_sent` or
   `payment_reminder_failed`, and is never done again: a run replayed sends nothing twice, and
   a mail that cannot leave (an address the mailer refuses) is not retried at every run.
+- **Never to an order paid meanwhile.** Each order is read again, under a lock, right before
+  its step: an order paid while the run was busy with others is left alone. A mail is
+  recorded before it leaves and the record is turned into a failure if it cannot: a reminder
+  is sent at most once.
+- **Not forever.** Without a cancellation step, an unpaid order is no longer read 30 days
+  after the last step, when the link of its last mail stops working.
 - **The cancellation** is the one any cancellation goes through: the status transitions are
   asked, the stock is given back, and the history shows the status change.
 - **Bounded.** A run acts on 200 orders at most (`--limit`), oldest first; the next run goes
   on. `--dry-run` lists what it would do.
+
+A step is known by its delay: changing a `24` hours step into `25` makes it a new step, sent
+again to the orders already reminded at 24 hours. A step naming a mail the shop does not have
+waits until it exists, and the command says so.
 
 The dashboard alert on unpaid orders, and the urgent marker of the order list, follow the
 first step of the schedule instead of a fixed 48 hours.
