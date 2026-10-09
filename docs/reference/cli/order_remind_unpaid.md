@@ -25,8 +25,8 @@ with `thelia:config`:
 Both are empty after an update: nothing is sent until a schedule is written. See
 [Unpaid order reminders](../../features/unpaid-order-reminders.md) for what a run does.
 
-The command exits with `1` when a step failed (the table says which), so the scheduler of
-the host can report it.
+The command exits with `1` when a step failed or waits for a mail message the shop does not
+have (the output says which), so the scheduler of the host can report it.
 
 ## Scheduling
 Run it every fifteen minutes or every hour; the steps are counted in hours.
