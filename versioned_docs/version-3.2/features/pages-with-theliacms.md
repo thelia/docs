@@ -34,7 +34,7 @@ Composer also installs the page builder bundle and the TheliaLibrary module, whi
 Activation creates the tables and the access rights, and generates the page addresses. It also seeds:
 
 - two menus, `main` and `footer`;
-- four legal pages (legal notice, privacy policy, cookies, accessibility statement), unpublished, in every active language.
+- on the first activation, four legal pages (legal notice, privacy policy, cookies, accessibility statement), unpublished, in each language the module has a text for (English and French).
 
 A legal page cannot be published while it still holds the sample text the module wrote. The refusal applies to the back-office button and to the command line alike.
 
@@ -44,7 +44,7 @@ Deactivating the module removes the rewritten addresses it owns, so the site ans
 
 A fresh Flexy install already has two modules that edit content: Page and TheliaBlocks (see [what a fresh install contains](/docs/getting-started/what-a-fresh-install-contains)). TheliaCMS runs next to them with its own tables, screens and addresses. It does not read what they store, and they ignore it.
 
-The contents and folders of the shop are not CMS pages. They stay in Folders, which the CMS section of the back-office menu links to. Nothing is converted: not the contents, not the Page pages, not the TheliaBlocks groups.
+The contents and folders of the shop are not CMS pages. They stay in Folders, which the CMS section of the back-office menu links to. Nothing is converted, whether contents, Page pages or TheliaBlocks groups.
 
 Both Page and TheliaCMS can serve a home page on `/`. Set one in a single module only.
 
@@ -52,11 +52,11 @@ Both Page and TheliaCMS can serve a home page on `/`. Set one in a single module
 
 **CMS > Pages** shows the tree one level at a time. A page can be filed under another one, and the address of a page is the chain of its slugs: a page "Conseil et accompagnement" under "Nos services" answers on `/nos-services/conseil-et-accompagnement`. Each language has its own slug. Leave the field empty and the slug comes from the title.
 
-A page has a title, a slug, a parent, a layout, a publication window and a visibility, plus SEO fields: meta title and description, social title and description, canonical URL, `noindex` and `nofollow`. All of them are per language. The French and English versions of a page are two independent canvases.
+A page has a title, a slug, a parent, a layout, a publication window and a visibility, plus SEO fields: meta title and description, social title and description, canonical URL, `noindex` and `nofollow`. The title, the slug and the SEO fields are per language. The parent, the layout, the visibility and the publication window are shared by every language. The content is per language too: the French and English versions of a page are two independent canvases.
 
 Rules to know:
 
-- `admin`, `api`, `assets`, `cache`, `media`, `sitemap`, `robots.txt`, `site-icon`, `recherche` and `search` cannot be a first segment, nor can a few Symfony debug paths. The rewriting router runs before the Symfony routes, so a page called `admin` would shadow the back office.
+- `admin`, `api`, `assets`, `cache`, `media`, `sitemap`, `robots.txt`, `site-icon`, `recherche`, `search`, `error` and a few Symfony debug paths cannot be the slug of a page. The rewriting router runs before the Symfony routes, so a page called `admin` would shadow the back office. A slug derived from the title is checked too, so a page titled "Search" needs a slug of its own.
 - Moving a page, or renaming it, rewrites the address of everything under it, in every language. It happens inside the transaction of the save, so a branch is never half moved. On a site of several hundred pages, moving a page near the root takes a moment.
 - An address that differs from a page address only by a trailing slash answers 301 to the form without it. Addresses that belong to other views (a product, a category, a content) are left alone.
 - With a search or a filter active, the tree turns into a flat list of results and the reorder arrows disappear, since a position moved from a filtered list would be a position among pages you cannot see.
@@ -128,8 +128,8 @@ Recipients are set on the form and nowhere else. A recipient never comes from th
 There is no captcha. Three checks run without asking anything of the visitor:
 
 - a hidden field that only a robot fills in;
-- a signed timestamp of when the form was served: a message sent in under 3 seconds, or with a stamp this site did not issue, is dropped;
-- a cap on how many messages one sender can send, which reuses the core `form_firewall_attempts` and `form_firewall_time_to_wait` settings. Only accepted messages count.
+- a signed timestamp of when the form was served: a message sent in under 3 seconds, more than 12 hours after the form was served, or with a stamp this site did not issue, is dropped;
+- a cap on how many messages one sender can send, which reuses the core `form_firewall_attempts` and `form_firewall_time_to_wait` settings and applies while `form_firewall_active` is on. Only accepted messages count.
 
 **CMS > Forms > Answers** lists what a form received and can search by email address. An answer can be exported as CSV or JSON, or deleted. The address a message came from is never stored, only a keyed hash of it.
 
@@ -141,11 +141,11 @@ Each form states how long its answers are kept, 365 days by default. `thelia_cms
 
 Alternative text is required in every language unless the image is marked decorative. A decorative image is published with an empty `alt`, and the choice is recorded. An image used by a page cannot be deleted.
 
-At publication every image becomes a `<picture>` with a WebP alternative, a `srcset`, explicit `width` and `height`, and lazy loading on every image but the first.
+At publication every image becomes a `<picture>` with a WebP alternative, a `srcset` when smaller widths exist, explicit `width` and `height` when the dimensions of the image are known, and lazy loading on every image but the first.
 
 ## Site settings
 
-**CMS > Settings** holds the site-wide settings. The ones that change how the site answers:
+These settings change how the site answers. Most are edited under **CMS > Settings**. The home page is chosen from the page list, and `heading_check_mode` and `footer_menu_hook` have no screen: they are module configuration values.
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
@@ -157,7 +157,7 @@ At publication every image becomes a `<picture>` with a WebP alternative, a `src
 | `maintenance_page_id` | none | The CMS page shown while the site is closed. |
 | `heading_check_mode` | `warn` | `warn` reports heading problems and publishes anyway. `block` refuses to publish. |
 | `trash_retention_days` | `30` | See [the bin](#the-bin). |
-| `footer_menu_hook` | off | Renders the `footer` menu in the `layout.footer.top` hook, for a theme that never calls `cms_menu('footer')`. |
+| `footer_menu_hook` | off | Renders the `footer` menu in the `layout.footer.top` hook, for a theme that reads neither `cms_menu('footer')` nor the `footer_links` content slot. Flexy reads the slot, so leave it off there. |
 
 Saving showcase mode also creates an Editor profile: pages, menus, media, forms and news, with no access to the shop, to these settings or to free HTML. Assign it under **Configuration > Administrators**.
 
@@ -185,4 +185,4 @@ The module uses two extension points of the core, so a theme needs no change to 
 
 ## More
 
-The module has more than this page covers, among them the sitemap and search integration, the shared cache tags, the export and import commands, and how to add a block of your own. See the [TheliaCMS repository](https://github.com/thelia-modules/TheliaCMS) for those.
+The [TheliaCMS repository](https://github.com/thelia-modules/TheliaCMS) documents the sitemap and search integration, the shared cache tags, the export and import commands, and how to add a block of your own.
