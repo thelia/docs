@@ -28,6 +28,76 @@ reading a filename or a redundant title.
 The front-office computes this resolved value; templates never fall back to the title
 themselves.
 
+## Image formats
+
+Added in Thelia 3.2, with TheliaLibrary 2.0.10.
+
+A shop can serve its catalog images in WebP or AVIF next to the source file. The browser picks
+the lightest format it reads, and the source format (JPEG, PNG) stays the fallback, so a browser
+that reads neither still gets the image.
+
+### Settings
+
+The formats and their quality are configuration variables, under Configuration > System
+variables in the back office:
+
+| Setting | Fresh install | Updated shop | Purpose |
+| --- | --- | --- | --- |
+| `image_formats` | `webp` | empty | Comma-separated list of the formats served next to the source file: `avif`, `webp`. Empty serves the source format only. |
+| `image_quality_webp` | `75` | `75` | Encoder quality of WebP files, from 1 to 100. |
+| `image_quality_avif` | `50` | `50` | Encoder quality of AVIF files, from 1 to 100. |
+
+A shop updated from 3.1 gets an empty `image_formats` list and keeps rendering its images as
+before, so nothing is regenerated on the first crawl. Setting it to `webp`, or `avif,webp`, turns
+the feature on.
+
+Each format has its own quality because the encoders do not share a scale: the same number does
+not give the same picture in WebP and in AVIF. A quality that is not a number between 1 and 100
+is ignored and the default of the format applies (75 for WebP, 50 for AVIF). An unknown entry in
+`image_formats` is dropped, and the order of the list does not matter: AVIF is always offered
+before WebP.
+
+### What the server must support
+
+A format is served only if the graphics library that renders the images can write it. Thelia
+asks the driver LiipImagine runs on (the `driver` key of `config/packages/liip_imagine.yaml`,
+`gd` by default):
+
+| Driver | Writes WebP when | Writes AVIF when |
+| --- | --- | --- |
+| `gd` | GD was built with WebP support (`IMG_WEBP` in `imagetypes()`) | GD was built with AVIF support (`IMG_AVIF` in `imagetypes()`) |
+| `imagick`, `gmagick` | ImageMagick or GraphicsMagick lists the WebP format | ImageMagick or GraphicsMagick lists the AVIF format |
+
+A format listed in `image_formats` that the server cannot write is dropped silently: the browser
+is offered one format less, and the page never breaks. Check what PHP supports before turning
+AVIF on, for instance with `php -r 'var_dump(imagetypes() & IMG_AVIF);'` on a GD setup.
+
+### How the images are served
+
+TheliaLibrary renders an image as a `<picture>` element: one `<source>` per active format, most
+efficient first, then the `<img>` of the source format. Each variant is a static file written
+next to the source file in the LiipImagine cache, under the source name followed by the format
+extension:
+
+```
+/media/cache/product_card/product/PROD001-1.jpg
+/media/cache/product_card/product/PROD001-1.jpg.webp
+```
+
+The variant is generated the first time a page asks for it, then served directly by the web
+server with no redirect and no content negotiation. A variant that fails to generate is logged
+and left out of the `<picture>`. The web server picks the `Content-Type` from the extension, so it
+needs to know `.webp` as `image/webp` and `.avif` as `image/avif`.
+
+A variant is not regenerated when a quality setting changes. To apply a new quality to images
+already in the cache, remove the cached images with LiipImagine's `liip:imagine:cache:remove`
+command.
+
+For developers, `Thelia\Domain\Media\Service\ImageFormatPolicy` is the single place that answers
+which formats to serve (`activeFormats()`) and at which quality (`qualityFor()`).
+`ImageFormatCapabilities` answers what the server can write. A theme or a module that renders
+images itself asks the policy rather than reading the settings.
+
 ## Videos
 
 A product can attach videos alongside its images. In the back office they are added and
