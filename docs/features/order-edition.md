@@ -69,4 +69,10 @@ run on this trigger. See [Order Status Transitions](./order-status-transitions.m
 | React to an edit | `TheliaEvents::ORDER_BEFORE_EDIT` (in the transaction) and `ORDER_AFTER_EDIT` (after the commit), with an `OrderEditEvent` |
 | Read what changed | the `order_edited` line of the order history, or `order_changes` in the mail |
 
-A preview runs the same code as a save and undoes it, without dispatching the events.
+A preview runs the same code as a save and undoes it. It does not dispatch the two edit events,
+but a line it adds is saved before being undone, so the model events of an order line are
+dispatched: a listener with effects outside the database should not act on them during an
+edit. A listener of `ORDER_AFTER_EDIT` that fails is logged; the edit, already committed,
+stands.
+
+The discount typed by the merchant is not checked against the coupons the order used.
