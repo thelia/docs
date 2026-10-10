@@ -5,7 +5,7 @@ sidebar_position: 10
 
 # Pages with TheliaCMS
 
-Added in Thelia 3.2.
+Available from Thelia 3.2.
 
 TheliaCMS (`thelia/cms-module`) is a module that turns a Thelia shop into a site with pages. It gives the back office a visual page builder, a tree of pages with addresses that follow the tree, a bin, menus, forms and a media library. A published page is plain HTML and CSS: it ships no builder JavaScript.
 
