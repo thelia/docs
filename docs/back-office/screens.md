@@ -13,7 +13,7 @@ The home page of the back office (`/admin/home`) is titled **Dashboard**. It ope
 
 The page holds:
 
-- Four figure cards: **Revenue**, **Orders**, **Average order** and **New customers**. Each one shows the change against the previous period of the same length, which ends just before the chosen one starts.
+- Four figure cards: **Revenue**, **Orders**, **Average order** and **New customers**. Each one shows the change against the previous period of the same length, which ends just before the chosen one starts. No change is shown when the previous period has nothing to compare with.
 - Alerts above the cards, each linking to the matching filtered list.
 - A **Revenue trend** chart (daily) and an **Order status** chart.
 - The **Recent orders**, **Top selling products** and **Low stock** lists.
@@ -53,7 +53,7 @@ The **Edit** form changes only the fields that are filled in: a field left on **
 - associated contents to add or remove,
 - related products to add or remove, for the relation type chosen in the form.
 
-Products that already have the requested value are skipped, and the confirmation message counts only the products that changed. Each batch is written to the [administration log](#administration-logs): an edit with the number of products and the changes made, a deletion with the references of the deleted products.
+For the online status and the template, products that already have the requested value are skipped and the confirmation message counts only the products that changed. Each batch is written to the [administration log](#administration-logs): an edit with the number of products and the changes made, a deletion with the references of the deleted products.
 
 ### Category tree
 
@@ -67,7 +67,7 @@ Viewing the tree needs the view right on categories, and moving a category needs
 
 The order list changes the status of several orders at once. With the update right on orders, a tick box appears on each row. Once orders are ticked, a toolbar offers **Move the selected orders to** a status.
 
-The [status graph](../features/order-status-transitions.md) decides order by order. The menu only offers statuses that at least one ticked order can reach. When no status can be reached from every ticked order, the page says so and asks to narrow the selection. When the form is sent, the server checks again: the orders that may take the new status are moved, and the references of the others are listed in a warning as skipped. A failure on one order is reported by its reference and does not stop the others.
+The [status graph](../features/order-status-transitions.md) decides order by order. The menu only offers the statuses that every ticked order can reach. When there is none, the page says so and asks to narrow the selection. When the form is sent, the server checks again: the orders that may take the new status are moved, and the references of the others are listed in a warning as skipped. A failure on one order is reported by its reference and does not stop the others.
 
 A batch is written to the [administration log](#administration-logs) as one line with the code of the target status and the number of orders moved.
 
@@ -75,7 +75,7 @@ A batch is written to the [administration log](#administration-logs) as one line
 
 The customer sheet (**Customers**, then a customer) starts with an **Overview** band, then the form, then collapsible sections.
 
-The band shows **Total spent**, **Orders**, **Average basket**, **First order**, **Last order** and **Customer since**. The money figures count the paid, processing and sent orders, like the dashboard revenue. The number of orders left out (cancelled, refunded, unpaid) is shown under **Orders**. When the customer ordered in several currencies, the amounts are added up without conversion and the band says so. An administrator without the view right on orders sees only **Customer since**, and the orders section is not shown to them.
+The band shows **Total spent**, **Orders**, **Average basket**, **First order**, **Last order** and **Customer since**. Every figure but **Customer since** counts the paid, processing and sent orders only, like the dashboard revenue. The number of orders left out (cancelled, refunded, unpaid) is shown under **Orders**. When the customer ordered in several currencies, the amounts are added up without conversion and the band says so. An administrator without the view right on orders sees only **Customer since**, and the orders section is not shown to them.
 
 Other sections:
 
@@ -90,7 +90,7 @@ Other sections:
 
 ### CSV templates for imports
 
-Each page of **Tools > Import** has a **Download a CSV template** button. The file contains only the header row: the columns the import expects. It is named after the import, as in `<import>-template.csv`. The button is absent when the import declares no columns.
+Each page of **Tools > Import** has a **Download a CSV template** button. The file contains only the header row: the columns the import expects. It is named after the reference of the import, in lower case, as in `<import>-template.csv`. The button is absent when the import declares no columns.
 
 ### Newsletter subscribers
 
@@ -124,7 +124,7 @@ Modules add content at the bottom through the `system-information.bottom` hook.
 **Configuration > Administration logs** lists what administrators did, filtered by period (the last 7 days by default), administrator, resource and module. Two things are kept out of an entry:
 
 - The request stored with it has no `Cookie`, `Authorization` or HTTP Basic header.
-- A failed back-office sign-in and a failed password creation are logged without the request body, so a password typed by mistake is not kept.
+- A failed back-office sign-in is logged without the request body, so a password typed by mistake is not kept.
 
 The screen needs the view right on the administration logs. See [Two-Factor Authentication](./two-factor-authentication.md) for what that feature writes to the log.
 
@@ -142,4 +142,4 @@ An administrator with a profile cannot change the profile of their own account, 
 
 On a narrow screen, the lists of orders, customers, products, coupons, sales, catalog price rules, order returns, currencies, countries and languages hide their secondary columns. A chevron at the start of each row expands a detail line with the hidden values. When a sortable column is hidden, a **Sort by** form with a direction and a **Sort** button replaces the clickable headers. Other lists, such as the newsletter subscribers, drop their secondary columns below a given width and have no detail line.
 
-A DataTable column declares the width it appears from with `visibleFrom` (`sm`, `md`, `lg`, `xl` or `xxl`). See [Components](./components.md).
+A DataTable column declares the width it appears from with `visibleFrom` (`sm`, `md`, `lg`, `xl` or `xxl`).
