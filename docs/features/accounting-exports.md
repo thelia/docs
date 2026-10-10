@@ -65,7 +65,7 @@ The columns of the sales journal are the 18 fields of the French accounting entr
 | `EcritureDate`, `PieceDate`, `ValidDate` | the invoice date |
 | `CompteNum`, `CompteLib` | the account and its label |
 | `CompAuxNum`, `CompAuxLib` | the customer reference and name, on the customer line only |
-| `EcritureLib` | "Facture <reference> <customer>" (in the language of the export) |
+| `EcritureLib` | `Facture <reference> <customer>` (in the language of the export) |
 | `Debit`, `Credit` | the amount, in the shop currency |
 | `EcritureLet`, `DateLet` | empty |
 | `Montantdevise`, `Idevise` | the amount and currency of an order in another currency |
