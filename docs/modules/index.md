@@ -60,7 +60,7 @@ Modules can:
 | **LiveComponents** | Create interactive front-office components |
 | **Controllers** | Handle HTTP requests (front and admin) |
 | **Event Listeners** | React to system events |
-| **Loops** | `BaseLoop` is the extension point for `{loop}` in Smarty back-office templates; for front-office (Twig) data, prefer API resources |
+| **Loops** | `BaseLoop` is the extension point of the legacy loop data layer, called by `{loop}` in Smarty templates and by the `loop()` Twig function; for new code, prefer API resources |
 | **Hooks** | Inject content into back-office templates |
 | **Forms** | Create validated forms |
 | **Commands** | Add CLI commands |
@@ -100,7 +100,7 @@ local/modules/MyProject/
 See [Module Structure](./structure.md) for detailed explanations of each component.
 
 :::note Back-office templates
-The reference back-office theme in Thelia 3 is the **default-twig** bundle: a self-contained bundle with its own `#[Route]` controllers, hooks, Twig templates, form themes and assets. The legacy Smarty `default` back-office theme is deprecated and is expected to be dropped in Thelia 3.1. Target the Twig back-office for new module screens.
+The reference back-office theme in Thelia 3 is the **default-twig** bundle: a self-contained bundle with its own `#[Route]` controllers, hooks, Twig templates, form themes and assets. The Smarty `default` back-office theme is no longer installed as of Thelia 3.2. Target the Twig back-office for module screens.
 :::
 
 ## PHP Best Practices

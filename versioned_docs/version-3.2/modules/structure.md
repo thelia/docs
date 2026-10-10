@@ -567,8 +567,8 @@ templates/backOffice/
         └── my-partial.html.twig
 ```
 
-:::note The Smarty back-office theme is deprecated
-The legacy Smarty `default` back-office theme is no longer the recommended target and is expected to be dropped in Thelia 3.1. Write your back-office hook templates against the `default-twig` bundle.
+:::note The Smarty back-office theme is no longer installed
+The Smarty `default` back-office theme is no longer installed as of Thelia 3.2. Write your back-office hook templates against the `default-twig` bundle.
 :::
 
 ## Translations

@@ -25,7 +25,7 @@ Propel is **not** Doctrine: there is no `EntityManager` and no `flush()`. Every 
 :::
 
 :::caution Back-office: Twig is the reference
-The Twig back-office (`default-twig` bundle) is the reference admin theme. The legacy Smarty `default` back-office still ships, but it is no longer recommended and is expected to be dropped in a later release. Build new admin features on the `default-twig` bundle.
+The Twig back-office (`default-twig` bundle) is the only admin theme Thelia installs. The Smarty `default` back-office is no longer installed as of Thelia 3.2 and is not maintained. Build admin features on the `default-twig` bundle.
 :::
 
 ### Directory structure
@@ -48,8 +48,7 @@ thelia/
 │       └── Model/                  # Propel models
 ├── templates/
 │   ├── frontOffice/flexy/          # Front-office Twig theme (FlexyBundle)
-│   ├── backOffice/default-twig/    # Back-office Twig theme (reference)
-│   └── backOffice/default/         # Legacy Smarty back-office (deprecated)
+│   └── backOffice/default-twig/    # Back-office Twig theme
 ├── vendor/thelia/
 │   └── modules/                    # Official modules
 └── local/modules/                  # Custom modules
@@ -117,7 +116,7 @@ Both the front-office and the back-office reference themes are Twig bundles:
 | AssetMapper + Tailwind CSS | AssetMapper + Sass + Bootstrap 5 |
 
 :::caution
-The legacy Smarty `default` back-office is still shipped for backward compatibility, but it is deprecated. New back-office work should target the `default-twig` bundle.
+The Smarty `default` back-office is no longer installed as of Thelia 3.2. Back-office work targets the `default-twig` bundle.
 :::
 
 See [Dual Templating](./dual-templating.md) for details.
