@@ -507,6 +507,71 @@ Since Thelia 3.1 a relation between two products carries a type: `accessory`, `c
 
 The titles come from the types themselves, translated, so adding a type in the back office adds a block on the page without touching the template. See [Product Relation Types](../../features/product-relation-types.md).
 
+## Adding a sort to product listings
+
+Added in Thelia 3.2. The sort selector of the Flexy product listings offers the theme's own sorts, which read native product columns, plus the ones modules declare. A module adds one by implementing `Thelia\Domain\Catalog\Product\ProductSortProviderInterface`:
+
+```php
+interface ProductSortProviderInterface
+{
+    public function value(): string;
+
+    public function title(): string;
+
+    public function position(): int;
+
+    /** @return array<string, string> */
+    public function parameters(): array;
+}
+```
+
+| Method | Returns |
+|--------|---------|
+| `value()` | The name of the sort in the query string of the listing. It ends up in shared and indexed URLs, so it must not be renamed later. Prefix it with the module code to avoid clashing with another sort. |
+| `title()` | The label of the entry, already translated: the front-office translator only knows the catalogs of the active theme. |
+| `position()` | The rank in the selector. Flexy places its own sorts at 10 (price ascending), 20 (price descending), 40 (newest), 50 (oldest), 60 (name A to Z) and 70 (name Z to A). |
+| `parameters()` | The query parameters sent to `/api/front/products`, such as `['order[ref]' => 'asc']`. |
+
+The interface is autoconfigured with the `thelia.catalog.product_sort` tag, so a service of an autowired module is enough. Only the services of an active module are in the container, so a deactivated module offers no sort.
+
+```php
+namespace MyModule\Catalog;
+
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Thelia\Domain\Catalog\Product\ProductSortProviderInterface;
+
+final readonly class ReferenceSort implements ProductSortProviderInterface
+{
+    public function __construct(private TranslatorInterface $translator)
+    {
+    }
+
+    public function value(): string
+    {
+        return 'mymodule_reference';
+    }
+
+    public function title(): string
+    {
+        return $this->translator->trans('Reference', [], 'mymodule');
+    }
+
+    public function position(): int
+    {
+        return 65;
+    }
+
+    public function parameters(): array
+    {
+        return ['order[ref]' => 'asc'];
+    }
+}
+```
+
+Flexy appends `order[ref]=asc` after the parameters of every sort as a tiebreaker, so pagination stays stable when products share a value. A sort that reads data the module stores needs a filter on the product collection that answers its parameters, registered by the same module (see [Filters](/docs/api/filters)). Without it the listing comes back in the default order under a heading that claims otherwise.
+
+A provider that returns the `value()` of a sort already offered replaces it, which lets a project swap one of the theme's sorts for its own. A URL carrying a sort the shop does not know, a removed module's for instance, falls back on the default order of the listing.
+
 ## Brand pages
 
 A brand carries a rewritten URL, and the core resolves it to the `brand` view with the brand id published as a URL parameter, the way a category or a product URL resolves. A theme serves it with a `brand.html.twig` at its root, read through `attr()` and `resources()` like any other page:

@@ -204,6 +204,26 @@ This file holds module metadata for the back-office and dependency management. T
 The `<thelia>` element states the minimum Thelia version your module targets; existing Thelia 3 modules still carry values such as `2.5.0` for backward compatibility. The `<type>` element selects the module kind (`classic`, `delivery` or `payment`) and determines which base class you extend.
 :::
 
+### Shipping a module inactive
+
+Added in Thelia 3.2. The optional `<enabled-by-default>` element says whether the module is active right after the shop is installed. It takes `0` or `1`, and must be the last element of `<module>`:
+
+```xml
+    <stability>prod</stability>
+
+    <enabled-by-default>0</enabled-by-default>
+</module>
+```
+
+| Value | Effect at install |
+|-------|-------------------|
+| absent or `1` | The module is registered active, as before. |
+| `0` | The module is registered inactive. It stays listed in the back-office and waits for the merchant to activate it. |
+
+A theme that requires the module does not activate it either. One exception: a module listed under `<required>` by a module that a theme brings and activates is activated with it, one level deep, whatever it declares. A module declared `0` that a theme brings activates none of its own required modules. An update never rewrites the state a merchant chose.
+
+Only the 2.2 descriptor format knows the element. The installers (`bin/install`, `thelia:install`, `bin/test-prepare`) check every descriptor before they create the database, and stop with a readable error on a value other than `0` or `1`, on the element placed anywhere but last, or on a descriptor still in the 2.1 format (a single `<author>` element instead of `<authors>`) that declares it.
+
 ## Routing
 
 Define routes with the `#[Route]` PHP 8 attribute directly on your controller methods. The core's `ModuleAttributeLoader` scans the `Controller/` directory of every activated module and registers every attributed route automatically. There is nothing else to declare.
