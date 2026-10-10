@@ -26,6 +26,8 @@ Read the release notes of the version you move to, and the matching page in
 relies on, and a module or a template you depend on may need its own bump in
 `composer.json`.
 
+If the shop runs background workers, stop them before you start and restart them at the end, as described in [Deploying](../getting-started/background-workers.md#deploying).
+
 ## 1. Update the code
 
 A project installed with `composer create-project thelia/thelia-project` depends on
@@ -140,6 +142,36 @@ cross, in order:
 
 - [Updating from 3.0 to 3.1](./from-3.0-to-3.1.md), patch releases 3.1.1 and 3.1.2 included.
 - [Updating from 3.1 to 3.2](./from-3.1-to-3.2.md), patch release 3.2.1 included.
+
+### Updating to 3.3: background jobs
+
+Thelia 3.3 ships Symfony Messenger and the [background jobs](../architecture/background-jobs.md).
+Check these points when you cross it:
+
+- The core requires `symfony/messenger`. When Composer applies the Symfony recipe of that
+  package instead of the Thelia one, it writes `config/packages/messenger.yaml` and adds
+  `MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0` to `.env`, and every mail then waits
+  for a worker. Delete the `config/packages/messenger.yaml` the Symfony recipe wrote: the core
+  configures Messenger itself. A `messenger.yaml` of your own, such as one that routes a module
+  message, stays. Unless a worker runs, also delete that line, so `async` stays synchronous.
+- The Symfony recipe of `symfony/scheduler` writes `src/Schedule.php`. Delete it too: the core
+  declares its own `thelia` schedule.
+- Going back from a queue to no queue leaves the jobs still waiting in `messenger_messages`.
+  Let a worker empty the queues before you empty `MESSENGER_TRANSPORT_DSN`.
+- The core configures Messenger for the whole application: its serializer, its bus, its
+  `failure_transport` and the routing of its messages come before the configuration of the
+  project. An application that already queued messages of its own (`App\Message\…`) gets a
+  `LogicException` on dispatch until their classes are listed in the
+  `thelia.messenger.allowed_message_classes` parameter. A module message is accepted when it
+  lives in the namespace of an active module and has a handler.
+- With a queue, the web servers and the workers must share `var/data-transfer/import/` and
+  `var/cache/export/`, and a deployment must not empty them while jobs wait. See
+  [Running the workers](../getting-started/background-workers.md#deploying).
+- On an AMQP queue, set `MESSENGER_HEAVY_TRANSPORT_DSN`: otherwise the exports and imports share
+  the queue of `async`, are read by its worker and tried again three times like its jobs.
+- Launching an import from the back office takes the `UPDATE` right on `admin.import`; `VIEW`
+  now only shows the imports and their jobs. Review the profiles of the administrators who
+  import.
 
 ## Recommendations
 

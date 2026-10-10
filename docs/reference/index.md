@@ -33,6 +33,12 @@ Transactional emails and order documents (invoice, delivery slip) are Twig theme
 
 See [Emails and PDF](./emails-and-pdf.md) for the theme reference and the preview commands.
 
+### Background jobs
+
+Mail delivery, back-office exports and imports, and the work of modules can run in a queue consumed by a worker, and recurring tasks run from a schedule.
+
+See [Background jobs](./background-jobs.md) for the settings, the commands and a complete module example.
+
 ## CLI commands
 
 Thelia provides console commands for common operations such as cache management, module handling, and database operations.
@@ -47,6 +53,7 @@ See the [CLI reference](./cli/index.md) for all available commands.
 | [Forms](./forms.md) | Form creation and validation |
 | [Internationalization](./internationalization.md) | Multi-language support |
 | [Emails and PDF](./emails-and-pdf.md) | Email and PDF Twig themes |
+| [Background jobs](./background-jobs.md) | Queues, workers and recurring tasks |
 | [CLI Commands](./cli/index.md) | Console commands |
 
 ## Legacy references

@@ -9,6 +9,44 @@ This page lists, release by release, what a module or a theme has to change when
 
 For the update procedure itself, see [Update](./update.md).
 
+## Thelia 3.3
+
+The update gestures (the Symfony Messenger recipe, the shared directories, the queue of the heavy jobs) are in [Updating to 3.3: background jobs](./update.md#updating-to-33-background-jobs). See [Background jobs](../architecture/background-jobs.md) for the model.
+
+### Back-office theme
+
+The `default-twig` back-office theme requires `thelia/core ^3.3` in its `composer.json`. Update the core and the theme together.
+
+### Export and import handlers
+
+`ExportHandler::export()`, `ImportHandler::import()` and `ImportHandler::validateUpload()` take a new optional last argument. A module that overrides one of them has to declare it.
+
+| Method | New last argument |
+|--------|-------------------|
+| `Thelia\Domain\DataTransfer\ExportHandler::export()` | `?\Closure $onProgress = null`, told the rows written |
+| `Thelia\Domain\DataTransfer\ImportHandler::import()` | `?\Closure $onProgress = null`, told the rows read |
+| `Thelia\Domain\DataTransfer\ImportHandler::validateUpload()` | `?File $file = null`, the uploaded file whose content is checked |
+
+`processExport()` and `processImport()` keep their signature. `ImportHandler::import()` now extracts an archive through a private method, so an override of `extractArchive()` is no longer called by it.
+
+`ImportHandler` takes a fourth constructor argument, `Thelia\Domain\DataTransfer\ArchiveInspector`: a module that builds or extends it passes it. `AbstractArchiver` implements the new `Thelia\Core\Archiver\ClosableArchiverInterface` (`close(): bool`, `discard(): void`): an archiver of a module that declares either method with another signature must align it.
+
+### Mails
+
+- The order history line `email_sent` is written once the mail server has taken the mail, by `Thelia\Mailer\EventListener\OrderEmailHistoryListener` on the Symfony Mailer `SentMessageEvent`, and no longer by `MailerFactory` right after handing the mail over. Without a queue this happens in the same request; with one, it is the worker that writes it, later, and the author of the line is `system`.
+- `MailerFactory` names the order in two headers of the mail, `X-Thelia-Order-Id` and `X-Thelia-Message-Code`. They travel through the queue and are removed right before the mail is handed to the mail server.
+- `MailerFactory` no longer takes an `OrderHistoryRecorder`. Its fourth constructor argument is now the required `Symfony\Component\Mailer\Transport\TransportInterface` (the `mailer.transports` service), used by `sendNow()`. A module that builds it with `new` and still passes the recorder gets a `TypeError`.
+- With a queue, `sendEmailMessageOrFail()` and the methods built on it only throw when the mail could not be built or queued. A delivery failure no longer reaches the caller: the mail is set aside in `failed`.
+- A `TemplatedEmail` that is not rendered yet is refused when it is queued, with a `LogicException`: the worker renders nothing. Render it before sending it (`BodyRenderer`), or send it without a queue.
+
+### Messenger configuration
+
+The core configures Messenger for the whole application: its serializer, its bus, its `failure_transport` and the routing of its messages come before the configuration of the project. An application or a module that already queued messages of its own (`App\Message\…`) gets a `LogicException` on dispatch until their classes are listed in the `thelia.messenger.allowed_message_classes` parameter, or live in the namespace of an active module and have a handler. See [Which classes a queue accepts](../architecture/background-jobs.md#which-classes-a-queue-accepts).
+
+### Import right
+
+Launching an import from the back office takes the `UPDATE` right on `admin.import`. The `VIEW` right used to be enough; it now only shows the imports and their jobs. Review the profiles of the administrators who import.
+
 ## Thelia 3.2
 
 A class you read from the container needs nothing when its constructor gains arguments. The "has to pass" cases below concern a module that builds the class with `new`.

@@ -156,6 +156,42 @@ purge cannot hand a blocked IP address a fresh set of attempts.
 
 See [`maintenance:purge`](../reference/cli/maintenance_purge.md).
 
+### Background jobs
+
+Exports and imports started from the back office, and jobs that failed in the queue, hold
+personal data too: an import file can list customers, and a failed order mail keeps the address
+of the customer and the content of the order. Their retention periods are fixed in the code.
+
+| Data | Purged by | Kept |
+| --- | --- | --- |
+| Export and import jobs that are done | `maintenance:purge` | 7 days |
+| Other export and import jobs (failed, queued, running) | `maintenance:purge` | 31 days, a day longer than the failed jobs they can be replayed from |
+| Uploaded import files | The import itself, then `maintenance:purge` | Deleted once the import is done, or once it failed when there is no queue to replay it from, or once its failed job is deleted from the back office (not by `messenger:failed:remove` nor `thelia:messenger:purge-failed`, which leave it to `maintenance:purge`, 31 days at most); a file kept for a replay goes with its job, only when it lies under `var/data-transfer/import` |
+| Files left in `var/data-transfer/import` | `maintenance:purge` | 31 days |
+| Failed jobs of the queue | `thelia:messenger:purge-failed`, and `maintenance:purge` | 30 days; `--older-than` changes it for `thelia:messenger:purge-failed` |
+
+The 30-day sweep of `var/data-transfer/import` removes what no job row points to any more, such
+as the extracted copy of an archive left by a worker that was killed, or a file whose row was
+deleted by hand. The `thelia` schedule runs `thelia:messenger:purge-failed` every day at 04:00;
+a shop that runs its tasks from a crontab adds it there. Record both retentions in the GDPR
+register.
+
+The reason an administrator reads of a failed export or import, on its job page and on the
+Background jobs screen, does not quote the data: unless the exception was written for the
+administrator, it reads as a server error, and the error line Thelia writes to the log names it
+by its class, code and place in the code rather than by its message. The failed job kept in
+`failed` stores only that text: the original exception is not chained to it, since Symfony
+keeps the whole chain of an exception it sets aside. This holds for the exports and imports of
+the back office; a failed mail or module job keeps the exception its handler threw, but the
+Background jobs screen only shows its reason when it was written for the administrator or is
+the answer of the mail server, credentials hidden, and the log of the workers names its
+exception by class, code and place (`Thelia\Messenger\Log\FailedJobLogProcessor`).
+
+A queued mail stores the content of its attachments in the queue, an attachment given by its
+path included: the queue, and `failed` for a mail that could not be delivered, hold the
+documents a mail carries, such as an invoice. See [Background jobs](../architecture/background-jobs.md#personal-data) and
+[`thelia:messenger:purge-failed`](../reference/cli/thelia_messenger_purge_failed.md).
+
 ## Adding a module purge to the same run
 
 `maintenance:purge` dispatches `TheliaEvents::MAINTENANCE_PURGE` at the end of its run. A
@@ -188,4 +224,5 @@ To be explicit, so nobody promises it:
 - [Security policy](./security-policy.md)
 - [`customer:anonymize`](../reference/cli/customer_anonymize.md),
   [`customer:export-personal-data`](../reference/cli/customer_export_personal_data.md),
-  [`maintenance:purge`](../reference/cli/maintenance_purge.md)
+  [`maintenance:purge`](../reference/cli/maintenance_purge.md),
+  [`thelia:messenger:purge-failed`](../reference/cli/thelia_messenger_purge_failed.md)
