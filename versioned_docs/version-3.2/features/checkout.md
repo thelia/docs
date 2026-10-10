@@ -173,3 +173,60 @@ Orders created from the back office or from the console record nothing, since no
 The IP address travels with the customer's personal data export, because it is half of what
 makes the acceptance evidence. Anonymization erases it and keeps the wording, the answer and the
 date. See [Personal data](../security/personal-data.md).
+
+## Error messages in the tunnel
+
+Added in Thelia 3.2, with Flexy 1.2.
+
+Flexy tells the buyer what went wrong where the buyer can act on it, instead of answering with an
+error page.
+
+### Form errors
+
+Every form of the theme reports all of its errors after a submission. Each field in error shows
+its messages right under it, and the field carries `aria-invalid` and an `aria-describedby`
+pointing at the message, so assistive technology reads them too.
+
+A summary at the top of the form lists the errors when one field is not enough to show them:
+
+| Situation | Summary |
+| --- | --- |
+| One visible field in error | None. The message under the field is enough. |
+| Several fields in error | "This form contains N errors.", then one entry per field with a link to it. |
+| A field in error that the page does not show | Listed, without a link. |
+| An error of the form itself, such as a rejected CSRF token | Listed first, without being counted. |
+
+After a submission, the focus moves to the summary, or to the field to correct when there is no
+summary.
+
+The summary is the `FormErrors` component (`components/Molecules/FormErrors`), which the
+`form_start` block of the Flexy form theme renders on every form.
+
+The summary names each field by its label. A template that renames a field for one page does it
+with the `override_labels()` Twig function, called before `form_start()`, so the page and the
+summary use the same wording:
+
+```twig
+{% do override_labels(form, {
+    'email': 'Email address'|trans,
+    'password.first': 'Choose a password'|trans,
+}) %}
+{{ form_start(form) }}
+```
+
+A nested field is reached by a dotted path, and an unknown name is ignored. Passing
+`{label: …}` to `form_row()` changes the rendered label only, so the summary would still read the
+label the form type declared. Calling `override_labels()` after `form_start()` throws a
+`LogicException`.
+
+### Refusals in the tunnel
+
+Two refusals that used to end on a server error now come back to the buyer:
+
+| Moment | What the buyer sees |
+| --- | --- |
+| Adding to the cart from the product page, when a module refuses the line (an `InvalidCartException` from a cart listener) or the stock ran out since the page was rendered | The message "This product could not be added to your cart." on the product page. |
+| Placing the order, when a line sells out between the check and the stock decrement (`StockShortageException`) | A redirect to the cart, with a message naming the product reference, and the cart showing the shortage line by line. |
+
+Both messages are the theme's own, translated in the language of the page. The message of a
+module's exception is written for a log and never reaches the buyer.
