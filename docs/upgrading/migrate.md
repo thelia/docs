@@ -290,6 +290,25 @@ final class MyModuleTest extends IntegrationTestCase
 
 Bootstrap the isolated test database with `bin/test-prepare`. It creates the test DB, applies the schema, runs `module:post-activate-all`, and generates the JWT keypair (`lexik:jwt:generate-keypair --skip-if-exists --env=test`).
 
+## Data that comes from Thelia 2
+
+A database migrated from Thelia 2 keeps traces of the Thelia 2 install: column definitions, class names and message wording. The Thelia 3 update scripts and the core align them, so a migrated shop behaves like a fresh install on these points. The scripts can be replayed.
+
+| What Thelia 2 left | What Thelia 3 does |
+|--------------------|--------------------|
+| `order.invoice_date` and `order_version.invoice_date` stored as `DATE` | `3.2.0.sql` turns them into `DATETIME`, so the invoice date keeps its time from then on. Dates written before the update stay at 00:00:00. |
+| Filter rows (`choice_filter`) without a display type | `3.2.0.sql` gives them `checkbox`, the type a filter with no type is already shown with. |
+| `admin.password_renew_token` declared `NOT NULL` without a default | `3.2.0.sql` makes it nullable, as on a fresh install, so `admin:create`, a password change and the creation of an administrator from the back office work. |
+| Other columns declared `NOT NULL` without a default | `3.2.0.sql` gives them their fresh install definition: `folder.parent` (`DEFAULT 0`), `coupon.expiration_date`, `currency.format`, `state.isocode`, `order_status.color` and `order_status.position`, and the same columns of `folder_version` and `coupon_version`. |
+| Tax types stored under their Thelia 2 class (`Thelia\TaxEngine\TaxType\...`) | The update moves the percentage, fixed amount and feature amount (eco-tax) types to `Thelia\Domain\Taxation\TaxEngine\TaxType\...`: `3.0.0-alpha1.sql` while migrating, `3.2.1.sql` on a shop migrated before 3.2.1. |
+| Tables in `utf8` (`utf8mb3`) | Nothing automatic: the conversion locks each table, so you run it once. See [Converting a database migrated from Thelia 2 to utf8mb4](./from-3.1-to-3.2.md#converting-a-database-migrated-from-thelia-2-to-utf8mb4). |
+
+### Messages seeded by Thelia 2 modules
+
+A module written for Thelia 2 often seeds its email messages with Smarty placeholders, such as `Payment of order {$order_ref}`. Thelia 3 renders the subject and the body of a message with Twig, and rewrites each plain Smarty variable `{$name}` into `{{ name }}` before rendering, so the customer reads the order reference.
+
+Only a bare variable is rewritten. A Smarty modifier (`{$ref|upper}`), a property access (`{$order.ref}`) or a Smarty tag (`{config key="..."}`) is left as it is: rewrite these in Twig from the back office. A message that already contains `{{` is not touched. The rewrite applies to the subject and to the text stored in the database; a message rendered from a template file of the email theme is not concerned.
+
 ## What stayed the same
 
 You do **not** rewrite these. They carry over unchanged:
