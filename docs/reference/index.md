@@ -51,7 +51,7 @@ See the [CLI reference](./cli/index.md) for all available commands.
 
 ## Legacy references
 
-These sections document the loop data layer and the Smarty plugins of Thelia 2. The loops stay in the core and answer the `loop()` Twig function; the Smarty back-office is no longer installed as of Thelia 3.2. Prefer [API resources](/docs/api/index.md) in new code.
+These sections document the loop data layer and the Smarty plugins of the `TheliaSmarty` module. The loops stay in the core and answer the `loop()` Twig function; the Smarty back-office is no longer installed as of Thelia 3.2. Prefer [API resources](/docs/api/index.md) in new code.
 
 | Topic | Description |
 |-------|-------------|

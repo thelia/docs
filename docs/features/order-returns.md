@@ -21,8 +21,8 @@ Returns ship switched off. Three settings drive them:
 | `order_return_window_days` | `14` | How many days a return can be asked for, counted from the shipment of the order. |
 | `order_return_restock_mode` | `resellable` | What reception puts back in stock: `auto` (every received line), `resellable` (only the lines marked resellable) or `never`. |
 
-The window starts on the day the order last moved to the `sent` status, as recorded in its
-history. An order sent again after coming back therefore starts a new window. An order that was
+Since Thelia 3.2, the window starts when the order last moved to the `sent` status, as recorded
+in its history (3.1 counted it from the creation of the order). An order sent again after coming back therefore starts a new window. An order that was
 never marked as sent, or that predates the order history, counts from its creation date.
 
 While the feature is off, the whole API surface of returns answers 404 rather than 403, so an
