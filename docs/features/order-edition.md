@@ -72,7 +72,7 @@ run on this trigger. See [Order Status Transitions](./order-status-transitions.m
 A preview runs the same code as a save and undoes it. It does not dispatch the two edit events,
 but a line it adds is saved before being undone, so the model events of an order line are
 dispatched: a listener with effects outside the database should not act on them during an
-edit. A listener of `ORDER_AFTER_EDIT` that fails is logged; the edit, already committed,
-stands.
+edit. A listener of `ORDER_AFTER_EDIT` that fails is logged and the edit stands. Inside a
+transaction the caller opened, nothing reaches the database until the caller commits.
 
 The discount typed by the merchant is not checked against the coupons the order used.
