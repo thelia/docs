@@ -22,8 +22,12 @@ decided so. Thelia therefore keeps the list in the core, next to the list of
 European Union member states, and reads it from the language code:
 
 ```
-ar   arc   ckb   dv   fa   he   ku   ps   sd   ug   ur   yi
+ar   arc   ckb   dv   fa   he   ps   sd   ug   ur   yi
 ```
+
+`ku` is not in the list. It stands for Kurmanji, written in the Latin alphabet, and reads
+left to right. Kurdish written in the Arabic script is Sorani, whose code is `ckb`: declare the
+language with a locale that starts with it, `ckb_IQ` for instance, to get a right-to-left page.
 
 The match uses the **language code alone**, so `ar_SA` and `ar_MA` behave the same.
 Anything the list does not know answers `ltr`. Adding such a language to your shop
