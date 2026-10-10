@@ -202,6 +202,39 @@ You **cannot** modify the native Thelia tables. The recommended way to attach ex
 </table>
 ```
 
+## Reads the core keeps in memory
+
+Since Thelia 3.1, the core avoids reading the same rows several times for one page. A module gets the benefit by going through the models and the query classes, and loses it, or reads stale values, when it writes behind their back in raw SQL.
+
+| Read | What the core keeps | Dropped when |
+|------|---------------------|--------------|
+| `ConfigQuery::read()` | The whole `config` table, read in one query and shared between processes through the application cache | A `Config` model is saved or deleted, `ConfigQuery::write()` included |
+| `ModuleConfigQuery::getConfigValue()`, `BaseModule::getConfigValue()` | Every configuration row of the module, read in one query on the first call | A `ModuleConfig` row or its translation is saved or deleted, `setConfigValue()` and `deleteConfigValue()` included, and at the start of each request and console command |
+| `Lang::getActiveLangs()`, `Country::getDefaultCountry()` | The active languages and the default country, for the life of the PHP process | A `Lang` or `Country` model is saved or deleted, and at the start of each console command |
+
+A value written with an SQL `UPDATE` raises none of these events. To be read at once, write through the model. `ConfigQuery::read($name, $default, true)` reads one row again, bypassing the snapshot.
+
+On PHP-FPM the process ends with the request, so the language and country memo lasts one request. On a persistent worker runtime such as FrankenPHP or RoadRunner, it lasts as long as the worker: a change written outside the model is seen once the worker restarts.
+
+### Relations read by the API
+
+When the API serializes a collection, the core reads the relations of the whole page, and the translations of the rows reached under a collection, in one statement per relation instead of one query per row. This walks the `#[Relation]` properties of the resource, collections included, down to five levels. A resource a module exposes gets the same treatment when it declares its relations with `Thelia\Api\Bridge\Propel\Attribute\Relation`.
+
+Two options of the attribute change the cost of a relation:
+
+| Option | Effect |
+|--------|--------|
+| `preload: true` | Reads a many-to-one relation for the whole page at once. Use it when the target changes from one row to the next. Without it the query joins the relation but each row still reads its target. |
+| `hydrateOutOfGroups: true` | Reads the relation even when no serialization group of the request exposes it. It costs a query per row: keep it for a resource that computes another field from that relation. |
+
+```php
+#[Relation(targetResource: Brand::class, preload: true)]
+#[Groups([self::GROUP_FRONT_READ])]
+public ?Brand $brand = null;
+```
+
+The batch reads rely on the Propel instance pool. Disabling it with `Propel::disableInstancePooling()` while the API serializes a collection puts the core back to one query per row.
+
 ## Learn more
 
 - [Modules vs Bundles](./modules-vs-bundles.md)
