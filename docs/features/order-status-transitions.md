@@ -37,8 +37,9 @@ move is traced in the admin log.
 
 An action is a row in `order_status_action`. It names:
 
-- a trigger: `enter` (the order entered that status) or `transition` (the order took that exact
-  from-to move);
+- a trigger: `enter` (the order entered that status), `transition` (the order took that exact
+  from-to move) or, since Thelia 3.3, `edit` (the lines of an order in that status were changed,
+  see [Order Edition](./order-edition.md); only mail actions run on it);
 - the statuses it watches, `from_status_id` and `to_status_id`;
 - an action type, its `payload`, its `position` in the run order, and whether it is `active`.
 
