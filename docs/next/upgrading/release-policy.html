@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.10.2">
 <title data-rh="true">Release Policy | Thelia Documentation</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://doc.thelia.net/docs/next/upgrading/release-policy"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Release Policy | Thelia Documentation"><meta data-rh="true" name="description" content="This page describes how Thelia 3 releases are numbered and branched, and what a shop or a"><meta data-rh="true" property="og:description" content="This page describes how Thelia 3 releases are numbered and branched, and what a shop or a"><link data-rh="true" rel="icon" href="/img/favicon.png"><link data-rh="true" rel="canonical" href="https://doc.thelia.net/docs/next/upgrading/release-policy"><link data-rh="true" rel="alternate" href="https://doc.thelia.net/docs/next/upgrading/release-policy" hreflang="en"><link data-rh="true" rel="alternate" href="https://doc.thelia.net/docs/next/upgrading/release-policy" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://AOX4BR07WS-dsn.algolia.net" crossorigin="anonymous"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Release Policy","item":"https://doc.thelia.net/docs/next/upgrading/release-policy"}]}</script><link rel="search" type="application/opensearchdescription+xml" title="Thelia Documentation" href="/opensearch.xml"><link rel="stylesheet" href="/assets/css/styles.3890d491.css">
-<script src="/assets/js/runtime~main.f7cf54e9.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.98145017.js" defer="defer"></script>
 <script src="/assets/js/main.1e28e783.js" defer="defer"></script>
 </head>
 <body>
@@ -50,6 +50,18 @@ what <code>main</code> held at the time. Which series still receive fixes is lis
 <li class="">an API, a service, an event or a method that has to go is <strong>deprecated in a minor
 release</strong>, keeping its behaviour, and documented as such in the release notes;</li>
 <li class="">it is <strong>removed in a major release</strong>, never in a minor or a patch one.</li>
+</ul>
+<p>Some minor releases of the 3.x line have removed code. The breaking changes listed in their
+release notes include these removals:</p>
+<ul>
+<li class="">3.1.0 removed the product price filter
+<code>Thelia\Api\Bridge\Propel\Filter\CustomFilters\Filters\PriceFilter</code>, which nothing called. See
+the <a href="https://github.com/thelia/thelia/releases/tag/3.1.0" target="_blank" rel="noopener noreferrer" class="">3.1.0 release notes</a>.</li>
+<li class="">3.2.0 stopped requiring the Smarty back office, <code>thelia/backoffice-default-template</code>, and with it
+the classes of <code>Thelia\Controller\Admin</code> and <code>Thelia\Form</code> that came with that package.
+<code>Thelia\Form\Lang\LangUrlEvent</code> now ships with the core, under the same name. See
+<a class="" href="/docs/next/upgrading/from-3.1-to-3.2#the-smarty-back-office-is-gone">The Smarty back-office is gone</a> and the
+<a href="https://github.com/thelia/thelia/releases/tag/3.2.0" target="_blank" rel="noopener noreferrer" class="">3.2.0 release notes</a>.</li>
 </ul>
 <p>The version a module requires in its <code>Config/module.xml</code> is a minimum, compared with <code>&gt;=</code>
 against the running core:</p>
