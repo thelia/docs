@@ -197,6 +197,7 @@ Every theme has a `template.xml` at its root. This is the only XML a theme needs
 The tags, in order:
 
 - `<descriptive locale="...">`: one block per locale, each with a `<title>`. Add as many as you need (Flexy ships `fr` and `en`).
+- `<parent>`: optional, the theme this one inherits from (see [Inheriting from another theme](#inheriting-from-another-theme)).
 - `<languages>`: the locales the theme supports.
 - `<version>`: the theme version.
 - `<authors>`: one or more `<author>` blocks with `<name>`, `<company>`, `<email>`, `<website>`.
@@ -207,8 +208,55 @@ The tags, in order:
   tag: it would point at a `dist` directory no build ever produces.
 
 :::caution
-There is no `<name>`, flat `<author>`, `<description>`, `<parent>` or `<required_version>` tag. The descriptor does not declare theme inheritance. To reuse Flexy from your own theme, render Flexy's components directly (see [Using Flexy components](#using-flexy-components)) rather than declaring a parent.
+There is no `<name>`, flat `<author>`, `<description>` or `<required_version>` tag.
 :::
+
+### Inheriting from another theme
+
+Added in Thelia 3.2.
+
+A front-office theme can inherit from another front-office theme, Flexy for instance, and ship
+only the files it changes. It names its parent by directory name in a `<parent>` tag, placed
+right after the `<descriptive>` blocks as the schema requires:
+
+```xml
+<!-- templates/frontOffice/my-theme/template.xml -->
+<template xmlns="http://thelia.net/schema/dic/template"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://thelia.net/schema/dic/template http://thelia.net/schema/dic/template/template-1_0.xsd">
+    <descriptive locale="en">
+        <title>My front office template</title>
+    </descriptive>
+    <parent>flexy</parent>
+    <languages>
+        <language>en_US</language>
+    </languages>
+    <version>1.0.0</version>
+    <stability>prod</stability>
+</template>
+```
+
+The parent lives in `templates/frontOffice/` like any other theme, and it can declare a parent of
+its own. Thelia reads the chain from the `template.xml` files on disk and searches it from the
+nearest theme to the farthest: the active theme first, then its parent, then the parent's parent.
+The nearest theme that ships a file wins.
+
+| Part of the theme | What the chain does |
+| --- | --- |
+| Pages | A page the active theme does not ship is read from its parent. Each theme of the chain is also registered under a Twig namespace of its own, `@theme_` followed by its directory name (any character other than a letter, a digit or an underscore becomes an underscore), so a page can extend the one it replaces: `{% extends '@theme_flexy/base.html.twig' %}`. |
+| Routes | The controllers in the `src/` directory of every theme of the chain declare routes. A route of the active theme replaces the inherited route of the same name. |
+| Components | The `components/` directories of the chain are searched nearest first, anonymous components included. |
+| Assets | `assets/`, `assets/styles/` and `components/` of each theme are searched nearest first. `importmap.php` and its `assets/vendor/` directory come from the nearest theme that ships an `importmap.php`. |
+| Tailwind entry | Tailwind compiles the nearest `assets/styles/app.css`. A theme that ships one replaces the entry stylesheet of its parent. |
+| Stimulus controllers | The controllers of every theme of the chain are registered. `assets/controllers.json` comes from the nearest theme that ships one. |
+| Icons | An icon in `assets/icons/` replaces the inherited icon of the same name. The other icons come from the parent. |
+| Translations | The `translations/` catalogues of the chain are loaded parents first, so a key the active theme defines replaces the inherited one. |
+| Internal views | The nearest `config/views.yaml` applies as a whole. The lists of the chain are not merged. |
+
+`FlexyBundle` reads this chain when the container is built, so a theme that inherits from Flexy
+needs no bundle class of its own as long as `FlexyBundle` stays enabled in `config/bundles.php`.
+Two themes of the chain whose directory names give the same namespace, `my-shop` and `my_shop`
+for instance, are rejected when the container is built.
 
 ## Creating the base layout
 
@@ -600,7 +648,7 @@ again after a `composer update`, which reinstalls the theme package.
 
 ## Using Flexy components
 
-A custom theme can reuse Flexy's components instead of declaring inheritance in `template.xml`. Render them by name with the `component()` Twig function:
+A custom theme that does not inherit from Flexy can still reuse Flexy's components. Render them by name with the `component()` Twig function:
 
 ```twig
 {# In your custom theme #}
