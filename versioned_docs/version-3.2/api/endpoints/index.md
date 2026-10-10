@@ -299,6 +299,66 @@ Error responses use the Hydra format regardless of the `Accept` header you send.
 }
 ```
 
+### 422 Unprocessable Entity
+
+A write that breaks a validation rule answers `422` and writes no row. Each
+violation names the property at fault in `propertyPath`:
+
+```json
+{
+    "@context": "/api/contexts/ConstraintViolation",
+    "@type": "ConstraintViolation",
+    "status": 422,
+    "violations": [
+        {
+            "propertyPath": "firstname",
+            "message": "This value should not be blank.",
+            "code": "c1051bb4-d103-4f74-8988-acbcafc7fdc3"
+        },
+        {
+            "propertyPath": "lastname",
+            "message": "This value should not be blank.",
+            "code": "c1051bb4-d103-4f74-8988-acbcafc7fdc3"
+        }
+    ],
+    "detail": "firstname: This value should not be blank.\nlastname: This value should not be blank.",
+    "hydra:title": "An error occurred",
+    "hydra:description": "firstname: This value should not be blank.\nlastname: This value should not be blank."
+}
+```
+
+The checks that clients synchronising data, such as an ERP, run into most often:
+
+| Request | Refused when | Violations |
+|---------|--------------|------------|
+| `POST /api/admin/customers`, `POST /api/front/customers` | `firstname` or `lastname` is left out or empty | `firstname`, `lastname` |
+| `PUT /api/admin/customers/{id}`, `PUT /api/front/account/customers/{id}` | `firstname` or `lastname` is left out or empty | `firstname`, `lastname` |
+| `PATCH /api/admin/customers/{id}` | `firstname` or `lastname` is sent empty | `firstname`, `lastname` |
+| `POST /api/admin/customers` | `email` is left out, empty or not an email address, or `password` is left out or empty | `email`, `password` |
+| `POST /api/admin/product_sale_elements`, `PUT /api/admin/product_sale_elements/{id}` | `product` or `ref` is left out or empty, or `quantity` is left out | `product`, `ref`, `quantity` |
+| `PUT` on another admin resource | a required property is left out (see [PUT replaces the whole resource](#put-replaces-the-whole-resource)) | the properties left out |
+
+Property names are the ones the resource declares: a payload sending
+`firstName` where the customer resource reads `firstname` is refused as a
+customer without a first name. A `quantity` of `0` is accepted.
+
+A violation found in a nested resource carries the path to that resource. When
+the second address posted with a customer has an empty label, the response
+names `addresses[1].label`, the index being the position of the address in the
+payload:
+
+```json
+{
+    "violations": [
+        {
+            "propertyPath": "addresses[1].label",
+            "message": "This value should not be blank."
+        }
+    ],
+    "detail": "addresses[1].label: This value should not be blank."
+}
+```
+
 ### 404 Not Found
 
 ```json
