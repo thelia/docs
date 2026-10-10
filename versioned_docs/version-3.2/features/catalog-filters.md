@@ -111,7 +111,7 @@ under the `thelia.catalog.product_sort` tag:
 
 | Method | Returns |
 | --- | --- |
-| `value()` | The value of the sort in the query string. Prefix it with the module code, and never rename it once published. |
+| `value()` | The value of the sort in the query string. Prefer a value prefixed with the module code, and never rename it once published. |
 | `title()` | The label, already translated by the module. |
 | `position()` | Where the entry sits among the theme's sorts. Flexy uses 10, 20, 40, 50, 60 and 70. |
 | `parameters()` | The query parameters sent to the product collection, for instance `['order[rating]' => 'desc']`. |

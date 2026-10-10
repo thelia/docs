@@ -193,7 +193,7 @@ A summary at the top of the form lists the errors when one field is not enough t
 | --- | --- |
 | One visible field in error | None. The message under the field is enough. |
 | Several fields in error | "This form contains N errors.", then one entry per field with a link to it. |
-| A field in error that the page does not show | Listed, without a link. |
+| A field in error that the page does not show (a hidden field, or a field with no label) | Listed, without a link. A single error of this kind still gets a summary. |
 | An error of the form itself, such as a rejected CSRF token | Listed first, without being counted. |
 
 After a submission, the focus moves to the summary, or to the field to correct when there is no
@@ -226,7 +226,7 @@ Two refusals that used to end on a server error now come back to the buyer:
 | Moment | What the buyer sees |
 | --- | --- |
 | Adding to the cart from the product page, when a module refuses the line (an `InvalidCartException` from a cart listener) or the stock ran out since the page was rendered | The message "This product could not be added to your cart." on the product page. |
-| Placing the order, when a line sells out between the check and the stock decrement (`StockShortageException`) | A redirect to the cart, with a message naming the product reference, and the cart showing the shortage line by line. |
+| Placing the order, when a line sells out between the check and the stock decrement (`StockShortageException`) | A redirect to the cart, with a message that names the product reference when it is known, and the cart showing the shortage line by line. |
 
 Both messages are the theme's own, translated in the language of the page. The message of a
 module's exception is written for a log and never reaches the buyer.
