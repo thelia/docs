@@ -251,10 +251,11 @@ The nearest theme that ships a file wins.
 | Stimulus controllers | The controllers of every theme of the chain are registered. `assets/controllers.json` comes from the nearest theme that ships one. |
 | Icons | An icon in `assets/icons/` replaces the inherited icon of the same name. The other icons come from the parent. |
 | Translations | The `translations/` catalogues of the chain are loaded parents first, so a key the active theme defines replaces the inherited one. |
-| Internal views | The nearest `config/views.yaml` applies as a whole. The lists of the chain are not merged. |
+| Internal views | The nearest `config/views.yaml` that declares an `internal` list applies as a whole. The lists of the chain are not merged. |
 
-`FlexyBundle` reads this chain when the container is built, so a theme that inherits from Flexy
-needs no bundle class of its own as long as `FlexyBundle` stays enabled in `config/bundles.php`.
+`FlexyBundle` reads this chain when the container is built, so the pages, routes, assets and
+components of a theme that inherits from Flexy are found without a bundle class of the child
+theme, as long as `FlexyBundle` stays enabled in `config/bundles.php`.
 Two themes of the chain whose directory names give the same namespace, `my-shop` and `my_shop`
 for instance, are rejected when the container is built.
 

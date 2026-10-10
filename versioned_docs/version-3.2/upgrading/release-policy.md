@@ -57,8 +57,8 @@ Within the 3.x line:
   release**, keeping its behaviour, and documented as such in the release notes;
 - it is **removed in a major release**, never in a minor or a patch one.
 
-Minor releases of the 3.x line have removed code all the same. The breaking changes listed in
-their release notes include these removals:
+Some minor releases of the 3.x line have removed code. The breaking changes listed in their
+release notes include these removals:
 
 - 3.1.0 removed the product price filter
   `Thelia\Api\Bridge\Propel\Filter\CustomFilters\Filters\PriceFilter`, which nothing called. See

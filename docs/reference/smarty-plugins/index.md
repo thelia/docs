@@ -6,7 +6,7 @@ sidebar_position: 3
 # Smarty Plugins
 
 :::caution Legacy - Smarty templates
-Smarty plugins come with the `TheliaSmarty` module (`thelia/smarty-module`) and serve Smarty templates, the **Smarty back-office theme** among them. **As of Thelia 3.2, neither the module nor that theme is installed.** The back-office is the **Twig** theme (`default-twig` bundle), where you use Twig functions and extensions instead of Smarty plugins.
+Smarty plugins come with the `TheliaSmarty` module (`thelia/smarty-module`) and serve Smarty templates, the **Smarty back-office theme** among them. As of Thelia 3.2, neither the module nor that theme is installed. The back-office is the **Twig** theme (`default-twig` bundle), where you use Twig functions and extensions instead of Smarty plugins.
 
 Keep reading this section only if you maintain a Smarty template. For the Twig back-office, use the mapping below.
 :::
