@@ -538,6 +538,8 @@ A brand carries a rewritten URL, and the core resolves it to the `brand` view wi
 
 A brand that is not visible never reaches the template: the core turns the request down before the view is rendered.
 
+Flexy renders the listing of a brand page with the `ProductListing` live component, which offers the filters of the categories where the brand's products are filed. See [Catalog Filters and Sorts](../../features/catalog-filters.md#filters-on-a-brand-page).
+
 ## Form customization
 
 Flexy ships a form theme at `form/flexy_form_theme.html.twig`, reached as `@FlexyForm/flexy_form_theme.html.twig`. Each of its blocks delegates the markup to an anonymous component under `components/Fields/`, so restyling an input usually means editing the component rather than the theme:
