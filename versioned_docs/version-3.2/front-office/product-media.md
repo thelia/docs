@@ -28,6 +28,41 @@ reading a filename or a redundant title.
 The front-office computes this resolved value; templates never fall back to the title
 themselves.
 
+## One image file per language
+
+Added in Thelia 3.2.
+
+Each language of an image can show its own file: a packaging printed for one country, a visual
+with translated text, a legal mention that differs from one market to the next. This covers the
+images of products, categories, contents, folders, brands and modules.
+
+In the back office, the merchant opens an image from the Images tab, switches to the language to
+change with the language selector of the edit screen, and uploads the file there. The file
+replaces the one of the language being edited only, and the screen says so. The previous file is
+removed from the disk once no other language still uses it. Deleting the image removes the file
+of every language.
+
+A language without a file of its own follows the same rule as a missing translated text, set by
+`default_lang_without_translation`:
+
+| `default_lang_without_translation` | A language without its own file shows |
+| --- | --- |
+| `1` (the default) | The file of the default language. The edit screen says that the language has no image of its own. |
+| `0` | No file. |
+
+The update to 3.2 gives every active language the file the image had, so nothing changes on
+screen after the update. Cloning a product copies the file of each language that has its own.
+
+For a template or a module, `getFile()` on an image model returns the file of the model's
+current locale, with the fallback above, and the `image` loop reads the file in its own locale.
+`getOwnFile()` returns the file of that language only, or `null`. The file is stored in
+`<type>_image_i18n.file`; code that read the former `file` column of the image table has to read
+the translation instead, see [Upgrading from 3.1 to 3.2](../upgrading/from-3.1-to-3.2.md#image-files-per-language).
+
+The admin API follows the language too: `file` and `fileUrl` of an image resource follow
+`?locale=`, and `POST /api/admin/<type>_images/{id}/file`, with the multipart fields
+`fileToUpload` and `locale`, sets or replaces the file of one language.
+
 ## Image formats
 
 Added in Thelia 3.2, with TheliaLibrary 2.0.10.
