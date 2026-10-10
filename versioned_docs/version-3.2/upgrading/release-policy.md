@@ -57,6 +57,18 @@ Within the 3.x line:
   release**, keeping its behaviour, and documented as such in the release notes;
 - it is **removed in a major release**, never in a minor or a patch one.
 
+Minor releases of the 3.x line have removed code all the same. The breaking changes listed in
+their release notes include these removals:
+
+- 3.1.0 removed the product price filter
+  `Thelia\Api\Bridge\Propel\Filter\CustomFilters\Filters\PriceFilter`, which nothing called. See
+  the [3.1.0 release notes](https://github.com/thelia/thelia/releases/tag/3.1.0).
+- 3.2.0 stopped requiring the Smarty back office, `thelia/backoffice-default-template`, and with it
+  the classes of `Thelia\Controller\Admin` and `Thelia\Form` that came with that package.
+  `Thelia\Form\Lang\LangUrlEvent` now ships with the core, under the same name. See
+  [The Smarty back-office is gone](./from-3.1-to-3.2.md#the-smarty-back-office-is-gone) and the
+  [3.2.0 release notes](https://github.com/thelia/thelia/releases/tag/3.2.0).
+
 The version a module requires in its `Config/module.xml` is a minimum, compared with `>=`
 against the running core:
 
