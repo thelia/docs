@@ -265,7 +265,7 @@ templates/backOffice/default-twig/
 ```
 
 :::tip The back-office reference is the Twig bundle
-`BackOfficeDefaultTwigBundle` is the recommended back-office. The older Smarty "default" back-office theme is no longer recommended and is expected to be dropped in a future release. New back-office work should target the Twig bundle.
+`BackOfficeDefaultTwigBundle` is the only back-office Thelia installs. The older Smarty "default" back-office theme is no longer installed as of Thelia 3.2. Back-office work targets the Twig bundle.
 :::
 
 ### Bundle registration

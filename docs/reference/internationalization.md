@@ -159,7 +159,7 @@ An override is reported when its source string is absent from the base catalogs 
 
 ## Legacy Smarty
 
-The legacy `default` back-office theme (Smarty) translated with the `{intl}` plugin and the `{format_date}` / `{format_number}` / `{format_money}` / `{format_address}` plugins. That theme is transitional and expected to be dropped in Thelia 3.1. For its syntax, see [Smarty plugins](./smarty-plugins/index.md).
+The legacy `default` back-office theme (Smarty) translated with the `{intl}` plugin and the `{format_date}` / `{format_number}` / `{format_money}` / `{format_address}` plugins. That theme is no longer installed as of Thelia 3.2. For its syntax, see [Smarty plugins](./smarty-plugins/index.md).
 
 ## Learn more
 

@@ -13,10 +13,10 @@ a list page is a `.html.twig` file, a form is a `*Type` class rendered with
 This page explains where templates live, how they are organized, and how forms are
 rendered.
 
-:::info Owner decision
-The Smarty `default` back-office theme is no longer recommended and is expected to be
-dropped in Thelia 3.1. The reference back-office is the **`default-twig` bundle**:
-autonomous in its routes (`#[Route]` attributes), hooks, templates, forms and assets.
+:::info The only back-office
+The Smarty `default` back-office theme is no longer installed as of Thelia 3.2. The back-office
+is the **`default-twig` bundle**: autonomous in its routes (`#[Route]` attributes), hooks,
+templates, forms and assets.
 :::
 
 ## Templates are namespaced Twig files

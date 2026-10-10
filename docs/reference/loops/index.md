@@ -5,13 +5,13 @@ sidebar_position: 1
 
 # Loops
 
-:::caution Loops are a legacy Smarty mechanism
-Loops are a **legacy data-access mechanism** tied to the Smarty templating engine. They are **not** the recommended way to fetch data in Thelia 3:
+:::caution Loops are a legacy data layer
+Loops are the **legacy data-access mechanism** of Thelia 2, built for Smarty templates. They are **not** the recommended way to fetch data in Thelia 3:
 
 - The **front-office** (Flexy/Twig theme) reads data through `resources()` / the `DataAccessService`. See [Front-Office Data Access](/docs/front-office/data-access).
 - The new **Twig back-office** (the `default-twig` bundle) fetches data through dedicated **Repositories** (Propel queries) and renders lists with Twig UI components (DataTable). It does **not** use loops.
 
-The loop classes (in `core/lib/Thelia/Core/Template/Loop/`, around 70 of them) are retained mainly for the legacy Smarty `default` back-office theme and for third-party Smarty templates. If you are building a module against the Twig back-office or the Flexy front-office, prefer the modern data paths linked above.
+The loop classes (in `core/lib/Thelia/Core/Template/Loop/`, around 70 of them) stay in the core. A Twig template runs them with the `loop()` and `loopCount()` functions of the TwigEngine module, as the default email and PDF templates do (see [Emails and PDF](/docs/reference/emails-and-pdf#available-twig-functions)). A Smarty template runs them with `{loop}`, which needs the `TheliaSmarty` module, no longer installed as of Thelia 3.2. If you are building a module against the Twig back-office or the Flexy front-office, prefer the modern data paths linked above.
 :::
 
 Loops are Smarty plugins that query the database and iterate over results. They provide a convenient way to fetch and display data in Smarty templates.

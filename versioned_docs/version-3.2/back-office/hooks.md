@@ -41,9 +41,9 @@ The `hook()` function dispatches a `HookRenderEvent`. Each listener appends a fr
 (`TwigEngine\Extension\HookExtension`) and is output-safe (`is_safe: html`).
 
 The `default-twig` bundle adds a tolerant variant, `safe_hook()`
-(`BackOfficeDefaultTwigBundle\Twig\HookExtension`). It catches listener exceptions and logs
-a warning instead of breaking the page. This helps while a third-party module still ships only
-Smarty templates during the cohabitation phase.
+(`BackOfficeDefaultTwigBundle\Twig\HookExtension`). It runs each listener on its own and
+catches its exceptions: a failing module loses its own fragment, the other modules on the same
+hook still render, and the error is logged (as a warning, or as an error in debug mode).
 
 ```twig
 {{ safe_hook('main.head-css') }}
@@ -251,7 +251,7 @@ The hooks consumed by bundled modules (CustomerFamily, SEOne, HookAdminHome, Vir
 <summary>Legacy Smarty <code>default</code> theme: native-hook inventory (deprecated)</summary>
 
 :::caution Deprecated reference
-The list below is the hook inventory of the legacy Smarty `default` back-office and front-office themes. The Smarty back-office is no longer the recommended one and is expected to be dropped in a future release. This inventory is kept only as a migration reference. Do not treat it as the authoritative current hook set. See the [emission contract](#hook-emission-contract) above for what the `default-twig` back-office actually emits.
+The list below is the hook inventory of the legacy Smarty `default` back-office and front-office themes. The Smarty back-office is no longer installed as of Thelia 3.2. Many of its back-office hook codes are still emitted by `default-twig` under the same name, and the renamed ones are replayed under their legacy name (see [Legacy hook aliasing](#legacy-hook-aliasing)). This inventory is kept only as a migration reference. Do not treat it as the authoritative current hook set. See the [emission contract](#hook-emission-contract) above for what the `default-twig` back-office actually emits.
 
 In a Smarty template, a single hook is `{hook name="hookname" ... }` (dispatching `HookRenderEvent`) and a block hook is `{hookblock name="hookname" ... }...{/hookblock}` iterated with `{forhook rel="hookname"}...{/forhook}` (dispatching `HookRenderBlockEvent`).
 :::

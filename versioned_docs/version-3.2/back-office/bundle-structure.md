@@ -13,10 +13,9 @@ idiomatic Symfony way: autowiring, `#[Route]` attributes, autoconfigured tags. I
 This page explains how that bundle is wired so you can read its code, extend it, or model your own
 admin module on it.
 
-:::note Owner decision
-The legacy Smarty `default` back-office theme is no longer recommended and will likely be dropped in
-Thelia 3.1. The reference back-office is the `default-twig` bundle described here. It owns its
-routes, hooks, templates, forms and assets.
+:::note The only back-office
+The Smarty `default` back-office theme is no longer installed as of Thelia 3.2. The back-office is
+the `default-twig` bundle described here. It owns its routes, hooks, templates, forms and assets.
 :::
 
 ## A Symfony AbstractBundle, activated on demand
@@ -59,8 +58,10 @@ back-office you select with `bin/install --backoffice_theme=default-twig` (or
 container.
 
 :::tip
-This is what lets the Twig and the legacy Smarty back-offices coexist in the same installation during
-the transition: only one of them is ever active in the container at a time.
+Another back-office theme can therefore be installed next to `default-twig`: while that theme is
+active, `default-twig` stays out of the container. A shop updated from 3.1 that still wants the
+Smarty `default` theme requires it itself (see
+[The Smarty back-office is gone](../upgrading/from-3.1-to-3.2.md#the-smarty-back-office-is-gone)).
 :::
 
 ## Service registration: no services XML
