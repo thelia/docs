@@ -63,9 +63,9 @@ The stock checks follow the `check-available-stock` setting, and a virtual produ
 of stock. Prices are unit prices with the customer's discount included.
 
 Adding to the cart resolves the lines again rather than trusting the table the browser holds. The
-resolved lines are added in one transaction: either all of them reach the cart, or none does. A
-reference already in the cart adds to its quantity. A line the cart could not take in full comes
-back marked as not added.
+resolved lines are added in one transaction, which rolls back on an unexpected error. A reference
+already in the cart adds to its quantity. A line the cart refuses comes back marked as not added,
+and the other lines stay in the cart.
 
 ## Limits
 
@@ -100,14 +100,15 @@ lists" and "Quick order":
 | One purchase list | `account_purchase_list` | `/account/purchase-lists/{listId}` |
 
 The table is the `QuickOrderTable` live component (`components/Organisms/QuickOrderTable`). It
-checks the table only on an explicit action: the button, or right after a paste or an import.
+checks the table only on an explicit action: the check button, the button that imports pasted
+lines, or the choice of a file.
 
 The cart page and the order page of the account carry a `SaveToPurchaseList` form, which saves the
 cart or the order into a new list or adds it to an existing one.
 
 A pasted line holds a reference then a quantity, separated by a tab (what a spreadsheet copies), a
-semicolon or a comma. Blank lines are skipped. A first line whose quantity is not a number is read
-as a header. A line that cannot be read is reported with its line number instead of being dropped.
+semicolon or a comma. Blank lines are skipped. A first line of two cells whose quantity is not a
+whole number is read as a header. A line that cannot be read is reported with its line number instead of being dropped.
 
 ## API
 

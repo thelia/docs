@@ -73,8 +73,8 @@ that reads neither still gets the image.
 
 ### Settings
 
-The formats and their quality are configuration variables, under Configuration > System
-variables in the back office:
+The formats and their quality are configuration variables, on the **Configuration parameters**
+screen of the back office:
 
 | Setting | Fresh install | Updated shop | Purpose |
 | --- | --- | --- | --- |
@@ -115,8 +115,8 @@ next to the source file in the LiipImagine cache, under the source name followed
 extension:
 
 ```
-/media/cache/product_card/product/PROD001-1.jpg
-/media/cache/product_card/product/PROD001-1.jpg.webp
+<cache path of the image>.jpg
+<cache path of the image>.jpg.webp
 ```
 
 The variant is generated the first time a page asks for it, then served directly by the web
