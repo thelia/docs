@@ -243,6 +243,8 @@ The `default-twig` back-office emits its hooks following fixed conventions, so a
 | `<entity>.update-form` | edit screens | `feature.update-form` |
 | `<entity>.tab` / `.tab-content` | tabbed edit screens | `product.tab` |
 
+A listener only reaches a hook the `hook` table knows: a subscription to an unknown hook is dropped when the container is built, with the log message `Hook customer.tab is unknown.` Since Thelia 3.2.1 the core declares the 105 back-office hooks the `default-twig` templates call, `customer.tab`, `customer.tab-content` and `customer-edit.actions` among them. A fresh install seeds them and `3.2.1.sql` adds them on an installed shop, so a module subscribes to them without creating them. A hook a module already created keeps its id and its titles.
+
 :::note A non-emitted hook is deprecated for the Twig back-office
 The hooks consumed by bundled modules (CustomerFamily, SEOne, HookAdminHome, VirtualProductControl, TheliaBlocks) are all wired. A hook code that is not emitted is considered deprecated for the Twig back-office. The `<screen>.js` / `<entity>.edit-js` script hooks are emitted per screen as screens are migrated. Source: `templates/backOffice/default-twig/README.md`.
 :::
