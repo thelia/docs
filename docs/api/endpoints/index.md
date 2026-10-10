@@ -333,10 +333,15 @@ The checks that clients synchronising data, such as an ERP, run into most often:
 |---------|--------------|------------|
 | `POST /api/admin/customers`, `POST /api/front/customers` | `firstname` or `lastname` is left out or empty | `firstname`, `lastname` |
 | `PUT /api/admin/customers/{id}`, `PUT /api/front/account/customers/{id}` | `firstname` or `lastname` is left out or empty | `firstname`, `lastname` |
+| `PUT /api/admin/customers/{id}` | `email` or `password` is left out or empty, as a `PUT` replaces the whole resource | `email`, `password` |
 | `PATCH /api/admin/customers/{id}` | `firstname` or `lastname` is sent empty | `firstname`, `lastname` |
 | `POST /api/admin/customers` | `email` is left out, empty or not an email address, or `password` is left out or empty | `email`, `password` |
 | `POST /api/admin/product_sale_elements`, `PUT /api/admin/product_sale_elements/{id}` | `product` or `ref` is left out or empty, or `quantity` is left out | `product`, `ref`, `quantity` |
 | `PUT` on another admin resource | a required property is left out (see [PUT replaces the whole resource](#put-replaces-the-whole-resource)) | the properties left out |
+
+Two customer checks answer in their own way: a password shorter than the `password.length`
+setting gives a violation with an empty `propertyPath`, and an email address another customer
+already uses is refused.
 
 Property names are the ones the resource declares: a payload sending
 `firstName` where the customer resource reads `firstname` is refused as a

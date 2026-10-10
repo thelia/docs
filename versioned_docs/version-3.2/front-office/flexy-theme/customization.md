@@ -509,7 +509,7 @@ The titles come from the types themselves, translated, so adding a type in the b
 
 ## Adding a sort to product listings
 
-Added in Thelia 3.2. The sort selector of the Flexy product listings offers the theme's own sorts, which read native product columns, plus the ones modules declare. A module adds one by implementing `Thelia\Domain\Catalog\Product\ProductSortProviderInterface`:
+Added in Thelia 3.2, with Flexy 1.2. The sort selector of the Flexy product listings offers the theme's own sorts, which read native product columns, plus the ones modules declare. A module adds one by implementing `Thelia\Domain\Catalog\Product\ProductSortProviderInterface`:
 
 ```php
 interface ProductSortProviderInterface
@@ -568,7 +568,7 @@ final readonly class ReferenceSort implements ProductSortProviderInterface
 }
 ```
 
-Flexy appends `order[ref]=asc` after the parameters of every sort as a tiebreaker, so pagination stays stable when products share a value. A sort that reads data the module stores needs a filter on the product collection that answers its parameters, registered by the same module (see [Filters](/docs/api/filters)). Without it the listing comes back in the default order under a heading that claims otherwise.
+Flexy adds `order[ref]=asc` to the parameters of every sort that does not set `order[ref]` itself, as a tiebreaker, so pagination stays stable when products share a value. A sort that reads data the module stores needs a filter on the product collection that answers its parameters, registered by the same module (see [Filters](/docs/api/filters)). Without it the listing comes back in the default order under a heading that claims otherwise.
 
 A provider that returns the `value()` of a sort already offered replaces it, which lets a project swap one of the theme's sorts for its own. A URL carrying a sort the shop does not know, a removed module's for instance, falls back on the default order of the listing.
 
