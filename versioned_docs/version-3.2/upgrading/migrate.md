@@ -56,7 +56,7 @@ Data access in a Twig template uses the `resources()` function, which calls the 
 ```
 
 :::caution Legacy loops are deprecated
-`DataAccessService::loop()` and `DataAccessService::loopCount()` (and the matching Twig `loop()` / `loopCount()` helpers) are marked `@deprecated`. They exist only to ease the transition. Migrate to `resources()`.
+`DataAccessService::loop()` and `DataAccessService::loopCount()` are marked `@deprecated`. They exist only to ease the transition: migrate front-office templates to `resources()`. The Twig `loop()` and `loopCount()` functions that the TwigEngine module registers are not deprecated, and the default e-mail and PDF themes still call them.
 :::
 
 ## Back-office: the `default-twig` bundle
