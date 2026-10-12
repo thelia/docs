@@ -349,6 +349,8 @@ Without a queue, an exception thrown by the handler reaches the code that dispat
 message: the save of the combination in the back office fails with it. A shop that relies on a
 remote API this way should run a queue.
 
+The first line of each block below names the file it goes in; it is not part of the file.
+
 ```
 local/modules/StockSync/
 ├── StockSync.php
@@ -854,25 +856,33 @@ enough to watch a push go through the queue.
 
    ```sql
    INSERT INTO module_config (module_id, name, created_at, updated_at)
-       SELECT id, 'api_url', NOW(), NOW() FROM module WHERE code = 'StockSync';
-   INSERT INTO module_config_i18n (id, locale, value) VALUES (LAST_INSERT_ID(), 'en_US', 'http://127.0.0.1:8099');
-   INSERT INTO module_config (module_id, name, created_at, updated_at)
-       SELECT id, 'api_token', NOW(), NOW() FROM module WHERE code = 'StockSync';
-   INSERT INTO module_config_i18n (id, locale, value) VALUES (LAST_INSERT_ID(), 'en_US', 'test-token');
+       SELECT m.id, s.name, NOW(), NOW()
+       FROM module m, (SELECT 'api_url' AS name UNION ALL SELECT 'api_token') s
+       WHERE m.code = 'StockSync'
+         AND NOT EXISTS (SELECT 1 FROM module_config c WHERE c.module_id = m.id AND c.name = s.name);
+   INSERT INTO module_config_i18n (id, locale, value)
+       SELECT c.id, 'en_US', IF(c.name = 'api_url', 'http://127.0.0.1:8099', 'test-token')
+       FROM module_config c JOIN module m ON m.id = c.module_id
+       WHERE m.code = 'StockSync' AND c.name IN ('api_url', 'api_token')
+   ON DUPLICATE KEY UPDATE value = VALUES(value);
    ```
 
-4. With `MESSENGER_TRANSPORT_DSN=doctrine://default` in `.env.local`, change the stock of a
-   combination in the back office. The page answers at once and the message waits:
+   Run again, it changes the two values without adding rows.
+
+4. With `MESSENGER_TRANSPORT_DSN=doctrine://default` in `.env.local` and no worker running,
+   change the stock of a combination in the back office. The page answers at once and the
+   messages wait: "Save all combinations" saves every row of the product, so one message per
+   combination is queued, and the handler skips those whose quantity did not change:
 
    ```bash
    php Thelia messenger:stats async
    ```
 
-5. Run a worker for one message, then read what the warehouse received and what the module
-   recorded:
+5. Run a worker until the queue is empty, then read what the warehouse received and what the
+   module recorded:
 
    ```bash
-   php Thelia messenger:consume async --limit=1 -vv
+   php Thelia messenger:consume async --time-limit=10 -vv
    cat /tmp/warehouse/received.log
    ```
 
