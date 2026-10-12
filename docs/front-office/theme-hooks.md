@@ -143,6 +143,18 @@ The default Flexy theme declares the following points. Names use the `page.zone.
 | `order-placed.top` | Top of the order confirmation page |
 | `order-placed.bottom` | Bottom of the order confirmation page |
 
+Flexy 1.2 adds these points:
+
+| Point | Location | Parameters |
+|-------|----------|------------|
+| `layout.head.<view>` | End of `<head>`, on one view only: `layout.head.index`, `layout.head.product`, `layout.head.checkout-cart`... | `breadcrumb` |
+| `login.form.top` | Above the login form, below its heading (a social login button, for instance) | none |
+| `login.form.bottom` | Below the login form | none |
+| `product.pse.alerts` | Below the add-to-cart form of the product page, for an alert a shopper leaves on the selected variant (back in stock, price drop) | `pseId`, `outOfStock`, `taxedPrice` |
+| `sitemap.urls` | Inside the `<urlset>` of each sitemap section; the answer is `<url>` entries | `context` (`categories`, `products` or `content`), `lang` (empty) |
+
+`layout.head.<view>` is named after the `_view` attribute of the request: the view the core routes to, or the template name for the pages Flexy renders itself. Use it for an asset that only one page needs. `product.pse.alerts` is not rendered when the product has no available variant.
+
 The page-level points pass their main entity as a parameter (`product`, `category`, `customer`), available in `render()` through the `$parameters` argument.
 
 ## SEO and analytics
