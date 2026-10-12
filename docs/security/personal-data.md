@@ -170,7 +170,7 @@ of the customer and the content of the order. Their retention periods are fixed 
 | Files left in `var/data-transfer/import` | `maintenance:purge` | 31 days |
 | Failed jobs of the queue | `thelia:messenger:purge-failed`, and `maintenance:purge` | 30 days; `--older-than` changes it for `thelia:messenger:purge-failed` |
 
-The 30-day sweep of `var/data-transfer/import` removes what no job row points to any more, such
+The 31-day sweep of `var/data-transfer/import` removes what no job row points to any more, such
 as the extracted copy of an archive left by a worker that was killed, or a file whose row was
 deleted by hand. The `thelia` schedule runs `thelia:messenger:purge-failed` every day at 04:00;
 a shop that runs its tasks from a crontab adds it there. Record both retentions in the GDPR

@@ -40,10 +40,10 @@ listens to it, purges its own tables, and appends a line to the report with
 
 The core listens to the same event to purge the back-office exports and imports, through
 `Thelia\Domain\DataTransfer\Service\DataTransferJobPurger`: the done jobs older than 7 days,
-any other (failed, queued, running) after 30 days, as long as the failed jobs they can be
+any other (failed, queued, running) after 31 days, a day longer than the failed jobs they can be
 replayed from, the uploaded file of each deleted import when it lies inside
-`var/data-transfer/import`, and the files of that directory older than 30 days. The same listener removes the export files of the cache older
-than a day. These periods are fixed.
+`var/data-transfer/import`, and the files of that directory older than 31 days. The same listener removes the export files of the cache older
+than a day; with `--dry-run`, it counts them and deletes none. These periods are fixed.
 
 The failed jobs set aside in `failed` for more than 30 days are deleted on the same run
 (`Thelia\Messenger\EventListener\FailedJobsMaintenancePurgeListener`), as
