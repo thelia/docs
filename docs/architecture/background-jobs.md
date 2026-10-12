@@ -239,6 +239,14 @@ mail and are removed right before it is handed to the mail server, so the custom
 receives them. With a worker, the line appears when the worker delivered the mail, and its
 author is `system`.
 
+A queue may hand a job out twice: when a worker stops after the mail server accepted the mail
+but before the job was acknowledged, the job comes back once its redelivery delay is over.
+`MailerFactory` gives every mail an identifier in an `X-Thelia-Mail-Id` header; a worker keeps
+the identifiers of the mails the server accepted for a week, in the `thelia.cache.sent_mails`
+pool, and does not send a mail whose identifier it kept. Workers on several servers share them
+when `THELIA_CACHE_DSN` points to a cache server they share. A mail sent with the Symfony
+mailer directly, not through `MailerFactory`, carries no identifier and is not guarded.
+
 With a queue, `MailerFactory::send*OrFail()` only throws when the mail could not be built or
 queued. A delivery failure happens later, in the worker. `MailerFactory::sendNow()` hands a mail
 to the mail server at once, queue or not: the back office uses it to test the mail
@@ -432,7 +440,10 @@ The recurring tasks of the shop are declared in a Symfony Scheduler schedule nam
 (`Thelia\Scheduler\TheliaSchedule`). A worker consuming `scheduler_thelia` runs them; until
 one does, nothing runs, and a shop can keep its crontab instead. The schedule is stateful and
 locked through `LOCK_DSN`, so two workers never run a task twice, and a worker that restarts
-after a missed run catches up the last one only. The tasks and their settings are listed in
+after a missed run catches up the last one only. Across servers this holds only when both are
+shared: `LOCK_DSN` must name a store every worker reaches (not the default `flock`), and
+`THELIA_CACHE_DSN` a cache server they all use; otherwise each server runs the tasks on its own,
+and a cache clear forgets the last runs. The tasks and their settings are listed in
 the [reference](../reference/background-jobs.md#recurring-tasks).
 
 A task of the schedule that fails does not go to `failed`: Messenger only sets aside what came

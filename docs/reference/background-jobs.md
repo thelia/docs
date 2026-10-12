@@ -139,7 +139,8 @@ the date. A command that exits with an error code gives
 The "Details" link of an export or import is only shown to the administrator who started the
 job and to super-administrators.
 
-The screen answers to the resource `admin.configuration.background-jobs`. Grant `VIEW` to read
+The screen answers to the resource `admin.configuration.background-jobs`, given to no existing
+profile by the update: until it is granted, only super-administrators see the screen. Grant `VIEW` to read
 it, `UPDATE` to replay and `DELETE` to delete. The description of a mail names its recipient
 and a failure reason may quote personal data, so give it only to the profiles that need it.
 
@@ -825,6 +826,63 @@ final class PushAllStockCommand extends Command
 The command only dispatches messages. With a queue, the pushes are spread over the `async`
 worker; without one, they run during the command. Combinations whose quantity did not change
 are skipped by the handler, so the nightly run only calls the API for real changes.
+
+### Trying it
+
+With the files above in `local/modules/StockSync/`, a local stand-in for the warehouse API is
+enough to watch a push go through the queue.
+
+1. Install and activate the module. Activation creates its two tables:
+
+   ```bash
+   composer dump-autoload
+   php Thelia module:refresh
+   php Thelia module:activate StockSync
+   ```
+
+2. Start a fake warehouse that answers `200` and keeps what it receives:
+
+   ```bash
+   mkdir -p /tmp/warehouse
+   echo '<?php file_put_contents("/tmp/warehouse/received.log", $_SERVER["REQUEST_URI"]." ".file_get_contents("php://input")."\n", FILE_APPEND);' > /tmp/warehouse/index.php
+   php -S 127.0.0.1:8099 -t /tmp/warehouse /tmp/warehouse/index.php
+   ```
+
+3. Give the module its two settings. The example has no configuration page; a module setting
+   is stored in `module_config` and its value in `module_config_i18n`, under `en_US` when no
+   locale is given:
+
+   ```sql
+   INSERT INTO module_config (module_id, name, created_at, updated_at)
+       SELECT id, 'api_url', NOW(), NOW() FROM module WHERE code = 'StockSync';
+   INSERT INTO module_config_i18n (id, locale, value) VALUES (LAST_INSERT_ID(), 'en_US', 'http://127.0.0.1:8099');
+   INSERT INTO module_config (module_id, name, created_at, updated_at)
+       SELECT id, 'api_token', NOW(), NOW() FROM module WHERE code = 'StockSync';
+   INSERT INTO module_config_i18n (id, locale, value) VALUES (LAST_INSERT_ID(), 'en_US', 'test-token');
+   ```
+
+4. With `MESSENGER_TRANSPORT_DSN=doctrine://default` in `.env.local`, change the stock of a
+   combination in the back office. The page answers at once and the message waits:
+
+   ```bash
+   php Thelia messenger:stats async
+   ```
+
+5. Run a worker for one message, then read what the warehouse received and what the module
+   recorded:
+
+   ```bash
+   php Thelia messenger:consume async --limit=1 -vv
+   cat /tmp/warehouse/received.log
+   ```
+
+   ```sql
+   SELECT * FROM stock_sync_log ORDER BY id DESC LIMIT 1;
+   ```
+
+Without a queue, the push happens during the save of the stock, in the same request. Stop the
+fake warehouse and change the stock again to see a retry: the worker logs the failure, waits 30
+seconds, and sets the message aside in `failed` after three more attempts.
 
 ### Turning the module off
 

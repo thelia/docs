@@ -131,8 +131,9 @@ run the module's own `update()` method:
 
 ```bash
 php Thelia module:refresh
-php Thelia cache:clear
 ```
+
+Then rebuild the cache as in [step 3](#3-rebuild-the-cache), workers stopped.
 
 ## Notes for each version
 
@@ -172,6 +173,10 @@ Check these points when you cross it:
 - Launching an import from the back office takes the `UPDATE` right on `admin.import`; `VIEW`
   now only shows the imports and their jobs. Review the profiles of the administrators who
   import.
+- The new screen Configuration > System > Background jobs answers to the resource
+  `admin.configuration.background-jobs`, which the update gives to no profile: grant it to the
+  profiles that follow the jobs. Until then, only super-administrators see it.
+- The core requires `doctrine/dbal ^4.2`: a project or a module held on DBAL 3 moves to DBAL 4.
 
 ## Recommendations
 

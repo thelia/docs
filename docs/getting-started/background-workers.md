@@ -30,6 +30,11 @@ Do not consume `scheduler_thelia` when the same commands already run from a cron
 (`maintenance:purge`, `sale:check-activation`, `thelia:messenger:purge-failed`): each would run
 twice. See the warning in the [recurring tasks reference](../reference/background-jobs.md#recurring-tasks).
 
+With workers on several servers, run the scheduler worker on one of them, or share the lock
+and the cache: `LOCK_DSN` must name a store every server reaches (the default `flock` locks one
+server only) and `THELIA_CACHE_DSN` a cache server they all use, which keeps the last run of
+each task. Otherwise each server runs every task.
+
 A Redis or AMQP queue needs its Messenger bridge, which the core does not ship:
 `composer require symfony/redis-messenger` (with the `redis` PHP extension) or
 `composer require symfony/amqp-messenger` (with the `amqp` extension). The queue in the shop
