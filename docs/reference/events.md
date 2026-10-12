@@ -1293,7 +1293,7 @@ __________________
 
 **ProductSearchedEvent** (no constant)  
 
-_Added in 3.2. `Thelia\Core\Event\Product\ProductSearchedEvent` is raised by a front theme once per product search a shopper submits, so a module can keep a search log whatever runs the search. It is dispatched under its class name: subscribe to `ProductSearchedEvent::class`. Flexy raises it on the first page of results only. Suggestions shown while typing and further pages of the same results are not searches._  
+_Added in 3.2. `Thelia\Core\Event\Product\ProductSearchedEvent` is raised by a front theme once per product search a shopper submits, so a module can keep a search log whatever runs the search. It is dispatched under its class name: subscribe to `ProductSearchedEvent::class`. PHP resolves `::class` without loading the class, so the same subscriber also loads on a core older than 3.2, where the event does not exist and is never raised. Flexy raises it on the first page of results only. Suggestions shown while typing and further pages of the same results are not searches._  
 
 -  ProductSearchedEvent -> $term $locale $hits (getters `getTerm()`, `getLocale()`, `getHits()`: the submitted term, the locale of the search and the number of products found)  
 

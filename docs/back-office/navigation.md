@@ -5,7 +5,7 @@ sidebar_position: 3
 
 # Navigation
 
-Added in Thelia 3.2. A module that takes over what a section of the administration menu manages can hide that section. TheliaCMS does it for the Folders section: the CMS entry replaces it, so the content of the site has one place in the menu.
+Added in Thelia 3.2. A module that takes over what a section of the administration menu manages can hide that section. [TheliaCMS](/docs/features/pages-with-theliacms) does it for the Folders section: the CMS entry replaces it, so the content of the site has one place in the menu.
 
 Hiding a section only removes it from the menu. Its routes and the permissions that protect them do not change, so the pages stay reachable by their URL and keep their access rules.
 
@@ -39,7 +39,7 @@ final readonly class NavigationSectionVoter implements NavigationSectionVoterInt
 }
 ```
 
-This is the voter of TheliaCMS. It answers `true` for the `folder` section and `false` for every other one, so it never hides a section it does not own.
+This is the voter of [TheliaCMS](/docs/features/pages-with-theliacms). It answers `true` for the `folder` section and `false` for every other one, so it never hides a section it does not own.
 
 ## Sections that can be hidden
 

@@ -80,10 +80,11 @@ api_platform:
 
 ### Image files per language
 
-The `file` column of `product_image`, `category_image`, `content_image`, `folder_image` and
-`brand_image` is removed. Each image now carries its file in its translation, so an image can
-differ from one language to the next. The update script copies the existing file into the
-translation of every active language.
+The `file` column of `product_image`, `category_image`, `content_image`, `folder_image`,
+`brand_image` and `module_image` is removed. Each image now carries its file in its translation,
+so an image can differ from one language to the next. The update script copies the existing file
+into the translation of every active language. How a merchant uses it is described in
+[Product media](../front-office/product-media.md#one-image-file-per-language).
 
 A module that read the `file` column has to read `file` from the matching `*_image_i18n` table
 instead (`product_image_i18n`, `category_image_i18n`, and so on). Check the modules that

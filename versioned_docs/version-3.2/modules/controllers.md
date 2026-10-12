@@ -15,7 +15,7 @@ Controllers handle HTTP requests in your module. Thelia provides two base contro
 | Admin | `BaseAdminController` | Active back-office template | Manual: call `checkAuth($resources, $modules, $accesses)` per action |
 
 :::note The back-office reference is the default-twig bundle
-Admin controllers render through the **active back-office template**, resolved by `TheliaTemplateHelper` (via `getActiveAdminTemplate()`). The reference back-office template in Thelia 3 is the `default-twig` bundle (Twig). The legacy Smarty `default` back-office theme is no longer recommended and is expected to be dropped in Thelia 3.1, so target Twig templates for new modules.
+Admin controllers render through the **active back-office template**, resolved by `TheliaTemplateHelper` (via `getActiveAdminTemplate()`). The reference back-office template in Thelia 3 is the `default-twig` bundle (Twig). The Smarty `default` back-office theme is no longer installed as of Thelia 3.2, so target Twig templates.
 :::
 
 :::caution Authorization is not automatic

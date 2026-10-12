@@ -443,6 +443,9 @@ resource collection. The `CategoryFilters` LiveComponent follows this pattern.
 }) %}
 ```
 
+The facets a listing offers, their counts, the Promotion and Newness facets and the filters of a
+brand page are described in [Catalog Filters and Sorts](../features/catalog-filters.md).
+
 ## Accessing translated content
 
 API responses include translated content in the `i18ns` property:

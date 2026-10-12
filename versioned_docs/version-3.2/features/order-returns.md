@@ -13,13 +13,17 @@ and the paperwork.
 
 ## Turning it on
 
-Returns ship switched off. Two settings drive them:
+Returns ship switched off. Three settings drive them:
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
 | `order_return_enabled` | `0` | `1` turns returns on. |
-| `order_return_window_days` | `14` | How long after the order a return can be asked for. |
+| `order_return_window_days` | `14` | How many days a return can be asked for, counted from the shipment of the order. |
 | `order_return_restock_mode` | `resellable` | What reception puts back in stock: `auto` (every received line), `resellable` (only the lines marked resellable) or `never`. |
+
+Since Thelia 3.2, the window starts when the order last moved to the `sent` status, as recorded
+in its history (3.1 counted it from the creation of the order). An order sent again after coming back therefore starts a new window. An order that was
+never marked as sent, or that predates the order history, counts from its creation date.
 
 While the feature is off, the whole API surface of returns answers 404 rather than 403, so an
 integration cannot tell a disabled feature from a missing resource.

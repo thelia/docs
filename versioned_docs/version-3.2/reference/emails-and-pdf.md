@@ -123,6 +123,43 @@ dompdf lays out pages from CSS, so the html2pdf tags from Thelia 2 are ported to
 dompdf 3.1 resolves `counter(page)` (the current page) but leaves `counter(pages)` (the total number of pages) at `0`. The shipped footer prints the current page number without a total. dompdf can compute the total through inline PHP (`isPhpEnabled` + `{PAGE_COUNT}`), but that is left **disabled** on purpose: a merchant-controlled string such as a product title could inject `<script type="text/php">` and run arbitrary code.
 :::
 
+### Language of the invoice and the delivery note
+
+Added in version 1.1.0 of the default PDF template, which requires Thelia 3.1.
+
+The invoice and the delivery note are printed in the language the order was placed in, whatever
+the language of the administrator who prints them. The customer is the one who keeps the
+document.
+
+The `locale` variable cannot carry that language: the Twig engine replaces whatever the caller
+passed with the language of the current request. So each document reads it back from the order,
+and the language stays readable even after the merchant deactivated it, hence `active` and
+`visible` set to `'*'`:
+
+```twig
+{% set document_locale %}
+    {%- for order in loop('document-language.order', 'order', {id: order_id, customer: '*'}) -%}
+        {%- for language in loop('document-language.lang', 'lang', {id: order.LANG, active: '*', visible: '*'}) -%}
+            {{- language.LOCALE -}}
+        {%- endfor -%}
+    {%- endfor -%}
+{% endset %}
+{% set document_locale = document_locale|trim ?: locale %}
+```
+
+Every translated label then passes `document_locale` to `|trans` instead of `locale`. An order
+that can no longer be read falls back on the language of the request. A custom PDF theme that wants
+the same behaviour does the same.
+
+### Postage tax rate on the invoice
+
+Changed in version 1.2.0 of the default PDF template, which requires Thelia 3.2.
+
+The invoice prints the postage tax rate computed from the order, the postage tax divided by the
+untaxed postage (`order.POSTAGE_TAX / order.POSTAGE_UNTAXED`), rounded to two decimals. A free
+postage prints 0 %. Earlier versions printed a fixed rate, 20 % in most cases, whatever tax the
+order actually carried on its postage.
+
 ## Available Twig functions
 
 Emails and PDF have no HTTP request behind them (they can be rendered from a worker or the console), so they rely on the CLI-safe helpers exposed by the `TwigEngine` module rather than on request-bound functions:

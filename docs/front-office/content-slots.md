@@ -7,7 +7,7 @@ sidebar_position: 9
 
 Added in Thelia 3.2. A content slot is a named place in a theme that holds a list of links: the header menu, the footer links, the page a consent box points at. The theme asks for a slot by its code. It never names a content or a folder by its id.
 
-The shop decides what a slot holds. By default the core fills it from folders and contents. A module, TheliaCMS for instance, can take a slot over without the theme changing a line.
+The shop decides what a slot holds. By default the core fills it from folders and contents. A module, [TheliaCMS](/docs/features/pages-with-theliacms) for instance, can take a slot over without the theme changing a line.
 
 ```
 Theme template                       Core                         Resolvers
@@ -155,7 +155,7 @@ The rules:
 - The core resolver sits at priority `-100`, so any module that declares a higher priority with `#[AsTaggedItem]` answers before it.
 - Take the locale from the argument, never from the request.
 
-TheliaCMS works this way. Its resolver (priority `100`) answers `header_links` and `footer_links` from the menus of the CMS as soon as a menu holds an entry. An empty menu returns `null`, which leaves the slot to the folders and contents of the shop. It does not answer the consent slots.
+[TheliaCMS](/docs/features/pages-with-theliacms) works this way. Its resolver (priority `100`) answers `header_links` and `footer_links` from the menus of the CMS as soon as a menu holds an entry. An empty menu returns `null`, which leaves the slot to the folders and contents of the shop. It does not answer the consent slots.
 
 ## Related
 

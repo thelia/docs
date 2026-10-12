@@ -159,6 +159,8 @@ A few notes on the more involved ones:
   injects `DashboardStatsProvider` and the `RequestStack`, reads the `period`
   query parameter, and computes the stats for the current locale. The autowiring
   is automatic (see below), and you still render it as `{{ component('BoDashboard') }}`.
+  The figures, alerts and lists it shows are described in
+  [Dashboard](./screens.md#dashboard).
 
 :::note Component classes are auto-discovered
 The bundle loads `BackOfficeDefaultTwigBundle\` from `src/` with `autowire()`
