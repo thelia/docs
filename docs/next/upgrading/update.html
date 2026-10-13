@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.10.2">
 <title data-rh="true">Update | Thelia Documentation</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://doc.thelia.net/docs/next/upgrading/update"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Update | Thelia Documentation"><meta data-rh="true" name="description" content="This guide covers updating an existing Thelia 3 site to a newer Thelia 3 release."><meta data-rh="true" property="og:description" content="This guide covers updating an existing Thelia 3 site to a newer Thelia 3 release."><link data-rh="true" rel="icon" href="/img/favicon.png"><link data-rh="true" rel="canonical" href="https://doc.thelia.net/docs/next/upgrading/update"><link data-rh="true" rel="alternate" href="https://doc.thelia.net/docs/next/upgrading/update" hreflang="en"><link data-rh="true" rel="alternate" href="https://doc.thelia.net/docs/next/upgrading/update" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://AOX4BR07WS-dsn.algolia.net" crossorigin="anonymous"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Update","item":"https://doc.thelia.net/docs/next/upgrading/update"}]}</script><link rel="search" type="application/opensearchdescription+xml" title="Thelia Documentation" href="/opensearch.xml"><link rel="stylesheet" href="/assets/css/styles.3890d491.css">
-<script src="/assets/js/runtime~main.ba556e9c.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.8dd38244.js" defer="defer"></script>
 <script src="/assets/js/main.dc9dd057.js" defer="defer"></script>
 </head>
 <body>
@@ -46,6 +46,11 @@ date. It then reports the version it starts from and the one it moves to, and ap
 each database migration in order. Several versions at once are applied in a single run. The
 script offers to back the database up first and restores that backup if a migration fails; on
 a large database, take the manual <code>mysqldump</code> above instead.</p>
+<p>The script writes that backup to <code>local/backup/update.sql</code>: the whole database, customers
+included. Keep it out of version control. Projects created from <code>thelia/thelia-project</code> 3.2.2
+ignore it; in an older project, add these lines to <code>.gitignore</code>, the first one for the JWT keys
+<code>bin/install</code> writes:</p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#bfc7d5"><span class="token plain">/config/jwt/*.pem</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">/local/backup/*</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">!/local/backup/.gitkeep</span><br></div></code></pre></div></div>
 <p>The web server user often owns <code>var/cache/&lt;env&gt;</code> and <code>var/propel/&lt;env&gt;</code>. From 3.2.1, when the
 script cannot delete some of their files, it moves the directory aside
 (<code>var/cache/&lt;env&gt;.previous-…</code>), where nothing loads it, prints the command that deletes it as
