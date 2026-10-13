@@ -5,8 +5,8 @@ sidebar_position: 2.2
 
 # Updating from 3.1 to 3.2
 
-This page lists what is specific to the move from Thelia 3.1 to 3.2, patch release 3.2.1
-included. The procedure itself (backup, Composer, database script, cache, assets, modules) is
+This page lists what is specific to the move from Thelia 3.1 to 3.2, patch releases 3.2.1
+and 3.2.2 included. The procedure itself (backup, Composer, database script, cache, assets, modules) is
 on [Update](./update.md); the steps below come on top of it. If you start from 3.0, apply
 [Updating from 3.0 to 3.1](./from-3.0-to-3.1.md) first.
 
@@ -268,6 +268,33 @@ is still served at its URL: the command lists it as well, and `-delete` removes 
 - The customer export writes the first and last names under their own column labels; they were
   swapped.
 
+## Patch release 3.2.2
+
+3.2.2 is a maintenance release of the 3.2 line. It fixes coupons and automatic promotions, the
+refund of a return that carries the postage, and a reserved operation that showed to every
+visitor while it was not running. It ships `setup/update/sql/3.2.2.sql`, which changes no schema
+and records the new version. `thelia/setup` ships as 3.2.2 with this core; `thelia/config` stays
+at 3.2.0 and the themes do not change. The full notes are on the
+[GitHub release](https://github.com/thelia/thelia/releases/tag/3.2.2).
+
+```bash
+composer update thelia/thelia-skeleton --with-all-dependencies
+php local/setup/update.php
+php Thelia cache:warmup --env=prod
+```
+
+A coupon that removes an amount or a percentage on products, categories or attribute values,
+and a free product coupon, kept only the first entry of its list when it was saved from the
+back-office, and discounted nothing. After the update it applies to that first entry only: open
+each of these coupons, select the whole list again and save it. The coupon conditions need
+nothing: the values already saved are read correctly from now on.
+
+For module developers: `getFreeShippingForCountries()` and `getFreeShippingForModules()` of a
+coupon return `CouponCountry` and `CouponModule` rows instead of arrays of plain values. In
+`FacadeInterface`, `getDeliveryAddress()` may return `null` and
+`getNbArticlesInCartIncludeQuantity()` a float; an implementation that declares the former
+return types stays compatible.
+
 ## Checklist
 
 1. `composer update thelia/thelia-skeleton --with-all-dependencies`
@@ -280,3 +307,4 @@ is still served at its URL: the command lists it as well, and `-delete` removes 
 8. If your database comes from Thelia 2: list the tables with `php bin/console thelia:database:convert-utf8mb4`, then convert them during a maintenance window (see [Converting a database migrated from Thelia 2 to utf8mb4](#converting-a-database-migrated-from-thelia-2-to-utf8mb4)).
 9. nginx: add the document cache block to the server block (see [Web server](#web-server)).
 10. List the files uploaded before the update and remove the ones the command finds (see [Files uploaded before the update](#files-uploaded-before-the-update)).
+11. Open the list coupons and the free product coupons saved from the back-office, select the whole list again and save them (see [Patch release 3.2.2](#patch-release-322)).
