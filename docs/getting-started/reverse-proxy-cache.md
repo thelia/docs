@@ -266,9 +266,15 @@ otherwise `enabled` does the same with less to configure.
 ### Souin and other surrogate key proxies
 
 Use `SHARED_CACHE_PURGER=souin` or `surrogate-key`. The keys are sent in `Surrogate-Key`,
-separated by `, `, and the purge is a `PURGE` with that header. Thelia's tests check
-the header these two send, but neither has been tried against a running proxy: check the
-separator and the purge route on your proxy before relying on them.
+separated by `, `, and the purge is a `PURGE` with that header.
+
+What was tried: the standalone `darkweak/souin` image, with a minimal configuration in front of
+a shop, stored the pages, served them back (`Cache-Status: Souin; hit`) and kept their
+`Surrogate-Key` header. The purge was not demonstrated: that image passed Thelia's `PURGE /`
+on to the web server, which refused it, and its `/souin-api` route was not active in that
+configuration. The `surrogate-key` driver was not tried against any proxy. Find the purge route
+of your proxy in its documentation and check it with the requests of
+[checking that it works](#checking-that-it-works) before relying on it.
 
 ## Checking that it works
 
@@ -315,6 +321,12 @@ is next updated.
 - A module that sets its own cache headers on a response of the views above can have them
   replaced when the mode is `enabled`. The pages of TheliaCMS are not concerned: they render
   their own view, which is never shared.
+- A module or a theme that reads a resource through `resources()` that is not on the list of
+  visitor independent ones keeps every page personal, on purpose. The HeaderHighlights module,
+  active on the demo shop, reads `/api/header-highlights` on every page: with it, no page of
+  the demo is shared. Deactivate it, or add its resource to `thelia.shared_cache.readable_prefixes`
+  and give it a purge of its own. When a page stays `private` with the mode `enabled`, look
+  first at the modules that add something to every page.
 - A module that personalises a page without a cookie, by IP address or by a request header,
   is invisible to the policy and would be served to everyone. Do not install it behind a
   shared cache, or have it set `Cache-Control: no-store` on its answers. `private` is not
@@ -330,5 +342,8 @@ is next updated.
 - The forms: a form whose token is tied to the session, served from a shared page, fails on
   its first submission and passes on the second. The Flexy theme lists three forms with
   stateless tokens, the add to cart, the coupon code and the customer login (see
-  [forms](../reference/forms.md)); audit any other form of your theme or of a module before
-  sharing the page that carries it.
+  [forms](../reference/forms.md)). The filters of a category are another: on a shared category
+  page, the first filter applied answers with an invalid token when the form carries the token
+  of the session that rendered the page. A fix, which gives that form the stateless token id
+  `thelia_product_listing`, is prepared for the Flexy theme and is not released yet. Audit any
+  other form of your theme or of a module before sharing the page that carries it.
