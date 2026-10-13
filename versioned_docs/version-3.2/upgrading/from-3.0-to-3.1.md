@@ -5,8 +5,8 @@ sidebar_position: 2.1
 
 # Updating from 3.0 to 3.1
 
-This page lists what is specific to the move from Thelia 3.0 to 3.1, patch releases 3.1.1 and
-3.1.2 included. The procedure itself (backup, Composer, database script, cache, assets,
+This page lists what is specific to the move from Thelia 3.0 to 3.1, patch releases 3.1.1,
+3.1.2 and 3.1.3 included. The procedure itself (backup, Composer, database script, cache, assets,
 modules) is on [Update](./update.md). Moving on to 3.2 is covered in
 [Updating from 3.1 to 3.2](./from-3.1-to-3.2.md).
 
@@ -124,3 +124,24 @@ this line. The steps that follow the update are the same as on 3.2.1:
   [Files uploaded before the update](./from-3.1-to-3.2.md#files-uploaded-before-the-update)
   describes. In 3.1.2 as well, deleting an image or a document over the admin API removes its
   row only, and deleting it from the back office leaves its copy under `public/cache/`.
+
+## Patch release 3.1.3
+
+3.1.3 is a maintenance release of the 3.1 line with the fixes 3.2.2 brings to the 3.2 line:
+coupons and automatic promotions, the refund of a return that carries the postage, and a
+reserved operation that showed to every visitor while it was not running. It ships
+`setup/update/sql/3.1.3.sql`, which changes no schema and records the new version.
+`thelia/setup` ships as 3.1.4 with this core, its 3.1.3 tag being already taken; `thelia/config`
+stays at 3.1.1 and the themes do not change. The full notes are on the
+[GitHub release](https://github.com/thelia/thelia/releases/tag/3.1.3).
+
+To stay on 3.1, update the core and the setup package rather than the skeleton:
+
+```bash
+composer update thelia/core thelia/setup --with-all-dependencies
+php local/setup/update.php
+php Thelia cache:warmup --env=prod
+```
+
+The coupons saved from the back-office need the same step as on 3.2.2, and modules see the same
+changes: see [Patch release 3.2.2](./from-3.1-to-3.2.md#patch-release-322).
