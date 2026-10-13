@@ -22,7 +22,7 @@ word.
 
 This page is about the second one. The container cache is rebuilt from the code and is
 emptied on every deployment; the application cache is not, which is exactly the point. The
-HTTP cache is a separate subject and is configured on the proxy, not in Thelia.
+HTTP cache is a separate subject: see [reverse proxy cache](./reverse-proxy-cache.md).
 
 ## Choosing a backend
 
