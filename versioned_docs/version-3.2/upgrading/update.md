@@ -67,6 +67,17 @@ each database migration in order. Several versions at once are applied in a sing
 script offers to back the database up first and restores that backup if a migration fails; on
 a large database, take the manual `mysqldump` above instead.
 
+The script writes that backup to `local/backup/update.sql`: the whole database, customers
+included. Keep it out of version control. Projects created from `thelia/thelia-project` 3.2.2
+ignore it; in an older project, add these lines to `.gitignore`, the first one for the JWT keys
+`bin/install` writes:
+
+```
+/config/jwt/*.pem
+/local/backup/*
+!/local/backup/.gitkeep
+```
+
 The web server user often owns `var/cache/<env>` and `var/propel/<env>`. From 3.2.1, when the
 script cannot delete some of their files, it moves the directory aside
 (`var/cache/<env>.previous-…`), where nothing loads it, prints the command that deletes it as
