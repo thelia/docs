@@ -71,6 +71,7 @@ server {
 
     # Static files caching
     location ~* \.(jpg|jpeg|gif|css|png|js|ico|pdf|zip|woff|woff2|ttf|svg)$ {
+        try_files $uri @rewriteapp;
         expires 30d;
         access_log off;
         log_not_found off;
@@ -111,3 +112,7 @@ Ensure Nginx (www-data) has write access to:
 chmod -R 755 var/cache var/log local/session local/media public/cache
 chown -R www-data:www-data var/ local/ public/cache
 ```
+
+## Serving files from a CDN
+
+To serve theme files and catalogue images from a CDN, see [Serving files from a CDN](./cdn.md).

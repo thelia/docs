@@ -61,6 +61,7 @@ server {
 
     # Static files caching
     location ~* \.(jpg|jpeg|gif|css|png|js|ico|pdf|zip|woff|woff2|ttf|svg)$ {
+        try_files $uri @rewriteapp;
         expires 30d;
         access_log off;
         log_not_found off;
