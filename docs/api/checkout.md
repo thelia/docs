@@ -162,7 +162,7 @@ family gets a new case rather than a new meaning for an old one.
 | `cart-empty` | `cart` | Nothing to order. |
 | `address-missing` | `delivery`, `payment` | No delivery or invoice address on the cart, or the one it names is gone. |
 | `delivery-invalid` | `delivery` | No carrier chosen, or the one chosen does not serve this address or will not take this cart. |
-| `invoice-address-incomplete` | `payment` | The billing address names a company without the legal identifiers an invoice needs. |
+| `invoice-address-incomplete` | `payment` | The billing address names a company whose SIRET or VAT number the core refuses, see [Business addresses](../features/checkout.md#business-addresses). |
 | `payment-invalid` | `payment` | No payment method chosen, or the one chosen will not take this cart. |
 | `consent-missing` | `payment` | A mandatory consent is unanswered. `details.consentCode` and `details.consentTitle` name it. |
 | `consent-unknown` | `payment` | The placement answered a consent the shop is not asking for. `details.consentCode` names it. |

@@ -157,6 +157,19 @@ php Thelia i18n:prune-overrides --locale=fr_FR --force
 
 An override is reported when its source string is absent from the base catalogs loaded for that locale. Review the list before forcing, especially on a partially translated locale. The command never touches the versioned base files. See [`i18n:prune-overrides`](./cli/i18n_prune_overrides.md).
 
+## Content without a translation
+
+The texts of the catalog (titles, descriptions, slugs) are stored per language. When an item has no text in the language the visitor asked for, the `default_lang_without_translation` setting (**Configuration → Languages & URLs**) decides what the front office does:
+
+| Value | An item without a text in the requested language |
+|-------|--------------------------------------------------|
+| `1` (the default) | Shows the text of the default language. |
+| `0` (strict mode) | Shows no text. The front loops that extend `BaseI18nLoop` leave the item out of their results, and the `attr()` lookups return no text for it. |
+
+In the default mode the cart shows the default-language title of a product that has no title in the visitor's language. The setting applies to the files of an image or a document the same way, see [Product media](../front-office/product-media.md).
+
+In PHP, `ConfigQuery::getDefaultLangWhenNoTranslationAvailable()` returns the mode as an integer, `Lang::REPLACE_BY_DEFAULT_LANGUAGE` (`1`) or `Lang::STRICTLY_USE_REQUESTED_LANGUAGE` (`0`), whether the setting is stored, missing or overridden by an environment variable. Compare it with these constants. A class that extends `ConfigQuery` and overrides the method has to declare the `int` return type.
+
 ## Legacy Smarty
 
 The legacy `default` back-office theme (Smarty) translated with the `{intl}` plugin and the `{format_date}` / `{format_number}` / `{format_money}` / `{format_address}` plugins. That theme is no longer installed as of Thelia 3.2. For its syntax, see [Smarty plugins](./smarty-plugins/index.md).

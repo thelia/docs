@@ -153,6 +153,33 @@ export default class extends Controller {
 
 Stimulus automatically discovers controllers from `assets/controllers/` using naming conventions.
 
+### 3. Load it on demand
+
+Added in Flexy 1.3.
+
+A controller file without a marker is imported by the controllers module that StimulusBundle generates, so the browser downloads it on every page, whether the page uses it or not. A comment before the class makes StimulusBundle register the controller through a dynamic `import()` instead, the first time an element with its identifier appears in the document. That includes an element that arrives with a LiveComponent render or a Turbo visit.
+
+```javascript
+import { Controller } from '@hotwired/stimulus';
+
+/* stimulusFetch: 'lazy' */
+export default class extends Controller {
+    // ...
+}
+```
+
+Flexy marks the controllers of its page components this way (accordion, modal, tooltip, password field, range slider, product listing, countdown, address card, cart line quantity and others). Eight stay in the start-up graph because the header renders them on every page, or because other controllers look them up by identifier:
+
+- `live-refresh-on-focus`
+- `sticky-observer`
+- `Layouts--Header--base`
+- `Molecules--MobileDrawer--base` and `Molecules--MobileDrawer--open`
+- `Organisms--HeaderMenuItem--base`
+- `Organisms--HeaderProfile--base`
+- `Organisms--LangSelect--base`
+
+A new controller of the theme has to carry the comment unless it is in this list: the `LazyControllersTest` of the theme fails otherwise, and it fails too when a controller of the list carries the comment. A custom theme or a module serving a single page should add the comment as well, and keep it off a controller that something else needs registered before the first interaction.
+
 ## Next steps
 
 - [LiveComponents](./live-components) - Server-side reactivity

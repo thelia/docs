@@ -174,6 +174,47 @@ The IP address travels with the customer's personal data export, because it is h
 makes the acceptance evidence. Anonymization erases it and keeps the wording, the answer and the
 date. See [Personal data](../security/personal-data.md).
 
+## Business addresses
+
+An address that names a company shows two more fields: the SIRET (the registration number) and the VAT number. They appear as soon as a company name is typed, on the address forms of the account, on the customer information form and on the guest checkout.
+
+The core checks what is typed, whatever the door it comes through (front forms, API, back office):
+
+| Field | Rule |
+| --- | --- |
+| SIRET, address in France | 14 digits and a valid checksum. |
+| Registration number, any other country | Up to 20 letters and digits. |
+| VAT number, address in the European Union | A two letter country prefix that matches the country of the address, then 2 to 13 letters or digits. |
+| French VAT number | `FR`, a two character key, then the 9 digits of the SIREN. The key must be valid and the SIREN must match the first 9 digits of the SIRET when a valid SIRET is given. A number with a letter key is accepted as it is. |
+| VAT number, address outside the Union | Free text, up to 20 characters. |
+
+A French VAT number that stops before the 9 digits of the SIREN (`FR12`, for instance) is refused. An address that already stores such a number shows the message on its next save, and the checkout refuses it when it is the invoice address (the `invoice-address-incomplete` refusal of [the checkout API](../api/checkout.md#violation-codes)).
+
+Neither field is mandatory in the core: an association, a VAT-exempt business or a company outside the Union has a name and no number to give. The Flexy theme makes both mandatory by default, and the `address_legal_identifiers_required` setting changes that. Added in Flexy 1.3.
+
+| `address_legal_identifiers_required` | Effect on the Flexy forms |
+| --- | --- |
+| Missing, empty or any value but `0` | The SIRET and the VAT number are mandatory once a company name is typed. |
+| `0` | They stay on the form without being mandatory. A value that is typed is still checked by the rules above. |
+
+On the guest checkout the server never requires the two fields; the setting only decides whether the form marks them as required.
+
+## The confirmation page
+
+Added in Flexy 1.3.
+
+The page shown after an order is placed receives the order as `placed_order`. It is read from the session of the buyer who placed it, never from the URL: a signed-in customer only gets an order of their own, and a visitor with no order in session gets none, so a template has to handle `placed_order` being empty.
+
+```twig
+{% if placed_order|default(null) %}
+    <p>{{ placed_order.ref }}</p>
+{% endif %}
+```
+
+The title says "Your payment has been confirmed" when the order is paid, and "Your order has been placed" otherwise (a cheque or a bank transfer waiting for its money). The page declares the theme hook `order-placed.additional-payment-info` with the order, so that the payment module can tell the buyer what is left to do: see [Theme hooks](../front-office/theme-hooks.md#points-declared-by-the-flexy-theme) and [Payment modules](../modules/payment-modules.md#pattern-4-no-gateway).
+
+When the payment module of an order returns no response (a payment with no gateway), the theme redirects to the confirmation page, where the cart is emptied. The failure page cancels only the order this session has just placed. Another unpaid order of the same customer is left alone.
+
 ## Error messages in the tunnel
 
 Added in Thelia 3.2, with Flexy 1.2.
