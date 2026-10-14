@@ -103,9 +103,16 @@ The product collection, both on `/api/admin/products` and on `/api/front/product
 | `ref` | The product reference |
 | `position` | The manual position |
 | `productCategories.position` | The manual position inside a category |
+| `productCategories.createdAt` | The date the product was added to the category |
 | `createdAt` | The date the product was created |
 | `updatedAt` | The date the product was last written |
 | `title` | The product title in the requested language |
+
+The two `productCategories` sorts need the `productCategories.category.id` filter in the same request (see [OrderFilter](../filters.md#orderfilter)). The newest arrivals of a category come with:
+
+```http
+GET /api/front/products?productCategories.category.id=10&order[productCategories.createdAt]=desc
+```
 
 `order[title]` is a filter of its own rather than the generic one, because a title lives in the
 translation rows of the product: sorting through the plain relation path would multiply the rows

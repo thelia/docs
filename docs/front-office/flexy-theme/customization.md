@@ -438,6 +438,8 @@ export default class extends Controller {
 </div>
 ```
 
+A controller that only some pages use should carry the `/* stimulusFetch: 'lazy' */` comment, so that the browser loads it on demand. See [Stimulus](../stimulus.md#3-load-it-on-demand).
+
 See [Stimulus](/docs/front-office/stimulus) for more.
 
 ## Adding product sections

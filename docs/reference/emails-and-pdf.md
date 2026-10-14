@@ -223,6 +223,12 @@ Passing the domain and locale on every call keeps the rendering faithful whether
 The `|trans` filter substitutes `%name%` (wrapped in percent signs), so both the catalog key and the parameter key carry them: `'…%ref%'|trans({'%ref%': order_ref}, …)`. This differs from the legacy Thelia translator, which used a single leading `%` (`%ref`). See [Internationalization](./internationalization.md#placeholders).
 :::
 
+### Mails sent without a session
+
+A mail built outside a web request (a console command, a scheduled task, a deferred message) has no session to read a language from. The mailer then hands the language of the message to the parser: `locale`, `lang_code` and `lang_id` hold the language the message was created for, and every `|trans({}, 'email', locale)` of the template speaks it. These values apply to that one mail and are cleared once it is rendered, so the next render without a session never inherits them. With a session, nothing changes.
+
+This needs the TwigEngine module 1.1.1 or later. Only the translations that receive `locale` follow the message. What reads the current language on its own, `LangService::getLang()` or `lang_direction`, still uses the default language when there is no session.
+
 ## Previewing a rendering
 
 Two console commands render an email or a PDF without the HTTP flow, so you can preview a template or work on it from the CLI.
