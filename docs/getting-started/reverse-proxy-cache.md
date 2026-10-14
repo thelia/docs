@@ -62,7 +62,8 @@ An answer is shared only when all of these hold:
 
 - it is a `200` to a `GET` or `HEAD` request;
 - the request carries no cookie, no `Authorization` header and is not an XHR;
-- the page is a home page, a category, a product, a content, a folder or a brand;
+- the page is a home page, a category, a product, a content, a folder or a brand, or a view a
+  module declared (see [keys for your own module](#keys-for-your-own-module));
 - the first segment of the path is not `admin`, `api`, `open_api`, `_components`, `_profiler`,
   `_wdt`, `account`, `checkout`, `customer`, `order`, `password`, `login`, `logout`,
   `register`, `address`, `cart-reminder` or `back-to-cart`, nor starts with one of them
@@ -118,15 +119,41 @@ of its items, because a change can only purge a list.
 ### Keys for your own module
 
 A page is shared only if everything it read through `resources()` is on the list in the
-parameter `thelia.shared_cache.readable_prefixes`. A path that is not on the list makes the
-page personal, which is safe and costs only the gain. A module that reads its own API
-resource from a catalogue page can add its prefix to that parameter. It must then purge the
-key it creates, which is the name of the resource (`/api/front/my_resources` is tagged
-`my_resources`), by providing its own purge through `SharedCachePurgerInterface` or by
-dispatching one of the events above. No module has used this extension point yet, so treat
-it as untested. A resource that no event purges must not be added. The loops,
-Propel queries and Live components that read data without `resources()` are invisible to the
-keys: `shared_cache_ttl` is their only bound.
+parameter `thelia.shared_cache.readable_prefixes`, or declared by a module. A path that is
+not on the list makes the page personal, which is safe and costs only the gain.
+
+A module declares what it adds by implementing
+`Thelia\Core\SharedCache\SharedCacheContributorInterface` on a service the container
+autoconfigures:
+
+```php
+final readonly class MyModuleSharedCache implements SharedCacheContributorInterface
+{
+    public function readableResources(): array
+    {
+        // A resource every visitor reads the same, and the keys of the pages that read it.
+        return ['/api/my-module/banners' => ['my_module_banners']];
+    }
+
+    public function shareableViews(): array
+    {
+        // The views the module renders, shared on the same terms as those of the core.
+        return ['my_module_page'];
+    }
+}
+```
+
+A page the module renders without `resources()` names what it shows with
+`SharedCacheKeyCollector::tag('my_module_page-12')`. The module then purges its keys when
+the merchant changes what they show, with `SharedCacheInvalidator::purge(['my_module_banners'])`:
+the keys are sent to the proxy when the request ends. A resource or a view that nothing
+purges must not be declared. HeaderHighlights (`/api/header-highlights`) and TheliaCMS (the
+`cmspage` view, the home page it takes over included) do so from their releases that follow
+the one of the core; on an older core they behave as before. TheliaCMS files every page
+under `cms` and `cms-menu`, since its menus and settings can show on any page: publishing a
+CMS page or saving a menu purges every page. The loops, Propel queries and
+Live components that read data without `resources()` are invisible to the keys:
+`shared_cache_ttl` is their only bound.
 
 ## Purging when something changes
 
@@ -135,15 +162,17 @@ before the database is written.
 
 | Change | Purged |
 | --- | --- |
-| A product, a feature value of a product, a clone, the hiding of a combination | `product-<id>` and the lists that can show it |
-| A category or a brand | the object, its list, `products` and `tfilters` |
+| A product, a feature value of a product, a clone, the hiding or the deletion of a combination | `product-<id>` and the lists that can show it |
+| A category or a brand, the move of a category in the tree included | the object, its list, `products` and `tfilters` |
+| An image, a document or a video saved, updated, moved, hidden or deleted, the quick edit of its title included | the product, category, content, folder or brand it belongs to, as above (the medium of a module, which belongs to none of them: every page) |
+| The reorder of the media of a product, the association of an image, a document or a video with a combination | the product, as above |
+| The filters of a category or of a template saved, or emptied from the release of the `default-twig` theme that follows | `tfilters`, and the category when the filters are its own |
 | A content | the object and the lists of contents |
 | A folder | the object, `folders` and the lists of contents |
 | A product, category, content, folder or brand written through the admin API | the same as its back-office edit |
 | Any other catalogue model written through the API | every page |
-| The deletion of a combination | every page, the product of a deleted combination being unknown |
 | The save of the store configuration screen, or any write of a shop setting | every page, the setting `shared_cache_mode` included: switching to `disabled` empties what a proxy kept |
-| A sale, a catalogue price rule, a feature, an attribute, a product association type, a tax or a tax rule, a currency, a template, a product video, a setting, a language, a hook, a module activation, meta data, a finished import, a change of position of contents, accessories, associations or combinations, an image or a document saved, updated, moved, hidden or deleted, a country, a state or a delivery area, a module updated, moved or deleted, a hook deactivated, a feature or an attribute added to or removed from every template, a translation file written, a cache clear | every page (`thelia`) |
+| A sale, a catalogue price rule, a feature, an attribute, a product association type, a tax or a tax rule, a currency, a template, a setting, a language, a hook, a module activation, meta data, an import (from the moment it begins, so one that stops half way purges too), a change of position of contents, accessories, associations or combinations, a country, a state or a delivery area, a module updated, moved or deleted, a hook deactivated, a feature or an attribute added to or removed from every template, a translation file written, a cache clear | every page (`thelia`) |
 
 While the mode is not `disabled`, every purge also flushes the data access cache pool, so a
 page rebuilt right after a purge cannot read a stale answer. In `disabled` mode the pool is
@@ -297,15 +326,10 @@ of your proxy in its documentation and check it with the requests of
 
 ## What is not purged
 
-These changes raise no catalogue event, so a shared page can be out of date by up to
+These changes purge nothing, so a shared page can be out of date by up to
 `shared_cache_ttl`:
 
 - the stock sold by an order;
-- an import of prices or stock that does not end with the `IMPORT_SUCCESS` event (a finished import of the back office or of the command line purges every page);
-- the move of a category in the tree and the association of a combination with an image from
-  the back-office theme;
-- the reorder of the media of a product and the quick edit of a document title, from the
-  back-office theme;
 - a page that read data through a loop or a Live component that is not in `resources()`.
 
 The countdown of a running sale is computed when the page is built, so it can be late by up
@@ -319,14 +343,14 @@ is next updated.
 - The proxy must ignore, for lookup, the requests that carry a cookie: those are never shared.
   Varnish does so by default.
 - A module that sets its own cache headers on a response of the views above can have them
-  replaced when the mode is `enabled`. The pages of TheliaCMS are not concerned: they render
-  their own view, which is never shared.
+  replaced when the mode is `enabled`. TheliaCMS steps aside: once it declares its view, the
+  core writes the headers of its pages.
 - A module or a theme that reads a resource through `resources()` that is not on the list of
   visitor independent ones keeps every page personal, on purpose. The HeaderHighlights module,
-  active on the demo shop, reads `/api/header-highlights` on every page: with it, no page of
-  the demo is shared. Deactivate it, or add its resource to `thelia.shared_cache.readable_prefixes`
-  and give it a purge of its own. When a page stays `private` with the mode `enabled`, look
-  first at the modules that add something to every page.
+  active on the demo shop, reads `/api/header-highlights` on every page: until it runs the
+  release that declares that resource, no page of the demo is shared. When a page stays
+  `private` with the mode `enabled`, look first at the modules that add something to every
+  page.
 - A module that personalises a page without a cookie, by IP address or by a request header,
   is invisible to the policy and would be served to everyone. Do not install it behind a
   shared cache, or have it set `Cache-Control: no-store` on its answers. `private` is not
