@@ -63,6 +63,12 @@ The admin API follows the language too: `file` and `fileUrl` of an image resourc
 `?locale=`, and `POST /api/admin/<type>_images/{id}/file`, with the multipart fields
 `fileToUpload` and `locale`, sets or replaces the file of one language.
 
+### Deleting an image or a document
+
+Deleting an image or a document removes its row, the stored file of every language, and what the shop published to serve it: the link or copy in the cache directory, the resized versions and the variants of the image filters. In the back office this is the delete button of the item. Over the API it is a `DELETE` on `/api/admin/<type>_images/{id}` or `/api/admin/<type>_documents/{id}`, for products, categories, contents, folders and brands, and on `/api/admin/module_images/{id}`.
+
+A copy published in `copy` delivery mode is removed only when it holds the content of the deleted file. A category image and a product image can both be stored as `logo-8.png`: deleting one keeps the copy of the other.
+
 ## Image formats
 
 Added in Thelia 3.2, with TheliaLibrary 2.0.10.
