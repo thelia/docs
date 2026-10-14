@@ -105,6 +105,21 @@ with an existing invoice numbering to continue.
 `maintenance:purge`, `customer:anonymize` and `customer:export-personal-data` still declare their name with `setName()` in `configure()` rather than the `#[AsCommand]` attribute. Both styles work; new commands should use the attribute.
 :::
 
+### Background jobs
+
+| Command | Description |
+| --- | --- |
+| `messenger:consume` | Run a worker on one or more transports (`async`, `async_heavy`, `scheduler_thelia`). |
+| `messenger:stats` | Count the messages waiting in each transport. |
+| `messenger:failed:show` | List the failed jobs, or show one with its error. |
+| `messenger:failed:retry` | Replay failed jobs. |
+| `messenger:failed:remove` | Delete failed jobs. |
+| `messenger:stop-workers` | Ask the workers to stop after their current message. |
+| [`thelia:messenger:purge-failed`](./thelia_messenger_purge_failed.md) | Delete the failed jobs set aside for more than a number of days. |
+
+The `messenger:*` commands come from Symfony Messenger. See [Background jobs](../background-jobs.md)
+and [Running the workers](../../getting-started/background-workers.md).
+
 ### Customers and personal data
 
 | Command | Description |
