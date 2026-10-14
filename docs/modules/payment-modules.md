@@ -314,6 +314,47 @@ public function pay(Order $order): ?Response
 }
 ```
 
+### Pattern 4: no gateway
+
+A payment that happens outside the shop (cheque, bank transfer) has nothing to redirect to. `pay()` returns `null`, and the order stays unpaid until the merchant sets it to paid.
+
+```php
+public function pay(Order $order): ?Response
+{
+    return null;
+}
+```
+
+With the Flexy theme, a `null` answer sends the buyer to the confirmation page, which says "Your order has been placed" and empties the cart. The page declares the theme hook `order-placed.additional-payment-info` (since Flexy 1.3) with the placed order as `order`. Answer it to tell the buyer what is left to do: the payee and address of a cheque, the account of a transfer.
+
+```php
+final readonly class InstructionsThemeHook implements ThemeHookInterface
+{
+    public function __construct(private Environment $twig)
+    {
+    }
+
+    public function supports(string $hookName): bool
+    {
+        return 'order-placed.additional-payment-info' === $hookName;
+    }
+
+    public function render(string $hookName, array $parameters): string
+    {
+        $order = $parameters['order'];
+
+        // The hook is rendered for every payment method: answer for your own orders only.
+        if ($order->getPaymentModuleId() !== MyPayment::getModuleId()) {
+            return '';
+        }
+
+        return $this->twig->render('@MyPayment/theme-hook/instructions.html.twig', ['order' => $order]);
+    }
+}
+```
+
+The hook class is registered the way [Theme hooks](../front-office/theme-hooks.md#answering-a-point-in-a-module) describes.
+
 ## Callback handling
 
 Process gateway notifications:

@@ -155,6 +155,12 @@ Flexy 1.2 adds these points:
 
 `layout.head.<view>` is named after the `_view` attribute of the request: the view the core routes to, or the template name for the pages Flexy renders itself. Use it for an asset that only one page needs. `product.pse.alerts` is not rendered when the product has no available variant.
 
+Flexy 1.3 adds this point:
+
+| Point | Location | Parameters |
+|-------|----------|------------|
+| `order-placed.additional-payment-info` | On the order confirmation page, for what the buyer still has to do to pay (the payee and address of a cheque, the bank account of a transfer) | `order` (the placed `Thelia\Model\Order`) |
+
 The page-level points pass their main entity as a parameter (`product`, `category`, `customer`), available in `render()` through the `$parameters` argument.
 
 ## SEO and analytics

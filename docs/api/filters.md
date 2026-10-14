@@ -99,6 +99,7 @@ Sort results by field.
         'position',
         'createdAt',
         'productCategories.position',
+        'productCategories.createdAt',
     ],
 )]
 ```
@@ -115,7 +116,12 @@ GET /api/front/products?order[position]=asc&order[ref]=asc
 
 # Related field
 GET /api/front/products?order[productCategories.position]=asc
+
+# Products most recently added to a category first
+GET /api/front/products?productCategories.category.id=10&order[productCategories.createdAt]=desc
 ```
+
+`productCategories.position` and `productCategories.createdAt` sort on the link between a product and a category. They apply together with the `productCategories.category.id` filter, in the same request. `productCategories.createdAt` is the date the product was put in the category, which is not the creation date of the product. A product created years ago can have been added to a range today. With the `depth` filter, the date read is the one of the link to the listed category or branch, never a link to a category outside it.
 
 ### RangeFilter
 
