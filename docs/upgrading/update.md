@@ -149,8 +149,8 @@ Each release can ask for something the generic procedure above does not cover: a
 change, a module to bump, a behaviour that moves. Read the page for every minor version you
 cross, in order:
 
-- [Updating from 3.0 to 3.1](./from-3.0-to-3.1.md), patch releases 3.1.1, 3.1.2 and 3.1.3 included.
-- [Updating from 3.1 to 3.2](./from-3.1-to-3.2.md), patch releases 3.2.1 and 3.2.2 included.
+- [Updating from 3.0 to 3.1](./from-3.0-to-3.1.md), patch releases 3.1.1, 3.1.2, 3.1.3 and 3.1.4 included.
+- [Updating from 3.1 to 3.2](./from-3.1-to-3.2.md), patch releases 3.2.1, 3.2.2 and 3.2.3 included.
 
 ## Recommendations
 

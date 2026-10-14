@@ -6,7 +6,7 @@ sidebar_position: 2.1
 # Updating from 3.0 to 3.1
 
 This page lists what is specific to the move from Thelia 3.0 to 3.1, patch releases 3.1.1,
-3.1.2 and 3.1.3 included. The procedure itself (backup, Composer, database script, cache, assets,
+3.1.2, 3.1.3 and 3.1.4 included. The procedure itself (backup, Composer, database script, cache, assets,
 modules) is on [Update](./update.md). Moving on to 3.2 is covered in
 [Updating from 3.1 to 3.2](./from-3.1-to-3.2.md).
 
@@ -145,3 +145,25 @@ php Thelia cache:warmup --env=prod
 
 The coupons saved from the back-office need the same step as on 3.2.2, and modules see the same
 changes: see [Patch release 3.2.2](./from-3.1-to-3.2.md#patch-release-322).
+
+## Patch release 3.1.4
+
+3.1.4 is a security release of the 3.1 line with the fix 3.2.3 brings to the 3.2 line for
+[GHSA-q679-2j8v-rh79](https://github.com/thelia/thelia/security/advisories/GHSA-q679-2j8v-rh79):
+a signed-in customer updating their account through the front API could write account fields
+reserved to the administration, and empty their own e-mail. It ships
+`setup/update/sql/3.1.4.sql`, which changes no schema and records the new version.
+`thelia/setup` ships as 3.1.5 with this core, its 3.1.4 tag being already taken; `thelia/config`
+stays at 3.1.1 and the themes do not change. The full notes are on the
+[GitHub release](https://github.com/thelia/thelia/releases/tag/3.1.4).
+
+To stay on 3.1, update the core and the setup package rather than the skeleton:
+
+```bash
+composer update thelia/core thelia/setup --with-all-dependencies
+php local/setup/update.php
+php Thelia cache:warmup --env=prod
+```
+
+Modules see the same change as on 3.2.3: see
+[Patch release 3.2.3](./from-3.1-to-3.2.md#patch-release-323).

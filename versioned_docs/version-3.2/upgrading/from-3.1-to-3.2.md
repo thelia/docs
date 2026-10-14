@@ -5,8 +5,8 @@ sidebar_position: 2.2
 
 # Updating from 3.1 to 3.2
 
-This page lists what is specific to the move from Thelia 3.1 to 3.2, patch releases 3.2.1
-and 3.2.2 included. The procedure itself (backup, Composer, database script, cache, assets, modules) is
+This page lists what is specific to the move from Thelia 3.1 to 3.2, patch releases 3.2.1,
+3.2.2 and 3.2.3 included. The procedure itself (backup, Composer, database script, cache, assets, modules) is
 on [Update](./update.md); the steps below come on top of it. If you start from 3.0, apply
 [Updating from 3.0 to 3.1](./from-3.0-to-3.1.md) first.
 
@@ -294,6 +294,32 @@ coupon return `CouponCountry` and `CouponModule` rows instead of arrays of plain
 `FacadeInterface`, `getDeliveryAddress()` may return `null` and
 `getNbArticlesInCartIncludeQuantity()` a float; an implementation that declares the former
 return types stays compatible.
+
+## Patch release 3.2.3
+
+3.2.3 is a security and maintenance release of the 3.2 line. It fixes
+[GHSA-q679-2j8v-rh79](https://github.com/thelia/thelia/security/advisories/GHSA-q679-2j8v-rh79):
+a signed-in customer updating their account through the front API could write the fields a
+module adds to the customer and reserves to the administration, such as the customer family of
+CustomerFamily, and the same request emptied their e-mail, so they could no longer sign in.
+Deleting an image or a document, in the back office or over the API, now also removes what the
+shop published to serve it (see
+[Deleting an image or a document](../front-office/product-media.md#deleting-an-image-or-a-document)).
+It ships `setup/update/sql/3.2.3.sql`, which changes no schema and records the new version.
+`thelia/setup` ships as 3.2.3 with this core; `thelia/config` stays at 3.2.0 and the themes do
+not change. The full notes are on the
+[GitHub release](https://github.com/thelia/thelia/releases/tag/3.2.3).
+
+```bash
+composer update thelia/thelia-skeleton --with-all-dependencies
+php local/setup/update.php
+php Thelia cache:warmup --env=prod
+```
+
+For module developers: a field a module adds to an API resource is written only when it carries
+a `#[Groups]` attribute naming a write group of the operation, as the fields of the resource
+itself do. A field without such a group is no longer written by an operation that declares
+groups.
 
 ## Checklist
 
