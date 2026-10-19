@@ -1,6 +1,6 @@
 ---
 title: Serving files from a CDN
-sidebar_position: 4.6
+sidebar_position: 4.7
 ---
 
 # Serving files from a CDN
@@ -13,8 +13,8 @@ A shop serves three families of files, and each one is configured in a different
 | Catalogue images | Generated on demand by LiipImagine into `public/media/cache/` | Cache headers on the origin; `MEDIA_CDN_URL` only for a separate domain |
 | Protected files (virtual products, invoices, order PDFs) | Served by the shop after checking the visitor's rights | Nothing: they must not be cached by a CDN |
 
-HTML pages and protected files are sent as `private`, so a CDN that honours the origin headers
-does not cache them. The rest of this page explains each family, then the settings that keep
+By default, HTML pages and protected files are sent as `private`, so a CDN that honours the
+origin headers does not cache them. The rest of this page explains each family, then the settings that keep
 absolute URLs on the shop's own domain.
 
 The setups below were checked on Thelia 3.2 and on the development version of the core, with
@@ -320,10 +320,13 @@ It follows that the CDN must send the shop's own host to the origin (often calle
 = origin host" in pull zone settings), never the CDN domain or the host sent by the client.
 
 When the CDN terminates TLS, Thelia also needs to know which proxies to trust, so that it sees
-the visitor's address and the `https` scheme. Thelia reads `SYMFONY_TRUSTED_PROXIES`; the
-default trusted headers are `X-Forwarded-For`, `X-Forwarded-Port` and `X-Forwarded-Proto`, not
-`X-Forwarded-Host`. The rules for choosing the addresses are in
-[Behind a proxy or a load balancer](../api/rate-limiting.md#behind-a-proxy-or-a-load-balancer).
+the visitor's address and the `https` scheme. Without project configuration, Symfony reads
+them from `SYMFONY_TRUSTED_PROXIES`; a project that wires its own `TRUSTED_PROXIES` variable
+into `framework.trusted_proxies`, as
+[Behind a proxy or a load balancer](../api/rate-limiting.md#behind-a-proxy-or-a-load-balancer)
+shows, sets that one instead. The same section gives the rules for choosing the addresses.
+Thelia's default trusted headers are `X-Forwarded-For`, `X-Forwarded-Port` and
+`X-Forwarded-Proto`, not `X-Forwarded-Host`.
 
 `url_site` also serves the e-mail layout and the SEO canonical and hreflang URLs, so links in
 e-mails do not depend on the request either.
@@ -331,8 +334,10 @@ e-mails do not depend on the request either.
 ## HTML and cookies
 
 HTML pages are sent with `cache-control: max-age=0, must-revalidate, private` and a
-`PHPSESSID` cookie on the first visit, so a CDN caches no HTML today. Caching public pages is
-a separate topic.
+`PHPSESSID` cookie on the first visit, so a CDN caches no HTML by default. From Thelia 3.3,
+public catalogue pages can be made shareable for anonymous visitors: see
+[Reverse proxy cache](./reverse-proxy-cache.md) before letting a CDN keep HTML, in particular
+its warning on the forwarded headers a visitor can send.
 
 Files under `/assets/` and existing files under `/media/cache/<filter>/` are sent without
 `Set-Cookie`. A separate CDN or media domain never receives the shop's cookies, so browsers do

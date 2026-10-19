@@ -320,10 +320,13 @@ It follows that the CDN must send the shop's own host to the origin (often calle
 = origin host" in pull zone settings), never the CDN domain or the host sent by the client.
 
 When the CDN terminates TLS, Thelia also needs to know which proxies to trust, so that it sees
-the visitor's address and the `https` scheme. Thelia reads `SYMFONY_TRUSTED_PROXIES`; the
-default trusted headers are `X-Forwarded-For`, `X-Forwarded-Port` and `X-Forwarded-Proto`, not
-`X-Forwarded-Host`. The rules for choosing the addresses are in
-[Behind a proxy or a load balancer](../api/rate-limiting.md#behind-a-proxy-or-a-load-balancer).
+the visitor's address and the `https` scheme. Without project configuration, Symfony reads
+them from `SYMFONY_TRUSTED_PROXIES`; a project that wires its own `TRUSTED_PROXIES` variable
+into `framework.trusted_proxies`, as
+[Behind a proxy or a load balancer](../api/rate-limiting.md#behind-a-proxy-or-a-load-balancer)
+shows, sets that one instead. The same section gives the rules for choosing the addresses.
+Thelia's default trusted headers are `X-Forwarded-For`, `X-Forwarded-Port` and
+`X-Forwarded-Proto`, not `X-Forwarded-Host`.
 
 `url_site` also serves the e-mail layout and the SEO canonical and hreflang URLs, so links in
 e-mails do not depend on the request either.
