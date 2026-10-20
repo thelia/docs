@@ -98,7 +98,7 @@ The answer carries the subscription and, this once, its `secret`:
 | --- | --- | --- |
 | `order.created` | an order is placed | the order |
 | `order.status_changed` | the status of an order changes | the order |
-| `order.paid` | an order moves to a paid status | the order |
+| `order.paid` | an order comes into a paid status (`paid`, `processing`, `sent`) | the order |
 | `customer.created` | a customer account is created | the customer |
 | `product.updated` | a product is saved with a change | the product |
 
@@ -552,7 +552,7 @@ X-Thelia-Webhook-Signature: v1=5984e0833c8b8cf9bf52e2a4d80ee901931ea09bbba973c2f
 
 ### `order.paid`
 
-Published when an order moves from a status that is not paid to one that is, right after `order.status_changed` for the same change.
+Published once when an order comes into the statuses the shop counts as paid (`paid`, `processing`, `sent`) from a status outside them, right after `order.status_changed` for the same change. A move between those statuses does not publish it again.
 
 <details>
 <summary>Full request</summary>
@@ -751,7 +751,7 @@ X-Thelia-Webhook-Signature: v1=713bf5cb003af0ac70be02a79d748e37e4c6eed2b833cbc9e
 
 ### `customer.created`
 
-Published when a customer account is created. An update of the account publishes nothing.
+Published when a customer account is created: a sign-up from the storefront, from the back office, or a customer created through the API. A guest checkout and an update of an account publish nothing.
 
 <details>
 <summary>Full request</summary>
@@ -793,7 +793,7 @@ X-Thelia-Webhook-Signature: v1=f7f3c83b4913f84038e31952ea4c23a5040ec7f34fa240409
 
 ### `product.updated`
 
-Published when a product is saved with a change: the product row, its text in the edited language, its default combination or its default category. A save that changes nothing publishes nothing. A price, a weight or a stock quantity goes through the combination events and does not publish it.
+Published when a product is saved with a change: the product row, its text in the edited language, its default combination or its default category. A save that changes nothing publishes nothing. A price, a weight or a stock quantity goes through the combination events and does not publish it. A product written through the API is published on every write, even one that changes nothing: the API has no state from before the write to compare with.
 
 <details>
 <summary>Full request</summary>
@@ -976,6 +976,8 @@ The same body with a space added at the end must be refused.
   attempt is retried after 1 minute, 5 minutes, 30 minutes and 2 hours (five attempts in all).
   Without a queue the job runs in the request: a failure is not retried and the subscription stays
   active.
+- **A request that tests your receiver is not an event.** The test button of the back office sends a signed `webhook.test` request, logged like any delivery under that name; it is not counted in the last successful delivery of a subscription.
+- **A webhook raised inside a transaction.** With a queue, a message that a worker reads before the transaction of the API write commits is looked for again a few times instead of being dropped. Without a queue the request leaves before the commit: a rollback that follows leaves the receiver with an event that did not happen.
 - **A subscription whose retries ran out goes to `error` and stops receiving.** Its
   `failureReason` says which delivery failed. An administrator enables it again once the receiver
   is fixed; a failed delivery can be replayed from the delivery log of the back office. A replay
