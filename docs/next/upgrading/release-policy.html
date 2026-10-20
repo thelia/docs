@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.10.2">
 <title data-rh="true">Release Policy | Thelia Documentation</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://doc.thelia.net/docs/next/upgrading/release-policy"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Release Policy | Thelia Documentation"><meta data-rh="true" name="description" content="This page describes how Thelia 3 releases are numbered and branched, and what a shop or a"><meta data-rh="true" property="og:description" content="This page describes how Thelia 3 releases are numbered and branched, and what a shop or a"><link data-rh="true" rel="icon" href="/img/favicon.png"><link data-rh="true" rel="canonical" href="https://doc.thelia.net/docs/next/upgrading/release-policy"><link data-rh="true" rel="alternate" href="https://doc.thelia.net/docs/next/upgrading/release-policy" hreflang="en"><link data-rh="true" rel="alternate" href="https://doc.thelia.net/docs/next/upgrading/release-policy" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://AOX4BR07WS-dsn.algolia.net" crossorigin="anonymous"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Release Policy","item":"https://doc.thelia.net/docs/next/upgrading/release-policy"}]}</script><link rel="search" type="application/opensearchdescription+xml" title="Thelia Documentation" href="/opensearch.xml"><link rel="stylesheet" href="/assets/css/styles.3890d491.css">
-<script src="/assets/js/runtime~main.468df4df.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.554b0710.js" defer="defer"></script>
 <script src="/assets/js/main.6e49b0d3.js" defer="defer"></script>
 </head>
 <body>
@@ -51,8 +51,10 @@ what <code>main</code> held at the time. Which series still receive fixes is lis
 release</strong>, keeping its behaviour, and documented as such in the release notes;</li>
 <li class="">it is <strong>removed in a major release</strong>, never in a minor or a patch one.</li>
 </ul>
-<p>Some minor releases of the 3.x line have removed code. The breaking changes listed in their
-release notes include these removals:</p>
+<p>The full rules are in the core&#x27;s
+<a href="https://github.com/thelia/thelia/blob/main/BC-PROMISE.md" target="_blank" rel="noopener noreferrer" class="">backward compatibility promise</a>. It was
+written down in October 2026, during the 3.2 line. Two earlier minor releases removed code before
+that, and their release notes list these removals under breaking changes:</p>
 <ul>
 <li class="">3.1.0 removed the product price filter
 <code>Thelia\Api\Bridge\Propel\Filter\CustomFilters\Filters\PriceFilter</code>, which nothing called. See
