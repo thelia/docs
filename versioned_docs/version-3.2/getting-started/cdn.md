@@ -8,7 +8,7 @@ sidebar_position: 4.6
 | Files | Served from | CDN cache |
 | --- | --- | --- |
 | Theme files (JS, CSS, fonts, icons) | `public/assets/`, compiled by AssetMapper | Yes, long TTL |
-| Catalogue images | `public/media/cache/`, generated on demand by LiipImagine | Yes, moderate TTL |
+| Catalogue images | `public/cache/images/`, generated on demand by LiipImagine | Yes, moderate TTL |
 | Protected files (virtual products, order PDFs) | The shop, after checking the visitor's rights | Never |
 
 Checked on Thelia 3.2 and the development version of the core, with Flexy and the default back
@@ -33,14 +33,16 @@ location ^~ /assets/ {
 }
 
 # Image derivatives: same name when regenerated, so no immutable.
-location ^~ /media/cache/ {
-    try_files $uri @rewriteapp;
+location ^~ /cache/images/ {
     add_header Cache-Control "public, max-age=86400" always;
+    try_files $uri =404;
 }
 ```
 
-`try_files ... @rewriteapp` is required: a derivative not generated yet is linked as
-`/media/cache/resolve/...`, which PHP generates before answering a `302` to the file.
+Derivatives are written under `public/cache/images/`, the `cache_prefix` TheliaLibrary sets in
+`config/packages/liip_imagine_thelia.yaml`. One not generated yet is linked as
+`/media/cache/resolve/...`, which PHP generates before answering a `302` to the file: that path
+must reach PHP, as the [nginx page](./nginx-configuration.md) configures it.
 
 ### 2. The shop URL and its trusted host
 
@@ -73,8 +75,10 @@ When the CDN ends TLS, Thelia must trust it to see the visitor's address and `ht
 ## Files on a separate domain
 
 To serve files from `cdn.example.com` while pages stay on the shop domain, Thelia must write
-that domain in the URLs. Both files below can be committed: with the variable empty, nothing
-changes.
+that domain in the URLs. With the variable empty, the files below change nothing for a shop at
+the root of its domain, so they can be committed. A shop installed in a subdirectory loses its
+base path as soon as `assets_cdn.yaml` exists, the variable empty or not: there, add that file
+only where `ASSETS_CDN_URL` is set.
 
 **Theme files**, `config/packages/assets_cdn.yaml`:
 
@@ -137,7 +141,9 @@ the shop domain.
   curl -s https://shop.example.com/<product page> | grep -oE '[[:space:]](src|srcset)="[^"]*/media/cache/resolve/' | wc -l
   ```
 
-- Protected files are sent `private` and must stay so: no "cache everything" rule on
+- Protected files are sent `private`, the guest download route included: Thelia starts a session
+  on every front request, and Symfony then marks the response `private`, even a
+  `BinaryFileResponse`, which is public by default. They must stay so: no "cache everything" rule on
   `/account/*`, `/order/*`, `/admin*`, `/api/*`, `/_components/*`, `/media/cache/resolve/*` or HTML.
   Virtual product downloads (`/account/order/download/{id}`, `/order/track/{token}/download/{id}`)
   require the customer's paid order or the guest token.
