@@ -57,8 +57,10 @@ Within the 3.x line:
   release**, keeping its behaviour, and documented as such in the release notes;
 - it is **removed in a major release**, never in a minor or a patch one.
 
-Some minor releases of the 3.x line have removed code. The breaking changes listed in their
-release notes include these removals:
+The full rules are in the core's
+[backward compatibility promise](https://github.com/thelia/thelia/blob/main/BC-PROMISE.md). It was
+written down in October 2026, during the 3.2 line. Two earlier minor releases removed code before
+that, and their release notes list these removals under breaking changes:
 
 - 3.1.0 removed the product price filter
   `Thelia\Api\Bridge\Propel\Filter\CustomFilters\Filters\PriceFilter`, which nothing called. See
