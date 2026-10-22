@@ -934,3 +934,17 @@ configuration missing). The message goes to `failed` at once, where it can be re
 the cause is fixed.
 
 Test the replay: dispatch the message twice in a test and check that the effect happened once.
+
+### Known limits
+
+Two cases are not guarded by the core in this version:
+
+- A failed job replayed from the back office and with `messenger:failed:retry` at the same
+  moment may be sent twice: the command reads the job without holding it while it asks what to
+  do with it. Replay a job from one place at a time.
+- A mail sent with the Symfony mailer directly, instead of `MailerFactory`, carries no
+  identifier: when the queue hands its job out again (a worker stopped between the mail server
+  accepting the mail and the job being acknowledged), it is sent a second time. Send the mails
+  of a module through `MailerFactory`, which a worker never delivers twice.
+
+Both are a reason more to keep every handler idempotent.
