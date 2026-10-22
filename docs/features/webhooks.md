@@ -96,7 +96,7 @@ The answer carries the subscription and, this once, its `secret`:
 
 | Event | Sent when | Body |
 | --- | --- | --- |
-| `order.created` | an order is placed | the order |
+| `order.created` | an order is placed, or created through the admin API | the order |
 | `order.status_changed` | the status of an order changes | the order |
 | `order.paid` | an order comes into a paid status (`paid`, `processing`, `sent`) | the order |
 | `customer.created` | a customer account is created | the customer |
@@ -971,17 +971,21 @@ The same body with a space added at the end must be refused.
   `X-Thelia-Webhook-Id`: keep the identifiers you have handled and drop a duplicate.
 - **The order of arrival is not guaranteed.** A retry of an old `order.status_changed` can reach
   the receiver after a newer one. `created_at` of the body tells which is older.
-- **Retries need a queue.** The delivery is a job (`DeliverWebhook`, routed to `async`), so a slow
-  receiver never holds back the order being saved. With a queue and a worker running, a failed
+- **Retries need a queue.** The delivery is a job (`DeliverWebhook`, routed to `async`), so with a
+  queue and a worker a slow receiver never holds back the order being saved. With a queue and a worker running, a failed
   attempt is retried after 1 minute, 5 minutes, 30 minutes and 2 hours (five attempts in all).
-  Without a queue the job runs in the request: a failure is not retried and the subscription stays
-  active.
+  Without a queue the job runs in the request that raised the event: a receiver that stays silent
+  holds that request for up to 10 seconds per subscription, a failure is not retried and the
+  subscription stays active. Configure a queue and run a worker before relying on webhooks in
+  production; the subscription list of the back office warns while none is configured.
 - **A request that tests your receiver is not an event.** The test button of the back office sends a signed `webhook.test` request, logged like any delivery under that name; it is not counted in the last successful delivery of a subscription.
 - **A webhook raised inside a transaction.** With a queue, a message that a worker reads before the transaction of the API write commits is looked for again a few times instead of being dropped. Without a queue the request leaves before the commit: a rollback that follows leaves the receiver with an event that did not happen.
 - **A subscription whose retries ran out goes to `error` and stops receiving.** Its
   `failureReason` says which delivery failed. An administrator enables it again once the receiver
   is fixed; a failed delivery can be replayed from the delivery log of the back office. A replay
-  that fails does not put the subscription back in `error`.
+  that fails does not put the subscription back in `error`. A replay is one attempt: it keeps the
+  attempts already made in `attempts`, and a delivery that was queued when its subscription was
+  turned off, or went to `error`, is recorded as `cancelled` and never sent.
 - **Replacing the secret does not touch the deliveries already waiting for a retry.** A retry is
   signed with the secret in force when it is sent, so a receiver that has not yet been given the
   new secret refuses those retries.
