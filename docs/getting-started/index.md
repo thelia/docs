@@ -26,6 +26,12 @@ falls back on generated recipes without reporting anything, the `config/packages
 Thelia expects are never written, and the install fails much later on an unrelated message, most
 often `You must either configure a "public_key" or a "secret_key"`.
 
+Another symptom of a missing token: Flex applies the Symfony recipe of `symfony/messenger`
+instead of the Thelia one. It writes `config/packages/messenger.yaml` and adds
+`MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0` to `.env`, so every mail waits in a
+queue for a worker that does not run, and no mail leaves the shop. Delete that file and that
+line, as described in [Updating from 3.2 to 3.3](../upgrading/from-3.2-to-3.3.md#symfony-recipes).
+
 Create a token on [github.com/settings/tokens](https://github.com/settings/tokens). No scope is
 needed, the recipes are public. Give it to Composer once:
 
