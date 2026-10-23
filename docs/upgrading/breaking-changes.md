@@ -11,7 +11,7 @@ For the update procedure itself, see [Update](./update.md).
 
 ## Thelia 3.3
 
-The update gestures (the Symfony Messenger recipe, the shared directories, the queue of the heavy jobs) are in [Updating to 3.3: background jobs](./update.md#updating-to-33-background-jobs). See [Background jobs](../architecture/background-jobs.md) for the model.
+The update gestures (the Symfony Messenger recipe, the shared directories, the queue of the heavy jobs) are in [Updating from 3.2 to 3.3](./from-3.2-to-3.3.md). See [Background jobs](../architecture/background-jobs.md) for the model.
 
 ### Doctrine DBAL 4
 
