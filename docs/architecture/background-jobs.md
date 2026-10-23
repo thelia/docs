@@ -512,7 +512,10 @@ For a module author, this means:
   a `LogicException` when it goes to a queue, with a `NoHandlerForMessageException` without one,
 - they can be written and read as JSON by the Symfony serializer: public or promoted
   constructor properties with scalar types, such as ids and codes,
-- they never carry a Propel model. The handler reads the row again from its id.
+- they never carry a Propel model. The handler reads the row again from its id,
+- they implement `Thelia\Messenger\Message\DescribedJob`, so the back office lists a failed job
+  by a line that says what it was, with no personal data in it. See
+  [the message of the example module](../reference/background-jobs.md#the-message).
 
 A class from outside these namespaces, such as an application class under `App\`, is
 accepted only once a project adds its exact name to `thelia.messenger.allowed_message_classes`.
