@@ -22,9 +22,7 @@ URLs do not change, the back office works as before, and Thelia needs three sett
 
 ### 1. Cache headers on the origin
 
-Add to the shop's server block (see the [nginx page](./nginx-configuration.md), which extends
-the `/assets/` location below with `gzip_static` and `brotli_static`: keep a single `/assets/`
-location):
+Add to the shop's server block (see the [nginx page](./nginx-configuration.md)):
 
 ```nginx
 # Theme files: the name carries a digest of the content.
@@ -133,8 +131,7 @@ the shop domain.
 - A deploy needs no purge: a changed theme file gets a new name. Run
   `php Thelia asset-map:compile` on each deploy (`bin/install` does not), again after
   `thelia:cache:clear` (it empties `public/assets` unless `--without-assets`), and
-  `importmap:install` after updating the theme package. In production, this command also
-  writes the minified CSS and the precompressed `.br`, `.zst` and `.gz` files.
+  `importmap:install` after updating the theme package.
 - Never set `liip_imagine.webp.generate: true`: every image then goes through a
   private `302` that no CDN caches. To check, the second load of a product page must show no
   `/media/cache/resolve/` in `src` or `srcset` (the zoom link `data-zoom-src` may keep one):
