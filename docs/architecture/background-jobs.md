@@ -292,170 +292,54 @@ A queued mail holds everything it is sent with, and names no file of the server
 
 ### Back-office exports and imports
 
-An export started from the back office is a job.
-`Thelia\Domain\DataTransfer\Job\ExportJobLauncher::launch()` records an `export_job` row and
-dispatches `Thelia\Domain\DataTransfer\Job\RunExportJob`. Without a queue, the export runs in
-the request and the file is served at once. With a queue, the back office shows
-the job page (`/admin/export/job/{id}`): waiting, running with the number of rows written
-(refreshed every 3 seconds), done with a download link, or failed with the reason.
+An export or an import started from the back office is a job. The launcher
+(`Thelia\Domain\DataTransfer\Job\ExportJobLauncher` or `ImportJobLauncher`) records a row in
+`export_job` or `import_job` and dispatches `RunExportJob` or `RunImportJob`, routed to
+`async_heavy`. The row is what the back office reads. Without a queue, the job runs in the
+request and the page shows its outcome at once. With a queue, the page of the job follows it:
+waiting, running, done, or failed with its reason.
 
-A finished export is never run twice. A failed one is recorded on its row and goes straight to
-`failed`; replaying it starts it over. The export files are deleted once older than a day,
-when `maintenance:purge` runs.
+An import file is checked in the request, before anything is queued, and moved to
+`var/data-transfer/import/`. It is kept outside the cache on purpose: a deployment empties the
+cache, and a queued import would lose its file.
 
-The reason recorded on the row is the one an administrator reads on the job page. On that row,
-only a reason written for the administrator is shown (the answer of a mail server, which the
-Background jobs screen also shows for a failed mail, never comes from an export or an import): an exception implementing
-`Thelia\Exception\UserFacingFailure`, anywhere in the chain of the failure, gives its message,
-cut to 2000 characters. The core ones are, in `Thelia\Domain\DataTransfer\Exception`,
-`UploadRefusedException` (the refusals of an uploaded file, a `FormValidationException`),
-`DataTransferNoDataFoundException`, `HandlerUnavailableException`, `MissingColumnsException`
-and `JobRefusedException`. A `FormValidationException` that does not implement the interface
-is not shown. Any other
-failure may quote SQL, the values of a row, paths or host names, so the row says "The job failed
-because of a server error. The details are in the server log."
-(`Thelia\Messenger\JobFailureMessage::SERVER_ERROR`). The failed message set aside in `failed`
-stores only that text, without the original exception, so neither the Background jobs screen
-nor `messenger:failed:show` shows anything more. The log line of
-the job names such a failure by the class, the code and the file and line of its first cause
-(`JobFailureMessage::forLog()`), never by a text that may hold the personal data of a customer;
-a reason written for the administrator is logged on one line. A module whose exception carries
-a message meant for the administrator implements `UserFacingFailure` on it.
+An import runs in a single database transaction. Stopped half way, by an error, a killed
+worker or a deployment, it leaves the catalog as it was, and its outcome is written to its row
+in the same transaction, so the catalog and the row never disagree. The cost is that the rows it
+writes stay locked until it ends: an order or a back-office edit touching one of them waits, then
+fails after `innodb_lock_wait_timeout`. Run a large stock or price import outside trading hours.
+When the code that launches an import already holds a transaction, the import works inside it
+and leaves the commit or the rollback to that code, so do not launch an import inside a
+transaction of your own. The listeners of `IMPORT_BEGIN`, `IMPORT_FINISHED` and `IMPORT_SUCCESS`
+run inside the transaction too: what they write is cancelled with the import, what they send is
+not, and a job they queue in the shop database is committed at once, so a worker may run it
+before the import is committed.
 
-A message that fails before its job is taken (its row cannot be read, the claim fails, or the
-queue refuses the look-again message) is set aside by `JobLifecycle::take()`, with the same
-sanitized text only. Its row is left as it is: it may be unreadable, or held by another
-run.
+A job never runs twice at the same time, and a finished job never runs again. A worker claims
+the row of the job before running it. A message that finds its job still running, because
+another worker holds it or because its worker died, does not run it: it is queued again to look
+at the job later. The job is taken over only once its row has shown no progress for an hour, so
+a long export or import that is still working is never started a second time. What this means
+for an operator after a worker is killed is in
+[Running the workers](../getting-started/background-workers.md#when-a-worker-stops).
 
-An import started from the back office is a job too.
-`Thelia\Domain\DataTransfer\Job\ImportJobLauncher::launch()` checks the file in the request
-(its extension, and its content: an archive must be an archive of its kind, anything else must
-be text), moves the uploaded file to `var/data-transfer/import/<Ymd>/`, records an `import_job`
-row and dispatches `Thelia\Domain\DataTransfer\Job\RunImportJob`. The file is kept outside the
-cache on purpose: a deployment empties the cache, and a queued import would lose its file.
-Without a queue, the import runs in the request and the back office shows the outcome: the
-number of rows imported and the rows refused with their reason. With a queue, the job page
-(`/admin/import/job/{id}`, refreshed every 3 seconds) shows waiting, running, done with the
-rows changed and the rows refused, or failed with the reason.
+A job that fails goes to `failed` at once, with no retry: running a whole export or import
+again unchanged would fail the same way. Replaying it from the failed jobs starts it over, an
+import from its first row.
 
-An import runs in a single Propel transaction. Stopped half way, by an error, a killed worker
-or a deployment, it leaves the catalog as it was. Its outcome (the `done` status, the rows
-imported and the rows refused) is written to the job row inside the same transaction, so the
-catalog and the row never disagree. When the code that runs the import already holds a
-transaction, the import works inside it and leaves the commit or the rollback to that code: an
-import that fails half way is then that code's to roll back, so do not launch an import inside a
-transaction of your own.
-
-The rows an import has written stay locked until it ends: an order or a back-office edit
-touching one of them waits, then fails after `innodb_lock_wait_timeout`. Run a large stock or
-price import outside trading hours. The listeners of `IMPORT_BEGIN`, `IMPORT_FINISHED` and
-`IMPORT_SUCCESS` run inside the transaction too: what they write is cancelled with the import,
-what they send is not, and a job they queue in the shop database is committed at once, so a
-worker may run it before the import is committed.
-
-A row the import refuses (a missing combination, an invalid GTIN) is not an error: it is listed
-with the job as a refusal, and the other rows are kept. A refusal whose text is not valid UTF-8
-is stored with the invalid bytes replaced. The refusals are kept up to 60,000 bytes
-(`ImportJob::ROW_ERRORS_MAX_BYTES`): past that, the first ones are kept and a last line says
-`<n> more rows were refused.`
-
-A row whose save fails inside the transaction of the import leaves the transaction unable to
-commit, even when a module catches the failure. The import stops at that row with
-`Row <n> could not be saved: nothing was imported.` rather than failing as a server error at the end;
-the stock import checks a GTIN and a part number before saving for that reason. A stock or a
-price must be a number, given as text or as a number, below 10^10 in absolute value: a list, an
-object, a missing price or anything else refuses the row with its reason, and the price is
-checked before anything is written for the row.
-
-An archive is looked into before it is extracted, both when it is uploaded and when it is
-imported (`Thelia\Domain\DataTransfer\ArchiveInspector`): it is refused when it holds more
-than 1000 entries (folders included), more than 512 MB once extracted, a name that is absolute or contains `..`, or a
-link. A zip is read through its directory; a tar, compressed or not, is read header by header
-through its compression, never held in memory. The GNU long-name and pax records of a tar
-count against the limits like any entry, a pax record is read record by record for the name it
-gives, and a header record over 64 KB is refused. It is then extracted next to its file, what the
-extraction really wrote is measured against the same 512 MB, and the extracted copy is removed
-once the import is over, whatever came of it. A file that does not parse in its format is
-refused with a message asking to check its content. The import only reads a file that lies in
-the import storage.
-
-A finished import is never run twice. A failed one goes to `failed`, and replaying it starts
-over from the first row. The uploaded file is deleted once the import
-is done, and kept while the job may be replayed; without a queue a failed job can never be
-replayed, so its file is deleted at once. Deleting the failed job from the back office deletes
-its file too (`FailedJobRemovedEvent`), unless the import is still marked running.
-`messenger:failed:remove` and `thelia:messenger:purge-failed` leave the file to
-`maintenance:purge`, which deletes it after 31 days at most. A job deleted from the failed
-jobs before it ever ran is marked failed, "Deleted from the failed jobs before it ran.", so its
-row no longer reads as waiting for a worker. A file that cannot be deleted is
-left to the purge
-and logged as a warning: the job is still reported as it ended. A failure the job row cannot
-record (the database gone) is logged, and the message is set aside in `failed` all the same. The path of the file is stored relative to
-the project, and its name is cut to 100 characters.
-
-Both jobs share the status enum `Thelia\Domain\DataTransfer\Job\JobStatus`: `queued`,
-`running`, `done`, `failed`. Their models implement `Thelia\Domain\DataTransfer\Job\DataTransferJob`
-and their messages, `RunExportJob` and `RunImportJob`,
-`Thelia\Domain\DataTransfer\Job\DataTransferJobMessage`. The handlers go through
-`Thelia\Domain\DataTransfer\Job\JobLifecycle`, which dispatches a job (`dispatch()`), takes it
-for a run (`take()`: the job when this run owns it, `null` when another run holds it or
-finished it, which is then looked at again later) and records its failure (`fail()`). A worker claims a job atomically before running it
-(`Thelia\Domain\DataTransfer\Job\JobClaim`, a service), so two workers handed the same job never
-run it at the same time. A job left `running` is taken again once it has given no sign of life for
-one hour (`JobClaim::STALE_AFTER_SECONDS`, 3600 seconds, the default redelivery timeout of the
-Doctrine transport): the claim compares the `updated_at` of the row, not the time the job
-started. An export refreshes it each time it reports its progress, and an import as it reads
-its rows (`ImportHandler::import()` takes an optional `$onProgress` closure), so a long export
-or import that is still working is never taken from under its worker. The import writes this
-sign of life through a second database connection (`Thelia\Domain\DataTransfer\Job\JobHeartbeat`),
-outside its own transaction, so the update is seen while the transaction is still open.
-
-A message that finds its job still `running`, held by another worker or left by a worker
-killed less than an hour ago, is not dropped: it is dispatched again with a `DelayStamp` of
-10 minutes (`JobLifecycle::POSTPONE_DELAY_SECONDS`, 600) and looks at the job again then, so a
-job whose worker died is taken again once its row turns stale. It does so at most 72 times
-(`JobLifecycle::MAX_POSTPONEMENTS`), 12 hours. After the last check it throws
-`UnrecoverableMessageHandlingException` and is set aside in `failed`, where it is listed with
-the other failed jobs; replaying it takes the job over once its worker has gone quiet. The count
-travels in the message (`$postponements`). A postponed message never restarts a job that failed
-in the meantime: only the original message takes a failed job. Without a queue the message is
-never postponed: the run that holds the job finishes it.
-
-A replayed job starts afresh. The messages implement `Thelia\Messenger\Message\ReplayableJob`,
-whose `forReplay()` gives the same message with no postponement counted. The back office
-replays a failed job with it, and `Thelia\Messenger\Middleware\ReplayedJobMiddleware`, on the
-default bus, does the same for a job replayed with `messenger:failed:retry`. A replay can
-therefore restart a job that failed, which a look-again message never does.
-
-A job whose row no longer exists fails for good and stays in `failed`, rather than
-passing for done. A job the queue refuses at dispatch is recorded as failed with "The job could
-not be queued. The details are in the server log.", and for an import the uploaded file is
-deleted.
-
-`maintenance:purge` deletes the export and import jobs that are `done` and were created more
-than 7 days ago (`Thelia\Domain\DataTransfer\Service\DataTransferJobPurger::JOB_RETENTION_DAYS`),
-with the files of the imports. Any other job, failed, queued or running, is kept 31 days: the
-30 days of the failed messages (`Thelia\Messenger\FailedMessagePurger::RETENTION_DAYS`) and one
-more (`DataTransferJobPurger::REPLAY_MARGIN_DAYS`), since a failed message ages from the day it
-was set aside, up to half a day after its row was written, and must still find its row when it
-is replayed. The file of an import is only deleted when it lies inside
-`var/data-transfer/import` (`Thelia\Domain\DataTransfer\Job\ImportStorage::DIRECTORY`),
-whatever path its row holds. The purge
-also removes the files of that directory older than 31 days, such as the extracted copy of an
-archive left by a killed worker, or a file whose row was deleted by hand.
-
-The page of a job, and the download of an export, are only open to the administrator who
-started it and to super-administrators (administrators without a profile). Other
-administrators get a 403, even with the export or import right, and the lists of recent
-exports and imports only show their own jobs. Launching an import takes the `UPDATE` right on
-`admin.import`; `VIEW` only shows the imports and their jobs. A job page refreshes itself
-every 3 seconds, at most 100 times, then stops and offers a link to refresh it by hand; a "Stop
-refreshing" link stops it earlier.
+The reason a job failed is shown to the administrator only when it was written for them, by an
+exception implementing `Thelia\Exception\UserFacingFailure`. Any other failure may quote SQL,
+the values of a row, paths or host names: the administrator reads that the job failed because of
+a server error, and the log names the exception by its class, code and place in the code, never
+by its message.
 
 An export or an import is one job for one file. It is not split into smaller jobs: a file is
 written by a single writer, and an import has to be atomic. Splitting work into smaller jobs
 fits work made of independent items, as in a module that pushes one message per product
 combination. It does not fit the rows of a file: do not dispatch one message per row.
+
+The launchers, the rights, the limits of an uploaded file and the retention of the jobs and their
+files are in the [reference](../reference/background-jobs.md#back-office-exports-and-imports).
 
 ## Recurring tasks
 
