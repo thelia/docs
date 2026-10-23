@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.10.2">
 <title data-rh="true">Order History | Thelia Documentation</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://doc.thelia.net/docs/next/back-office/order-history"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Order History | Thelia Documentation"><meta data-rh="true" name="description" content="Added in Thelia 3.2."><meta data-rh="true" property="og:description" content="Added in Thelia 3.2."><link data-rh="true" rel="icon" href="/img/favicon.png"><link data-rh="true" rel="canonical" href="https://doc.thelia.net/docs/next/back-office/order-history"><link data-rh="true" rel="alternate" href="https://doc.thelia.net/docs/next/back-office/order-history" hreflang="en"><link data-rh="true" rel="alternate" href="https://doc.thelia.net/docs/next/back-office/order-history" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://AOX4BR07WS-dsn.algolia.net" crossorigin="anonymous"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Back-Office","item":"https://doc.thelia.net/docs/next/back-office/"},{"@type":"ListItem","position":2,"name":"Order History","item":"https://doc.thelia.net/docs/next/back-office/order-history"}]}</script><link rel="search" type="application/opensearchdescription+xml" title="Thelia Documentation" href="/opensearch.xml"><link rel="stylesheet" href="/assets/css/styles.3890d491.css">
-<script src="/assets/js/runtime~main.554b0710.js" defer="defer"></script>
-<script src="/assets/js/main.6e49b0d3.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.cf2b90c8.js" defer="defer"></script>
+<script src="/assets/js/main.c57dab0b.js" defer="defer"></script>
 </head>
 <body>
 <svg style="display: none;"><defs>
@@ -89,8 +89,12 @@ change never fails on its own audit trail.</li>
 <p>The listeners that feed the journal are <code>RecordOrderHistoryListener</code> (order creation, payment,
 status, delivery and transaction references, address) and <code>RecordOrderReturnHistoryListener</code>.
 Invoice numbering is recorded where the reference is allocated, by the automatic path
-(<code>invoice_ref_auto</code>) and by the <code>allocate_invoice_ref</code> status action. <code>MailerFactory</code> records
-<code>email_sent</code> when the message parameters carry <code>order_id</code> or <code>order_ref</code>.</p>
+(<code>invoice_ref_auto</code>) and by the <code>allocate_invoice_ref</code> status action. <code>email_sent</code> is recorded
+by <code>Thelia\Mailer\EventListener\OrderEmailHistoryListener</code> on the Symfony Mailer
+<code>SentMessageEvent</code>, once the mail server has accepted the mail; with a queue, the worker
+writes it, and its author is <code>system</code>. <code>MailerFactory</code> only names the order in the
+<code>X-Thelia-Order-Id</code> and <code>X-Thelia-Message-Code</code> headers of the mail, when the message
+parameters carry <code>order_id</code> or <code>order_ref</code>.</p>
 <p>A payment module that dispatches an <code>OrderEvent</code> should name itself with
 <code>OrderEvent::setSourceModuleCode()</code>, so the line is authored by the module. The base payment
 module controller does it for <code>confirmPayment()</code>, <code>cancelPayment()</code> and <code>saveTransactionRef()</code>.</p>
