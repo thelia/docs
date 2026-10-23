@@ -31,9 +31,10 @@ Do not consume `scheduler_thelia` when the same commands already run from a cron
 twice. See the warning in the [recurring tasks reference](../reference/background-jobs.md#recurring-tasks).
 
 With workers on several servers, run the scheduler worker on one of them, or share the lock
-and the cache: `LOCK_DSN` must name a store every server reaches (the default `flock` locks one
-server only) and `THELIA_CACHE_DSN` a cache server they all use, which keeps the last run of
-each task. Otherwise each server runs every task.
+and the cache: `LOCK_DSN` must name a store every server reaches and `THELIA_CACHE_DSN` a cache
+server they all use, which keeps the last run of each task. `flock`, the default of the core, and
+`semaphore`, the default of a project created from `thelia/thelia-project`, both lock one server
+only. Otherwise each server runs every task.
 
 The queue in the shop database is the one to start with; when to prefer Redis or AMQP is
 explained in [Choosing a transport](../architecture/background-jobs.md#choosing-a-transport).
@@ -183,20 +184,34 @@ only.
 
 In development, the synchronous default is usually all you need: mails reach Mailpit during
 the request, exports are served and imports run at once. To try the queue, set
-`MESSENGER_TRANSPORT_DSN=doctrine://default` in `.env.local` and let DDEV run the worker:
+`MESSENGER_TRANSPORT_DSN=doctrine://default` in `.env.local` and let DDEV run the worker.
+
+The `thelia/thelia` repository ships `.ddev/config.worker.yaml` for that. A project created
+with `composer create-project thelia/thelia-project` has no `.ddev/` directory: after
+`ddev config`, create the file with this content:
 
 ```yaml
-# .ddev/config.worker.yaml, shipped with the core
+# .ddev/config.worker.yaml
 web_extra_daemons:
   - name: messenger-worker
     command: "php bin/console messenger:consume async async_heavy --time-limit=3600 --memory-limit=256M"
     directory: /var/www/html
 ```
 
-Run `ddev restart` to start it. Set `MESSENGER_TRANSPORT_DSN` in `.env.local`, not under
-`web_environment` in `.ddev/config.yaml`: a value set there wins over the `.env` files, for
-every command run in the container. The worker runs the code it loaded at start: after changing a
-handler, run `ddev exec php Thelia messenger:stop-workers` so it restarts on the new code.
+Run `ddev restart` to start it. Without a queue the worker waits and does nothing. It leaves
+out `scheduler_thelia` on purpose, since the recurring tasks would purge the carts and the logs of
+the development database at night; run them by hand with
+`ddev exec php bin/console messenger:consume scheduler_thelia`.
+
+Set `MESSENGER_TRANSPORT_DSN` in `.env.local`, not under `web_environment` in
+`.ddev/config.yaml`: a value set there wins over the `.env` files, for every command run in the
+container. The worker runs the code it loaded at start: after changing a handler, run
+`ddev exec php Thelia messenger:stop-workers` so it restarts on the new code. To stop the worker
+for a while, run `ddev exec "supervisorctl stop webextradaemons:messenger-worker"`.
+
+To kill workers by hand, as when testing a hard stop, match the command with a pattern that
+does not match itself: `pkill -f '[m]essenger:consume'`. A plain `pkill -f messenger:consume`
+run through a shell also matches that shell, and kills it.
 
 ## Monitoring
 
