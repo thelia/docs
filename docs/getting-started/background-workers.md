@@ -35,6 +35,8 @@ and the cache: `LOCK_DSN` must name a store every server reaches (the default `f
 server only) and `THELIA_CACHE_DSN` a cache server they all use, which keeps the last run of
 each task. Otherwise each server runs every task.
 
+The queue in the shop database is the one to start with; when to prefer Redis or AMQP is
+explained in [Choosing a transport](../architecture/background-jobs.md#choosing-a-transport).
 A Redis or AMQP queue needs its Messenger bridge, which the core does not ship:
 `composer require symfony/redis-messenger` (with the `redis` PHP extension) or
 `composer require symfony/amqp-messenger` (with the `amqp` extension). The queue in the shop
