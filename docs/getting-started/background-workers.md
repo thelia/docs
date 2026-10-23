@@ -59,10 +59,26 @@ memory, and recycling the worker keeps it in check. A connection that MySQL clos
 database is closed after each message, before the worker acknowledges it, so a long export or
 import never leaves the acknowledgement on a connection MySQL has dropped.
 
-On `SIGTERM` or `SIGINT`, a worker finishes the message in hand, then stops. A worker killed
-hard (`SIGKILL`, out of memory) leaves its Doctrine message marked as delivered; the transport
-hands it to another worker after `redeliver_timeout`, 3600 seconds by default. That is one
+## When a worker stops
+
+A worker stopped cleanly, by `SIGTERM` or `SIGINT` from its process manager, by
+`php Thelia messenger:stop-workers`, or for a deployment, finishes the message in hand, then
+stops. Nothing is lost: the messages it did not take wait in the queue for the next worker.
+
+A worker stopped hard (`SIGKILL`, out of memory, a server that goes down) leaves the message it
+was handling marked as delivered. The Doctrine transport hands it out again once its
+`redeliver_timeout` has passed: 3600 seconds by default, set in the DSN, for instance
+`MESSENGER_TRANSPORT_DSN=doctrine://default?redeliver_timeout=600`. The heavy queue is derived
+from the same DSN and takes the same value. The handler then runs a second time, which is one
 reason handlers must be [idempotent](../reference/background-jobs.md#idempotence-and-replay).
+
+An export or an import is not taken over that fast. Its job row records its progress, and the
+job is only started again once that row has shown no progress for an hour. A redelivered message
+that finds the row still fresh looks again 10 minutes later. An export or an import cut by a hard
+stop therefore starts over about an hour after the worker died, an hour and ten minutes at most,
+and a shorter `redeliver_timeout` does not make it sooner. This is on purpose: a long export or
+import that is still working on another worker is never started a second time. A job still held
+after 12 hours of such checks is set aside in `failed`, where it can be replayed.
 
 ## Supervisor
 
