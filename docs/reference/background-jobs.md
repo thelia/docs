@@ -590,17 +590,41 @@ declare(strict_types=1);
 
 namespace StockSync\Message;
 
-final readonly class PushStock
+use Thelia\Messenger\Message\DescribedJob;
+
+final readonly class PushStock implements DescribedJob
 {
     public function __construct(
         public int $productSaleElementsId,
     ) {
+    }
+
+    public function describe(): string
+    {
+        return \sprintf('Stock push of combination #%d', $this->productSaleElementsId);
     }
 }
 ```
 
 Never put a Propel model in a message. It cannot be serialized as JSON, and by the time the
 worker reads the message the row may have changed or been deleted.
+
+`Thelia\Messenger\Message\DescribedJob` gives the job the line the Background jobs screen shows
+for it among the failed jobs. A message that does not implement it is listed by the short name
+of its class (`PushStock`), which tells the administrator nothing about which combination
+failed. `describe()` runs when the screen is displayed, on the message read back from the
+queue.
+
+The description is shown to every administrator who may read the screen, and it stays as long
+as the failed job does. Never put personal data in it: no name, e-mail address or postal
+address of a customer, no order content. Give ids and references, which the administrator can
+look up with their own rights.
+
+`Thelia\Messenger\Message\ReplayableJob` is for a message that carries a state a replay must
+reset, such as the number of times it was postponed: its `forReplay()` returns the message to
+put back on the queue when the job is replayed, from the back office or with
+`messenger:failed:retry`. `PushStock` carries only an id, so it has nothing to reset and does
+not implement it.
 
 ### The handler
 
