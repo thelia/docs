@@ -60,6 +60,29 @@ The core only ships the Doctrine transport. A Redis queue needs
 `composer require symfony/redis-messenger` and the `redis` PHP extension; an AMQP queue needs
 `composer require symfony/amqp-messenger` and the `amqp` extension.
 
+### Choosing a transport
+
+Start with `doctrine://default`. It needs nothing to install and no server to run: the queue is
+a table of the shop database, saved with its backups, and the failed jobs are kept in that
+database whatever the queue is. Workers on several servers can share it, since they all reach
+the shop database. The jobs of a shop (mails, back-office exports and imports, the messages of a
+few modules) are well within what a table can serve.
+
+Move to another transport for one of these reasons:
+
+- the volume: modules that dispatch many messages, a push per product combination on a large
+  catalog for instance, keep the workers reading and writing the table all day. Redis or a
+  broker takes that load off the database the shop serves its pages from,
+- the hosting already runs a Redis server or a RabbitMQ broker, with its monitoring and its
+  backups: use it rather than adding a queue to the database,
+- the team already operates AMQP for other applications and wants the shop jobs in the same
+  place.
+
+Redis is the shorter step: one package, one PHP extension, and the heavy queue is derived from
+the DSN. AMQP also needs `MESSENGER_HEAVY_TRANSPORT_DSN` set, see below. Whatever the transport,
+a Redis or AMQP server holds personal data and must stay private, see
+[Personal data](../security/personal-data.md#background-jobs).
+
 ### A second queue for heavy jobs
 
 Exports and imports are routed to `async_heavy`, so a large import never holds up the mails
