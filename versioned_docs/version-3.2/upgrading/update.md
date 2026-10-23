@@ -127,6 +127,12 @@ The first two rebuild the front-office assets, the last one the back-office styl
 any command the console does not carry: each comes from a package the corresponding template
 requires.
 
+In production, also run `php Thelia asset-map:compile`. It writes the files served from
+`public/assets/`, with the minified CSS and the precompressed `.br`, `.zst` and `.gz` copies.
+Install `brotli` (and optionally `zstd`) on the machine that runs it to get those formats, and
+see [Nginx configuration](../getting-started/nginx-configuration.md#precompressed-assets) for the
+server side.
+
 ## 5. Update the modules
 
 Modules keep their own version numbers, so they update separately:
