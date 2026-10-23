@@ -79,7 +79,7 @@ that finds the row still fresh looks again 10 minutes later. An export or an imp
 stop therefore starts over about an hour after the worker died, an hour and ten minutes at most,
 and a shorter `redeliver_timeout` does not make it sooner. This is on purpose: a long export or
 import that is still working on another worker is never started a second time. A job still held
-after 12 hours of such checks is set aside in `failed`, where it can be replayed.
+after 12 hours of such checks is sent to the failure transport, `failed`, where it can be replayed.
 
 ## Supervisor
 

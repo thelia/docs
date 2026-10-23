@@ -181,7 +181,7 @@ Background jobs screen, does not quote the data: unless the exception was writte
 administrator, it reads as a server error, and the error line Thelia writes to the log names it
 by its class, code and place in the code rather than by its message. The failed job kept in
 `failed` stores only that text: the original exception is not chained to it, since Symfony
-keeps the whole chain of an exception it sets aside. This holds for the exports and imports of
+keeps the whole chain of an exception it sends to the failure transport. This holds for the exports and imports of
 the back office; a failed mail or module job keeps the exception its handler threw, but the
 Background jobs screen only shows its reason when it was written for the administrator or is
 the answer of the mail server, credentials hidden, and the log of the workers names its
