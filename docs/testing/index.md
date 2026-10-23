@@ -277,7 +277,7 @@ It performs the following:
 
 It does not set templates, create an admin, or import demo data. It is the minimal setup a test run needs.
 
-Tests always run without a queue: `tests/bootstrap.php` empties `MESSENGER_TRANSPORT_DSN` and `MESSENGER_HEAVY_TRANSPORT_DSN` after the `.env` files are read, so every background job runs at once, whatever queue the machine is configured with.
+Tests always run without a queue: `tests/bootstrap.php` empties `MESSENGER_TRANSPORT_DSN` and `MESSENGER_HEAVY_TRANSPORT_DSN` after the `.env` files are read, so every background job runs at once, whatever queue the machine is configured with. A message dispatched through the bus of the shop in a test is therefore handled at once, by its real handler. To test a module that queues work (the dispatch with an in-memory transport, the handler and its replay with the test database), see [Testing a message, its handler and its dispatch](../reference/background-jobs.md#testing-a-message-its-handler-and-its-dispatch).
 
 :::caution Stale Propel cache
 If tests suddenly hit the wrong database after switching branches or environments, delete `var/propel/test/` and re-run `composer test:prepare`. Step 5 above does this automatically, but a manual run is the quickest fix when a cache survives.
