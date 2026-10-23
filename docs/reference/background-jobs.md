@@ -35,11 +35,12 @@ A Redis or AMQP DSN needs its Messenger bridge, which the core does not ship:
 `composer require symfony/redis-messenger` (with the `redis` PHP extension) or
 `composer require symfony/amqp-messenger` (with the `amqp` extension).
 
-`async_heavy` takes its DSN from `MESSENGER_TRANSPORT_DSN` through
-`Thelia\Messenger\HeavyTransportDsnProcessor`: empty gives `sync://`, a `doctrine://` DSN gives
-the same table with `queue_name=heavy`, a Redis DSN gives the stream `<stream>_heavy`
-(`messages_heavy` when it names no stream), and any other DSN is used as is, so both transports
-share one queue.
+How `async_heavy` derives its queue from `MESSENGER_TRANSPORT_DSN` is shown in
+[A second queue for heavy jobs](../architecture/background-jobs.md#a-second-queue-for-heavy-jobs).
+The options of the Symfony transport go in the DSN, such as
+`doctrine://default?redeliver_timeout=600`; the heavy queue derived from it keeps them. What
+`redeliver_timeout` changes, and what it does not, is explained in
+[When a worker stops](../getting-started/background-workers.md#when-a-worker-stops).
 
 The core configures Messenger for the whole application: its serializer, its bus, its
 `failure_transport` and the routing of its messages are loaded before the configuration of the
@@ -87,7 +88,7 @@ to `async_heavy`.
 | `messenger:failed:retry` | Replay failed jobs. |
 | `messenger:failed:remove` | Delete failed jobs. |
 | `messenger:stop-workers` | Ask every worker to stop after its current message. |
-| [`thelia:messenger:purge-failed`](./cli/thelia_messenger_purge_failed.md) | Delete the failed jobs set aside for more than `--older-than` days (30 by default). `maintenance:purge` deletes those older than 30 days too. |
+| [`thelia:messenger:purge-failed`](./cli/thelia_messenger_purge_failed.md) | Delete the jobs in the failure transport for more than `--older-than` days (30 by default). `maintenance:purge` deletes those older than 30 days too. |
 
 All of them run through `php Thelia`, for example `php Thelia messenger:stats`.
 
@@ -97,15 +98,16 @@ Configuration > System > Background jobs (`/admin/configuration/background-jobs`
 
 - whether a queue is configured, and how many jobs wait in it,
 - how many jobs failed, and the list of failed jobs, the newest first, with their description,
-  the reason of the failure, the date and the number of attempts,
+  the reason of the failure, the date and the number of attempts. The description is the
+  `describe()` of a message implementing `Thelia\Messenger\Message\DescribedJob`, the subject
+  and the recipients of a mail, or else the short name of the message class,
 - the recurring tasks whose last run failed, under "Recurring tasks that failed",
 - the last 20 exports and the last 20 imports of the administrator looking at it, of every
   administrator for a super-administrator.
 
 The reason of a failed job is shown when it was written for the administrator (an exception
-implementing `Thelia\Exception\UserFacingFailure`, `Thelia\Messenger\JobSetAsideException`
-among them) or when it is the answer of the mail server, with the credentials of any URL in it
-hidden by `Thelia\Mailer\TransportCredentials` (a password holding an `@` is hidden whole).
+implementing `Thelia\Exception\UserFacingFailure`) or when it is the answer of the mail server,
+with the credentials of any URL in it hidden (a password holding an `@` is hidden whole).
 Either is cut to 2000 characters. Any other reason reads as a server error.
 
 The waiting count adds the jobs of `async` and of `async_heavy`, and counts them once when both
@@ -113,27 +115,25 @@ transports have the same DSN. When `failed` is in the shop database, the default
 read in SQL, so the newest failures show however many there are.
 
 Each failed job can be replayed or deleted. Replay takes the job out of `failed` first, then
-puts it back on the transport it failed on; if that fails, the job is set aside again. A job
+puts it back on the transport it failed on; if that fails, the job goes back to `failed`. A job
 that implements `Thelia\Messenger\Message\ReplayableJob` is put back as `forReplay()` returns
-it, so it starts afresh; `Thelia\Messenger\Middleware\ReplayedJobMiddleware`, on the default
-bus, does the same for `messenger:failed:retry`. A double
-click cannot send it twice. Without a queue, a replayed job runs at once, and a job that fails
+it, so it starts afresh, and the same goes for a job replayed with `messenger:failed:retry`. A
+double click cannot send it twice. Without a queue, a replayed job runs at once, and a job that fails
 again stays in the failed list. A replay that fails shows "The job failed again. The details are
-in the server log." and the reason goes to the log. If setting it aside fails too (queue and
+in the server log." and the reason goes to the log. If putting it back in `failed` fails too (queue and
 database both down), the job is lost from the queues and a critical line of the log names it by
 its id and its class, and the two failures by their class, code and place: its description and
 its content may name a customer, and the log is kept far longer than the failed jobs.
 
 A job the workers could no longer read (module turned off, class removed, content that no longer
 fits) is listed as `Unreadable job: <reason>` with its original class. Replayed, it would fail
-the same way, so it has no Replay button (`FailedJob::$replayable` is false); delete it once you
+the same way, so it has no Replay button; delete it once you
 know what it was.
 
-A recurring task of the `thelia` schedule that fails is not set aside in `failed`: it runs again
-at its next time. `Thelia\Scheduler\EventListener\RecurringTaskFailureListener` keeps its last
-failure in the `cache.app` pool (`Thelia\Scheduler\RecurringTaskFailures`) until a run of the
-task goes through, or for a month after the date of that failure, and the screen lists it with the task, the reason and
-the date. A command that exits with an error code gives
+A recurring task of the `thelia` schedule that fails does not go to `failed`: it runs again
+at its next time. Its last failure is kept in the application cache until a run of the task
+goes through, or for a month after the date of that failure, and the screen lists it with the
+task, the reason and the date. A command that exits with an error code gives
 `Command "<input>" exited with code "<code>".` as its reason.
 
 The "Details" link of an export or import is only shown to the administrator who started the
@@ -887,13 +887,13 @@ enough to watch a push go through the queue.
 
 Without a queue, the push happens during the save of the stock, in the same request. Stop the
 fake warehouse and change the stock again to see a retry: the worker logs the failure, waits 30
-seconds, and sets the message aside in `failed` after three more attempts.
+seconds, and sends the message to `failed` after three more attempts.
 
 ### Turning the module off
 
 A queue accepts the messages of active modules only. Messages of `StockSync` still waiting when
 the module is turned off can no longer be read: the worker reads each of them as
-`Thelia\Messenger\Message\UndecodableJob` and sets it aside in `failed`. Nothing is lost and
+`Thelia\Messenger\Message\UndecodableJob` and sends it to `failed`. Nothing is lost and
 nothing loops. The Background jobs screen lists them as `Unreadable job: <reason>` with the
 original class `StockSync\Message\PushStock`. Delete them there, and let the nightly task push
 the stock again once the module is back.
