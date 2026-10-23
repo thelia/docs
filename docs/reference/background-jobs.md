@@ -146,14 +146,16 @@ and a failure reason may quote personal data, so give it only to the profiles th
 
 ## Back-office exports and imports
 
-Exports and imports started from the back office are jobs. Both use the status enum
-`Thelia\Domain\DataTransfer\Job\JobStatus` (`queued`, `running`, `done`, `failed`).
+Exports and imports started from the back office are jobs. How they run, and why an import is
+a single transaction, is explained in
+[Background jobs](../architecture/background-jobs.md#back-office-exports-and-imports). This
+section lists what they expose and what they accept.
 
 | | Export | Import |
 | --- | --- | --- |
 | Transport | `async_heavy` | `async_heavy` |
-| Launcher | `ExportJobLauncher::launch(...)` | `ImportJobLauncher::launch(Import $import, File $file, string $originalName, ?Lang $language = null, ?int $adminId = null)` |
-| Message | `RunExportJob(int $exportJobId, int $postponements = 0)` | `RunImportJob(int $importJobId, int $postponements = 0)` |
+| Launcher | `ExportJobLauncher::launch(Export $export, string $serializerId, ?string $archiverId = null, ?Lang $language = null, bool $includeImages = false, bool $includeDocuments = false, ?array $rangeDate = null, ?int $adminId = null): ExportJob` | `ImportJobLauncher::launch(Import $import, File $file, string $originalName, ?Lang $language = null, ?int $adminId = null): ImportJob` |
+| Message | `RunExportJob(int $exportJobId)` | `RunImportJob(int $importJobId)` |
 | Row | `export_job` | `import_job`: status, file name, rows imported, refused rows with their reason, error |
 | Without a queue | Runs in the request, the file is served at once | Runs in the request, the page shows the rows imported and the rows refused |
 | With a queue | `/admin/export/job/{id}`: waiting, running with the rows written, done with the download, failed with the reason | `/admin/import/job/{id}`: waiting, running, done with the rows changed and refused, failed with the reason |
@@ -163,20 +165,24 @@ Exports and imports started from the back office are jobs. Both use the status e
 | Right to launch | `VIEW` on the export resource | `UPDATE` on the import resource; `VIEW` only shows the imports and their jobs |
 | Job page access | The administrator who started it and super-administrators, download included | The administrator who started it and super-administrators |
 
-The classes live in `Thelia\Domain\DataTransfer\Job\`. Both messages implement
-`DataTransferJobMessage`, `Thelia\Messenger\Message\ReplayableJob` and
-`Thelia\Messenger\Message\DescribedJob` (they are listed as `Export #<id>` and `Import #<id>`
-among the failed jobs), and both models (`ExportJob`, `ImportJob`) implement `DataTransferJob`. Both job pages refresh every 3 seconds,
-at most 100 times (`JobPageRefresh::MAX_ROUNDS` in the theme), then offer a link to refresh by
-hand, and a finished job is never run twice. Other administrators get a 403 on a job page, even with
-the export or import right.
+The launchers and the messages live in `Thelia\Domain\DataTransfer\Job\`. A job has one of the
+statuses of the enum `Thelia\Domain\DataTransfer\Job\JobStatus`: `queued`, `running`, `done`,
+`failed`. Both messages implement `Thelia\Messenger\Message\DescribedJob`, and are listed as
+`Export #<id>` and `Import #<id>` among the failed jobs.
+
+### The job pages
+
+A job page refreshes itself every 3 seconds, at most 100 times, then stops and offers a link to
+refresh it by hand; a "Stop refreshing" link stops it earlier. Other administrators than the one
+who started the job get a 403, even with the export or import right, and the lists of recent
+exports and imports only show their own jobs, except to super-administrators.
 
 An administrator can launch 10 exports and imports in 10 minutes, the two counted together
 (rate limiter `admin_data_transfer_launch`, declared in the core `framework` configuration). A
 launch is only counted once its form is valid: a form sent without a file, with a file the
 server did not receive whole, with a file whose name or content the import refuses, or with an
-invalid option is not counted.
-Past the limit, the launch is refused with a message asking to wait a few minutes.
+invalid option is not counted. Past the limit, the launch is refused with a message asking to
+wait a few minutes.
 
 Without a queue, an import that refused more than 10 rows leads to its job page, which lists
 them all; with fewer, the form page shows them in its message. The description of an export or
@@ -185,27 +191,20 @@ an import, written in HTML by its module, keeps only `p`, `br`, `strong`, `b`, `
 `http`, `https` and `mailto` links). Anything else, scripts, styles, media, `id` and `name`
 attributes included, is removed.
 
-The reason of a failed job is a whitelist (`Thelia\Messenger\JobFailureMessage::forAdministrator()`).
-An exception implementing `Thelia\Exception\UserFacingFailure`, anywhere in the chain of the
-failure, gives its message, cut to 2000 characters. The core ones live in
-`Thelia\Domain\DataTransfer\Exception`: `UploadRefusedException` (a `FormValidationException`
-raised when an uploaded file is refused), `DataTransferNoDataFoundException`,
-`HandlerUnavailableException`, `MissingColumnsException` and `JobRefusedException`.
-`Thelia\Form\Exception\FormValidationException` itself does not implement it.
+### The reason of a failure
 
-An export whose year is not four digits or whose month is not 1 to 12
-(`Thelia\Domain\DataTransfer\Export\ExportPeriod::resolve()`, called by the launcher and by the export) is refused with
-"The dates of the export are not valid.", and one whose format is no longer available on the
-server with `The format "<format>" is no longer available on this server.`. Both are a
-`JobRefusedException`, which the administrator reads as it is.
+The reason an administrator reads, on the job page and on the Background jobs screen, is the
+message of an exception implementing `Thelia\Exception\UserFacingFailure`, found anywhere in the
+chain of the failure, cut to 2000 characters. The core ones live in
+`Thelia\Domain\DataTransfer\Exception`: `UploadRefusedException` (an uploaded file refused),
+`DataTransferNoDataFoundException`, `HandlerUnavailableException`, `MissingColumnsException` and
+`JobRefusedException`. `Thelia\Form\Exception\FormValidationException` itself does not implement
+the interface.
 
-Any other failure is shown as "The job failed because of a server error. The details are in the server
-log." (`JobFailureMessage::SERVER_ERROR`), both on the job row and as the error of the failed
-job on the Background jobs screen, and the error line the job writes to the log names it by
-class, code and file:line (`JobFailureMessage::forLog()`), or by its reason, on one line, when
-it was written for the administrator. The job page
-passes the reason through the translator, so the fixed messages are shown in the language of
-the administrator.
+Any other failure reads "The job failed because of a server error. The details are in the server
+log.", and the log line of the job names the exception by its class, code and place in the code.
+The job page passes the reason through the translator, so the fixed messages are shown in the
+language of the administrator.
 
 A module whose export or import throws an exception meant for the administrator implements
 the interface on it:
@@ -216,98 +215,65 @@ final class WarehouseRefusedException extends \RuntimeException implements \Thel
 }
 ```
 
-`JobLifecycle` dispatches a job (`dispatch()`), takes it for a run
-(`take(DataTransferJobMessage $message, \Closure $find): ?DataTransferJob`: claimed, or looked at
-again later, the table coming from `DataTransferJobMessage::jobTable()`, a `JobTable`), sets
-aside a message that fails before its job is taken, and records the failure of a job
-(`fail(DataTransferJobMessage $message, DataTransferJob $job, \Throwable $exception)`); it reads from `Thelia\Messenger\Transport\ConfiguredQueues` whether the heavy jobs run
-without a queue (`heavyJobsRunInline()`). A worker claims a job
-atomically (`JobClaim::claim(JobTable $table, int $jobId, bool $allowFailed = true)`, an injected
-service) before running it:
-two workers handed the same job never run it at the same time. A job left `running` is taken
-again once its row has not been updated for one hour (`JobClaim::STALE_AFTER_SECONDS`, 3600). An
-export updates it as it reports its progress and an import as it reads its rows, every 500 rows
-(`Thelia\Domain\DataTransfer\DataTransferProgress::STEP`) and once at the end
-(`ImportHandler::import()` takes an optional `$onProgress` closure), so a long job that is still
-working keeps its worker.
+Some refusals of the core, all `JobRefusedException`:
 
-A message that finds its job still `running` is dispatched again with a `DelayStamp` of
-10 minutes (`JobLifecycle::POSTPONE_DELAY_SECONDS`, 600), at most 72 times
-(`JobLifecycle::MAX_POSTPONEMENTS`, 12 hours), each time with `$postponements` one higher. A job
-whose worker was killed is therefore taken again once its row is stale. `ClaimOutcome` tells
-the handler what happened: `Owned` (it runs the job), `Finished` (the job is over, or no queue
-can look at it again) or `Postponed`. After the last check
-the message throws `UnrecoverableMessageHandlingException` and is set aside in `failed`;
-replaying it from there takes the job over once its worker has gone quiet. `JobLifecycle` passes
-`$allowFailed` only for the original message (`$postponements` at 0): a postponed message never
-restarts a job that failed in the meantime, while a replayed job, which starts again at 0, takes
-a failed job. Without a queue a message is never postponed.
+- an export whose year is not four digits or whose month is not 1 to 12: "The dates of the
+  export are not valid.",
+- an export whose format is no longer available on the server:
+  `The format "<format>" is no longer available on this server.`,
+- an import row whose save leaves the transaction unable to commit, even when a module catches
+  the failure: `Row <n> could not be saved: nothing was imported.`
 
-A job whose row was deleted fails for good and stays in `failed`. A message that fails before
-its job is taken (the row cannot be read, the claim fails, the look-again message is refused)
-goes to `failed` through `JobLifecycle::take()` with the sanitized reason only, and its row is
-left untouched. A job the queue refuses at
-dispatch is recorded as failed with "The job could not be queued. The details are in the
-server log." (`JobLifecycle::NOT_QUEUED`), and the file of such an import is deleted. Failed
-jobs are kept 30 days (`FailedMessagePurger::RETENTION_DAYS`), as long as the failed messages,
-so they can still be replayed.
+A job the queue refuses at dispatch is recorded as failed with "The job could not be queued. The
+details are in the server log.", and the file of such an import is deleted. A job whose row was
+deleted fails for good and stays in `failed`. A job deleted from the failed jobs before it ever
+ran is marked failed with "Deleted from the failed jobs before it ran.", so its row no longer
+reads as waiting for a worker.
 
-`maintenance:purge` delegates to `Thelia\Domain\DataTransfer\Service\DataTransferJobPurger`:
-the `done` jobs created more than 7 days ago (`DataTransferJobPurger::JOB_RETENTION_DAYS`) are
-deleted, any other (failed, queued, running) after 31 days, a day past the failed message it may be replayed from. The file of an import is deleted
-with its row only when it lies inside `var/data-transfer/import`
-(`Thelia\Domain\DataTransfer\Job\ImportStorage`, `ImportStorage::DIRECTORY`). The files of that
-directory older than 31 days are removed too,
-and its empty directories once they are more than a day old, since a fresh one may be about to
-receive an upload.
+### What an import accepts
 
-`ImportJobLauncher::launch()` checks the file in the request through
-`ImportHandler::validateUpload(string $fileName, ?File $file = null)`, so a wrong file is
-refused before anything is queued. The extension must be one the import handlers accept, and,
-when the file is given, its content is read with `finfo`: an archive must match the type of its
-archiver, anything else must be text. An archive is also looked into
-(`Thelia\Domain\DataTransfer\ArchiveInspector`): it is refused when it holds more than 1000
-files (`MAX_ENTRIES`), more than 512 MB once extracted (`MAX_EXTRACTED_BYTES`), or a name that
-is absolute or contains `..`, or a link entry, zip and tar alike. A tar, gzip or bzip2 archive
-is read header by header through `compress.zlib://` or `compress.bzip2://`, never held in
-memory and never copied. GNU long-name and pax records count against the limits like any
-entry, a pax record is read record by record, and a header record over 64 KB is refused.
-`ImportHandler::import()` checks it again before extracting it, then
-measures what the extraction wrote (`ArchiveInspector::assertExtractedSize()`).
-`ImportHandler` takes the inspector as an optional constructor argument. A file that does not
-parse in its format is refused with an `UploadRefusedException` asking to check its content,
-and the import handler only reads a file that lies inside `ImportStorage`.
-The file is moved out of the upload directory to `var/data-transfer/import/`
-(`ImportStorage::DIRECTORY`), not to the cache, which a deployment empties. Its path is stored
-relative to the project, and its name is cut to 100 characters.
+The file is checked in the request, before anything is queued. Its extension must be one the
+import handlers accept, and its content is read: an archive must match the type of its
+archiver, anything else must be text. A file that does not parse in its format is refused with
+a message asking to check its content.
 
-An import runs in a single Propel transaction: stopped half way (an error, a killed worker, a
-deployment), it leaves the catalog as it was, and replaying it starts over from the first row.
-The `done` status, the rows imported and the rows refused are written inside that transaction.
-The handler opens and commits the transaction only when the caller holds none; otherwise the
-caller commits or rolls back. A row the import refuses (a missing combination, an invalid GTIN)
-is listed with the job as a refusal, and the other rows are kept; a refusal that is not valid
-UTF-8 is stored with the invalid bytes replaced. The refusals are kept up to 60,000 bytes
-(`ImportJob::ROW_ERRORS_MAX_BYTES`), the last line then saying `<n> more rows were refused.`
+An archive is looked into before it is extracted, both when it is uploaded and when it is
+imported (`Thelia\Domain\DataTransfer\ArchiveInspector`). It is refused when it holds more than
+1000 entries, folders included, more than 512 MB once extracted, a name that is absolute or
+contains `..`, or a link, zip and tar alike. What the extraction really wrote is measured against
+the same 512 MB, and the extracted copy is removed once the import is over, whatever came of it.
+`ImportHandler` takes the `ArchiveInspector` as a required constructor argument: code that builds
+or extends it passes one.
 
-A row whose save leaves the transaction unable to commit, even when a module catches the
-failure, stops the import with `Row <n> could not be saved: nothing was imported.`
-(`JobRefusedException`). A stock or a price is read from text or from a number, and must be
-below 10^10 in absolute value; a list, an object, a missing price or anything else refuses the
-row with its reason, and the price of a row is checked before anything is written for it.
+A row the import refuses (a missing combination, an invalid GTIN) is listed with the job as a
+refusal, and the other rows are kept. A refusal that is not valid UTF-8 is stored with the
+invalid bytes replaced. The refusals are kept up to 60,000 bytes; past that, the first ones are
+kept and a last line says `<n> more rows were refused.` A stock or a price must be a number,
+given as text or as a number, below 10^10 in absolute value: a list, an object, a missing price
+or anything else refuses the row with its reason, and the price of a row is checked before
+anything is written for it.
 
-Without a queue, a failed import can never be replayed, so its file is deleted at once
-(`JobLifecycle::keepsFailedJobs()`). With a queue, deleting the failed import from the back
-office dispatches `Thelia\Messenger\Event\FailedJobRemovedEvent` and its file is deleted with
-it, unless the import is still marked running; `messenger:failed:remove` and
-`thelia:messenger:purge-failed` leave the file to `maintenance:purge`, 31 days at most. A file that cannot be deleted is
-logged and left to the
-purge; the job still ends as it did. When the job row cannot record its failure, the error is
-logged and the message is set aside in `failed` all the same.
+The file is moved out of the upload directory to `var/data-transfer/import/`, not to the cache,
+which a deployment empties. Its path is stored relative to the project, its name is cut to 100
+characters, and the import only reads a file that lies in that directory.
 
-`ImportHandler::import()` removes the extracted
-copy of an archive once the import is over, whether it succeeded or not. The sign of life of an import goes through a second database
-connection (`JobHeartbeat`), so a long import is never taken from its worker.
+### Files and retention
+
+- An import file is deleted once the import is done. Without a queue a failed import can never
+  be replayed, so its file is deleted at once; with a queue it is kept while the job may be
+  replayed.
+- Deleting a failed import from the back office deletes its file too
+  (`Thelia\Messenger\Event\FailedJobRemovedEvent`), unless the import is still marked running.
+  `messenger:failed:remove` and `thelia:messenger:purge-failed` leave the file to
+  `maintenance:purge`.
+- `maintenance:purge` deletes the `done` jobs created more than 7 days ago, and any other job
+  (failed, queued, running) after 31 days: a day past the 30 days a failed message is kept, so a
+  replayed job still finds its row. The file of an import goes with its row only when it lies
+  inside `var/data-transfer/import`. The purge also removes the files of that directory older
+  than 31 days, such as the extracted copy of an archive left by a killed worker, and its empty
+  directories once they are more than a day old.
+- A file that cannot be deleted is logged as a warning and left to the purge; the job is still
+  reported as it ended.
 
 ## Recurring tasks
 
