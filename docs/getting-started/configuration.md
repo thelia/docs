@@ -42,7 +42,31 @@ JWT_PASSPHRASE=your-passphrase
 
 # Lock
 LOCK_DSN=flock
+
+# Background jobs: empty means no queue, every job runs at once
+MESSENGER_TRANSPORT_DSN=
 ```
+
+### Background jobs and recurring tasks
+
+These variables decide whether mails, exports, imports and the jobs of modules wait in a queue
+for a worker, and when the recurring tasks run. Only `MESSENGER_TRANSPORT_DSN` is written in
+`.env`; the others take the default below when they are not set.
+
+| Variable | Default | Effect |
+| --- | --- | --- |
+| `MESSENGER_TRANSPORT_DSN` | empty | The queue of the jobs. Empty, every job runs at once in the request that dispatched it. `doctrine://default` keeps the queue in the shop database. |
+| `MESSENGER_HEAVY_TRANSPORT_DSN` | derived from `MESSENGER_TRANSPORT_DSN` | The queue of the back-office exports and imports. |
+| `MESSENGER_FAILURE_TRANSPORT_DSN` | `doctrine://default?queue_name=failed` | Where the jobs that failed every attempt are kept. |
+| `THELIA_SCHEDULE_SALE_CHECK` | `* * * * *` | When `sale:check-activation` runs. Empty disables it. |
+| `THELIA_SCHEDULE_MAINTENANCE_PURGE` | `30 3 * * *` | When `maintenance:purge` runs. Empty disables it. |
+| `THELIA_SCHEDULE_FAILED_JOBS_PURGE` | `0 4 * * *` | When `thelia:messenger:purge-failed` runs. Empty disables it. |
+| `THELIA_SCHEDULE_CURRENCY_RATES` | empty | When `currency:update-rates` runs. Off by default. |
+
+The recurring tasks only run when a worker consumes the `scheduler_thelia` transport. Naming a
+queue in `MESSENGER_TRANSPORT_DSN` without running a worker leaves the mails undelivered. See the
+[background jobs reference](../reference/background-jobs.md#configuration) for the details of
+each variable, and [Running the workers](./background-workers.md) to run them.
 
 ### Database configuration
 
