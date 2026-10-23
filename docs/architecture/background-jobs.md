@@ -432,20 +432,7 @@ path itself.
 
 ## Personal data
 
-A queue holds personal data: a queued mail carries the address of its recipient and the
-content of the order, and a failed job keeps everything it was dispatched with. Treat the
-queue like the database:
-
-- a Redis or AMQP broker must not be reachable from outside the hosting,
-- its credentials go in `.env.local` or the secrets of the hosting, never in Git,
-- the retention of failed jobs is a processing to record in the GDPR register. The
-  `thelia:messenger:purge-failed` task deletes them after 30 days by default, and
-  `maintenance:purge` deletes those older than 30 days too.
-
-A Redis or AMQP queue is read by the workers as the queue of the shop: whoever can write to it
-can send mails through the mail server of the shop, and replay the exports and imports it
-names. This is an accepted risk, and the reason such a server must stay private. A queue in the
-shop database adds nothing to what access to that database already gives.
-
-See [Personal data](../security/personal-data.md) and
-[Running the workers](../getting-started/background-workers.md#personal-data-in-the-queue).
+A queue holds personal data: a queued mail carries the address of its recipient and the content
+of the order, and a failed job keeps everything it was dispatched with. How long each is kept,
+and how to protect a Redis or AMQP server, is in
+[Personal data](../security/personal-data.md#background-jobs).

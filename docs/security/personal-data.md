@@ -189,8 +189,30 @@ exception by class, code and place (`Thelia\Messenger\Log\FailedJobLogProcessor`
 
 A queued mail stores the content of its attachments in the queue, an attachment given by its
 path included: the queue, and `failed` for a mail that could not be delivered, hold the
-documents a mail carries, such as an invoice. See [Background jobs](../architecture/background-jobs.md#personal-data) and
+documents a mail carries, such as an invoice. See
 [`thelia:messenger:purge-failed`](../reference/cli/thelia_messenger_purge_failed.md).
+
+The description of a failed job on the Background jobs screen names the recipient of a mail.
+Give the screen (`admin.configuration.background-jobs`) only to the profiles that need it. A
+module describes its own jobs with ids and references, never personal data, see
+[the message of the example module](../reference/background-jobs.md#the-message).
+
+#### The queue server
+
+Treat the queue like the database:
+
+- A Redis or AMQP server must not be reachable from the internet. Bind it to the private
+  network of the hosting and protect it with a password. The workers read its queue as the
+  queue of the shop: whoever can write to it can send mails through the mail server of the shop
+  and replay the exports and imports it names. This is an accepted risk, and the reason such a
+  server must stay private. A queue in the shop database adds nothing to what access to that
+  database already gives.
+- Put the DSN and its credentials in `.env.local` or in the secrets of the hosting, never in a
+  committed file.
+- Do not share one Redis between environments unless each one has its own stream: a staging
+  worker would otherwise send the mails of production. Give each environment its own stream
+  name in the DSN (`redis://host:6379/messages_staging`, whose heavy jobs then go to the stream
+  `messages_staging_heavy`) or its own Redis database.
 
 ## Adding a module purge to the same run
 

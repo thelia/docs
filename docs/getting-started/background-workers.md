@@ -286,28 +286,10 @@ office, nor an import it stored read by a worker.
 ## Personal data in the queue
 
 Queued mails carry the recipient address and the content of the order, and a failed job keeps
-everything it was dispatched with.
-
-- Failed jobs are deleted by `thelia:messenger:purge-failed` after 30 days, every day at 04:00
-  when the schedule runs, and by `maintenance:purge`, which deletes the failed jobs older than
-  30 days on each of its runs. Keep the same tasks in the crontab of a shop that does not
-  consume the schedule. Record this retention in the GDPR register; see
-  [Personal data](../security/personal-data.md).
-- A failed job keeps everything it was dispatched with, but its reason is cleaned before it is
-  shown or logged: the log of the workers names the exception of a failed job by its class,
-  code and place (`Thelia\Messenger\Log\FailedJobLogProcessor`), and the credentials of a
-  mail server are hidden in the reasons the back office shows.
-- A Redis or AMQP broker must not be reachable from the internet. Bind it to the private
-  network of the hosting and protect it with a password. The workers read its queue as the
-  queue of the shop: whoever can write to it can send mails through the mail server of the shop
-  and replay the exports and imports it names. A queue in the shop database adds nothing to
-  what access to that database already gives.
-- Put the DSN and its credentials in `.env.local` or in the secrets of the hosting, never in
-  a committed file.
-- Do not share one Redis between environments unless each one has its own stream: a staging
-  worker would otherwise send the mails of production. Give each environment its own stream
-  name in the DSN (`redis://host:6379/messages_staging`, whose heavy jobs then go to the stream
-  `messages_staging_heavy`) or its own Redis database.
+everything it was dispatched with. The failed jobs are deleted after 30 days by
+`thelia:messenger:purge-failed` and `maintenance:purge`: a shop that does not consume the
+schedule keeps both in its crontab. The retention periods, and how to protect a Redis or AMQP
+server, are in [Personal data](../security/personal-data.md#background-jobs).
 
 ## Sizing
 
