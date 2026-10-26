@@ -152,6 +152,8 @@ the shop domain.
   require the customer's paid order or the guest token.
 - HTML is `private` with a session cookie, so no CDN caches it by default. From Thelia 3.3,
   read [Reverse proxy cache](./reverse-proxy-cache.md) before letting a CDN keep pages.
+- A visitor country read from a CDN header (`CF-IPCountry`, for example) needs the CDN to set that
+  header before its cache. See [Visitor country detection](../features/visitor-country.md#caching).
 
 ## Checking the setup
 
