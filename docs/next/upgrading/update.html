@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.10.2">
 <title data-rh="true">Update | Thelia Documentation</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://doc.thelia.net/docs/next/upgrading/update"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Update | Thelia Documentation"><meta data-rh="true" name="description" content="This guide covers updating an existing Thelia 3 site to a newer Thelia 3 release."><meta data-rh="true" property="og:description" content="This guide covers updating an existing Thelia 3 site to a newer Thelia 3 release."><link data-rh="true" rel="icon" href="/img/favicon.png"><link data-rh="true" rel="canonical" href="https://doc.thelia.net/docs/next/upgrading/update"><link data-rh="true" rel="alternate" href="https://doc.thelia.net/docs/next/upgrading/update" hreflang="en"><link data-rh="true" rel="alternate" href="https://doc.thelia.net/docs/next/upgrading/update" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://AOX4BR07WS-dsn.algolia.net" crossorigin="anonymous"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Update","item":"https://doc.thelia.net/docs/next/upgrading/update"}]}</script><link rel="search" type="application/opensearchdescription+xml" title="Thelia Documentation" href="/opensearch.xml"><link rel="stylesheet" href="/assets/css/styles.3890d491.css">
-<script src="/assets/js/runtime~main.cf2b90c8.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.9c9b2192.js" defer="defer"></script>
 <script src="/assets/js/main.c57dab0b.js" defer="defer"></script>
 </head>
 <body>
@@ -80,6 +80,11 @@ the assets:</p>
 <p>The first two rebuild the front-office assets, the last one the back-office stylesheet. Skip
 any command the console does not carry: each comes from a package the corresponding template
 requires.</p>
+<p>In production, also run <code>php Thelia asset-map:compile</code>. It writes the files served from
+<code>public/assets/</code>, with the minified CSS and the precompressed <code>.br</code>, <code>.zst</code> and <code>.gz</code> copies.
+Install <code>brotli</code> (and optionally <code>zstd</code>) on the machine that runs it to get those formats, and
+see <a class="" href="/docs/next/getting-started/nginx-configuration#precompressed-assets">Nginx configuration</a> for the
+server side.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="5-update-the-modules">5. Update the modules<a href="#5-update-the-modules" class="hash-link" aria-label="Direct link to 5. Update the modules" title="Direct link to 5. Update the modules" translate="no">​</a></h2>
 <p>Modules keep their own version numbers, so they update separately:</p>
 <div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#bfc7d5"><span class="token function" style="color:rgb(130, 170, 255)">composer</span><span class="token plain"> update thelia/module-name</span><br></div></code></pre></div></div>
