@@ -150,8 +150,9 @@ to every visitor of the same URL, banner and prices included. See the
 A resolver of your own reads something the cache cannot see, such as a cookie or the IP address.
 The core already keeps the pages out of the shared cache while the detection is active, so the
 page that depends on your resolver is covered. A page of your own, built from the detected
-country outside the detection modes, must be answered with a private response
-(`Cache-Control: private`).
+country outside the detection modes, must set `Cache-Control: no-store`: the shop replaces
+`private` on a page it shares, as the [reverse proxy cache](../getting-started/reverse-proxy-cache.md#limits)
+page explains.
 
 ## Personal data
 
