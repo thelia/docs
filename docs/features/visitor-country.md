@@ -40,13 +40,33 @@ close it. The choice is kept for the session, so the banner does not come back o
 If multi-domain is active and a language of the detected country has its own domain, the banner
 links to that domain. The shop never redirects a visitor on its own.
 
+With multi-domain, arriving on the domain of a language of the detected country counts as
+accepting. When the mode is `suggest`, multi-domain is active, the region of the language of the
+session (`BE` for `nl_BE`, the part after the last `_`) is the detected country, and the visitor
+has not answered yet, the shop keeps that country and marks the suggestion as answered. The banner
+is not shown on that domain, and the prices are those of that country.
+
+### When the mode changes
+
+The mode is read on every request, so a change applies to visitors who already have a session:
+
+- Switching to `apply`: a visitor whose country was detected, and who has no country in use yet,
+  gets the detected country on the next request, even when the session was opened in `suggest`
+  mode.
+- Switching to `suggest`: a country kept while the mode was `apply` is no longer used. Only a
+  country the visitor accepted is used in `suggest` mode, so the visitor sees the default country
+  and the banner until they answer.
+- Switching to `off`: the default country is used again, as before.
+
 Whatever the mode, these rules hold:
 
 - An address entered by the customer always wins. An order is taxed on its billing address, never
   on the detected country.
 - A value the shop does not recognise, a forged value, or a country that is not sold on the
   storefront is ignored. The visitor keeps the default country, and no message is shown.
-- Detection runs once per session.
+- Detection runs once per session. With source `header`, a request that carries no usable header
+  does not close the detection: it runs again on the next request. With source `ip_database`, a
+  lookup that finds nothing is remembered for the session.
 - Detection does not run from the command line, nor on `/admin`.
 
 ## Where the country comes from
@@ -97,6 +117,14 @@ Databases that are compatible, listed with their licence. This list does not rec
 Whichever database you use, its updates are your responsibility. An old database keeps assigning
 addresses to the countries they had when it was built.
 
+## Requirements for the banner
+
+The banner posts a stateless CSRF token, because the page it sits on may be served from a shared
+cache, and a token bound to a session would be replayed to other visitors. The token identifier is
+`submit`. It must be declared under `framework.csrf_protection.stateless_token_ids` in
+`config/packages/csrf.yaml`, which the Symfony recipe writes on installation. Without it, the answer of the visitor
+is refused.
+
 ## Caching
 
 The mode changes what a shared cache may keep. Read the page for your setup before turning the
@@ -108,6 +136,18 @@ mode on:
   [CDN](../getting-started/cdn.md) pages.
 - With source `ip_database`, pages are not shared while the detection is active. Each visitor
   gets a page built for them.
+
+Many CDNs do not take `Vary` into account for HTML pages. Do not rely on it. Either put the country in the cache key of the CDN, or do not cache
+these pages there. A cache that ignores the header serves the page built for the first visitor to
+every visitor of the same URL, banner and prices included. Check the behaviour of your own CDN
+rather than assuming it.
+
+### Module authors
+
+A resolver that reads something other than the configured header, such as a cookie or the IP
+address, makes the page depend on something a cache cannot see. The pages it affects must stay out
+of the shared cache: answer them with a private response (`Cache-Control: private`). The core does
+this for source `ip_database`; a module that adds its own resolver must do it for its own source.
 
 ## Personal data
 
