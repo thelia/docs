@@ -65,8 +65,9 @@ Whatever the mode, these rules hold:
 - A value the shop does not recognise, a forged value, or a country that is not sold on the
   storefront is ignored. The visitor keeps the default country, and no message is shown.
 - Detection runs once per session. With source `header`, a request that carries no usable header
-  does not close the detection: it runs again on the next request. With source `ip_database`, a
-  lookup that finds nothing is remembered for the session.
+  does not close the detection: it runs again on the next request, but a header that is present is
+  the answer, even for a country the shop does not show. With source `ip_database`, a lookup that
+  finds nothing is remembered for the session.
 - Detection does not run from the command line, nor on `/admin`.
 
 ## Where the country comes from
@@ -107,6 +108,11 @@ warning to its log and keeps the default country.
 The server must see the real address of the visitor. Behind a proxy, declare your proxies as
 trusted proxies, as explained in [the trusted proxies section](../getting-started/cdn.md#3-the-trusted-proxies)
 and in [the proxy section of the rate limiting page](../api/rate-limiting.md#behind-a-proxy-or-a-load-balancer).
+Without them, every visitor has the address of the proxy, and so the country of the proxy.
+
+A lookup that finds nothing is remembered for the session. A database installed after the fact
+is therefore read by new sessions only: a visitor whose session already ran the lookup keeps the
+default country until the session ends.
 
 Databases that are compatible, listed with their licence. This list does not recommend one:
 
@@ -117,37 +123,35 @@ Databases that are compatible, listed with their licence. This list does not rec
 Whichever database you use, its updates are your responsibility. An old database keeps assigning
 addresses to the countries they had when it was built.
 
-## Requirements for the banner
+## The token of the banner
 
-The banner posts a stateless CSRF token, because the page it sits on may be served from a shared
-cache, and a token bound to a session would be replayed to other visitors. The token identifier is
-`submit`. It must be declared under `framework.csrf_protection.stateless_token_ids` in
-`config/packages/csrf.yaml`, which the Symfony recipe writes on installation. Without it, the answer of the visitor
-is refused.
+The banner posts a stateless CSRF token: it is the same for every visitor and checks the origin of
+the request, not a session, so the banner does not depend on who the page was built for. Its
+identifier is `thelia_country_suggestion`, and the Flexy theme declares it under
+`framework.csrf_protection.stateless_token_ids` in its own `config/packages/csrf.yaml`. There is
+nothing to add to the `config/packages/csrf.yaml` of the shop.
 
 ## Caching
 
-The mode changes what a shared cache may keep. Read the page for your setup before turning the
-mode on:
+While the detection is active, in `suggest` or `apply` mode, the pages are not shared by the
+cache of the shop, whatever the source: each visitor gets a page built for them, and the answer
+carries no `Vary` header for the country. In `off` mode the shared cache behaves as it did before
+the feature.
 
-- With source `header`, a shared page depends on the header. The proxy must set the header
-  before its cache, so that the cache keeps one page per value. See the
-  [reverse proxy cache](../getting-started/reverse-proxy-cache.md) and the
-  [CDN](../getting-started/cdn.md) pages.
-- With source `ip_database`, pages are not shared while the detection is active. Each visitor
-  gets a page built for them.
-
-Many CDNs do not take `Vary` into account for HTML pages. Do not rely on it. Either put the country in the cache key of the CDN, or do not cache
-these pages there. A cache that ignores the header serves the page built for the first visitor to
-every visitor of the same URL, banner and prices included. Check the behaviour of your own CDN
-rather than assuming it.
+A CDN or a reverse proxy in front of the shop therefore has nothing to key on and nothing to
+configure for the country. Make sure it does not cache these pages on its own, against the
+`Cache-Control` the shop sends: a cache that ignores it serves the page built for the first visitor
+to every visitor of the same URL, banner and prices included. See the
+[reverse proxy cache](../getting-started/reverse-proxy-cache.md) and the
+[CDN](../getting-started/cdn.md) pages.
 
 ### Module authors
 
-A resolver that reads something other than the configured header, such as a cookie or the IP
-address, makes the page depend on something a cache cannot see. The pages it affects must stay out
-of the shared cache: answer them with a private response (`Cache-Control: private`). The core does
-this for source `ip_database`; a module that adds its own resolver must do it for its own source.
+A resolver of your own reads something the cache cannot see, such as a cookie or the IP address.
+The core already keeps the pages out of the shared cache while the detection is active, so the
+page that depends on your resolver is covered. A page of your own, built from the detected
+country outside the detection modes, must be answered with a private response
+(`Cache-Control: private`).
 
 ## Personal data
 
@@ -165,8 +169,8 @@ A module reads it there rather than from the request headers.
 | `detectedCountry()` | The country found for the visitor, or `null` when the mode is `off` or nothing was found. |
 | `currentCountry()` | The country the visitor shops in: the one applied or accepted, else the default country of the shop. |
 | `suggestion()` | The country to offer, in `suggest` mode, to a visitor with no account who has not answered yet; otherwise `null`. |
-| `accept($countryId)` | Keeps that country for the session; `false` when the country is not visible in the shop. |
-| `decline()` | Records that the visitor closed the suggestion. |
+| `accept($countryId)` | Keeps that country for the session, and answers the suggestion. `false`, with nothing written, when the mode is `off`, when the country is not the detected one, when it is not visible in the shop, or when there is no session. |
+| `decline()` | Records that the visitor closed the suggestion, and forgets a country kept while the mode was `apply`. |
 
 The detection runs once per session, before the page is rendered, so these methods do not
 read the request again. `CountryService::getPreselectedCountry()` gives the country an address
@@ -176,7 +180,9 @@ A module can provide its own source by implementing
 `Thelia\Domain\Localization\VisitorCountry\VisitorCountryResolverInterface`. Its method
 `resolve(Request): ?string` returns an ISO 3166-1 alpha-2 code, such as `BE`, or `null`.
 
-The front API exposes the mode and the detected country:
+The front API exposes the mode and the detected country. It informs and applies nothing: the
+answer is built from the request alone, without a session, and a headless front decides what to do
+with it.
 
 ```http
 GET /api/front/visitor_country
