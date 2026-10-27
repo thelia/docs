@@ -356,8 +356,8 @@ is next updated.
   shared cache, or have it set `Cache-Control: no-store` on its answers. `private` is not
   enough: Symfony sets it on every answer that touched the session, so it cannot be told
   apart, and Thelia replaces it on a page it shares.
-- The visitor country detection, in its `header` source, also varies pages by a request header.
-  The proxy must set that header before its cache. See [Visitor country detection](../features/visitor-country.md#caching).
+- While the visitor country detection is on (`suggest` or `apply`), no page is shared, whatever its
+  source. See [Visitor country detection](../features/visitor-country.md#caching).
 - The purge is synchronous, at the end of the request. A proxy that does not answer holds the
   request for up to 5 seconds, on a server that cannot close the connection to the browser
   first (mod_php, the development server).
