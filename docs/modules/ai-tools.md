@@ -164,7 +164,7 @@ final readonly class UpdatePriceTool implements AiWriteToolInterface
 }
 ```
 
-`VariantPrices` is a service of your module, here. The two methods are used in this way:
+`VariantPrices` is a service of your module. Notes on the two methods:
 
 - `AiChangeProposal`: `target` says what the change touches (128 bytes at most), `summary` is plain text for the administrator (512 characters at most), `before` and `after` are JSON arrays (32 768 bytes at most each). `before` is what `apply()` checks again.
 - The administrator reads more than the summary. The approval screen shows the summary, the full arguments and the state after the change, always escaped. The summary is written from a request of the model, so it is not enough to decide on. Put in `after` what the change will really do.
@@ -190,7 +190,7 @@ A tool is offered to a caller when all of these are true:
 - Through MCP, the tool has `mcp: true`, and the MCP server is on.
 - For the `Admin` audience, the actor is an administrator and holds the right of the tool: the `resource` or `module` with the `access`. Through MCP, the token must cover that right too, so the right in force is the intersection of the rights of the administrator and the scopes of the token.
 
-In short: the offer is the rights of the actor, limited by the audience.
+The offer is the rights of the actor, limited by the audience.
 
 - The rights are read from the database, not from a session, at each `offer()` and again at each `call()`. A right taken away stops the next call.
 - An administrator who is logged in but talks to a `public` or `customer` usage is offered only the tools of that audience, never an administrator tool.
