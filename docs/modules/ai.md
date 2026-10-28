@@ -90,7 +90,7 @@ if (!$registry->isActive('commerceagents.shopping_assistant')) {
 }
 ```
 
-`isActive()` tells whether a request would pass the settings now: the usage is on, a model with the right capabilities is assigned to its range, a public usage has a budget, and the budget is not spent. Use it to hide a feature. The gateway checks again at every call, so it is a convenience, not a guard. `get($usageId)` returns the declaration and `all()` lists every declared usage.
+`isActive()` tells whether a request would pass the settings now: the usage is on, a model with the right capabilities is assigned to its range, a public usage has a budget, and the budget is not spent. Use it to hide a feature. The gateway checks again at every call, so it is only a convenience. `get($usageId)` returns the declaration and `all()` lists every declared usage.
 
 ## Sending a request
 
@@ -483,7 +483,7 @@ Two Twig functions take what you stored, as an array, as JSON or as an `AiProven
 </article>
 ```
 
-The `data-*` form is the choice of Thelia, not a format fixed by the regulation. Check the current guidance before you rely on it. This is not legal advice.
+Thelia chose the `data-*` form; the regulation does not fix a format. Check the current guidance before you rely on it. This is not legal advice.
 
 **`AiTransparency::None`** is for an internal job or an administrator tool that publishes nothing. A `Public` or `Customer` usage that declares `None` is shown in the register as to be reviewed, because the declaration does not say whether people talk with it.
 
