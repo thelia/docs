@@ -191,7 +191,7 @@ foreach ($this->gateway->stream($request) as $event) {
 
 ## Guardrails
 
-A usage can list optional checks in `guardrails`, each with a default mode. The merchant can change the mode through the admin API (`/api/admin/ai/usage-settings`); the back-office screen of a usage does not show it.
+A usage can list optional checks in `guardrails`, each with a default mode. The merchant can change the mode on the edit page of the usage (section Safety checks: Follow the module, Block the request, Let it through and note it, Not applied), or through the admin API (`/api/admin/ai/usage-settings`).
 
 | Name | What it does |
 | --- | --- |
@@ -447,7 +447,7 @@ In a Twig template, use `ai_transparency_notice(usageId[, locale])`. It returns 
 {% endif %}
 ```
 
-The Flexy theme has a component that does this for you. Include it once, above the first message:
+The Flexy theme has a component that does this for you. It arrives with Thelia 3.3, in the Flexy theme of the same version. Include it once, above the first message:
 
 ```twig
 <twig:Molecules:AiNotice:Base usage="commerceagents.shopping_assistant" />
@@ -459,7 +459,7 @@ The Flexy theme has a component that does this for you. Include it once, above t
 - Extra attributes (`class`, `id`) go on the notice. It is a polite live region (`role="status"`), so a screen reader announces it when it is inserted.
 - The English text reads "You are talking with an AI assistant. Its answers can contain mistakes."
 
-<!-- TODO screenshot: the AI notice above the input of a chat on the storefront -->
+It renders the notice as the informative message of the design system (the `Molecules:SnackBar:Base` component, with its icon), so it looks the same as the other messages of the theme.
 
 **`AiTransparency::Generative`**: the module publishes what the model writes. Each response carries a provenance mark, unless the merchant turned it off.
 

@@ -327,7 +327,7 @@ A model that holds three things at once can be turned against the shop by a text
 | `UntrustedContent` | Returns text a third party wrote: reviews, web pages, messages. |
 | `ExternalCommunication` | Sends something out of the shop: an e-mail, a message, a request to another system. |
 
-Declare the risks honestly. `AiToolOffer::$lethalTrifecta` is `true` when the tools of the offer together cover the three. The core signals the combination in the back office (the register of usages, the screen of a token) and never blocks it. The protection that remains is the approval of every change by a person.
+Declare the risks honestly. `AiToolOffer::$lethalTrifecta` is `true` when the tools of the offer together cover the three. The core signals the combination in the back office (the Tools together column of the Usages tab, the Trifecta column of the MCP tokens tab) and never blocks it. The protection that remains is the approval of every change by a person.
 
 If your agent has such an offer, narrow it with `only`, or accept that every proposal must be read with care.
 
