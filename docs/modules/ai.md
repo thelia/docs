@@ -11,13 +11,16 @@ A module that needs a language model does not talk to a provider. It declares wh
 
 All the types below live in `Thelia\Domain\Ai`. None of them exposes a type of the library that talks to the providers, so a module written against this page does not depend on that library.
 
-This page is for module developers. The merchant side, including what the AI Act asks of a shop, is in [AI and the AI Act](../features/ai-act.md).
+This page is for module developers. Two companion pages complete it:
+
+- [Giving tools to an AI](./ai-tools.md): tools a model or an external client can use, with approval by an administrator.
+- For the merchant side, see [AI settings and MCP](../features/ai-settings.md) and, for what the AI Act asks of a shop, [AI and the AI Act](../features/ai-act.md).
 
 ## What the core does for you
 
 | Concern | What the core does |
 | --- | --- |
-| Provider and model | The module asks for a range (`fast`, `standard` or `advanced`) and the capabilities it needs. The merchant assigns one model to each range. A module never names a model. |
+| Provider and model | The module declares a range (`fast`, `standard` or `advanced`) and the capabilities it needs. The merchant assigns one model to each range, and can choose another range for a usage (see [The merchant can change the range](#the-merchant-can-change-the-range)). A module never names a model. |
 | Rate | Requests are counted per actor (administrator, customer, visitor, system) against the limits of the usage. |
 | Budget | Before the call, the cost the call can reach is reserved against the monthly budget of the usage and the global monthly cap of the shop. A call that would cross either is refused. |
 | Log | One row in `ai_usage_log` per call, refusals included: usage, connection, model, tokens, cost, hashed actor, status, latency, the verdict of every check. The prompt is not stored unless the merchant turns that on for the usage. |
@@ -64,10 +67,18 @@ final readonly class ShoppingAssistant
 | `tier` | The range of model: `Fast`, `Standard` or `Advanced`. |
 | `capabilities` | What the model must be able to do: `StructuredOutput`, `Tools`, `Vision`, `Streaming`. The model assigned to the range must have all of them, or the usage is inactive. A request can only use the capabilities its usage declared. |
 | `transparency` | `None`, `Interactive` (a person talks with the model) or `Generative` (the module publishes what the model writes). See [Showing that an AI is involved](#showing-that-an-ai-is-involved). |
-| `guardrails` | Optional checks by name, each with its default mode: `Block` stops the call, `Annotate` writes the failure to the log and returns it in the response. The merchant can change the mode. |
-| `maxInputCharacters` | The default size limit of what a person types (the last user message), in characters. The merchant can change it. `null` means no limit of its own. |
+| `guardrails` | Optional checks by name, each with its default mode: `Block` stops the call, `Annotate` writes the failure to the log and returns it in the response. The merchant can change the mode through the admin API. |
+| `maxInputCharacters` | The default size limit of what a person types (the last user message), in characters. The merchant can change it through the admin API. `null` means no limit of its own. |
 
-Two audiences carry a rule: a `Public` usage stays inactive until the merchant gives it a monthly budget above zero, so a chat open to anonymous visitors never spends money by surprise.
+A `Public` usage carries one more rule: it stays inactive until the merchant gives it a monthly budget above zero, so a chat open to anonymous visitors never spends money by surprise.
+
+### The merchant can change the range
+
+The `tier` you declare is a default. In the back office the merchant can pick another range for the usage, for example `advanced` for a writing tool that gave poor results on `fast`. Your code does not change: the gateway resolves the range at each call, from the choice of the merchant or else from your declaration.
+
+- `$registry->get($usageId)->tier` is still the range you declared. The register of usages (`thelia:ai:usages`, the back office, the API) shows both: `tier` is the range in force and `declared_tier` the one of the module.
+- The model of the range the merchant picks must have every capability the usage declares (tools, structured output, streaming). If it has not, the usage is inactive: `isActive()` returns `false` and a call fails with `InactiveAiUsageException`. This is one more reason to declare only the capabilities you use.
+- A merchant who picks the declared range keeps it even if a later version of your module declares another. Choosing the empty option goes back to following the declaration.
 
 The module skeleton loads the classes of a module with `autoconfigure(true)`, and the core reads the attribute on every autoconfigured service, so a module needs no extra registration. A usage the module declares appears in the register of AI usages of the back office.
 
@@ -126,6 +137,33 @@ If `finishReason` is `MaxTokens`, the answer reached the output limit. The call 
 
 A guardrail in `Annotate` mode does not stop the call. `$response->annotations()` returns the checks that failed, in case you want to show or review them.
 
+### Refusals and the provider request id
+
+A provider can refuse to answer. Anthropic does it with a normal response (HTTP 200) and an empty content; an OpenAI-compatible provider does it with `finish_reason: content_filter` or a `refusal` text. The gateway does not turn this into an exception. You get a response with `finishReason` set to `AiFinishReason::ContentFilter`, an empty `text`, `data` set to `null`, and the tokens the provider counted, which are logged.
+
+```php
+use Thelia\Domain\Ai\AiFinishReason;
+
+$response = $this->gateway->complete($request);
+
+if (AiFinishReason::ContentFilter === $response->finishReason) {
+    // Nothing usable came back. Do not read $response->text or $response->data.
+    $this->logger->notice('The provider refused a request.', [
+        'usage' => $request->usageId,
+        'category' => $response->refusalCategory,   // e.g. 'cyber' with Anthropic, null when the provider gives none
+        'detail' => $response->refusalDetail,       // the provider's own wording, not translated
+        'provider_request_id' => $response->providerRequestId,
+    ]);
+
+    return null; // degrade the feature: show a generic "I cannot help with this"
+}
+```
+
+- `refusalCategory` and `refusalDetail` come from the provider (Anthropic `stop_details`, the `refusal` text of OpenAI). Both are `null` for any other answer, and on a stream. Mistral and Ollama document no refusal, so a refusal from them is not mapped.
+- A refusal is not a broken JSON answer: when the request has an `outputSchema`, the schema check does not judge a `ContentFilter` response.
+- Treat `refusalDetail` like any text from a third party. Log it, do not show it to a visitor.
+- `providerRequestId` is the identifier the provider gave to the call: the `request-id` or `x-request-id` header, else the `id` of the body. On a stream only the header is read. It is `null` when the provider gives none (Ollama). It is also written in `ai_usage_log.provider_request_id`, so you can quote it to the provider's support for a given row of the log.
+
 ### Streaming
 
 `stream()` returns the answer as it is produced.
@@ -153,7 +191,7 @@ foreach ($this->gateway->stream($request) as $event) {
 
 ## Guardrails
 
-A usage can list optional checks in `guardrails`, each with a default mode. The merchant can change the mode in the back office.
+A usage can list optional checks in `guardrails`, each with a default mode. The merchant can change the mode through the admin API (`/api/admin/ai/usage-settings`); the back-office screen of a usage does not show it.
 
 | Name | What it does |
 | --- | --- |
@@ -222,6 +260,8 @@ new AiRequest(
 ## Tools
 
 A tool is a function of your module that the model can ask you to run. The gateway only describes it: it does not run it.
+
+This section covers a tool your module runs itself, with its own session. To expose the data of the shop (and changes that an administrator approves) to your own agent or to an external client, declare the tool with `#[AsAiTool]` instead: see [Giving tools to an AI](./ai-tools.md).
 
 ```php
 use Thelia\Domain\Ai\AiToolCall;
@@ -331,10 +371,56 @@ All of them implement `Thelia\Domain\Ai\Exception\AiExceptionInterface`. Catch t
 | `AiRateLimitExceededException` | The actor sent too many requests. `retryAfter` may hold the time to wait. | Ask the person to try again later. |
 | `AiGuardrailBlockedException` | A guardrail in `Block` mode refused the request or the answer. `verdict` says which and why; `logId` is set when the call was already paid. | Show a generic refusal. Never show `verdict->reason` to a visitor: it is for the log. |
 | `AiJurisdictionRefusedException` | Only when the merchant turned on "EU only", and the connection or service is outside the EU. | Point to the setting in the back office. |
+| `AiKeyDecryptionException` | The API key of the connection was saved with another application secret and cannot be read. | Tell an administrator to enter the key again in the connection. |
 | `AiProviderUnavailableException` | The provider did not answer or answered an error. `retryable` is true for a timeout, an overload or a 5xx. `logId` is set when the call was already logged. | Retry only if `retryable`. The gateway already retried once before the first byte; it never retries after that. There is no automatic switch to another connection. |
 | `UnknownAiUsageException`, `AiUsageViolationException`, `InvalidAiArgumentException` | A usage that is not declared, a request outside its declaration, an invalid value. | These are bugs. Do not catch them. |
 
 A refused call writes a row in the log, with the status `rejected` or `blocked` and a cost of zero. The reason is one of `rate_limit`, `budget`, `budget_global` or `jurisdiction`; an input over the size limit is `blocked` with the reason `input_too_long`. The exception is a call to a usage that is unknown, inactive or badly declared: it is not logged, because it is a bug of the module or a switch the merchant turned, not a call.
+
+### Showing a failure to a person
+
+The messages of these exceptions are English, written for the log and the developer. To show a failure on a screen or in a mail, use `AiFailureExplainer::explain()`. It returns a plain sentence in the language asked, for example "The monthly budget of this usage is used up." It works without a request (console, queue worker): the language is the one you pass, else the one of the visitor, else the one of the shop.
+
+```php
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Thelia\Domain\Ai\AiGatewayInterface;
+use Thelia\Domain\Ai\AiMessage;
+use Thelia\Domain\Ai\AiRequest;
+use Thelia\Domain\Ai\Exception\AiExceptionInterface;
+use Thelia\Domain\Ai\Service\AiFailureExplainer;
+
+final readonly class SuggestTitleController
+{
+    public function __construct(private AiGatewayInterface $gateway, private AiFailureExplainer $failures) {}
+
+    #[Route('/admin/module/theliacms/suggest-title', name: 'theliacms.suggest_title', methods: ['POST'])]
+    public function __invoke(Request $request): JsonResponse
+    {
+        try {
+            $response = $this->gateway->complete(new AiRequest(
+                usageId: 'theliacms.text',
+                messages: [AiMessage::user($request->request->getString('brief'))],
+                maxOutputTokens: 200,
+            ));
+        } catch (AiExceptionInterface $failure) {
+            return new JsonResponse(
+                ['error' => $this->failures->explain($failure, $request->getLocale())],
+                Response::HTTP_SERVICE_UNAVAILABLE,
+            );
+        }
+
+        return new JsonResponse(['title' => $response->text]);
+    }
+}
+```
+
+- The sentences exist in French and English. With any other language the English sentence is shown.
+- A failure the explainer has no sentence for comes back with its own message. That includes the refusals of a value that carry a variable part ("must be one of …", "must be a positive number") and the error stored by a connection test: they stay in English.
+- The sentences name the connection and tell an administrator what to check (the key, the model, the address). Use them in an administration screen. For a visitor, write your own generic message, as in the table above.
+- Nothing the provider wrote and no key is part of a sentence.
 
 ## Showing that an AI is involved
 
@@ -361,7 +447,19 @@ In a Twig template, use `ai_transparency_notice(usageId[, locale])`. It returns 
 {% endif %}
 ```
 
-<!-- TODO écran : the Twig function and the Flexy component that render this notice are not delivered yet; add their names and one example once they are. -->
+The Flexy theme has a component that does this for you. Include it once, above the first message:
+
+```twig
+<twig:Molecules:AiNotice:Base usage="commerceagents.shopping_assistant" />
+```
+
+- It takes the identifier of the usage, and an optional `locale` (the language of the request, then of the shop, by default).
+- It holds no setting and no rule: whether a notice is due, and its text, come from `ai_transparency_notice()`. It renders nothing when the usage is not interactive, is inactive, or when the merchant turned the notice off.
+- An identifier the core does not know throws, so a typo is not a silent missing notice.
+- Extra attributes (`class`, `id`) go on the notice. It is a polite live region (`role="status"`), so a screen reader announces it when it is inserted.
+- The English text reads "You are talking with an AI assistant. Its answers can contain mistakes."
+
+<!-- TODO screenshot: the AI notice above the input of a chat on the storefront -->
 
 **`AiTransparency::Generative`**: the module publishes what the model writes. Each response carries a provenance mark, unless the merchant turned it off.
 
@@ -398,6 +496,83 @@ bin/console thelia:ai:usages --format=table   # or json, or csv; add --locale=fr
 ```
 
 The CSV output is protected against formula injection.
+
+## Settings written from a module
+
+A module that had its own provider settings before 3.3 (a key, a model, a budget) can move them to the settings of the core. Use `Thelia\Domain\Ai\Service\AiSettingsWriter` rather than the Propel models: it is the one door the back office and the admin API use, so a rule is written once, the API key goes through the vault that encrypts it, and a refusal is an `AiExceptionInterface` whose message says what to fix. Nothing is saved when one is raised.
+
+| Method | What it writes |
+| --- | --- |
+| `saveConnection()` | A connection to a provider. Pass `null` to create one, or the existing `AiConnection` to update it. A blank `$apiKey` keeps the stored key. |
+| `assignTier()` | The model of a range. A range has one assignment: pass the one it has to change it. |
+| `saveUsageSetting()` | What the merchant decided for a usage: switch, range, budget, limits, pinned model, guardrail modes, notice, mark, prompt storage. |
+| `setEnabled()`, `setMonthlyCap()`, `setEuropeanUnionOnly()` | The global switch, the monthly cap of the whole shop (a decimal string, `'0'` for none) and the "EU only" option. |
+
+```php
+use Propel\Runtime\ActiveQuery\Criteria;
+use Thelia\Domain\Ai\Exception\AiExceptionInterface;
+use Thelia\Domain\Ai\Service\AiSettingsWriter;
+use Thelia\Model\AiModelQuery;
+use Thelia\Model\AiTierAssignmentQuery;
+use Thelia\Model\AiConnectionQuery;
+use Thelia\Model\AiUsageSettingQuery;
+
+final readonly class LegacySettingsImporter
+{
+    public function __construct(private AiSettingsWriter $writer) {}
+
+    /** @param array{api_key: string, monthly_budget: string} $legacy */
+    public function import(array $legacy): void
+    {
+        try {
+            $connection = $this->writer->saveConnection(
+                connection: AiConnectionQuery::create()->findOneByCode('mistral-main'),
+                code: 'mistral-main',
+                title: 'Mistral',
+                provider: 'mistral',
+                jurisdiction: null,          // deduced for Mistral; only a compatible server needs it
+                baseUrl: null,               // the usual address of the provider
+                apiKey: $legacy['api_key'],  // encrypted by the vault, never stored as it is
+                apiKeyEnv: null,
+                allowPrivateNetwork: false,
+                active: true,
+            );
+
+            $model = AiModelQuery::create()
+                ->filterByProvider('mistral')
+                ->filterByName('ministral-3b-latest')
+                ->filterByConnectionId(null, Criteria::ISNULL)   // the catalogue of the provider
+                ->findOne();
+
+            if (null !== $model) {
+                $this->writer->assignTier(
+                    AiTierAssignmentQuery::create()->findOneByTier('fast'),
+                    'fast',
+                    $connection->getId(),
+                    $model->getId(),
+                );
+            }
+
+            $this->writer->saveUsageSetting(
+                AiUsageSettingQuery::create()->findOneByUsageId('commerceagents.shopping_assistant'),
+                'commerceagents.shopping_assistant',
+                enabled: true,
+                monthlyBudget: $legacy['monthly_budget'],   // "25.00": a public usage needs a budget above zero to run
+            );
+        } catch (AiExceptionInterface $refusal) {
+            // The message is English and says what to fix: log it, or show it with AiFailureExplainer.
+            throw new \RuntimeException('The AI settings could not be migrated: '.$refusal->getMessage(), 0, $refusal);
+        }
+    }
+}
+```
+
+- `saveUsageSetting()` writes the whole row. A value you leave out goes back to its default (`null`, `false` or `true` as in the signature), it does not keep what the merchant had set. When you update an existing row, read the current values from the `AiUsageSetting` and pass them again.
+- `$tier` is `null` to follow the range the module declared, or `'fast'`, `'standard'`, `'advanced'`. Passing the declared range stores it as the merchant's choice (see [The merchant can change the range](#the-merchant-can-change-the-range)).
+- `saveUsageSetting()` checks that the usage exists: the module that declares it must be installed first.
+- A range whose model lacks a capability the usage declares is accepted here. The usage then shows as inactive and its calls are refused.
+- The writer does not check the rights of an administrator. The code that calls it does, if it runs for one.
+- Deleting a connection, a range assignment or a usage setting is not part of the writer.
 
 ## Testing
 
