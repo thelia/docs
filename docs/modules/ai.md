@@ -24,9 +24,9 @@ This page is for module developers. The merchant side, including what the AI Act
 | Cut-off | A usage the merchant turned off, or the global switch, makes the call fail with `InactiveAiUsageException`. |
 | Untrusted data | What you pass as untrusted content, and every tool result, is wrapped in delimiters that name its source and tell the model it is data. |
 | Output | A structured answer is decoded and checked against your schema before you get it. HTML in a field marked `"contentMediaType": "text/html"` is reduced to the allowed elements. |
-| Retries | None. The gateway never retries and never runs a tool: both are yours. |
+| Retries | One retry, before the first byte of the answer has arrived. After that the gateway never replays a request, because a second call would be paid twice. It never runs a tool: that is yours. |
 
-The checks that always apply are named `limits`, `rate_limit`, `budget`, `untrusted_content`, `output_schema` and `html_sanitizer` (`CoreGuardrail`). They cannot be turned off, and they do not go in the `guardrails` list of a usage.
+The checks that always apply are named `limits`, `rate_limit`, `budget`, `untrusted_content`, `output_schema` and `html_sanitizer` (`CoreGuardrail`). They cannot be turned off, and they do not go in the `guardrails` list of a usage. The optional checks are described in [Guardrails](#guardrails).
 
 ## Declaring a usage
 
@@ -118,11 +118,11 @@ Everything in `AiRequest` except `usageId` and `messages` is optional.
 | `maxOutputTokens` | Between 1 and 1 000 000, and below the limit of the usage. `null` takes the limit of the usage. |
 | `providerOptions` | Native options of one provider (see [Provider options](#provider-options)). |
 | `correlationId` | Groups the turns of one task in the log. 64 characters at most, letters, digits and `. _ : -`. |
-| `actor` | Who the call is made for. Leave it `null`: the gateway finds the logged-in administrator, then the customer, then the visitor by session or IP address, and the system in a command or a worker. It never assumes an HTTP request exists. Set it only to speak for someone else, with `AiActor::admin($id)`, `customer($id)`, `visitor($sessionOrIp)` or `system('process')`. |
+| `actor` | Who the call is made for. Leave it `null`: the gateway finds the logged-in administrator, then the customer, then the visitor by session or IP address, and the system in a command or a worker. It never assumes an HTTP request exists. For a `Public` or `Customer` usage it takes the logged-in customer, or else the visitor, and never an administrator, even if one is logged in. Set it only to speak for someone else, with `AiActor::admin($id)`, `customer($id)`, `visitor($sessionOrIp)` or `system('process')`. |
 
 A request that asks for something its usage did not declare (tools, a schema, a stream) fails with `AiUsageViolationException`. An invalid value fails at construction with `InvalidAiArgumentException`. Both are bugs of the module, not conditions to handle at run time.
 
-If `finishReason` is `MaxTokens`, the text or the structured data may be cut short.
+If `finishReason` is `MaxTokens`, the answer reached the output limit. The call does not fail: you get the partial text, the tokens are counted and logged, and `complete` is true. A structured answer cut short does not pass the schema check, and the verdict reason is `truncated`. Raise `maxOutputTokens` or ask for less.
 
 A guardrail in `Annotate` mode does not stop the call. `$response->annotations()` returns the checks that failed, in case you want to show or review them.
 
@@ -150,6 +150,20 @@ foreach ($this->gateway->stream($request) as $event) {
 - The checks run when the iteration starts, so the exceptions of `complete()` come from the first iteration, not from the call to `stream()`.
 - The log row is written when the stream ends. If you stop iterating before the end, the row is written anyway, with the status `aborted` and the tokens known at that moment.
 - Output guardrails run on the whole text, at the end. A delta already sent cannot be taken back, so on a stream they can annotate but not block. A blocking input check works as usual.
+
+## Guardrails
+
+A usage can list optional checks in `guardrails`, each with a default mode. The merchant can change the mode in the back office.
+
+| Name | What it does |
+| --- | --- |
+| `mistral_moderation` | Sends the text a person typed to the Mistral moderation model. Only the safety categories block (`sexual`, `hate_and_discrimination`, `violence_and_threats`, `dangerous`, `criminal`, `selfharm`, `jailbreaking`). The categories of advice (`health`, `financial`, `law`, `pii`) and any unknown category are noted in the verdict and do not block. The list is the parameter `thelia.ai.moderation.mistral_blocking_categories`. |
+| `openai_moderation` | The same, with the OpenAI moderation model. |
+| `topic` | A judge of the fast range that tells whether what a visitor wrote stays on the subject of the usage, which is its `purpose`. It reads the input only, so an off-topic message is stopped before the paid call. The judge is itself a usage of the core, `core.guardrail_topic`: it counts against the budget and appears in the log and the register. It is a model, so it can be fooled. |
+
+The moderation models read only the text typed by a person, never your `system` text or a tool result. A guardrail never receives the actor in clear, only a hashed identifier. The model names are the parameters `thelia.ai.moderation.mistral_model` and `thelia.ai.moderation.openai_model`.
+
+A guardrail that is missing, has no usable connection, or fails gives a verdict `unavailable` or `guardrail_error`. In `Block` mode the call is refused; in `Annotate` mode it goes on and the verdict is logged.
 
 ## Untrusted content
 
@@ -262,6 +276,14 @@ providerOptions: ['anthropic' => ['effort' => 'high']],
 
 The options are applied only when the connection resolved for the request is of that provider. With a Mistral connection, the `anthropic` entry is not sent.
 
+With Anthropic, reasoning is off by default: when the request has no `thinking` option, the adapter sends `thinking: {type: disabled}`. Some models otherwise reason on their own and spend the whole `maxOutputTokens` without writing any text. To ask for reasoning, use the adaptive mode and an effort:
+
+```php
+providerOptions: ['anthropic' => ['thinking' => ['type' => 'adaptive'], 'effort' => 'medium']],
+```
+
+The `enabled` mode with `budget_tokens` is refused by recent models.
+
 This is a way out that nothing governs. The usage does not declare it, the core does not check it, and a tool the provider runs on its side (a web plugin, for instance) costs no more in the log than what the provider announces. Prefer the declared features whenever one fits.
 
 ## Costs outside the gateway
@@ -309,10 +331,10 @@ All of them implement `Thelia\Domain\Ai\Exception\AiExceptionInterface`. Catch t
 | `AiRateLimitExceededException` | The actor sent too many requests. `retryAfter` may hold the time to wait. | Ask the person to try again later. |
 | `AiGuardrailBlockedException` | A guardrail in `Block` mode refused the request or the answer. `verdict` says which and why; `logId` is set when the call was already paid. | Show a generic refusal. Never show `verdict->reason` to a visitor: it is for the log. |
 | `AiJurisdictionRefusedException` | Only when the merchant turned on "EU only", and the connection or service is outside the EU. | Point to the setting in the back office. |
-| `AiProviderUnavailableException` | The provider did not answer or answered an error. `retryable` is true for a timeout, an overload or a 5xx. `logId` is set when the call was already logged. | Retry only if `retryable`. The gateway does not retry. There is no automatic switch to another connection. |
+| `AiProviderUnavailableException` | The provider did not answer or answered an error. `retryable` is true for a timeout, an overload or a 5xx. `logId` is set when the call was already logged. | Retry only if `retryable`. The gateway already retried once before the first byte; it never retries after that. There is no automatic switch to another connection. |
 | `UnknownAiUsageException`, `AiUsageViolationException`, `InvalidAiArgumentException` | A usage that is not declared, a request outside its declaration, an invalid value. | These are bugs. Do not catch them. |
 
-A refused call still writes a row in the log, with the status `rejected` or `blocked` and a cost of zero.
+A refused call writes a row in the log, with the status `rejected` or `blocked` and a cost of zero. The reason is one of `rate_limit`, `budget`, `budget_global` or `jurisdiction`; an input over the size limit is `blocked` with the reason `input_too_long`. The exception is a call to a usage that is unknown, inactive or badly declared: it is not logged, because it is a bug of the module or a switch the merchant turned, not a call.
 
 ## Showing that an AI is involved
 
@@ -330,6 +352,15 @@ if (null !== $notice) {
 
 `transparencyNotice($usageId, $locale = null)` returns the translated text, in the current locale when `$locale` is `null`, or `null` when the usage is not interactive or the merchant turned the notice off: show nothing then.
 
+In a Twig template, use `ai_transparency_notice(usageId[, locale])`. It returns the escaped text, or an empty string when there is nothing to show (not interactive, usage inactive, notice turned off). An unknown usage identifier throws, so a typo is not a silent missing notice. In PHP, `transparencyNotice()` returns `null` in the same cases and throws `UnknownAiUsageException` for an unknown usage.
+
+```twig
+{% set notice = ai_transparency_notice('commerceagents.shopping_assistant') %}
+{% if notice %}
+    <p class="ai-notice">{{ notice }}</p>
+{% endif %}
+```
+
 <!-- TODO écran : the Twig function and the Flexy component that render this notice are not delivered yet; add their names and one example once they are. -->
 
 **`AiTransparency::Generative`**: the module publishes what the model writes. Each response carries a provenance mark, unless the merchant turned it off.
@@ -340,11 +371,33 @@ $provenance = $response->provenance?->toArray();
 //  'generated_at' => '2026-10-28T10:15:00+01:00', 'log_id' => 9002]
 ```
 
-Store the array with the content, and expose it as machine-readable metadata wherever the content is shown. `provenance` is `null` when the merchant turned the mark off for the usage.
+Store the array (or its JSON) with the content, and expose it as machine-readable metadata wherever the content is shown. `provenance` is `null` when the merchant turned the mark off for the usage. `AiProvenance::fromStored()` reads a stored array or JSON back and returns `null` if it is invalid.
+
+Two Twig functions take what you stored, as an array, as JSON or as an `AiProvenance`, and return an empty string if it is not a valid mark:
+
+- `ai_provenance_attributes(mark)` returns the attributes `data-ai-generated="true" data-ai-usage data-ai-model data-ai-generated-at`, already escaped.
+- `ai_provenance_label(mark[, locale])` returns a sentence for people, such as "Content generated by an AI (model) on 2026-10-28."
+
+```twig
+<article {{ ai_provenance_attributes(page.aiProvenance) }}>
+    {{ page.body|raw }}
+    <small>{{ ai_provenance_label(page.aiProvenance) }}</small>
+</article>
+```
+
+The `data-*` form is the choice of Thelia, not a format fixed by the regulation. Check the current guidance before you rely on it. This is not legal advice.
 
 **`AiTransparency::None`** is for an internal job or an administrator tool that publishes nothing. A `Public` or `Customer` usage that declares `None` is shown in the register as to be reviewed, because the declaration does not say whether people talk with it.
 
-`AiUsageRegistryInterface::compliance($usageId)` returns the status of each duty of the usage: the obligation (`article_50_1` or `article_50_2`), the state (`met`, `not_met` or `to_review`) and a translatable message. It is informative: a usage that is not compliant still runs.
+`AiUsageRegistryInterface::compliance($usageId)` returns the status of each duty of the usage: the obligation (`article_50_1` or `article_50_2`), the state (`met`, `not_met` or `to_review`) and a translatable message. It is informative: a usage that is not compliant still runs. When a duty is not met, the status carries a `reason` (`notice_turned_off`, `mark_turned_off` or `no_duty_declared`), and `translate()` gives a message in plain words.
+
+The register is also available in the console, for a script or an audit:
+
+```bash
+bin/console thelia:ai:usages --format=table   # or json, or csv; add --locale=fr_FR
+```
+
+The CSV output is protected against formula injection.
 
 ## Testing
 
@@ -359,4 +412,4 @@ Store the array with the content, and expose it as machine-readable metadata whe
 | Checks a structured answer against the schema and sanitizes marked HTML. | Validates tool arguments, and sanitizes HTML outside the marked fields. |
 | Writes one row per call, with a hashed actor and no prompt by default. | Does not store prompts or personal data elsewhere without a reason. |
 | Provides the notice and the provenance mark. | Shows the notice and stores and exposes the mark. |
-| Does not run tools and does not retry. | Runs tools with the rights of the actor, bounds the loop and decides whether to retry. |
+| Does not run tools and retries only before the first byte of the answer. | Runs tools with the rights of the actor, bounds the loop and decides whether to retry later. |
