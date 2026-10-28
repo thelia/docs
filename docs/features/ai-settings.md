@@ -9,9 +9,7 @@ Added in Thelia 3.3.
 
 Thelia 3.3 lets modules use language models, and lets an AI assistant outside your shop use some tools of the shop, under your control. This page explains the settings you manage and how to connect an external assistant. What the European AI Act asks of a shop is in [AI and the AI Act](./ai-act.md). Module developers: [Calling an AI model from a module](../modules/ai.md) and [Giving tools to an AI](../modules/ai-tools.md).
 
-You find everything under **Configuration > Artificial intelligence**. The page has tabs: Connections, Models, Ranges, Usages, Register, Consumption, Tools, Approvals and MCP tokens.
-
-<!-- TODO screenshot: Configuration > Artificial intelligence, the tabs and the Connections list -->
+You find everything under **Configuration > Artificial intelligence**. The page has nine tabs under its title: Connections (it opens first), Models, Ranges, Usages, Register, Consumption, Tools, Approvals and MCP tokens. The **Add a connection** button is at the top right. The Connections tab lists the connections in a table with the columns Name, Identifier, Provider, Data processed, API key, Status, Last test and Actions.
 
 ## Getting started
 
@@ -29,9 +27,9 @@ A connection is the link between your shop and a company that runs AI models, wi
 | Field | What it is |
 | --- | --- |
 | Name and identifier | The name you recognise it by, and a short identifier without spaces (`mistral-main`). The log and the modules refer to the connection by its identifier. |
-| Provider | Mistral, Anthropic, OpenAI, Scaleway, OVHcloud, Albert, Ollama, a compatible service, or the Thelia AI preset. |
+| Provider | Mistral AI (France), Anthropic (Claude), OpenAI, Compatible service (OpenAI format), Scaleway (France), OVHcloud (France), Albert (French State), Ollama (your own server) or Thelia AI. |
 | Server address | Empty for the usual address of the provider. Fill it in for your own server or a compatible service. |
-| Where the data is processed | Asked only for a compatible service or your own server. For the other providers it is deduced (see [AI and the AI Act](./ai-act.md#providers-and-where-data-goes)). |
+| Where the data is processed | Asked only for a compatible service or your own server, with the choices "In the European Union" and "Outside the European Union". For the other providers it is deduced (see [AI and the AI Act](./ai-act.md#providers-and-where-data-goes)). |
 | API key | Stored encrypted. It is never displayed again, not even to administrators. Leave the field empty when you edit a connection to keep the stored key. |
 | Environment variable holding the key | Optional, for a server that keeps its secrets out of the database. When set, it wins over the saved key. |
 | The server is on a private network | Tick it only for a server of your own network (Ollama, for example). Otherwise addresses of a private network are refused. |
@@ -41,27 +39,27 @@ A connection is the link between your shop and a company that runs AI models, wi
 
 If the application secret of your shop (`APP_SECRET`) changes, or you restore a database from another shop, the saved keys can no longer be read. The calls fail and the message asks you to enter the key again in the connection.
 
-<!-- TODO screenshot: the edit form of a connection with the Test now button -->
+The form is titled **New connection**, or **Edit the connection** for an existing one. On an existing connection, the card **Test the connection** under the form holds the **Test now** button and the result of the last test (Worked or Failed, with the date).
 
 ### European Union only
 
-Below the list, the option **Refuse providers outside the European Union** is off by default. Thelia prefers European providers and never forbids the others. Turn it on to refuse every AI call that would process data outside the EU, including paid services of a module that run outside the EU.
+Below the list, in the block **European Union only**, the option **Refuse providers outside the European Union** is off by default (click **Save** to apply it). Thelia prefers European providers and never forbids the others. Turn it on to refuse every AI call that would process data outside the EU, including paid services of a module that run outside the EU.
 
 ## Models and ranges
 
-The **Models** tab lists the models Thelia knows, with their price per million tokens. A token is about three quarters of a word. Edit a price if your contract differs, or add a model the list does not know. The prices let Thelia estimate the cost of each call and respect your budgets. They are not what the provider bills you: check your contract.
+The **Models** tab lists the models Thelia knows, with their price per million tokens. The table has the columns Model identifier, Display name, Input price, Output price, Context size, Abilities and Origin (Shipped for the models that come with Thelia), with an **Edit** link per row and an **Add a model** button at the top right. A token is about three quarters of a word. Edit a price if your contract differs, or add a model the list does not know. The prices let Thelia estimate the cost of each call and respect your budgets. They are not what the provider bills you: check your contract.
 
 A module never asks for a precise model. It asks for a **range**:
 
 | Range | For |
 | --- | --- |
-| Fast and economical | Quick, simple tasks: chat, sorting, short answers. Pick a small, cheap model. |
-| Standard | Everyday writing and analysis. A good balance between quality and price. |
-| Advanced | Long texts and complex tasks. Pick the strongest model you accept to pay for. |
+| Fast and economical range | Quick, simple tasks: chat, sorting, short answers. Pick a small, cheap model. |
+| Standard range | Everyday writing and analysis. A good balance between quality and price. |
+| Advanced range | Long texts and complex tasks. Pick the strongest model you accept to pay for. |
 
 In the **Ranges** tab you choose, once, which model serves each range. Change it later and every feature on that range follows. The model must belong to a connection you have set up.
 
-<!-- TODO screenshot: the Ranges tab -->
+In **Configuration > Artificial intelligence > Ranges**, the page has one drop-down per range, labelled **Fast and economical range**, **Standard range** and **Advanced range**, each with the choice "No model" and the models of your active connections, and a **Save** button. While you have no active connection, a message says so and asks you to add one in the Connections tab.
 
 ### A different range for one usage
 
@@ -73,7 +71,7 @@ A module declares the range it needs, but you can choose another one for a given
 
 ## Usages
 
-A usage is one thing a module asks the AI to do, for example answering your visitors. The **Usages** tab lists them with the module, the audience, the range, the tools, the monthly budget, the status and the state of the duties of the AI Act (Article 50).
+A usage is one thing a module asks the AI to do, for example answering your visitors. The **Usages** tab lists them in a table with the columns Usage, Module, Audience, Range, Tools, Tools together, Monthly budget, Status, Article 50, Why it does not run and Actions (a **Configure** button).
 
 Open a usage to change:
 
@@ -83,31 +81,37 @@ Open a usage to change:
 | Range of this usage | See above. |
 | Monthly budget (US dollars) | When the month has used this amount, the usage stops until the next month. Leave empty for no cap of its own. **A usage open to your visitors does not run without a budget above zero.** |
 | Model for this usage | See above. |
+| Mistral moderation, OpenAI moderation, Topic check | Optional safety checks on what is sent to the model and on its answer. Each one is set to Follow the module (the default), Block the request, Let it through and note it, or Not applied. |
+| Requests per minute, Requests per day | Rate limits of the usage. Empty means no limit for this kind of usage. |
+| Length of the answer (tokens) | Cap on the length of an answer. |
+| Length of what a person types (characters) | Cap on the size of a message. Empty means no limit. |
+| Keep the prompts in the log | Off by default: the log keeps the cost, the model and the checks, not the text sent. |
+| Days the prompts are kept | Retention period, used only when the prompts are kept (30 days by default). |
 | Tell people they are talking to an AI | The notice of Article 50(1). On by default. |
 | Mark generated content as made by an AI | The mark of Article 50(2). On by default. |
 
 Amounts are in US dollars, as the providers bill them. Nothing is converted.
 
-The screen does not show the rate limits of a usage, the size limit of what a person types, the storage of prompts or the mode of its guardrails (stop or only note). These settings, and all the others, are available through the admin API, under `/api/admin/ai/usage-settings`. A usage does not store the text of its prompts unless you turn that on there, with a retention period.
+The same settings are also available through the admin API, under `/api/admin/ai/usage-settings`. A usage does not store the text of its prompts unless you turn that on, with a retention period; the texts can hold personal data, so turn it on only to investigate.
 
 The **Register** tab is the list of every usage with its provider, its model, its tools and its duties. You can export it as CSV or JSON. See [AI and the AI Act](./ai-act.md).
 
-<!-- TODO screenshot: the edit page of a usage -->
+To open the edit page, go to **Configuration > Artificial intelligence > Usages** and click **Configure** on the row. The form has these sections, from top to bottom: the switch and the range, the budget and the model, **Safety checks**, **Limits**, **Privacy** and **Transparency (Article 50)**, then **Cancel** and **Save**.
 
 ## Consumption, budgets and the global switch
 
-The **Consumption** tab shows the calls and their cost, for the period you choose, by usage, by module, by model and by day. It also holds the global settings:
+The **Consumption** tab shows the calls and their cost, for the period you choose (fields **From** and **To**, then **Show**), in four tables: By usage, By module, By model and By day, each with the columns Calls and Cost (US dollars). It also holds the **Global settings**:
 
-- AI is allowed in the shop is the master switch. Turn it off and no module can use AI, whatever its own settings say. It also turns off the MCP server.
-- Monthly cap for the whole shop is in US dollars. `0` means no cap. All usages together stop when the month reaches it.
+- **AI is allowed in the shop** is the master switch. Turn it off and no module can use AI, whatever its own settings say. It also turns off the MCP server.
+- **Monthly cap for the whole shop (US dollars)**. `0` means no cap. All usages together stop when the month reaches it.
 
 A call is refused before it is made when it would cross the budget of its usage or the cap of the shop. The cost the call can reach is reserved first, so budgets hold even when many calls come at once.
 
-<!-- TODO screenshot: the Consumption tab with the global settings and the tables -->
+The Global settings block, with its **Save** button, is at the top of **Configuration > Artificial intelligence > Consumption**; the period fields and the four tables follow.
 
 ## Tools, approvals and the MCP server
 
-A tool is something a module lets an AI do in your shop: read products, or propose a change. The **Tools** tab lists them with the module, the effect (read or change), the right needed, the audience, whether they are available over MCP, and their risks.
+A tool is something a module lets an AI do in your shop: read products, or propose a change. The **Tools** tab lists them with the columns Tool (name and description), Module, Effect (Reads, or Proposes a change (needs approval)), Right needed (for example "View admin.product"), Audience, Available over MCP (Yes or No) and Risks (for example "Private data").
 
 Three rules apply to every tool:
 
@@ -115,25 +119,26 @@ Three rules apply to every tool:
 - A tool that changes something only proposes. Nothing happens until an administrator approves it.
 - Every call is logged.
 
-<!-- TODO screenshot: the Tools tab -->
+The tab is read only: it shows what modules declare, and has no switch.
 
 ### The approval console
 
-The **Approvals** tab lists the proposals waiting for your decision, the ones you have the right to decide. Open one to read exactly what would change:
+The **Approvals** tab lists the proposals waiting for your decision, the ones you have the right to decide, with the columns Proposal, Tool, Target, Proposed on and Expires on, and a **Review** button on each row. When nothing is waiting, it says "Nothing is waiting for your decision." Open one to read exactly what would change:
 
-- the summary written by the tool,
-- the full arguments and the state before and after the change.
+- the summary written by the tool (**Summary**),
+- the full **Arguments**, the **State before** and the **State after the change**,
+- who proposed it (**Proposed by**, with the token if it came from an assistant), when, and when it expires.
 
 The summary is written from a request of the AI, so it is not enough to decide. Read the arguments and the state after the change.
 
-You can **Approve and apply**, or **Reject** with an optional note. Only an administrator signed in to the back office can decide. An AI assistant, the API and the console cannot. You can only approve a change if you hold the right the tool needs, today.
+You can **Approve and apply**, or **Reject** with an optional **Reason (optional)**. Only an administrator signed in to the back office can decide. An AI assistant, the API and the console cannot. You can only approve a change if you hold the right the tool needs, today.
 
 - A proposal expires after 24 hours, and is then no longer applicable. A shop that needs another delay can set the variable `ai_tool_approval_ttl_hours`.
 - If the change cannot be applied (the shop changed since the proposal, for example), the proposal is marked failed with the reason, and nothing is applied.
-- If a change was interrupted while being applied (a server stopped at that moment), it appears at the top of the list. Check in your shop whether the change was applied, then use **Close as failed** and say what you checked. Thelia never replays a change by itself.
+- If a change was interrupted while being applied (a server stopped at that moment), it appears at the top of the list. Check in your shop whether the change was applied, then use **Close as failed** and answer "What did you check?". Thelia never replays a change by itself.
 - Revoking a token, or deleting an administrator, rejects the proposals still waiting that came from them.
 
-<!-- TODO screenshot: the Approvals tab and the page of one proposal -->
+A banner at the top of the list, "Some changes were interrupted while being applied.", points to those. The page of a proposal is titled **Proposed change** and shows the module and the target above the summary.
 
 ### Connecting an AI assistant over MCP
 
@@ -151,9 +156,9 @@ Thelia 3.3 has no OAuth server. If your assistant requires it, it cannot connect
 
 #### 1. Turn the server on
 
-The MCP server is off by default. Open **Configuration > System variables** and set `ai_mcp_enabled` to `1`. `AI is allowed in the shop` (Consumption tab) must be on too.
+The MCP server is off by default. Open **Configuration > Artificial intelligence > MCP tokens**. At the top, the line **MCP server enabled** has a button **Switch on** (and **Switch off** once it is on, with the badge Active). The choice is stored in the system variable `ai_mcp_enabled`. **AI is allowed in the shop** (Consumption tab) must be on too.
 
-While it is off, every request to the server gets a 404 and the MCP tokens tab says so.
+While it is off, every request to the server gets a 404 and the MCP tokens tab says so ("The MCP server is switched off, so no token works yet.").
 
 #### 2. Check the allowed hosts
 
@@ -169,21 +174,21 @@ If your assistant reaches the shop through another name, set the environment var
 
 Open the **MCP tokens** tab. The tab appears when you hold the right `admin.configuration.ai-mcp` (view), and you need its create right to make a token.
 
-1. Give the token a **Name** to recognise the assistant that uses it.
-2. Choose its **scopes**: the parts of the back office and the kind of access (view, create, update, delete), or the code of a module. Choose at least one.
+1. Under **Create a token**, give the token a **Name** to recognise the assistant that uses it.
+2. Under **What the token may do**, choose its scopes: the **Parts of the back office**, the **Kind of access** (view, create, update, delete), or **Modules (codes separated by commas)**. Choose at least one.
 3. Click **Create the token**.
-4. Copy the token now. It starts with `thelia_mcp_` and is shown only once. Thelia keeps a fingerprint only and cannot show it again.
+4. Copy the token now ("Copy your token now: it is shown only once."). It starts with `thelia_mcp_` and is shown only once. Thelia keeps a fingerprint only and cannot show it again.
 
 A token:
 
 - belongs to you and takes your rights as they are at each request, reduced by its scopes. It can use a tool only when its scopes and your own rights both allow it. It can never do more than you can.
 - expires after 90 days. The longest life allowed is 365 days, or the value of `ai_tool_token_max_days` if you set it.
-- shows its last use in the list. **Revoke** it when you stop using the assistant: the effect is immediate, at the next request.
+- shows its last use in the list, which has the columns Name, Token, Reach, Expires on, Last used, Status, Trifecta and a **Revoke** button. **Revoke** it when you stop using the assistant: the effect is immediate, at the next request.
 - opens `/api/mcp` and nothing else of the shop.
 
-**Give this token all my rights (no scopes)** makes the token able to propose anything you may do in the shop. It is risky: prefer scopes. A warning is stronger for a super-administrator. Create one token per assistant.
+**Give this token all my rights (no scopes)** makes the token able to propose anything you may do in the shop. It is risky: prefer scopes. A stronger warning shows for a super-administrator. Create one token per assistant.
 
-<!-- TODO screenshot: the MCP tokens tab, the form and the token shown once -->
+The token appears once, in a box titled **Your token**, above the list.
 
 #### 4. Connect the assistant
 
@@ -228,7 +233,7 @@ An AI assistant becomes dangerous when it holds three things at once:
 
 With all three, a hostile sentence hidden in a review could ask the assistant to send your private data to a stranger. Nobody has to hack anything: the assistant obeys the text.
 
-Thelia flags this and does not block it. You see a "Tools together" warning in the Usages tab, and a warning on a token that reaches the three. What protects you most is the approval step, as nothing that changes the shop happens without a person. To reduce the risk: narrow the scopes of the token, switch off the usages that do not need all three, and read each proposal.
+Thelia flags this and does not block it. You see the "Tools together" column in the Usages tab, and the "Trifecta" column and a warning on a token that reaches the three. What protects you most is the approval step, as nothing that changes the shop happens without a person. To reduce the risk: narrow the scopes of the token, switch off the usages that do not need all three, and read each proposal.
 
 ## What you keep
 
