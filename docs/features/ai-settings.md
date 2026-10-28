@@ -183,7 +183,7 @@ A token:
 
 - belongs to you and takes your rights as they are at each request, reduced by its scopes. It can use a tool only when its scopes and your own rights both allow it. It can never do more than you can.
 - expires after 90 days. The longest life allowed is 365 days, or the value of `ai_tool_token_max_days` if you set it.
-- shows its last use in the list, which has the columns Name, Token, Reach, Expires on, Last used, Status, Trifecta and a **Revoke** button. **Revoke** it when you stop using the assistant: the effect is immediate, at the next request.
+- shows its last use in the list, which has the columns Name, Token, Reach, Expires on, Last used and Status, and a **Revoke** button. A red **Trifecta** badge follows the name of a token whose tools reach the three risks together. **Revoke** it when you stop using the assistant: the effect is immediate, at the next request.
 - opens `/api/mcp` and nothing else of the shop.
 
 **Give this token all my rights (no scopes)** makes the token able to propose anything you may do in the shop. It is risky: prefer scopes. A stronger warning shows for a super-administrator. Create one token per assistant.
@@ -233,7 +233,7 @@ An AI assistant becomes dangerous when it holds three things at once:
 
 With all three, a hostile sentence hidden in a review could ask the assistant to send your private data to a stranger. Nobody has to hack anything: the assistant obeys the text.
 
-Thelia flags this and does not block it. You see the "Tools together" column in the Usages tab, and the "Trifecta" column and a warning on a token that reaches the three. What protects you most is the approval step, as nothing that changes the shop happens without a person. To reduce the risk: narrow the scopes of the token, switch off the usages that do not need all three, and read each proposal.
+Thelia flags this and does not block it. You see the "Tools together" column in the Usages tab, and a "Trifecta" badge and a warning on a token that reaches the three. What protects you most is the approval step, as nothing that changes the shop happens without a person. To reduce the risk: narrow the scopes of the token, switch off the usages that do not need all three, and read each proposal.
 
 ## What you keep
 
