@@ -43,7 +43,7 @@ The form is titled **New connection**, or **Edit the connection** for an existin
 
 ### European Union only
 
-Below the list, in the block **European Union only**, the option **Refuse providers outside the European Union** is off by default (click **Save** to apply it). Thelia prefers European providers and never forbids the others. Turn it on to refuse every AI call that would process data outside the EU, including paid services of a module that run outside the EU.
+Below the list, in the block **European Union only**, the option **Refuse providers outside the European Union** is off by default (click **Save** to apply it). European providers are the defaults, and the others stay allowed. Turn it on to refuse every AI call that would process data outside the EU, including paid services of a module that run outside the EU.
 
 ## Models and ranges
 
@@ -181,7 +181,7 @@ Open the **MCP tokens** tab. The tab appears when you hold the right `admin.conf
 
 A token:
 
-- belongs to you and takes your rights as they are at each request, reduced by its scopes. It can use a tool only when its scopes and your own rights both allow it. It can never do more than you can.
+- belongs to you and takes your rights as they are at each request, reduced by its scopes. It can use a tool only when its scopes and your own rights both allow it, so it never does more than you can.
 - expires after 90 days. The longest life allowed is 365 days, or the value of `ai_tool_token_max_days` if you set it.
 - shows its last use in the list, which has the columns Name, Token, Reach, Expires on, Last used and Status, and a **Revoke** button. A red **Trifecta** badge follows the name of a token whose tools reach the three risks together. **Revoke** it when you stop using the assistant: the effect is immediate, at the next request.
 - opens `/api/mcp` and nothing else of the shop.
@@ -231,7 +231,7 @@ An AI assistant becomes dangerous when it holds three things at once:
 2. it reads **text that someone outside wrote** (a review, a web page, a message),
 3. it can **send something out** (an e-mail, a request to another system).
 
-With all three, a hostile sentence hidden in a review could ask the assistant to send your private data to a stranger. Nobody has to hack anything: the assistant obeys the text.
+With all three, a hostile sentence hidden in a review could ask the assistant to send your private data to a stranger. Nobody has to hack anything, because the assistant simply obeys the text.
 
 Thelia flags this and does not block it. You see the "Tools together" column in the Usages tab, and a "Trifecta" badge and a warning on a token that reaches the three. What protects you most is the approval step, as nothing that changes the shop happens without a person. To reduce the risk: narrow the scopes of the token, switch off the usages that do not need all three, and read each proposal.
 
