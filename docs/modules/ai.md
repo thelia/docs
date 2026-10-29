@@ -316,13 +316,15 @@ providerOptions: ['anthropic' => ['effort' => 'high']],
 
 The options are applied only when the connection resolved for the request is of that provider. With a Mistral connection, the `anthropic` entry is not sent.
 
-With Anthropic, reasoning is off by default: when the request has no `thinking` option, the adapter sends `thinking: {type: disabled}`. Some models otherwise reason on their own and spend the whole `maxOutputTokens` without writing any text. To ask for reasoning, use the adaptive mode and an effort:
+With Anthropic, reasoning is off by default: when the request has no `thinking` option, the adapter sends the setting that turns reasoning off for the model, read from the catalogue. It is `disabled` for most models, `between_tools` for some, and for a model that accepts neither, `adaptive` at the lowest effort. Some models otherwise reason on their own and spend the whole `maxOutputTokens` without writing any text. A `thinking` option that your module passes is never changed. At the effort `xhigh` or `max`, the adapter sends no `thinking` field, because the API refuses `disabled` there. To ask for reasoning, use the adaptive mode and an effort:
 
 ```php
 providerOptions: ['anthropic' => ['thinking' => ['type' => 'adaptive'], 'effort' => 'medium']],
 ```
 
 The `enabled` mode with `budget_tokens` is refused by recent models.
+
+With OpenAI, two settings are not yours to change. The adapter always sends `store: false`, so OpenAI does not keep the responses, and `providerOptions` cannot turn it back on. It never sends fewer than 16 output tokens, the minimum of the Responses API: a smaller `maxOutputTokens` is raised to 16. An output schema is sent with `strict: true` only when every object in it, nested ones included, is closed (`additionalProperties: false`) and lists all its properties in `required`. Any other schema is sent with `strict: false` and is still checked by the layer.
 
 This is a way out that nothing governs. The usage does not declare it, the core does not check it, and a tool the provider runs on its side (a web plugin, for instance) costs no more in the log than what the provider announces. Prefer the declared features whenever one fits.
 
@@ -354,7 +356,7 @@ $this->costs->record(new AiExternalCost(
 ));
 ```
 
-- `authorize()` takes the currency of `$maximumCost` as its last argument (`string $currency = 'USD'`, an ISO 4217 code such as `EUR`). The amount held against the budget carries that currency, as the row written by `record()` carries its own `currency`. Pass the currency you will record the cost in. Existing calls keep working with the default. A class outside the core that implements `AiCostRecorderInterface` must add the optional argument. Consumption is added up as exact decimal strings, with no float in between.
+- `authorize()` takes the currency of `$maximumCost` as its last argument (`string $currency = 'USD'`, an ISO 4217 code such as `EUR`). The amount held against the budget carries that currency, as the row written by `record()` carries its own `currency`. Pass the currency you will record the cost in. Existing calls keep working with the default. A class outside the core that implements `AiCostRecorderInterface` must add the optional argument. Consumption is added up as exact decimal strings, with no float in between. The consumption report gives one row per currency and never adds amounts of different currencies. The budget of a usage and the monthly cap still add the amounts as written, so they only mean something when the models of the usage are priced in one currency.
 - `authorize()` checks what the gateway checks before its own calls: the usage exists and is active, the service passes the optional "EU only" setting, and the budget of the usage and the global cap are not reached. `$maximumCost` is the highest cost the call can reach, a positive decimal with a point; it counts as already spent, so a call that would cross the budget is refused before it runs. The default `'0'` only checks that the budget is not reached yet.
 - `record()` returns the identifier of the log row. It never fails because of the budget: the cost counts from the moment it is written.
 - `cost` is a decimal string such as `0.00009870`: up to 8 digits before the point and 8 after. Convert a float with `sprintf('%.8F', $amount)`. `(string) 1.2E-7` is not a decimal and is refused.
@@ -578,6 +580,10 @@ final readonly class LegacySettingsImporter
 - The rules live in the writer, not in the screens or the API. A connection code is lower case letters, digits, `-` and `_`, 64 characters at most, and no two connections share one. A model name holds letters, digits and `. _ : / @ + -`, 128 characters at most, and a provider has one model of a given name per connection. A model attached to a connection must have that connection's provider. Prices are decimal strings and the currency is an ISO 4217 code (`USD` when you pass `null`). Changing the provider, the connection or the address of a record that ranges or usages rely on is refused with a message that says what to move first.
 - `deleteConnection()` and `deleteModel()` throw `Thelia\Domain\Ai\Exception\AiResourceInUseException` while a range is assigned to the connection or the model. Nothing is deleted. It is an `AiExceptionInterface`, so the `catch` above covers it; catch it first to tell "still in use" from a bad value. The admin API answers `409` for it and `422` for the other refusals.
 - A connection to a public server must use `https`. `http` is accepted only when the parameter `thelia.ai.allow_insecure_urls` is `true` (see [Connections to a plain `http` server](#connections-to-a-plain-http-server)). A connection flagged `allowPrivateNetwork` may use `http` or `https` without it.
+
+### The environment variable of a key
+
+`saveConnection()` and the admin API refuse an `apiKeyEnv` that does not follow the rule of the screen: a name that starts with `THELIA_AI_` and ends with `_KEY` or `_TOKEN`, or the usual variable of the provider (`ANTHROPIC_API_KEY`, `MISTRAL_API_KEY`, `OPENAI_API_KEY`) while the connection calls the default address of that provider. A connection saved earlier with another name is read with the same rule: its calls fail with the same message, and so does the test of the connection.
 
 ## Connections to a plain `http` server
 
