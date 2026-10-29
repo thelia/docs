@@ -28,12 +28,12 @@ A connection is the link between your shop and a company that runs AI models, wi
 | --- | --- |
 | Name and identifier | The name you recognise it by, and a short identifier without spaces (`mistral-main`). The log and the modules refer to the connection by its identifier. |
 | Provider | Mistral AI (France), Anthropic (Claude), OpenAI, Compatible service (OpenAI format), Scaleway (France), OVHcloud (France), Albert (French State), Ollama (your own server) or Thelia AI. |
-| Server address | Empty for the usual address of the provider. Fill it in for your own server or a compatible service. |
+| Server address | Empty for the usual address of the provider. Fill it in for your own server or a compatible service. The address must use `https`. Plain `http` is accepted only for a server on a private network, or when a developer has turned on the `thelia.ai.allow_insecure_urls` parameter of the shop. |
 | Where the data is processed | Asked only for a compatible service or your own server, with the choices "In the European Union" and "Outside the European Union". For the other providers it is deduced (see [AI and the AI Act](./ai-act.md#providers-and-where-data-goes)). |
 | API key | Stored encrypted. It is never displayed again, not even to administrators. Leave the field empty when you edit a connection to keep the stored key. |
 | Environment variable holding the key | Optional, for a server that keeps its secrets out of the database. When set, it wins over the saved key. |
 | The server is on a private network | Tick it only for a server of your own network (Ollama, for example). Otherwise addresses of a private network are refused. |
-| Connection in use | Untick to stop using a connection without deleting it. |
+| Connection in use | Untick to stop using a connection without deleting it. A connection or a model that a range uses cannot be deleted: assign another one to the range first. |
 
 **Test now** sends one very short message to the provider. It costs a fraction of a cent at most. The list shows the result of the last test.
 

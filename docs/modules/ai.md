@@ -354,6 +354,7 @@ $this->costs->record(new AiExternalCost(
 ));
 ```
 
+- `authorize()` takes the currency of `$maximumCost` as its last argument (`string $currency = 'USD'`, an ISO 4217 code such as `EUR`). The amount held against the budget carries that currency, as the row written by `record()` carries its own `currency`. Pass the currency you will record the cost in. Existing calls keep working with the default. A class outside the core that implements `AiCostRecorderInterface` must add the optional argument. Consumption is added up as exact decimal strings, with no float in between.
 - `authorize()` checks what the gateway checks before its own calls: the usage exists and is active, the service passes the optional "EU only" setting, and the budget of the usage and the global cap are not reached. `$maximumCost` is the highest cost the call can reach, a positive decimal with a point; it counts as already spent, so a call that would cross the budget is refused before it runs. The default `'0'` only checks that the budget is not reached yet.
 - `record()` returns the identifier of the log row. It never fails because of the budget: the cost counts from the moment it is written.
 - `cost` is a decimal string such as `0.00009870`: up to 8 digits before the point and 8 after. Convert a float with `sprintf('%.8F', $amount)`. `(string) 1.2E-7` is not a decimal and is refused.
@@ -503,10 +504,12 @@ A module that had its own provider settings before 3.3 (a key, a model, a budget
 
 | Method | What it writes |
 | --- | --- |
-| `saveConnection()` | A connection to a provider. Pass `null` to create one, or the existing `AiConnection` to update it. A blank `$apiKey` keeps the stored key. |
+| `saveConnection()` | A connection to a provider. Pass `null` to create one, or the existing `AiConnection` to update it. A blank `$apiKey` keeps the stored key, as long as the provider and the address do not change: the stored key is never sent to a new server, so the call is refused until you pass the key again. |
+| `saveModel()` | A model of the catalogue, with its prices per million tokens and its currency. Pass `null` to create one, or the existing `AiModel` to update it. The row is marked as entered by hand. |
 | `assignTier()` | The model of a range. A range has one assignment: pass the one it has to change it. |
 | `saveUsageSetting()` | What the merchant decided for a usage: switch, range, budget, limits, pinned model, guardrail modes, notice, mark, prompt storage. |
-| `setEnabled()`, `setMonthlyCap()`, `setEuropeanUnionOnly()` | The global switch, the monthly cap of the whole shop (a decimal string, `'0'` for none) and the "EU only" option. |
+| `setEnabled()`, `setMcpEnabled()`, `setMonthlyCap()`, `setEuropeanUnionOnly()` | The global switch, the MCP switch, the monthly cap of the whole shop (a decimal string, `'0'` for none) and the "EU only" option. |
+| `deleteConnection()`, `deleteModel()`, `deleteTierAssignment()`, `deleteUsageSetting()` | The deletions. A usage setting goes back to its defaults; a range assignment leaves the range without a model. |
 
 ```php
 use Propel\Runtime\ActiveQuery\Criteria;
@@ -572,7 +575,13 @@ final readonly class LegacySettingsImporter
 - `saveUsageSetting()` checks that the usage exists: the module that declares it must be installed first.
 - A range whose model lacks a capability the usage declares is accepted here. The usage then shows as inactive and its calls are refused.
 - The writer does not check the rights of an administrator. The code that calls it does, if it runs for one.
-- Deleting a connection, a range assignment or a usage setting is not part of the writer.
+- The rules live in the writer, not in the screens or the API. A connection code is lower case letters, digits, `-` and `_`, 64 characters at most, and no two connections share one. A model name holds letters, digits and `. _ : / @ + -`, 128 characters at most, and a provider has one model of a given name per connection. A model attached to a connection must have that connection's provider. Prices are decimal strings and the currency is an ISO 4217 code (`USD` when you pass `null`). Changing the provider, the connection or the address of a record that ranges or usages rely on is refused with a message that says what to move first.
+- `deleteConnection()` and `deleteModel()` throw `Thelia\Domain\Ai\Exception\AiResourceInUseException` while a range is assigned to the connection or the model. Nothing is deleted. It is an `AiExceptionInterface`, so the `catch` above covers it; catch it first to tell "still in use" from a bad value. The admin API answers `409` for it and `422` for the other refusals.
+- A connection to a public server must use `https`. `http` is accepted only when the parameter `thelia.ai.allow_insecure_urls` is `true` (see [Connections to a plain `http` server](#connections-to-a-plain-http-server)). A connection flagged `allowPrivateNetwork` may use `http` or `https` without it.
+
+## Connections to a plain `http` server
+
+A connection to a public server must use `https`, because the API key travels with every request. The Symfony parameter `thelia.ai.allow_insecure_urls` (`false` by default, declared in `core/lib/Thelia/Config/Resources/parameters/ai.php`) lets an administrator save a plain `http` address for a public host. Set it to `true` in the parameters of your project, on a development shop only. It is separate from `thelia.webhook.allow_insecure_urls`, which governs webhook addresses and has no effect on AI connections. A server on a private network (the "private network" box of the connection) does not need it.
 
 ## Testing
 
