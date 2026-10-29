@@ -58,7 +58,7 @@ Below the list, in the block **European Union only**, the option **Refuse provid
 
 The **Models** tab lists the models Thelia knows, with their price per million tokens. The table has the columns Model identifier, Display name, Input price, Output price, Context size, Abilities and Origin (Shipped for the models that come with Thelia), with an **Edit** link per row and an **Add a model** button at the top right. A token is about three quarters of a word. Edit a price if your contract differs, or add a model the list does not know. The prices let Thelia estimate the cost of each call and respect your budgets. They are not what the provider bills you: check your contract.
 
-A module never asks for a precise model. It asks for a **range**:
+A module asks for a **range**, never for a precise model:
 
 | Range | For |
 | --- | --- |

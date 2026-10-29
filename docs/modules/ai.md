@@ -326,7 +326,7 @@ The `enabled` mode with `budget_tokens` is refused by recent models.
 
 With OpenAI, two settings are not yours to change. The adapter always sends `store: false`, so OpenAI does not keep the responses, and `providerOptions` cannot turn it back on. It never sends fewer than 16 output tokens, the minimum of the Responses API: a smaller `maxOutputTokens` is raised to 16. An output schema is sent with `strict: true` only when every object in it, nested ones included, is closed (`additionalProperties: false`) and lists all its properties in `required`. Any other schema is sent with `strict: false` and is still checked by the layer.
 
-This is a way out that nothing governs. The usage does not declare it, the core does not check it, and a tool the provider runs on its side (a web plugin, for instance) costs no more in the log than what the provider announces. Prefer the declared features whenever one fits.
+Provider options sit outside the declared features. The usage does not declare them, the core does not check them, and a tool the provider runs on its side (a web plugin, for instance) costs no more in the log than what the provider announces. Prefer the declared features whenever one fits.
 
 ## Costs outside the gateway
 
