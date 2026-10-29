@@ -159,8 +159,8 @@ change, a module to bump, a behaviour that moves. Read the page for every minor 
 cross, in order:
 
 - [Updating from 3.0 to 3.1](./from-3.0-to-3.1.md), patch releases 3.1.1, 3.1.2, 3.1.3 and 3.1.4 included.
-- [Updating from 3.1 to 3.2](./from-3.1-to-3.2.md), patch releases 3.2.1, 3.2.2 and 3.2.3 included.
-- [Updating from 3.2 to 3.3](./from-3.2-to-3.3.md): the background jobs.
+- [Updating from 3.1 to 3.2](./from-3.1-to-3.2.md), patch releases 3.2.1 to 3.2.5 included.
+- [Updating from 3.2 to 3.3](./from-3.2-to-3.3.md): the background jobs, the AI layer, behaviour changes and constructor changes for modules.
 
 ## Recommendations
 
