@@ -1,0 +1,11 @@
+{
+  "label": "Loops (legacy reference)",
+  "position": 90,
+  "link": {
+    "type": "doc",
+    "id": "reference/loops/index"
+  },
+  "customProps": {
+    "description": "Smarty loop reference \u2014 legacy data layer, prefer API resources in new code"
+  }
+}
