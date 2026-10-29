@@ -31,11 +31,20 @@ A connection is the link between your shop and a company that runs AI models, wi
 | Server address | Empty for the usual address of the provider. Fill it in for your own server or a compatible service. The address must use `https`. Plain `http` is accepted only for a server on a private network, or when a developer has turned on the `thelia.ai.allow_insecure_urls` parameter of the shop. |
 | Where the data is processed | Asked only for a compatible service or your own server, with the choices "In the European Union" and "Outside the European Union". For the other providers it is deduced (see [AI and the AI Act](./ai-act.md#providers-and-where-data-goes)). |
 | API key | Stored encrypted. It is never displayed again, not even to administrators. Leave the field empty when you edit a connection to keep the stored key. |
-| Environment variable holding the key | Optional, for a server that keeps its secrets out of the database. When set, it wins over the saved key. |
+| Environment variable holding the key | Optional, for a server that keeps its secrets out of the database. The name must start with `THELIA_AI_` and end with `_KEY` or `_TOKEN`. The usual variable of the provider (`ANTHROPIC_API_KEY`, `MISTRAL_API_KEY`, `OPENAI_API_KEY`) is accepted too, but only while the connection uses the default address of that provider. Any other name is refused. When set, it wins over the saved key. |
 | The server is on a private network | Tick it only for a server of your own network (Ollama, for example). Otherwise addresses of a private network are refused. |
-| Connection in use | Untick to stop using a connection without deleting it. A connection or a model that a range uses cannot be deleted: assign another one to the range first. |
+| Connection in use | Untick to stop using a connection without deleting it. A connection or a model that a range or a usage uses cannot be deleted: assign another one to the range, or free the usage, first. |
 
 **Test now** sends one very short message to the provider. It costs a fraction of a cent at most. The list shows the result of the last test.
+
+The test calls a model the connection serves: the model of one of its ranges or usages, or else a cheap model that Thelia knows for that provider. When there is neither (an Ollama server or a compatible service with no model chosen yet), the test says there is no model to call instead of guessing one. A failed test names the model it called at the end of the message, so you know which one to fix.
+
+### Notes by provider
+
+- OpenAI: Thelia asks OpenAI not to store the responses (`store: false`). OpenAI would keep them for 30 days otherwise.
+- OpenAI in the European region (`https://eu.api.openai.com`): the region serves dated model names only, such as `gpt-5.4-nano-2026-03-17`. An alias such as `chat-latest` is not served there. Choose a dated model.
+- OVHcloud: the API key is optional. Without a key the service answers at a low rate, 2 requests a minute per IP address and per model.
+- Scaleway: model names are written without the vendor prefix, as `llama-3.3-70b-instruct` and not `meta/llama-3.3-70b-instruct`.
 
 If the application secret of your shop (`APP_SECRET`) changes, or you restore a database from another shop, the saved keys can no longer be read. The calls fail and the message asks you to enter the key again in the connection.
 
@@ -90,7 +99,7 @@ Open a usage to change:
 | Tell people they are talking to an AI | The notice of Article 50(1). On by default. |
 | Mark generated content as made by an AI | The mark of Article 50(2). On by default. |
 
-Amounts are in US dollars, as the providers bill them. Nothing is converted.
+Amounts are written in the currency of the prices of the model, US dollars for the models that come with Thelia. Nothing is converted. The budget of a usage and the cap of the shop add up the amounts as they were written, whatever their currency, so a budget only means something for a usage whose models are priced in one currency.
 
 The same settings are also available through the admin API, under `/api/admin/ai/usage-settings`. A usage does not store the text of its prompts unless you turn that on, with a retention period; the texts can hold personal data, so turn it on only to investigate.
 
@@ -100,10 +109,10 @@ To open the edit page, go to **Configuration > Artificial intelligence > Usages*
 
 ## Consumption, budgets and the global switch
 
-The **Consumption** tab shows the calls and their cost, for the period you choose (fields **From** and **To**, then **Show**), in four tables: By usage, By module, By model and By day, each with the columns Calls and Cost (US dollars). It also holds the **Global settings**:
+The **Consumption** tab shows the calls and their cost, for the period you choose (fields **From** and **To**, then **Show**), in four tables: By usage, By module, By model and By day, each with the columns Calls and Cost. A cost keeps its currency: when models are priced in different currencies, a table shows one row per currency and the total of the period lists one amount per currency. Amounts in different currencies are never added together. It also holds the **Global settings**:
 
 - **AI is allowed in the shop** is the master switch. Turn it off and no module can use AI, whatever its own settings say. It also turns off the MCP server.
-- **Monthly cap for the whole shop (US dollars)**. `0` means no cap. All usages together stop when the month reaches it.
+- **Monthly cap for the whole shop (US dollars)**. `0` means no cap. All usages together stop when the month reaches it. The amounts counted against the cap are added as they were written, with no conversion between currencies.
 
 A call is refused before it is made when it would cross the budget of its usage or the cap of the shop. The cost the call can reach is reserved first, so budgets hold even when many calls come at once.
 
@@ -234,6 +243,12 @@ An AI assistant becomes dangerous when it holds three things at once:
 With all three, a hostile sentence hidden in a review could ask the assistant to send your private data to a stranger. Nobody has to hack anything, because the assistant simply obeys the text.
 
 Thelia flags this and does not block it. You see the "Tools together" column in the Usages tab, and a "Trifecta" badge and a warning on a token that reaches the three. What protects you most is the approval step, as nothing that changes the shop happens without a person. To reduce the risk: narrow the scopes of the token, switch off the usages that do not need all three, and read each proposal.
+
+## Known limits
+
+- Claude Haiku 5.5 costs five times more for a request whose prompt is over 100,000 tokens. The price list holds one price per model, so the cost logged for such a request is five times too low. Keep a margin in the budget of a usage that sends long prompts to this model.
+- Budgets and the cap of the shop add amounts without converting currencies (see [Consumption, budgets and the global switch](#consumption-budgets-and-the-global-switch)).
+- The costs shown are estimates from the price list. They are not what the provider bills you.
 
 ## What you keep
 
