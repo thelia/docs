@@ -6,7 +6,7 @@ sidebar_position: 2.2
 # Updating from 3.1 to 3.2
 
 This page lists what is specific to the move from Thelia 3.1 to 3.2, patch releases 3.2.1,
-3.2.2 and 3.2.3 included. The procedure itself (backup, Composer, database script, cache, assets, modules) is
+3.2.2, 3.2.3, 3.2.4 and 3.2.5 included. The procedure itself (backup, Composer, database script, cache, assets, modules) is
 on [Update](./update.md); the steps below come on top of it. If you start from 3.0, apply
 [Updating from 3.0 to 3.1](./from-3.0-to-3.1.md) first.
 
@@ -334,3 +334,39 @@ groups.
 9. nginx: add the document cache block to the server block (see [Web server](#web-server)).
 10. List the files uploaded before the update and remove the ones the command finds (see [Files uploaded before the update](#files-uploaded-before-the-update)).
 11. Open the list coupons and the free product coupons saved from the back-office, select the whole list again and save them (see [Patch release 3.2.2](#patch-release-322)).
+
+## Patch release 3.2.4
+
+3.2.4 is a security release of the 3.2 line. Coupon usage limits are now enforced on paid and
+pending orders: a coupon limited to a number of usages, overall or per customer, could be used
+more times than allowed. It ships `setup/update/sql/3.2.4.sql`, which adds the configuration
+variable `coupon_unpaid_order_hold_days` (7 by default) and records the new version. An unpaid
+order holds the coupon usages it was placed with for that many days; past the delay, or with 0,
+its usages are available to new orders again. The full notes are on the
+[GitHub release](https://github.com/thelia/thelia/releases/tag/3.2.4).
+
+```bash
+composer update thelia/thelia-skeleton --with-all-dependencies
+php local/setup/update.php
+php Thelia cache:warmup --env=prod
+```
+
+## Patch release 3.2.5
+
+3.2.5 is a security and maintenance release of the 3.2 line. Opening a return, on the front API or
+from the administration, can no longer take over a return line that already exists, including one
+of another customer: the request is refused with 422. The history of an order now reads in the
+order things happened. It ships `setup/update/sql/3.2.5.sql`, which changes no schema and records
+the new version. The commands are the same as for 3.2.4. The full notes are on the
+[GitHub release](https://github.com/thelia/thelia/releases/tag/3.2.5).
+
+For module developers:
+
+- The history line of a status change is written at priority 127 of `ORDER_UPDATE_STATUS`
+  (it was 64). A module that sends its e-mail at priority 128 still comes first and has to run
+  below 127.
+- `Thelia\Action\OrderReturn` no longer dispatches `ORDER_RETURN_SEND_STATUS_EMAIL` from
+  `create()`, `receive()` and `updateStatus()`. A listener at priority 32 of `ORDER_RETURN_CREATE`,
+  `ORDER_RETURN_RECEIVE` and `ORDER_RETURN_UPDATE_STATUS` sends it, so a listener between 32 and
+  128 now runs before the e-mail, and the e-mail is not sent if it stops the propagation. Calling
+  these methods directly, without dispatching the event, no longer sends the e-mail.
