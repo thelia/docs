@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.10.2">
 <title data-rh="true">Updating from 3.2 to 3.3 | Thelia Documentation</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://doc.thelia.net/docs/next/upgrading/from-3.2-to-3.3"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Updating from 3.2 to 3.3 | Thelia Documentation"><meta data-rh="true" name="description" content="This page lists what is specific to the move from Thelia 3.2 to 3.3. The procedure itself"><meta data-rh="true" property="og:description" content="This page lists what is specific to the move from Thelia 3.2 to 3.3. The procedure itself"><link data-rh="true" rel="icon" href="/img/favicon.png"><link data-rh="true" rel="canonical" href="https://doc.thelia.net/docs/next/upgrading/from-3.2-to-3.3"><link data-rh="true" rel="alternate" href="https://doc.thelia.net/docs/next/upgrading/from-3.2-to-3.3" hreflang="en"><link data-rh="true" rel="alternate" href="https://doc.thelia.net/docs/next/upgrading/from-3.2-to-3.3" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://AOX4BR07WS-dsn.algolia.net" crossorigin="anonymous"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Updating from 3.2 to 3.3","item":"https://doc.thelia.net/docs/next/upgrading/from-3.2-to-3.3"}]}</script><link rel="search" type="application/opensearchdescription+xml" title="Thelia Documentation" href="/opensearch.xml"><link rel="stylesheet" href="/assets/css/styles.3890d491.css">
-<script src="/assets/js/runtime~main.b3350be4.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.3da410c8.js" defer="defer"></script>
 <script src="/assets/js/main.95d2ff42.js" defer="defer"></script>
 </head>
 <body>
@@ -58,6 +58,139 @@ profiles that follow the jobs. Until then, only super-administrators see it.</li
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="dependencies">Dependencies<a href="#dependencies" class="hash-link" aria-label="Direct link to Dependencies" title="Direct link to Dependencies" translate="no">​</a></h2>
 <ul>
 <li class="">The core requires <code>doctrine/dbal ^4.2</code>: a project or a module held on DBAL 3 moves to DBAL 4.</li>
-</ul></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_WFHX"><a href="https://github.com/thelia/docs/edit/main/docs/upgrading/from-3.2-to-3.3.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/docs/next/upgrading/from-3.1-to-3.2"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Updating from 3.1 to 3.2</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/docs/next/upgrading/from-twig-branch"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Upgrading from the twig branch</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#symfony-recipes" class="table-of-contents__link toc-highlight">Symfony recipes</a></li><li><a href="#queues-and-workers" class="table-of-contents__link toc-highlight">Queues and workers</a></li><li><a href="#rights" class="table-of-contents__link toc-highlight">Rights</a></li><li><a href="#dependencies" class="table-of-contents__link toc-highlight">Dependencies</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://discord.gg/YgwpYEE3y3" target="_blank" rel="noopener noreferrer" class="footer__link-item">Discord<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://stackoverflow.com/questions/tagged/thelia" target="_blank" rel="noopener noreferrer" class="footer__link-item">Stack Overflow<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://forum.thelia.net/" target="_blank" rel="noopener noreferrer" class="footer__link-item">Forum<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://twitter.com/theliaecommerce" target="_blank" rel="noopener noreferrer" class="footer__link-item">Twitter<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Github</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/thelia/thelia" target="_blank" rel="noopener noreferrer" class="footer__link-item">Thelia<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/thelia/thelia-project" target="_blank" rel="noopener noreferrer" class="footer__link-item">Thelia project<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/thelia-modules/" target="_blank" rel="noopener noreferrer" class="footer__link-item">Modules<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div></div></footer></div>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="the-database-script">The database script<a href="#the-database-script" class="hash-link" aria-label="Direct link to The database script" title="Direct link to The database script" translate="no">​</a></h2>
+<p><code>php local/setup/update.php</code> runs <code>setup/update/sql/3.3.0.sql</code>. It creates the tables of the new
+features (the AI layer, the queue table <code>messenger_messages</code>, sale units, delivery dates and
+slots, postal code rules on delivery zones, payment parts), adds the rights and the settings they
+need, and converts or completes some existing data:</p>
+<ul>
+<li class="">The promotional price of an order line becomes a <code>DECIMAL(16,6)</code> on a shop that came from
+Thelia 2. Orders placed before the conversion keep the total of their invoice.</li>
+<li class="">Missing country titles and the German titles of the four checkout steps are filled in. A title
+an administrator edited is kept.</li>
+<li class="">The availability, customer rating and price facets become visible on every category listing
+that already shows facets. A merchant who does not want one hides it in the &quot;Filters&quot; section
+of the category or of the template.</li>
+<li class="">The settings <code>shared_cache_mode</code> (<code>disabled</code>) and <code>shared_cache_ttl</code> arrive. An update changes
+nothing until you set them: see <a class="" href="/docs/next/getting-started/reverse-proxy-cache">Reverse proxy cache</a>.</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="the-ai-layer">The AI layer<a href="#the-ai-layer" class="hash-link" aria-label="Direct link to The AI layer" title="Direct link to The AI layer" translate="no">​</a></h2>
+<p>The AI layer stays off after the update: no model is called until an administrator adds a
+connection and a module declares a usage that needs it. See
+<a class="" href="/docs/next/features/ai-settings">AI settings and MCP</a> and
+<a class="" href="/docs/next/modules/ai">Calling an AI model from a module</a>.</p>
+<ul>
+<li class="">The script creates nine tables (<code>ai_connection</code>, <code>ai_model</code>, <code>ai_tier_assignment</code>,
+<code>ai_usage_setting</code>, <code>ai_usage_log</code>, <code>ai_budget_reservation</code>, <code>ai_tool_token</code>,
+<code>ai_tool_approval</code>, <code>ai_tool_call_log</code>), the rights <code>admin.configuration.ai</code> and
+<code>admin.configuration.ai-mcp</code>, and the settings <code>ai_enabled</code>, <code>ai_monthly_cap</code>, <code>ai_eu_only</code>,
+<code>ai_log_retention_days</code>, <code>ai_mcp_enabled</code>, <code>ai_tool_approval_ttl_hours</code> and
+<code>ai_tool_token_max_days</code>. A setting the shop already holds is left alone.</li>
+<li class="">The core requires <code>symfony/ai-platform</code>, the bridges <code>symfony/ai-anthropic-platform</code>,
+<code>symfony/ai-generic-platform</code>, <code>symfony/ai-mistral-platform</code>, <code>symfony/ai-ollama-platform</code> and
+<code>symfony/ai-open-ai-platform</code> (all <code>^0.15</code>), <code>symfony/mcp-bundle</code> (<code>^0.15</code>) and <code>nyholm/psr7</code>
+(<code>^1.8</code>). A project that pins one of them must allow these versions.</li>
+<li class="">Composer may apply the Symfony recipes of these packages and write
+<code>config/packages/ai_*_platform.yaml</code> and <code>config/packages/mcp.yaml</code>. They do no harm and you can
+delete them: the shop reads its connections from the database, and the core registers its own
+MCP server.</li>
+<li class="">The MCP server on <code>/api/mcp</code> is off (<code>ai_mcp_enabled</code> is <code>0</code>) until an administrator switches
+it on and creates tokens. If the shop is served on a host other than <code>url_site</code>, set
+<code>THELIA_MCP_ALLOWED_HOSTS</code> to the host names the endpoint must accept.</li>
+<li class="">The key of a connection is read from a <code>THELIA_AI_*_KEY</code> or <code>THELIA_AI_*_TOKEN</code> variable, or
+from the usual variable of the provider when the connection points at that provider&#x27;s own
+address. A connection saved before with another variable name is refused.</li>
+<li class="">The embedded price list no longer holds models the providers do not serve (13 Mistral names and
+six OpenAI entries). A range or a usage that points at one keeps working from its row in
+<code>ai_model</code>; choose another model when the provider says the model does not exist. Scaleway
+models are listed without the vendor prefix (<code>llama-3.3-70b-instruct</code>): choose the model again
+on a range that used a prefixed name.</li>
+<li class="">OpenAI is now sent <code>store: false</code>. A connection to the European region
+(<code>https://eu.api.openai.com</code>) needs dated model names such as <code>gpt-5.4-nano-2026-03-17</code>.</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="back-office-theme">Back-office theme<a href="#back-office-theme" class="hash-link" aria-label="Direct link to Back-office theme" title="Direct link to Back-office theme" translate="no">​</a></h2>
+<p>The <code>default-twig</code> theme requires <code>thelia/core ^3.3</code>: update both together. The screens of the AI
+layer, the background jobs and the new features ship with the theme.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="behaviour-changes">Behaviour changes<a href="#behaviour-changes" class="hash-link" aria-label="Direct link to Behaviour changes" title="Direct link to Behaviour changes" translate="no">​</a></h2>
+<ul>
+<li class="">Returns on the front API. An order that does not exist, or a line that does not belong to the
+order, answers 422 instead of 400. A return on an order that is cancelled, refunded or not paid
+yet answers with a message that says so, where it used to say the return window had closed. A
+client that reads the status or the message follows.</li>
+<li class="">A loop given a <code>lang</code> argument that names no language throws an <code>InvalidArgumentException</code>
+instead of reading the language of the session. A template that passes a misspelled or removed
+language fails on its next render.</li>
+<li class="">With <code>default_lang_without_translation</code> set to <code>0</code>, the front loops and <code>attr()</code> no longer
+return the items and texts that have no translation in the requested language.</li>
+<li class="">An import is one transaction. A row its rules refuse is reported and the import goes on. A row
+the database cannot save cancels the whole import. The rows written stay locked until the end,
+so run a large stock or price import outside trading hours. A listener of <code>IMPORT_BEGIN</code>,
+<code>IMPORT_FINISHED</code> or <code>IMPORT_SUCCESS</code> runs inside that transaction: what it writes is cancelled
+with the import, what it sends (a mail, a file, a job queued in the shop database) is not.</li>
+<li class="">An uploaded import is checked by its content as well as its name. An archive is refused when it
+holds more than 1000 entries, more than 512 MB once extracted, a link, or a name outside its
+folder.</li>
+<li class=""><code>maintenance:purge</code> also deletes the failed jobs older than 30 days.</li>
+<li class="">A combination saved with a new <code>ean_code</code> that is not a GTIN is refused: a 422 on <code>eanCode</code>
+from the admin API, a refused row from the stock import. Spaces and hyphens are removed. Codes
+already stored stay as they are until they change.</li>
+<li class="">The name of a cached image rendition covers all its options, so each rendition is generated
+again once, on its first request. The old files stay until <code>image-cache:clear</code> or
+<code>thelia:cache:clear</code> empties the cache.</li>
+<li class="">The messages <code>customer_account_created</code> and <code>customer_account_changed</code> no longer receive the
+customer&#x27;s password. The templates of the default e-mail theme keep rendering without it. A
+template or a module that reads <code>password</code> from these messages gets nothing.</li>
+<li class="">Delivery. An order whose delivery address was moved to another country, state, postal code or
+city after the cart copied it is refused with <code>delivery-address-moved</code> until the address is
+chosen again. A cart whose carrier the postal code rules of its zones refuse is refused when the
+order is placed. A zone without a rule takes every postal code, as before.</li>
+<li class="">A mail written in the order history (<code>email_sent</code>) is now recorded once the mail server has taken
+the mail. With a queue, that is the worker, later, and the author of the line is <code>system</code>.</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="exports-and-imports-files">Exports and imports files<a href="#exports-and-imports-files" class="hash-link" aria-label="Direct link to Exports and imports files" title="Direct link to Exports and imports files" translate="no">​</a></h2>
+<p>Exports, their archives and uploaded imports are created with mode 0640, in folders made with
+mode 0770. A folder made before keeps its mode. When the web server and the workers run under two
+users of one group, check <code>var/data-transfer/import</code> and the export folder of the cache, and give
+them <code>chmod 0770</code> if needed. Run any crontab or deployment script that exports or runs
+<code>maintenance:purge</code> under the same system user as the web server, or under users that share a
+group.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="mails-and-queues">Mails and queues<a href="#mails-and-queues" class="hash-link" aria-label="Direct link to Mails and queues" title="Direct link to Mails and queues" translate="no">​</a></h2>
+<ul>
+<li class="">Send the mails of a module through <code>MailerFactory</code>. It gives each mail an identifier that guards
+against a second delivery. A mail sent with the Symfony mailer directly carries none, and is sent
+again if the queue hands its job out a second time.</li>
+<li class="">A failed job replayed from the back office and with <code>messenger:failed:retry</code> at the same moment
+may be sent twice. Replay a job from one place at a time.</li>
+<li class="">A Redis or AMQP queue is read by the workers as the shop&#x27;s own. Whoever can write to it can send
+mails through the mail server of the shop and replay exports and imports. Keep such a server
+private.</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="for-module-and-theme-developers">For module and theme developers<a href="#for-module-and-theme-developers" class="hash-link" aria-label="Direct link to For module and theme developers" title="Direct link to For module and theme developers" translate="no">​</a></h2>
+<p>The full list, with the exact signatures, is in the 3.3.0 section of
+<a href="https://github.com/thelia/thelia/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer" class=""><code>CHANGELOG.md</code></a>. In short:</p>
+<ul>
+<li class="">Many services gain a constructor argument without a default: <code>ImportHandler</code>, <code>MailerFactory</code>,
+<code>ResourceService</code>, <code>CartGuard</code>, <code>OrderFacade</code>, <code>CheckoutSelectionProcessor</code>,
+<code>DeliveryModuleResourceBuilder</code>, <code>DeliveryModuleEligibilityChecker</code>, <code>CheckoutValidationService</code>,
+<code>Action\Module</code>, <code>Action\Customer</code> and the return processors, among others. A module that builds
+one by hand passes the new argument. A module that reads it from the container has nothing to do.</li>
+<li class=""><code>PostageEstimator::estimatePostageForCountry()</code> and <code>AreaDeliveryModuleQuery::findByCountryAndModule()</code>
+take a last argument <code>?string $zipCode = null</code>. A class that overrides one declares it too.</li>
+<li class=""><code>ExportHandler::export()</code>, <code>ImportHandler::import()</code> and <code>ImportHandler::validateUpload()</code> take a
+new optional last argument. <code>AbstractArchiver</code> implements the new <code>ClosableArchiverInterface</code>.</li>
+<li class=""><code>ReservedSaleVisibility</code> hands over to <code>ProductVisibility</code>. A subclass that overrode its methods
+declares a <code>ProductVisibilityRuleInterface</code> instead.</li>
+<li class=""><code>CART_SET_PAYMENT_MODULE</code> also resets the stored payment method of the cart unless the event
+names one.</li>
+<li class="">In the <code>default-twig</code> theme, <code>ExportImportController</code> is gone. Its routes are served by
+<code>ExportController</code>, <code>ImportController</code>, <code>DataTransferListController</code>, <code>ExportJobController</code> and
+<code>ImportJobController</code>. Three controllers (<code>MailingSystemController</code>, <code>MessagePreviewController</code>,
+<code>PasswordResetController</code>) take new constructor arguments.</li>
+<li class="">In Flexy, the <code>Delivery</code>, <code>Invoice</code> and <code>Payment</code> organisms and <code>CheckoutController::payAction()</code>
+take new arguments. A child theme that overrides one declares them and passes them on.</li>
+<li class=""><code>DELETE /api/admin/customers/{id}</code> runs the same deletion as the back office and answers 409 for
+a customer who has orders, where it used to fail with a 500.</li>
+</ul></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_WFHX"><a href="https://github.com/thelia/docs/edit/main/docs/upgrading/from-3.2-to-3.3.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/docs/next/upgrading/from-3.1-to-3.2"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Updating from 3.1 to 3.2</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/docs/next/upgrading/from-twig-branch"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Upgrading from the twig branch</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#symfony-recipes" class="table-of-contents__link toc-highlight">Symfony recipes</a></li><li><a href="#queues-and-workers" class="table-of-contents__link toc-highlight">Queues and workers</a></li><li><a href="#rights" class="table-of-contents__link toc-highlight">Rights</a></li><li><a href="#dependencies" class="table-of-contents__link toc-highlight">Dependencies</a></li><li><a href="#the-database-script" class="table-of-contents__link toc-highlight">The database script</a></li><li><a href="#the-ai-layer" class="table-of-contents__link toc-highlight">The AI layer</a></li><li><a href="#back-office-theme" class="table-of-contents__link toc-highlight">Back-office theme</a></li><li><a href="#behaviour-changes" class="table-of-contents__link toc-highlight">Behaviour changes</a></li><li><a href="#exports-and-imports-files" class="table-of-contents__link toc-highlight">Exports and imports files</a></li><li><a href="#mails-and-queues" class="table-of-contents__link toc-highlight">Mails and queues</a></li><li><a href="#for-module-and-theme-developers" class="table-of-contents__link toc-highlight">For module and theme developers</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://discord.gg/YgwpYEE3y3" target="_blank" rel="noopener noreferrer" class="footer__link-item">Discord<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://stackoverflow.com/questions/tagged/thelia" target="_blank" rel="noopener noreferrer" class="footer__link-item">Stack Overflow<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://forum.thelia.net/" target="_blank" rel="noopener noreferrer" class="footer__link-item">Forum<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://twitter.com/theliaecommerce" target="_blank" rel="noopener noreferrer" class="footer__link-item">Twitter<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Github</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/thelia/thelia" target="_blank" rel="noopener noreferrer" class="footer__link-item">Thelia<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/thelia/thelia-project" target="_blank" rel="noopener noreferrer" class="footer__link-item">Thelia project<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/thelia-modules/" target="_blank" rel="noopener noreferrer" class="footer__link-item">Modules<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div></div></footer></div>
 </body>
 </html>
