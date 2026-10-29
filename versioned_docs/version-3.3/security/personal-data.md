@@ -1,0 +1,250 @@
+---
+title: Personal data
+sidebar_position: 2
+---
+
+# Personal data
+
+Thelia ships the tools a shop needs to answer a customer asking for their data, or for
+its deletion: an export, an anonymization that keeps the accounting record, and a
+retention policy. Modules plug into all three through a single interface.
+
+## Exporting what the shop knows about someone
+
+`customer:export-personal-data` writes, as JSON, everything the shop holds about one
+customer: the account, the address book, the orders with their frozen order addresses
+and products, the carts, and the newsletter subscription.
+
+Since Thelia 3.1 it also carries the consents answered at payment, with the wording as it was
+displayed, the answer, the date and the IP address the answer came from, and the order returns,
+with their reference, status, reason, comment, refund amount and lines.
+
+Customer tags are deliberately left out: a tag is an internal marker the shop wrote about the
+customer, not something the customer told the shop, and the export handed to a person should
+carry no trace of it.
+
+```shell
+php Thelia customer:export-personal-data customer@example.com --output-file=export.json
+```
+
+The same export is available from the back-office, on the customer sheet. There, the
+archive is streamed in the response: it is never written under the web root nor into a
+shared cache, the response is marked `private, no-store, must-revalidate`, and the admin
+log records the export without writing the customer name back into the database.
+
+See [`customer:export-personal-data`](../reference/cli/customer_export_personal_data.md).
+
+## Anonymizing instead of deleting
+
+Deleting an account would take away orders a business is required to keep. Anonymization
+erases the identity and leaves the accounting record intact.
+
+| Erased | Kept |
+| --- | --- |
+| Account identity: last name, first name, email (replaced by `anonymous-<id>@anonymous.invalid`), password, remember-me and confirmation tokens, sponsor. The account is disabled. | Orders: reference, invoice number and date, amounts, taxes, coupons, status history |
+| Address book (`address`) and cart addresses (`cart_address`) | Country and state of the order address, which justify the VAT rate applied |
+| Identity frozen on the order addresses (`order_address`): title, company, SIRET, VAT number, name, address, postcode, city, phone numbers | The order itself, still attached to the now anonymous account |
+| Carts, newsletter subscription, account version history (`customer_version`) | Admin log entries: which administrator did what, and when |
+| The IP address recorded next to each consent answered at payment (`order_consent.ip_address`) | The consent wording, the answer and its date: what was agreed to, and when |
+| The free text of the order returns: the customer comment and the refusal reason, and the version history that still held them | The returns and their lines: reference, status, quantities and refund amounts |
+| Customer tag attachments, which only mean something against an identified person | |
+| Identity copied into the admin log: the message and the posted request payload | |
+
+```shell
+php Thelia customer:anonymize customer@example.com
+```
+
+The whole operation runs in a single Propel transaction: if a module fails, nothing is
+written. `customer.anonymized_at` records the date of the first erasure, which makes the
+operation traceable and idempotent: running it twice does not move the date.
+
+See [`customer:anonymize`](../reference/cli/customer_anonymize.md).
+
+:::note Deleting an account is still possible
+`CUSTOMER_DELETEACCOUNT` and the back-office delete button are unchanged. Anonymization is
+the alternative for a shop that must keep its invoices.
+:::
+
+## Declaring the personal data a module holds
+
+A shop rarely runs core alone. A loyalty balance, a support ticket or a stored payment
+token belong to the module that stores them. Implement
+`Thelia\Domain\Customer\Service\CustomerPersonalDataProviderInterface` and the module is
+called automatically on both the export and the anonymization: no configuration, no tag
+to declare.
+
+```php
+// local/modules/Loyalty/Service/LoyaltyPersonalData.php
+<?php
+
+declare(strict_types=1);
+
+namespace Loyalty\Service;
+
+use Loyalty\Model\LoyaltyPointQuery;
+use Thelia\Domain\Customer\Service\CustomerPersonalDataProviderInterface;
+use Thelia\Model\Customer;
+
+class LoyaltyPersonalData implements CustomerPersonalDataProviderInterface
+{
+    public function getPersonalDataSectionName(): string
+    {
+        return 'loyalty';
+    }
+
+    public function exportPersonalData(Customer $customer): array
+    {
+        return LoyaltyPointQuery::create()
+            ->filterByCustomerId($customer->getId())
+            ->find()
+            ->toArray();
+    }
+
+    public function anonymizePersonalData(Customer $customer): void
+    {
+        LoyaltyPointQuery::create()
+            ->filterByCustomerId($customer->getId())
+            ->delete();
+    }
+}
+```
+
+Three rules apply:
+
+- The section name must not collide with a core section (`customer`, `addresses`,
+  `orders`, `carts`, `newsletter`) nor with another provider. Prefer the module code.
+- `exportPersonalData()` returns a structure suitable for JSON serialization, or an empty
+  array when there is nothing.
+- `anonymizePersonalData()` runs inside the anonymization transaction. Throwing rolls the
+  whole operation back, including what core already anonymized.
+
+The provider is also called when the retention policy anonymizes a dormant account, so a
+module erases its share on a scheduled run exactly as on a manual one.
+
+## Retention: not keeping what is no longer needed
+
+`maintenance:purge` deletes stale data. Every period is a configuration variable, so a
+shop sets its own.
+
+| Data | Configuration variable | Default |
+| --- | --- | --- |
+| Carts without an order | `purification_cart_no_order_days` | 60 days |
+| Anonymous carts | `purification_cart_anonymous_days` | 30 days |
+| Admin logs | `purification_admin_logs_days` | 180 days |
+| Form firewall records (they hold IP addresses) | `purification_form_firewall_days` | 1 day |
+| Identity of accounts that never ordered | `purification_customer_no_order_days` | `0`, off |
+| Identity of accounts whose last order is old | `purification_customer_after_last_order_days` | `0`, off |
+
+```shell
+php Thelia maintenance:purge --dry-run
+php Thelia maintenance:purge
+```
+
+:::caution Customer retention is off by default, on purpose
+Erasing an identity cannot be undone, and the shop is the only one that knows how long it
+is allowed to keep the data. Both customer periods default to `0`, which keeps the
+retention off. Set them explicitly, and run `--dry-run` first.
+:::
+
+The two customer periods are distinct because an account that has ordered is also tied to
+an accounting retention obligation: an account that never ordered ages from its creation
+date, an account that ordered ages from its last order. An account already anonymized is
+skipped, so a nightly run does the work once per account.
+
+The form firewall threshold never goes below the longest waiting period configured, so a
+purge cannot hand a blocked IP address a fresh set of attempts.
+
+See [`maintenance:purge`](../reference/cli/maintenance_purge.md).
+
+### Background jobs
+
+Exports and imports started from the back office, and jobs that failed in the queue, hold
+personal data too: an import file can list customers, and a failed order mail keeps the address
+of the customer and the content of the order. Their retention periods are fixed in the code.
+
+| Data | Purged by | Kept |
+| --- | --- | --- |
+| Export and import jobs that are done | `maintenance:purge` | 7 days |
+| Other export and import jobs (failed, queued, running) | `maintenance:purge` | 31 days, a day longer than the failed jobs they can be replayed from |
+| Uploaded import files | The import itself, then `maintenance:purge` | Deleted once the import is done, or once it failed when there is no queue to replay it from, or once its failed job is deleted from the back office (not by `messenger:failed:remove` nor `thelia:messenger:purge-failed`, which leave it to `maintenance:purge`, 31 days at most); a file kept for a replay goes with its job, only when it lies under `var/data-transfer/import` |
+| Files left in `var/data-transfer/import` | `maintenance:purge` | 31 days |
+| Failed jobs of the queue | `thelia:messenger:purge-failed`, and `maintenance:purge` | 30 days; `--older-than` changes it for `thelia:messenger:purge-failed` |
+
+The 31-day sweep of `var/data-transfer/import` removes what no job row points to any more, such
+as the extracted copy of an archive left by a worker that was killed, or a file whose row was
+deleted by hand. The `thelia` schedule runs `thelia:messenger:purge-failed` every day at 04:00;
+a shop that runs its tasks from a crontab adds it there. Record both retentions in the GDPR
+register.
+
+The reason an administrator reads of a failed export or import, on its job page and on the
+Background jobs screen, does not quote the data: unless the exception was written for the
+administrator, it reads as a server error, and the error line Thelia writes to the log names it
+by its class, code and place in the code rather than by its message. The failed job kept in
+`failed` stores only that text: the original exception is not chained to it, since Symfony
+keeps the whole chain of an exception it sends to the failure transport. This holds for the exports and imports of
+the back office; a failed mail or module job keeps the exception its handler threw, but the
+Background jobs screen only shows its reason when it was written for the administrator or is
+the answer of the mail server, credentials hidden, and the log of the workers names its
+exception by class, code and place (`Thelia\Messenger\Log\FailedJobLogProcessor`).
+
+A queued mail stores the content of its attachments in the queue, an attachment given by its
+path included: the queue, and `failed` for a mail that could not be delivered, hold the
+documents a mail carries, such as an invoice. See
+[`thelia:messenger:purge-failed`](../reference/cli/thelia_messenger_purge_failed.md).
+
+The description of a failed job on the Background jobs screen names the recipient of a mail.
+Give the screen (`admin.configuration.background-jobs`) only to the profiles that need it. A
+module describes its own jobs with ids and references, never personal data, see
+[the message of the example module](../reference/background-jobs.md#the-message).
+
+#### The queue server
+
+Treat the queue like the database:
+
+- A Redis or AMQP server must not be reachable from the internet. Bind it to the private
+  network of the hosting and protect it with a password. The workers read its queue as the
+  queue of the shop: whoever can write to it can send mails through the mail server of the shop
+  and replay the exports and imports it names. This is an accepted risk, and the reason such a
+  server must stay private. A queue in the shop database adds nothing to what access to that
+  database already gives.
+- Put the DSN and its credentials in `.env.local` or in the secrets of the hosting, never in a
+  committed file.
+- Do not share one Redis between environments unless each one has its own stream: a staging
+  worker would otherwise send the mails of production. Give each environment its own stream
+  name in the DSN (`redis://host:6379/messages_staging`, whose heavy jobs then go to the stream
+  `messages_staging_heavy`) or its own Redis database.
+
+## Adding a module purge to the same run
+
+`maintenance:purge` dispatches `TheliaEvents::MAINTENANCE_PURGE` at the end of its run. A
+module listens to it, purges its own tables, and appends a line to the report:
+
+```php
+#[AsEventListener(event: TheliaEvents::MAINTENANCE_PURGE)]
+public function purgeOldQuotes(MaintenancePurgeEvent $event): void
+{
+    $deleted = QuoteQuery::create()
+        ->filterByCreatedAt(new \DateTime('-1 year'), Criteria::LESS_THAN)
+        ->delete();
+
+    $event->addResult(sprintf('<comment>Quotes (>1 year):</comment> <info>%d deleted</info>', $deleted));
+}
+```
+
+## What Thelia does not provide
+
+To be explicit, so nobody promises it:
+
+- No cookie consent banner. It belongs to the theme or to a module.
+- No self-service account deletion from the front-office. Both operations are available
+  from the CLI and the back-office only.
+- Neither the export nor the anonymization is exposed through the API.
+- No application-level encryption of personal columns at rest.
+
+## See also
+
+- [Security policy](./security-policy.md)
+- [`customer:anonymize`](../reference/cli/customer_anonymize.md),
+  [`customer:export-personal-data`](../reference/cli/customer_export_personal_data.md),
+  [`maintenance:purge`](../reference/cli/maintenance_purge.md),
+  [`thelia:messenger:purge-failed`](../reference/cli/thelia_messenger_purge_failed.md)
