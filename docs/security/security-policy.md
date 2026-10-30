@@ -13,6 +13,9 @@ The canonical disclosure policy — contact, scope, response targets and support
 versions — lives in the repository:
 [SECURITY.md](https://github.com/thelia/thelia/blob/main/SECURITY.md).
 
+For what a version number means and how long a series is supported, see
+[Release cycle and support](./release-cycle.md).
+
 ## Reporting a vulnerability
 
 Never use a public issue, discussion or pull request for a security problem. Report it
