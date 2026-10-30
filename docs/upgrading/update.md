@@ -6,6 +6,7 @@ sidebar_position: 2
 # Updating Thelia
 
 This guide covers updating an existing Thelia 3 site to a newer Thelia 3 release.
+How long each series receives fixes is on [Release cycle and support](../security/release-cycle.md).
 
 :::note Coming from Thelia 2?
 Thelia 3 cannot update a Thelia 2 database in place. The updater refuses any database below
