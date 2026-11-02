@@ -48,10 +48,10 @@ No derogation is claimed.
 |---|---|
 | No link to skip to the main content, and nothing for it to target | 12.7 |
 | The logo link of the checkout header had no accessible name | 6.2 |
-| The copyright line of the checkout footer and the crossed-out price of the cart were at 4.2:1 | 3.2 |
+| The copyright line of the checkout footer, the crossed-out price of the cart and the product details of the order confirmation were at 4.2:1 | 3.2 |
 | The variant selector of the product page took the focus without showing it, and stayed a tab stop on desktop where it does nothing | 10.7 |
 | The account page was 330px wide in a 320px viewport | 10.11 |
-| The home page had no heading; sign-in, sign-up and contact started at level 2; the filled cart had no heading | 9.1 |
+| The home page, the filled cart and the order confirmation had no level 1 heading; sign-in, sign-up and contact started at level 2 | 9.1 |
 | The name field of the contact form did not declare its purpose for autofill | 11.13 |
 
 ### How the audit was made
@@ -69,7 +69,8 @@ a content page (`/a-propos.html`), contact, sign-in, sign-up, the account, its a
 and purchase lists, then the cart, delivery, payment and confirmation steps of the checkout.
 
 The payment and confirmation steps are measured by the core's `accessibility` workflow on every
-pull request; they were not part of the manual pass of this audit.
+pull request, which also places an order with the keyboard alone; they were not part of the
+manual pass of this audit.
 
 ### Report a problem
 
@@ -93,8 +94,8 @@ What Flexy guarantees holds as long as a child theme does not undo it.
    icons that identify a control at 3:1. Check a new colour on each background it is used on:
    `--color-grey` passes on white and fails on `--color-lightest`.
 6. Let content shrink. A grid that changes column count at a breakpoint declares its single
-   column below it (`grid-cols-1 md:grid-cols-2`), and a button that sizes to its text also
-   gets `max-w-full`.
+   column below it (`grid-cols-1 md:grid-cols-2`). `Molecules:Button` never grows wider than
+   its container; a button of your own that sizes to its text gets `max-w-full`.
 7. Render form fields through the theme's form theme: it associates the label, marks the field
    `aria-invalid` and points `aria-describedby` at the error, and `Molecules:FormErrors` moves
    the focus to the error summary. Give each personal data field its `autocomplete` value.
@@ -115,8 +116,9 @@ BASE_URL=https://my-shop.ddev.site npx playwright test specs/accessibility.spec.
 
 The page list comes from `setup/audit/lighthouserc.default.yaml`; point it at your own URLs if
 your catalogue differs from the demo. Each page logs a line such as
-`a11y /chairs.html: 25 rules checked, 39 not applicable, 0 rules violated, 0 blocking node(s)`.
-A page where no rule was checked fails: an audit that measured nothing is not a pass.
+`a11y /chairs.html: 25 rules checked (20 on the content), 39 not applicable, 0 rules violated, 0 blocking node(s)`.
+A page where no rule reached the content fails: the rules on `<html>` and `<head>` (language,
+title) run whatever is excluded, and an audit that measured nothing else is not a pass.
 
 The measure settles only part of RGAA. The criteria marked NT in the
 [grid](./accessibility-audit.md) still need a person, a keyboard and a screen reader.

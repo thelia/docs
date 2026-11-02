@@ -95,7 +95,7 @@ still to check by hand.
 |---|---|---|
 | **7.1** Chaque script est-il, si nécessaire, compatible avec les technologies d’assistance ? | NT | Live components, drawers and the cart toast: screen reader pass needed. |
 | **7.2** Pour chaque script ayant une alternative, cette alternative est-elle pertinente ? | NA | No script alternative on the audited pages. |
-| **7.3** Chaque script est-il contrôlable par le clavier et par tout dispositif de pointage (hors cas particuliers) ? | NT | Every tab stop of 9 pages is reachable and the variant drawer opens with Enter. Other widgets still to try one by one. |
+| **7.3** Chaque script est-il contrôlable par le clavier et par tout dispositif de pointage (hors cas particuliers) ? | NT | Every tab stop of 9 pages is reachable, the variant drawer opens with Enter, and an order is placed from the product page to the confirmation with Tab, Enter and Space only (test). Other widgets still to try one by one. |
 | **7.4** Pour chaque script qui initie un changement de contexte, l’utilisateur est-il averti ou en a-t-il le contrôle ? | NT | To review: selects that reload a listing (sort, currency, language). |
 | **7.5** Dans chaque page web, les messages de statut sont-ils correctement restitués par les technologies d’assistance ? | NT | The search result count is in a live region. The add to cart confirmation and the cart updates: to review with a screen reader. |
 
@@ -118,7 +118,7 @@ still to check by hand.
 
 | Criterion | Status | Evidence |
 |---|---|---|
-| **9.1** Dans chaque page web, l’information est-elle structurée par l’utilisation appropriée de titres ? | C | Every audited page now has a level 1 heading (checked by the test), and the section titles of the home page, the product page and the content pages are headings. Fixed in this audit: the home page had no heading at all; sign-in, sign-up and contact started at h2; the filled cart had none. |
+| **9.1** Dans chaque page web, l’information est-elle structurée par l’utilisation appropriée de titres ? | C | Every audited page now has a level 1 heading (checked by the test), and the section titles of the home page, the product page and the content pages are headings. Fixed in this audit: the home page had no heading at all; sign-in, sign-up and contact started at h2; the filled cart and the order confirmation had none. |
 | **9.2** Dans chaque page web, la structure du document est-elle cohérente (hors cas particuliers) ? | C | Every page has `header`, `main` and `footer` (base.html.twig). axe `bypass` passes. |
 | **9.3** Dans chaque page web, chaque liste est-elle correctement structurée ? | C | axe `list` and `listitem` (axe, 15 pages). |
 | **9.4** Dans chaque page web, chaque citation est-elle correctement indiquée ? | NA | No quotation on the audited pages. |
