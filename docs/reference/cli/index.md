@@ -80,7 +80,7 @@ through `php Thelia`, and empties the Symfony cache only.
 
 | Command | Description |
 | --- | --- |
-| `export` | Export data through a registered export handler. |
+| `export` | Export data through a registered export handler. The sales journal and the tax summary are described in [Accounting Exports](../../features/accounting-exports.md); `thelia.fec` writes the French accounting entries file. |
 | `import` | Import data through a registered import handler. |
 | `generate:sql` | Generate the core SQL files (`insert.sql`, `update*.sql`). |
 | `thelia:generate-resources` | Output the admin resources (ACL resource keys). |
