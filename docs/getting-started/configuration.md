@@ -62,6 +62,7 @@ for a worker, and when the recurring tasks run. Only `MESSENGER_TRANSPORT_DSN` i
 | `THELIA_SCHEDULE_MAINTENANCE_PURGE` | `30 3 * * *` | When `maintenance:purge` runs. Empty disables it. |
 | `THELIA_SCHEDULE_FAILED_JOBS_PURGE` | `0 4 * * *` | When `thelia:messenger:purge-failed` runs. Empty disables it. |
 | `THELIA_SCHEDULE_CURRENCY_RATES` | empty | When `currency:update-rates` runs. Off by default. |
+| `THELIA_SCHEDULE_REPORT_MAILS` | `*/15 * * * *` | When `report:send-due` runs. Empty disables it. |
 
 The recurring tasks only run when a worker consumes the `scheduler_thelia` transport. Naming a
 queue in `MESSENGER_TRANSPORT_DSN` without running a worker leaves the mails undelivered. See the

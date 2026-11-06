@@ -93,6 +93,8 @@ through `php Thelia`, and empties the Symfony cache only.
 | [`maintenance:purge`](./maintenance_purge.md) | Purge old data: carts without orders, anonymous carts, admin logs, form firewall records, and the identity of accounts nobody uses anymore. |
 | `sale:check-activation` | Check the activation/deactivation dates of sales and apply the required action. |
 | `currency:update-rates` | Update currency exchange rates. |
+| [`report:send-due`](./report_send_due.md) | Send the scheduled reports that are due, each period once. |
+| [`report:mail`](./report_mail.md) | Send one scheduled report now. |
 | `thelia:order:rounding-mode` | Show or switch how order line totals are rounded, freezing the orders already placed. |
 | `sequence:set` | Set a gapless sequence counter (`order_ref`, `invoice_ref_<year>`, ...) to a given value. |
 | `import-export:clean` | Delete the exports and imports whose handler class is no longer available. |
