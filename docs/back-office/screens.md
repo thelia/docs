@@ -138,6 +138,34 @@ The screen needs the view right on the administration logs. See [Two-Factor Auth
 
 An administrator with a profile cannot change the profile of their own account, and nobody can delete their own account.
 
+## Search
+
+The search box of the top bar opens `/admin/search`. Press **/** from any screen to reach it, unless the cursor is already in a field. A term of fewer than 2 characters is not searched.
+
+Results come in groups, each shown only when it has a match:
+
+| Group | Found by | Right needed |
+|---|---|---|
+| Products | reference, reference or GTIN of a combination, title | view on products |
+| Combinations | reference, GTIN | view on products |
+| Categories, folders, contents, brands, sales | title | view on each |
+| Customers | reference, first name, last name, full name, email address, phone number | view on customers |
+| Orders | reference, invoice reference, transaction reference | view on orders |
+| Coupons | code, title | view on coupons |
+| Administrators | login, name, email address | view on administrators |
+| Modules | code, title | view on modules |
+
+Some rules decide what comes first and what is shown:
+
+- In each group, a reference, code or title equal to the term comes first, then one starting with it, then one holding it. Orders of equal rank come newest first, the other groups alphabetically.
+- A GTIN is found when it is typed in full: `4006381333931`, `4 006381 333931` or `4006381-333931`. Part of a GTIN finds nothing.
+- A product found through a combination names that combination under its title.
+- `%`, `_` and quotes are searched as characters.
+- Titles are shown in the language of the administrator, then in the default language of the shop when the title is missing there, then in any language that has one. A title in any language is searched.
+- A group holds 25 rows. When more match, its header reads "25 of N". Products, customers and orders link to their list filtered on the term. The other groups link to the search narrowed to that group, 25 rows per page.
+
+A group the profile may not view is not searched at all, so a profile restricted to the catalogue sees no customer, order, coupon or administrator. Orders stay limited to the sale units of the administrator. The page needs the view right on `admin.search`; without it the page answers 403. An administrator who searches more than 120 times in a minute is asked to wait. When the TntSearch module is active, `/admin/search` shows the module's search page instead.
+
 ## Small screens
 
 On a narrow screen, the lists of orders, customers, products, coupons, sales, catalog price rules, order returns, currencies, countries and languages hide their secondary columns. A chevron at the start of each row expands a detail line with the hidden values. When a sortable column is hidden, a **Sort by** form with a direction and a **Sort** button replaces the clickable headers. Other lists, such as the newsletter subscribers, drop their secondary columns below a given width and have no detail line.
