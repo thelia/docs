@@ -19,6 +19,11 @@ Since Thelia 3.1 it also carries the consents answered at payment, with the word
 displayed, the answer, the date and the IP address the answer came from, and the order returns,
 with their reference, status, reason, comment, refund amount and lines.
 
+Since Thelia 3.4 it carries the subscriptions too: the values of each one, its installments with the
+reference of their order, its history and the label of its payment method, never the token. The
+anonymization of a customer cancels and ends their running subscriptions. See
+[Subscriptions](../features/subscriptions.md#personal-data).
+
 Customer tags are deliberately left out: a tag is an internal marker the shop wrote about the
 customer, not something the customer told the shop, and the export handed to a person should
 carry no trace of it.

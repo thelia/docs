@@ -756,6 +756,12 @@ Match the class instead of the wording of the message to tell a shortage from an
 
 See [Breaking changes](../upgrading/breaking-changes.md#thelia-32) for the constructors that changed.
 
+## Subscriptions
+
+A module that stores payment methods can also be asked to charge one without the customer, for the
+installments of a [subscription](../features/subscriptions.md). See
+[Charging a stored method off session](./recurring-payments.md).
+
 ## Best practices
 
 ### Do

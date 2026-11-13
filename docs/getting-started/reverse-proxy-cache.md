@@ -69,6 +69,10 @@ An answer is shared only when all of these hold:
   `register`, `address`, `cart-reminder` or `back-to-cart`, nor starts with one of them
   followed by `-` or `_`. Only the first segment counts: the list of views above is what
   keeps the other pages out;
+- the page is not one of the subscription pages of the account (`/account/subscriptions`, and the
+  detail of a subscription under it). They sit under `account`, so the path rule above already keeps
+  them out, and they answer `Cache-Control: no-store` as well: they show a customer's own
+  subscriptions, payment method label and installments;
 - no price depends on the visitor: no catalogue price rule reserved to a named audience and
   no reserved sale is active (while one is, no page is shared);
 - every resource the page read through `resources()` is one that does not depend on the

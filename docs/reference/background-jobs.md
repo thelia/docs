@@ -26,6 +26,7 @@ hosting.
 | `THELIA_SCHEDULE_FAILED_JOBS_PURGE` | `0 4 * * *` | Cron expression of `thelia:messenger:purge-failed`. Empty disables the task. |
 | `THELIA_SCHEDULE_CURRENCY_RATES` | empty | Cron expression of `currency:update-rates`. Off by default. |
 | `THELIA_SCHEDULE_REPORT_MAILS` | `*/15 * * * *` | Cron expression of `report:send-due`. Empty disables the task. |
+| `THELIA_SCHEDULE_SUBSCRIPTION_BILLING` | `*/15 * * * *` | Cron expression of `subscription:bill-due`. Empty disables the task. |
 | `LOCK_DSN` | `flock` in the `.env` of the core, `semaphore` in the `.env.dist` of `thelia-project` | The lock store that keeps two workers from running the same scheduled task. |
 
 `doctrine://default` is the only Doctrine connection name accepted: it is the shop database,
@@ -287,6 +288,7 @@ The `thelia` schedule runs these commands when a worker consumes `scheduler_thel
 | `thelia:messenger:purge-failed` | `THELIA_SCHEDULE_FAILED_JOBS_PURGE` | 04:00 |
 | `currency:update-rates` | `THELIA_SCHEDULE_CURRENCY_RATES` | off |
 | `report:send-due` | `THELIA_SCHEDULE_REPORT_MAILS` | every 15 minutes |
+| `subscription:bill-due` | `THELIA_SCHEDULE_SUBSCRIPTION_BILLING` | every 15 minutes |
 
 `currency:update-rates` is off because it overwrites every rate, including those set by hand.
 `sale:check-activation` switches a sale back on when it was turned off by hand inside its

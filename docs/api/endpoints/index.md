@@ -40,6 +40,8 @@ Full CRUD operations requiring authentication.
 | Order return statuses | `/api/admin/order_return_statutes` | GET (collection, item) |
 | Product relation types | `/api/admin/product_association_types` | GET, POST, PUT, PATCH, DELETE |
 | Product relations | `/api/admin/product_associations` | GET, POST, DELETE |
+| Subscriptions | `/api/admin/subscriptions` | GET (collection, item) |
+| Subscription plans | `/api/admin/subscription_plans` | GET, POST, PUT, PATCH, DELETE |
 | Customer tags | `/api/admin/tags` | GET, POST, PUT, PATCH, DELETE |
 | Customer tag attachments | `/api/admin/tag-elements` | GET, POST, DELETE |
 
@@ -65,6 +67,8 @@ Mostly read-only public access. A few operations write data (cart management, ac
 | Product relation types | `/api/front/product_association_types` | GET (collection, item) |
 | Product relations | `/api/front/product_associations` | GET (collection, item) |
 | Account order returns | `/api/front/account/order_returns` | GET (collection, item), POST |
+| Account subscriptions | `/api/front/account/subscriptions` | GET (collection, item), POST (`cancel`, `pause`, `resume`, `payment_method`) |
+| Subscription plans | `/api/front/subscription_plans` | GET (collection, item) |
 | Guest account conversion | `/api/front/guest-customers/{id}/convert` | POST |
 | Checkout | `/api/front/account/checkout/{cartId}` | POST (`delivery_address`, `invoice_address`, `delivery_module`, `payment_module`, `place`), GET (`validation`) |
 
@@ -77,6 +81,128 @@ Customer and order personal-data routes (`/api/front/account/customers/{id}`, `/
 :::
 
 The checkout operations are documented on their own page: [Checkout over the front API](../checkout.md).
+
+## Subscriptions
+
+Added in Thelia 3.4. The feature is described in [Subscriptions](../../features/subscriptions.md).
+Null fields are left out of the JSON.
+
+### Front: the account of the customer
+
+These routes need a customer JWT and only reach the subscriptions of that customer.
+
+| Request | Effect |
+| --- | --- |
+| `GET /api/front/account/subscriptions` | The subscriptions of the customer. |
+| `GET /api/front/account/subscriptions/{id}` | One subscription, with its `installments`. |
+| `POST /api/front/account/subscriptions/{id}/cancel` | Cancels it. No body. |
+| `POST /api/front/account/subscriptions/{id}/pause` | Pauses an active subscription, when its plan allows. No body. |
+| `POST /api/front/account/subscriptions/{id}/resume` | Resumes a paused subscription, and nothing else. No body. |
+| `POST /api/front/account/subscriptions/{id}/payment_method` | Changes the payment method, of any subscription still billed but a cancelled one. |
+
+```http
+POST /api/front/account/subscriptions/3/payment_method
+Content-Type: application/json
+
+{"paymentMethod": "/api/front/account/payment_methods/12"}
+```
+
+| Status | When |
+| --- | --- |
+| `401` | No token. |
+| `403` | An administrator token. |
+| `404` | The subscription is another customer's. |
+| `409` | The state of the subscription refuses the action. |
+| `422` | The payment method is not the customer's. |
+
+A subscription:
+
+```json
+{
+  "id": 3,
+  "ref": "SUB1A2B3C4D5E6F",
+  "status": "active",
+  "quantity": 1,
+  "periodUnit": "month",
+  "periodCount": 1,
+  "commitmentCount": 3,
+  "pausable": true,
+  "unitPrice": 9.9,
+  "installmentsBilled": 1,
+  "currentPeriodStart": "2028-01-31T10:00:00+01:00",
+  "currentPeriodEnd": "2028-02-29T10:00:00+01:00",
+  "nextBillingAt": "2028-02-29T10:00:00+01:00",
+  "createdAt": "2028-01-31T10:00:00+01:00",
+  "currencyCode": "EUR",
+  "productId": 12,
+  "productRef": "BOX",
+  "productTitle": "Monthly box",
+  "paymentMethodLabel": "Visa ending 4242",
+  "paymentMethodId": 5,
+  "initialOrderId": 40,
+  "initialOrderRef": "ORD000000000040",
+  "installments": [
+    {"number": 1, "state": "paid", "orderId": 40, "orderRef": "ORD000000000040", "date": "2028-01-31", "attemptCount": 1}
+  ]
+}
+```
+
+The payment method is shown by its label only, never by its token.
+
+### Front: the plans of a product
+
+`GET /api/front/subscription_plans?product.id=12` lists the visible plans of an online product, and
+`GET /api/front/subscription_plans/{id}` reads one. `price` is the price of one installment in the
+currency being browsed.
+
+A plan follows its product. The plan of a product the visitor may not see (a private drop they are
+not part of, a category closed to their customer group, a rule of a module) is left out of the list
+and answers `404` by id, as the product does. When the product shows no price to the visitor (prices
+for signed-in customers only, prices on request), the plan comes without `price`.
+
+```json
+{
+  "id": 7,
+  "periodUnit": "month",
+  "periodCount": 1,
+  "trialDays": 14,
+  "commitmentCount": 3,
+  "pausable": false,
+  "position": 1,
+  "i18ns": {"en_US": {"title": "Monthly box"}},
+  "productId": 12,
+  "price": 9.9,
+  "currencyCode": "EUR"
+}
+```
+
+A plan goes into the cart with `subscriptionPlanId` on the line. The cart refuses a plan beside any
+other line, a second plan, a plan that is not visible or not the product's, and a visitor who is not a
+signed-in customer, with a `422`.
+
+### Admin
+
+`GET /api/admin/subscriptions` and `/{id}` need the `admin.subscription` right. They accept the filters
+`status`, `ref` and `customer.id`, and the order `nextBillingAt`. They add `customer`, `failureCount`
+and `nextRetryAt` to the subscription, and `lastError` to each installment.
+
+`/api/admin/subscription_plans` supports `POST`, `GET`, `PUT`, `PATCH` and `DELETE`. `prices` replaces
+every price when it is sent, and a price in the default currency is required:
+
+```json
+{
+  "product": "/api/admin/products/12",
+  "periodUnit": "month",
+  "periodCount": 1,
+  "trialDays": 7,
+  "pausable": true,
+  "visible": true,
+  "installmentCount": null,
+  "commitmentCount": 3,
+  "i18ns": {"en_US": {"title": "Monthly box"}},
+  "prices": [{"currencyId": 1, "price": 12.5, "fromDefaultCurrency": false}]
+}
+```
 
 ## Common patterns
 

@@ -150,6 +150,9 @@ the shop domain.
   `/account/*`, `/order/*`, `/admin*`, `/api/*`, `/_components/*`, `/media/cache/resolve/*` or HTML.
   Virtual product downloads (`/account/order/download/{id}`, `/order/track/{token}/download/{id}`)
   require the customer's paid order or the guest token.
+- The subscription pages of the account (`/account/subscriptions` and the detail of a subscription)
+  show a customer's own subscriptions and payment method. They are sent `Cache-Control: no-store`: a
+  CDN rule must not override it, and they stay under the `/account/*` exclusion above.
 - HTML is `private` with a session cookie, so no CDN caches it by default. From Thelia 3.3,
   read [Reverse proxy cache](./reverse-proxy-cache.md) before letting a CDN keep pages.
 - While the visitor country detection is on, the shop shares no page, whatever its source. A CDN that
