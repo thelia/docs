@@ -51,6 +51,8 @@ Every product sold in the period, best seller first, 25 per page, with its refer
 
 Every customer who ordered in the period, with the number of orders, the total including taxes, the average basket, the last order, the previous period and the change. The table is sorted on the total by default, and each column can be sorted. It shows 25 customers per page.
 
+Whether customers come back, their lifetime value and the dormant customers are in the [customer loyalty report](./customer-loyalty-report.md).
+
 ## How the amounts are computed
 
 Each order line is totalled with its taxes by the rounding rule of its order, as its invoice was. The amounts are added up as the orders store them, without converting their currency, as the dashboard does.
