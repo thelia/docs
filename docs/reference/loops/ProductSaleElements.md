@@ -31,6 +31,8 @@ Plus the [global arguments](./global_arguments) and [search arguments](./searchA
 | $IS_DEFAULT        | returns if the product sale element is the default product sale element for the product |
 | $IS_NEW            | returns if the product sale element is new                                              |
 | $IS_PROMO          | returns if the product sale element is in promo                                         |
+| $OUT_OF_STOCK_POLICY | what happens at zero stock: 0 refuse the sale, 1 sell without limit, 2 sell up to PREORDER_LIMIT units below zero |
+| $PREORDER_LIMIT    | the units that can be sold below zero stock when the policy is 2 |
 | $PRICE             | the product sale element price                                                          |
 | $PRICE_TAX         | the product sale element price tax                                                      |
 | $PRODUCT_ID        | the related product id                                                                  |
@@ -38,6 +40,7 @@ Plus the [global arguments](./global_arguments) and [search arguments](./searchA
 | $PROMO_PRICE_TAX   | the product sale element promo price tax                                                |
 | $QUANTITY          | the product sale element stock quantity                                                 |
 | $REF               | the product sale element reference                                                      |
+| $RESTOCK_DATE      | the date new stock is expected |
 | $TAXED_PRICE       | the product sale element taxed price                                                    |
 | $TAXED_PROMO_PRICE | the product sale element taxed promo price                                              |
 | $WEIGHT            | the product sale element weight                                                         |

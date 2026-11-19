@@ -27,6 +27,7 @@ Plus the [global arguments](./global_arguments)
 | $PRODUCT_ID                | the product id                                                 |
 | $PARENT                    | the parent product in the cart, if the current product has one |
 | $POSTSCRIPTUM              | the order product postscriptum                                 |
+| $IS_PREORDER               | 1 when the line was sold above the physical stock, 0 otherwise |
 | $PRICE                     | the order product price (unit price)                           |
 | $PRICE_TAX                 | the order product taxes (unit price)                           |
 | $PRODUCT_SALE_ELEMENTS_ID  | the order product sale elements id                             |
@@ -34,7 +35,9 @@ Plus the [global arguments](./global_arguments)
 | $PROMO_PRICE               | the order product in promo price (unit price)                  |
 | $PROMO_PRICE_TAX           | the order product in promo price taxes (unit price)            |
 | $QUANTITY                  | the order product ordered quantity                             |
+| $QUANTITY_DECIMALS         | the decimals of the quantity sold, frozen on the line (0 on a line placed before) |
 | $REF                       | the order product reference                                    |
+| $RESTOCK_DATE              | the restock date of the combination when the line was placed, for a preorder line |
 | $TAXED_PRICE               | the order product price including taxes (unit price)           |
 | $TAXED_PROMO_PRICE         | the order product in promo price including taxes (unit price)  |
 | $TAX_RULE_DESCRIPTION      | the tax rule description for this item                         |
@@ -43,6 +46,7 @@ Plus the [global arguments](./global_arguments)
 | $TOTAL_PRICE               | the order product price (total price)                          |
 | $TOTAL_PROMO_PRICE         | the order product in promo price (total price)                 |
 | $TOTAL_TAXED_PRICE         | the order product price including taxes (total price)          |
+| $UNIT_CODE                 | the unit code frozen on the line (`kg`, `l`...), empty on a line placed before |
 | $TOTAL_TAXED_PROMO_PRICE   | the order product in promo price including taxes (total price) |
 | $VIRTUAL                   | whatever the order product is a virtual product or not         |
 | $VIRTUAL_DOCUMENT          | the name of the file if the product is virtual.                |
