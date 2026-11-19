@@ -100,6 +100,8 @@ The **Unsubscribe** action of a row marks the subscriber as unsubscribed. The ro
 
 Viewing and exporting need the view right on the newsletter, and **Unsubscribe** needs the delete right.
 
+The header of the page shows whether the sign-up is on and, to an administrator who may update the newsletter, a button that turns it on or off. See [Newsletter](../features/newsletter).
+
 ## Configuration
 
 ### System information
@@ -137,6 +139,12 @@ The screen needs the view right on the administration logs. See [Two-Factor Auth
 - reset the second factor of a superadministrator.
 
 An administrator with a profile cannot change the profile of their own account, and nobody can delete their own account.
+
+## When an action fails
+
+Since 3.4, an action that fails on a technical error, such as a database, an HTTP client or a PHP error, or an exception that wraps one, shows the administrator a generic message: "The action failed on an internal error. The details are in the log." The detail goes to the log instead of the screen, so that table names, queries, URLs and file paths are not shown.
+
+A refusal worded by a rule is still shown as it is worded, for instance a capture above the authorization or a forbidden status transition.
 
 ## Search
 
