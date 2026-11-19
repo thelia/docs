@@ -1,0 +1,11 @@
+{
+  "label": "Smarty Plugins (legacy)",
+  "position": 91,
+  "link": {
+    "type": "doc",
+    "id": "reference/smarty-plugins/index"
+  },
+  "customProps": {
+    "description": "Smarty plugins for the legacy back-office theme"
+  }
+}

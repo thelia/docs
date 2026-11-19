@@ -1,0 +1,11 @@
+{
+  "label": "Testing",
+  "position": 8,
+  "link": {
+    "type": "doc",
+    "id": "testing/index"
+  },
+  "customProps": {
+    "description": "Write and run tests for your Thelia application"
+  }
+}

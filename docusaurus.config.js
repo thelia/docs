@@ -88,17 +88,22 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: 'https://github.com/thelia/docs/edit/main/',
-          lastVersion: '3.3',
+          lastVersion: '3.4',
           versions: {
             current: {
               label: 'Next',
               path: 'next',
               banner: 'unreleased',
             },
-            '3.3': {
+            '3.4': {
               label: 'Thelia 3',
               path: '',
               banner: 'none',
+            },
+            '3.3': {
+              label: 'Thelia 3.3',
+              path: '3.3',
+              banner: 'unmaintained',
             },
             '3.2': {
               label: 'Thelia 3.2',

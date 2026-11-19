@@ -1,0 +1,66 @@
+---
+title: Reference
+sidebar_position: 1
+---
+
+# Reference documentation
+
+Technical reference for Thelia's core systems.
+
+## Core systems
+
+### Events
+
+Thelia uses Symfony's event dispatcher so modules can react to actions across the system. Events keep components decoupled from each other.
+
+See the [Events reference](./events.md) for the complete list of available events.
+
+### Forms
+
+Thelia's form system is built on Symfony Forms. It handles validation, CSRF protection, and template rendering.
+
+See the [Forms reference](./forms.md) for form creation and handling.
+
+### Internationalization
+
+Thelia supports multiple languages and locales. This section covers how to translate your modules and templates.
+
+See [Internationalization](./internationalization.md) for the i18n documentation.
+
+### Emails and PDF
+
+Transactional emails and order documents (invoice, delivery slip) are Twig themes rendered through the same parser as the rest of the site.
+
+See [Emails and PDF](./emails-and-pdf.md) for the theme reference and the preview commands.
+
+### Background jobs
+
+Mail delivery, back-office exports and imports, and the work of modules can run in a queue consumed by a worker, and recurring tasks run from a schedule.
+
+See [Background jobs](./background-jobs.md) for the settings, the commands and a complete module example.
+
+## CLI commands
+
+Thelia provides console commands for common operations such as cache management, module handling, and database operations.
+
+See the [CLI reference](./cli/index.md) for all available commands.
+
+## Quick reference
+
+| Topic | Description |
+|-------|-------------|
+| [Events](./events.md) | System events and event listeners |
+| [Forms](./forms.md) | Form creation and validation |
+| [Internationalization](./internationalization.md) | Multi-language support |
+| [Emails and PDF](./emails-and-pdf.md) | Email and PDF Twig themes |
+| [Background jobs](./background-jobs.md) | Queues, workers and recurring tasks |
+| [CLI Commands](./cli/index.md) | Console commands |
+
+## Legacy references
+
+These sections document the loop data layer and the Smarty plugins of the `TheliaSmarty` module. The loops stay in the core and answer the `loop()` Twig function; the Smarty back-office is no longer installed as of Thelia 3.2. Prefer [API resources](/docs/api/index.md) in new code.
+
+| Topic | Description |
+|-------|-------------|
+| [Loops](./loops/index.md) | Smarty loop reference (legacy data layer) |
+| [Smarty Plugins](./smarty-plugins/index.md) | Smarty plugins for the legacy back-office theme |

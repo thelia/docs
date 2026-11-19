@@ -1,0 +1,7 @@
+{
+  "label": "Upgrading",
+  "position": 10,
+  "customProps": {
+    "description": "Migrate from Thelia 2 or update an existing Thelia 3 project"
+  }
+}

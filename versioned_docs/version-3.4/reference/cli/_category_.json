@@ -1,0 +1,11 @@
+{
+  "label": "CLI Commands",
+  "position": 4,
+  "link": {
+    "type": "doc",
+    "id": "reference/cli/index"
+  },
+  "customProps": {
+    "description": "Console commands reference"
+  }
+}

@@ -1,0 +1,356 @@
+---
+title: Translatable Resources
+sidebar_position: 4
+---
+
+# Translatable Resources
+
+Many e-commerce entities (products, categories, content) require multilingual support. Thelia provides `AbstractTranslatableResource` for resources with i18n data.
+
+## AbstractTranslatableResource
+
+Extend this class instead of implementing `PropelResourceInterface` directly:
+
+```php
+use Thelia\Api\Resource\AbstractTranslatableResource;
+
+class Product extends AbstractTranslatableResource
+{
+    // Resource properties...
+
+    #[Groups([self::GROUP_ADMIN_READ, self::GROUP_ADMIN_WRITE])]
+    public I18nCollection $i18ns;
+
+    public static function getI18nResourceClass(): string
+    {
+        return ProductI18n::class;
+    }
+
+    public static function getPropelRelatedTableMap(): ?TableMap
+    {
+        return new ProductTableMap();
+    }
+}
+```
+
+## I18nCollection
+
+The `I18nCollection` holds translations for all locales:
+
+```php
+#[Groups([self::GROUP_ADMIN_READ, self::GROUP_ADMIN_WRITE, self::GROUP_FRONT_READ])]
+public I18nCollection $i18ns;
+```
+
+### JSON structure
+
+```json
+{
+    "id": 1,
+    "ref": "PROD-001",
+    "i18ns": {
+        "en_US": {
+            "title": "Product Title",
+            "description": "Product description in English",
+            "chapo": "Short description",
+            "postscriptum": "Additional notes"
+        },
+        "fr_FR": {
+            "title": "Titre du produit",
+            "description": "Description du produit en français",
+            "chapo": "Description courte",
+            "postscriptum": "Notes additionnelles"
+        }
+    }
+}
+```
+
+## Creating the I18n resource
+
+Each translatable resource needs a corresponding I18n resource:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace MyModule\Api\Resource;
+
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Thelia\Api\Resource\I18n;
+
+class ProductReviewI18n extends I18n
+{
+    #[Groups([
+        ProductReview::GROUP_ADMIN_READ,
+        ProductReview::GROUP_ADMIN_WRITE,
+        ProductReview::GROUP_FRONT_READ,
+        ProductReview::GROUP_FRONT_WRITE,
+    ])]
+    #[NotBlank(groups: [ProductReview::GROUP_ADMIN_WRITE])]
+    public ?string $title = null;
+
+    #[Groups([
+        ProductReview::GROUP_ADMIN_READ,
+        ProductReview::GROUP_ADMIN_WRITE,
+        ProductReview::GROUP_FRONT_READ,
+        ProductReview::GROUP_FRONT_WRITE,
+    ])]
+    public ?string $content = null;
+}
+```
+
+## Complete example
+
+### Main resource
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace MyModule\Api\Resource;
+
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Delete;
+use Propel\Runtime\Map\TableMap;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Thelia\Api\Bridge\Propel\Validator\I18nConstraint;
+use Thelia\Api\Resource\AbstractTranslatableResource;
+use Thelia\Api\Resource\I18nCollection;
+use MyModule\Model\Map\FaqItemTableMap;
+
+#[ApiResource(
+    operations: [
+        new Post(uriTemplate: '/admin/faq_items'),
+        new GetCollection(uriTemplate: '/admin/faq_items'),
+        new Get(uriTemplate: '/admin/faq_items/{id}'),
+        new Put(uriTemplate: '/admin/faq_items/{id}'),
+        new Delete(uriTemplate: '/admin/faq_items/{id}'),
+    ],
+    normalizationContext: ['groups' => [self::GROUP_ADMIN_READ]],
+    denormalizationContext: ['groups' => [self::GROUP_ADMIN_WRITE]],
+)]
+#[ApiResource(
+    operations: [
+        new GetCollection(uriTemplate: '/front/faq_items'),
+        new Get(uriTemplate: '/front/faq_items/{id}'),
+    ],
+    normalizationContext: ['groups' => [self::GROUP_FRONT_READ]],
+)]
+class FaqItem extends AbstractTranslatableResource
+{
+    public const GROUP_ADMIN_READ = 'admin:faq_item:read';
+    public const GROUP_ADMIN_WRITE = 'admin:faq_item:write';
+    public const GROUP_FRONT_READ = 'front:faq_item:read';
+
+    #[Groups([self::GROUP_ADMIN_READ, self::GROUP_FRONT_READ])]
+    public ?int $id = null;
+
+    #[Groups([self::GROUP_ADMIN_READ, self::GROUP_ADMIN_WRITE])]
+    public ?int $position = null;
+
+    #[Groups([self::GROUP_ADMIN_READ, self::GROUP_ADMIN_WRITE])]
+    public bool $visible = true;
+
+    #[I18nConstraint(groups: [self::GROUP_ADMIN_WRITE])]
+    #[Groups([
+        self::GROUP_ADMIN_READ,
+        self::GROUP_ADMIN_WRITE,
+        self::GROUP_FRONT_READ,
+    ])]
+    public I18nCollection $i18ns;
+
+    public static function getI18nResourceClass(): string
+    {
+        return FaqItemI18n::class;
+    }
+
+    public static function getPropelRelatedTableMap(): ?TableMap
+    {
+        return new FaqItemTableMap();
+    }
+}
+```
+
+### I18n resource
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace MyModule\Api\Resource;
+
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Thelia\Api\Resource\I18n;
+
+class FaqItemI18n extends I18n
+{
+    #[Groups([
+        FaqItem::GROUP_ADMIN_READ,
+        FaqItem::GROUP_ADMIN_WRITE,
+        FaqItem::GROUP_FRONT_READ,
+    ])]
+    #[NotBlank(groups: [FaqItem::GROUP_ADMIN_WRITE])]
+    public ?string $question = null;
+
+    #[Groups([
+        FaqItem::GROUP_ADMIN_READ,
+        FaqItem::GROUP_ADMIN_WRITE,
+        FaqItem::GROUP_FRONT_READ,
+    ])]
+    #[NotBlank(groups: [FaqItem::GROUP_ADMIN_WRITE])]
+    public ?string $answer = null;
+}
+```
+
+## I18nConstraint
+
+Validate required locales:
+
+```php
+use Thelia\Api\Bridge\Propel\Validator\I18nConstraint;
+
+#[I18nConstraint(groups: [self::GROUP_ADMIN_WRITE])]
+public I18nCollection $i18ns;
+```
+
+This ensures at least one locale has the required fields filled.
+
+## Accessing translations via DataAccessService
+
+When using `DataAccessService::resources()` (in PHP or via the `resources()` Twig function), the `i18ns` property is **automatically flattened** to the current locale.
+
+:::important
+The DataAccessService always returns translations for the **current locale only**. You cannot access other locales via this method.
+:::
+
+### In Twig
+
+```twig
+{% set product = resources('/api/front/products/' ~ productId) %}
+
+{# Translations are flattened to current locale #}
+<h1>{{ product.i18ns.title }}</h1>
+<p>{{ product.i18ns.description }}</p>
+<p>{{ product.i18ns.chapo }}</p>
+```
+
+The returned structure is:
+
+```json
+{
+    "id": 1,
+    "ref": "PROD-001",
+    "i18ns": {
+        "title": "Product Title",
+        "description": "Product description...",
+        "chapo": "Short description"
+    }
+}
+```
+
+**Not** a multi-locale structure like the raw API returns.
+
+### In PHP
+
+```php
+$product = $this->dataAccessService->resources('/api/front/products/1');
+
+// Access current locale (already flattened)
+$title = $product['i18ns']['title'];
+$description = $product['i18ns']['description'];
+```
+
+## Accessing all locales (raw API)
+
+If you need access to all translations, use the HTTP API directly:
+
+```http
+GET /api/admin/products/1
+Accept: application/json
+```
+
+Response includes all locales:
+
+```json
+{
+    "id": 1,
+    "ref": "PROD-001",
+    "i18ns": {
+        "en_US": {
+            "title": "Product Title",
+            "description": "Product description in English"
+        },
+        "fr_FR": {
+            "title": "Titre du produit",
+            "description": "Description du produit en français"
+        }
+    }
+}
+```
+
+:::important
+This multi-locale shape is what **both** the `/api/admin` and `/api/front` HTTP endpoints return. The front endpoints are **not** flattened either: `i18ns` is always keyed by locale over HTTP.
+
+Flattening to the current locale happens **only** through the `DataAccessService` (the `resources()` Twig function and the PHP service), not on the HTTP API. Source: `ResourceService::formatI18ns()` in `core/lib/Thelia/Api/Service/API/ResourceService.php`.
+:::
+
+## Propel I18n Table
+
+Your Propel schema should include an i18n table:
+
+```xml
+<table name="faq_item">
+    <column name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+    <column name="position" type="INTEGER"/>
+    <column name="visible" type="BOOLEAN" default="true"/>
+</table>
+
+<table name="faq_item_i18n">
+    <column name="id" type="INTEGER" primaryKey="true"/>
+    <column name="locale" type="VARCHAR" size="5" primaryKey="true"/>
+    <column name="question" type="CLOB"/>
+    <column name="answer" type="CLOB"/>
+    <foreign-key foreignTable="faq_item" onDelete="CASCADE">
+        <reference local="id" foreign="id"/>
+    </foreign-key>
+</table>
+```
+
+## Core translatable resources
+
+Thelia provides these translatable resources:
+
+| Resource | I18n Fields |
+|----------|-------------|
+| `Product` | title, description, chapo, postscriptum |
+| `Category` | title, description, chapo, postscriptum |
+| `Content` | title, description, chapo, postscriptum |
+| `Folder` | title, description, chapo, postscriptum |
+| `Brand` | title, description, chapo |
+| `Feature` | title |
+| `FeatureAv` | title |
+| `Attribute` | title |
+| `AttributeAv` | title |
+
+## Best practices
+
+1. Keep i18n fields in a separate class for cleaner organization.
+2. Validate required locales with `I18nConstraint`.
+3. Include `i18ns` in every read group, since clients need the translations.
+4. Handle missing translations by providing fallbacks.
+
+## Next steps
+
+- [Resources](./resources) - Basic resource creation
+- [Addons](./addons) - Extending resources
+- [Serialization Groups](./serialization-groups) - Controlling visibility

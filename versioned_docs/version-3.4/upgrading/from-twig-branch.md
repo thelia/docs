@@ -1,0 +1,115 @@
+---
+title: Upgrading from the twig branch
+sidebar_position: 3
+---
+
+# Upgrading from the twig branch
+
+Before the first tagged release, Thelia 3 was distributed from the `twig` branch of each
+repository, and projects followed it with `dev-twig` constraints. Those constraints track a
+moving branch. Replace them with the released versions.
+
+## Update the constraints
+
+`thelia/core` and the project skeleton are released as `3.0.0`, the templates on the `1.0`
+series. A caret constraint accepts every later release of the same major version:
+
+```json
+{
+    "require": {
+        "thelia/thelia-skeleton": "^3.0",
+        "thelia/core": "^3.0",
+        "thelia/flexy": "^1.0",
+        "thelia/backoffice-default-twig-template": "^1.0",
+        "thelia/email-default-template": "^1.0",
+        "thelia/pdf-default-template": "^1.0"
+    }
+}
+```
+
+A project created with `composer create-project thelia/thelia-project` only requires
+`thelia/thelia-skeleton`; `thelia/core` and the templates arrive as transitive dependencies. Only
+change what your own `composer.json` declares.
+
+Every Thelia module is tagged at the same time, each with its own new major version. The version
+differs from one module to the next, so read it on the module page on
+[Packagist](https://packagist.org/packages/thelia/) before writing the constraint:
+
+```json
+{
+    "require": {
+        "thelia/rewrite-url-module": "^3.0"
+    }
+}
+```
+
+## Remove the beta stability flag
+
+Installing the Thelia 3 betas required allowing the beta stability in the root `composer.json`.
+Every Thelia package now has a stable release: remove the `"minimum-stability": "beta"` line if
+the project still carries it.
+
+## Run the update
+
+Update the packages you changed, and nothing else:
+
+```bash
+composer update thelia/thelia-skeleton thelia/flexy \
+    thelia/backoffice-default-twig-template --with-dependencies
+```
+
+A bare `composer update` also moves every unrelated dependency to its latest version. If something
+breaks afterwards, you no longer know which change caused it. Keep the update scoped.
+
+## After the update
+
+Clear the cache:
+
+```bash
+php Thelia cache:clear
+```
+
+Rebuild the assets. Composer reinstalls the template packages from scratch, so whatever a template
+had compiled is gone:
+
+```bash
+php Thelia importmap:install
+php Thelia tailwind:build
+php Thelia sass:build
+```
+
+The first two rebuild the front-office assets, the last one the Twig back-office stylesheet. These
+are the commands `bin/install` runs on a fresh install.
+
+Then open the front office and `/admin`, and check that both render.
+
+## Custom modules
+
+A module declares the Thelia version it requires in `Config/module.xml`. The constraint is a
+minimum, compared with `>=` against the running core, so the highest value a module can ask for
+is the version the shop runs:
+
+```xml
+<thelia>3.0.0</thelia>
+```
+
+Anything above the running version, `3.2.0` on a 3.1 shop for instance, makes the module fail to
+activate with `The module <name> requires Thelia 3.2.0 or newer`.
+
+Because the constraint is a minimum, a module still declaring `<thelia>2.5.0</thelia>` keeps
+working, and a module declaring `<thelia>3.0.0</thelia>` keeps activating on 3.1 and later. Raise
+it to `3.0.0` once the module no longer supports Thelia 2, and beyond that only when the module
+starts using something a later release added. See [Release Policy](./release-policy.md).
+
+## Thelia 2 projects
+
+A Thelia 2 project following `dev-main` has to move off `main`: that branch now carries Thelia 3.
+Thelia 2 maintenance continues on the `2.6` branch:
+
+```json
+{
+    "require": {
+        "thelia/thelia": "dev-2.6"
+    }
+}
+```
