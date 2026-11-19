@@ -102,6 +102,17 @@ What Flexy guarantees holds as long as a child theme does not undo it.
 8. A control that only exists on mobile (a drawer trigger) is a `<button>` and is hidden with
    `display: none` where it does nothing, so that it leaves the tab order.
 
+## What the core checks on every pull request
+
+The `accessibility` workflow of `thelia/thelia` serves a demo shop and runs `tests/Playwright/specs/accessibility.spec.ts` against it, on every pull request.
+
+- axe runs with the WCAG 2.1 A and AA rules, the base of RGAA 4.1. The spec fails on a serious or critical violation. It runs on the sign-in and sign-up forms, on the pages of `setup/audit/lighthouserc.default.yaml` and on each step of the checkout, up to the confirmation.
+- axe waits until Turbo has finished its visit and the live components have rendered again. Otherwise it would read a half-transparent text as a contrast failure.
+- A page where no rule reached its content fails. A URL of the sample that no longer exists, or that redirects elsewhere, fails too.
+- The same spec checks the skip link, places an order with the keyboard alone, and checks that nothing sticks out of a 320px viewport.
+
+The workflow starts PHP's built-in server with a router script, so that it hands rewritten URLs to Symfony. The page list of `lighthouserc.default.yaml` follows the routes Flexy serves.
+
 ## Measure a derived theme
 
 The spec of the core runs against any served shop. From a checkout of `thelia/thelia`, with your
@@ -113,6 +124,8 @@ npm ci
 npx playwright install chromium
 BASE_URL=https://my-shop.ddev.site npx playwright test specs/accessibility.spec.ts
 ```
+
+The helpers that read the database run `ddev exec mysql` by default. When the shop is not served by DDEV, set `MYSQL_COMMAND` to your own client, for example `MYSQL_COMMAND="mysql -h127.0.0.1 -uroot -proot thelia"`.
 
 The page list comes from `setup/audit/lighthouserc.default.yaml`; point it at your own URLs if
 your catalogue differs from the demo. Each page logs a line such as
