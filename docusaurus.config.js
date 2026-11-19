@@ -103,7 +103,7 @@ module.exports = {
             '3.3': {
               label: 'Thelia 3.3',
               path: '3.3',
-              banner: 'unmaintained',
+              banner: 'none',
             },
             '3.2': {
               label: 'Thelia 3.2',
