@@ -9,6 +9,41 @@ This page lists, release by release, what a module or a theme has to change when
 
 For the update procedure itself, see [Update](./update.md).
 
+## Thelia 3.4
+
+These changes ship in a minor release, which departs from the [compatibility promise](./release-policy.md#compatibility-promise). They correct a price or a stock calculation, or close an access that the promise should not protect. No official module or theme depends on them. The exact signatures are in the "Breaking changes" of [`CHANGELOG.md`](https://github.com/thelia/thelia/blob/3.4.0/CHANGELOG.md), and [`UPGRADE-3.4.md`](https://github.com/thelia/thelia/blob/3.4.0/UPGRADE-3.4.md) says what to do for each entry. The update gestures are in [Updating from 3.3 to 3.4](./from-3.3-to-3.4.md).
+
+### Constructors and signatures
+
+Many services take new constructor arguments, with no default (price lists, customer groups, stock reservation, product bundles, express payment). A module that builds one by hand passes them; a module that reads the service from the container has nothing to do. A subclass that overrides a method which gained an optional argument declares it too: `Action\Cart::refreshCartItemPrices()` (`bool $bundleLinesOnly = false`), `ReservedSaleProductRule::visibleProductClause()` (`bool $defaultVisitor = false`), `StockDecrementer::decrement()`, `FilterService` and `Category::countAllProducts()`. `CouponInterface` declares `getPriority()` and `isStopProcessing()`: a promotion type that extends `CouponAbstract` inherits them.
+
+### Classes and events
+
+- `ModelConfigListener` is no longer `readonly`: a subclass declared `readonly class` drops the modifier.
+- `RecordOrderHistoryListener::rememberStatusBeforeChange()` is removed: read the previous status from `OrderEvent::getPreviousStatusId()`.
+- The first result extension of the Propel collection provider that answers something other than `null` is served, in the order of `getDefaultPriority()`, where all ran and the last answer won.
+- `CART_ADDITEM`, `CUSTOMER_CREATEACCOUNT`, `CUSTOMER_UPDATEACCOUNT` and `CUSTOMER_UPDATEPROFILE` may throw `ProductNotAvailableException` or `InvalidCustomerDiscountException`: a module that dispatches them catches the exception. `CustomerGroup::preDelete()` throws `DefaultCustomerGroupProtectedException` for the default group.
+- Every customer row needs a group: a module or an import that inserts into `customer` with SQL sets `customer_group_id`.
+
+### Quantities, prices and totals
+
+- Quantities are floats: `ProductSaleElements::$quantity`, `CartEvent::getQuantity()` and its protected property `$quantity` (`?float` instead of `?int`), `Product::createProductSaleElement()`. A class that overrides or redeclares them follows, and a listener that compares a quantity to an integer with `===` changes.
+- Prices of a sale element can be `null` in the API when the shop does not show the price to the caller (`ProductPrice::getPrice()` returns `?float`).
+- Totals and line amounts round half up to the cent, so an order total may differ by a cent. Code that adds up cart lines reads `CartItem::getSummedTotalRealPrice()`.
+- Prices change for customers with a discount or a group that prices anything.
+- Paying a cart whose prices moved is refused once with a 409 Conflict; the next attempt goes through.
+
+### API
+
+- `GET /api/front/coupons` and its two siblings answer 404; `Thelia\Api\Resource\Coupon` is no longer an API resource.
+- `confirmationToken` is removed from the customer read representation, and `POST /api/front/customers` no longer reads `customerTitle` nor a `lang` IRI.
+
+### Themes
+
+- Update Flexy (1.4.0), back-office (1.4.0), e-mail (1.4.0) and PDF (1.5.0) together with the core: all require `thelia/core ^3.4`.
+- A child theme that overrides a Flexy component listed in `UPGRADE-3.4.md` (`Summary\Checkout`, `NextButton\Base`, `Cart\Base`, `ProductDetails\Base`) follows its new signature. The back-office search of `default-twig` changes the public methods of `SearchRepository` and `SearchResultsPresenter`.
+- An AI connection that reads `THELIA_AI_<X>_KEY` and calls a base URL of its own needs `THELIA_AI_<X>_BASE_URL`.
+
 ## Thelia 3.3
 
 The update gestures (the Symfony Messenger recipe, the shared directories, the queue of the heavy jobs) are in [Updating from 3.2 to 3.3](./from-3.2-to-3.3.md). See [Background jobs](../architecture/background-jobs.md) for the model.
