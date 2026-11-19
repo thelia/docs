@@ -40,11 +40,12 @@ latest series only.
 
 | Series | Branch | Supported | End of support |
 |--------|--------|-----------|----------------|
-| 3.3 | `3.3` | Yes, security fixes | None yet |
-| 3.2 | `3.2` | Critical security fixes only: update to 3.3 | With the 3.4.0 release |
-| 3.1 | `3.1` | No: update to 3.3 | 29 October 2026, with the 3.3.0 release |
-| 3.0 | None | No: update to 3.3 | 16 September 2026, with the 3.1.0 release |
-| 2.6 | `2.6` | No: update to 3.3 | 6 October 2026, with the 3.2.1 release |
+| 3.4 | `3.4` | Yes, security fixes | None yet |
+| 3.3 | `3.3` | Critical security fixes only: update to 3.4 | With the 3.5.0 release |
+| 3.2 | `3.2` | No: update to 3.4 | 19 November 2026, with the 3.4.0 release |
+| 3.1 | `3.1` | No: update to 3.4 | 29 October 2026, with the 3.3.0 release |
+| 3.0 | None | No: update to 3.4 | 16 September 2026, with the 3.1.0 release |
+| 2.6 | `2.6` | No: update to 3.4 | 6 October 2026, with the 3.2.1 release |
 | 2.5 and older | None | No | Ended |
 
 Thelia 3 is developed on a single trunk. A security fix ships in the next 3.x release, and a
@@ -65,6 +66,7 @@ number is decided from the content at tag time.
 | 3.1.0 | 16 September 2026 |
 | 3.2.0 | 2 October 2026 |
 | 3.3.0 | 29 October 2026 |
+| 3.4.0 | 19 November 2026 |
 
 Since 3.0.0, a new minor series has come out every two to four weeks. Patch releases come in
 between. Plan updates as a routine task rather than as a rare project: a series stops
