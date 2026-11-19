@@ -19,7 +19,7 @@ dated sale can display a countdown on the storefront.
 | --- | --- |
 | `0` | Everyone. The historical behaviour, and the default. |
 | `1` | The customers named on the sale, stored in the `sale_customer` table. |
-| `2` | Customer groups. Modelled, not implemented: customer groups do not exist in the core yet. |
+| `2` | The customers of the [customer groups](./customer-groups.md) named on the sale, stored in the `sale_customer_group` table. |
 
 A reserved sale is invisible to anyone it is not open to. Its page answers 404 and its discount
 is never served. When the merchant also ticks `sale.hide_products`, the products it covers
@@ -27,6 +27,8 @@ disappear from the listings, the front API and the product page for everyone els
 showing at their usual price.
 
 A product covered by two hidden sales stays visible to a customer named on either one.
+
+A sale reserved for groups must name at least one group, and one whose groups were all deleted applies to nobody. `SaleCreateEvent` takes the groups through `setCustomerGroupIds()`, and the admin API reads them on a single sale as `customerGroupIds`.
 
 Guest accounts are never entitled to a reserved sale: a guest row is reusable by email, so it
 cannot carry an entitlement.

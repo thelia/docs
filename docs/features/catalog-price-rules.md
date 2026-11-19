@@ -19,7 +19,8 @@ to run.
 A rule is made of three things:
 
 - A scope: which products it prices.
-- An audience: everyone, or the customers named on the rule.
+- An audience: everyone, the customers named on the rule, or the customers of chosen
+  [customer groups](./customer-groups.md).
 - An effect: a percentage off, an amount off per currency, or a fixed price per currency.
 
 On top of that a rule has a priority, a "stop" flag, optional dates, and a choice to show the
@@ -41,12 +42,13 @@ turned off, and its other settings are set on the edit screen.
 | Percentage taken off | Between 0 and 100. Used by the percentage effect. |
 | Value per currency | Used by the amount and fixed price effects. Typed tax included, at the shop location. A currency left blank is not priced by the rule. At least one currency is required. |
 | Show the catalog price struck through | Shows the original price next to the rule price. |
-| Who this rule prices for | Everyone, or named customers only. |
+| Who this rule prices for | Everyone, named customers only, or customer groups only. A rule reserved for groups must name at least one group. |
 
-Amounts and fixed prices are typed tax included, like the offsets of a flash sale. Customer
-groups are not available yet: the audience is everyone or a list of customers. A rule reserved
+Amounts and fixed prices are typed tax included, like the offsets of a flash sale. A rule reserved
 for named customers needs at least one customer, and changing the audience needs the permission
-to view customers.
+to view customers. A rule reserved for customer groups needs at least one group. A rule reserved
+for groups that have all been deleted applies to nobody. A guest account is never a member of a
+group for a rule.
 
 ### The scope
 
@@ -89,6 +91,14 @@ zero and logs it.
 
 The customer discount, if the customer has one, applies on top of the rule price, exactly as it
 applies to a promo price.
+
+### With customer groups and price lists
+
+A rule competes with what the customer's [group](./customer-groups.md) pays. The lower price wins.
+When the group changes nothing for the product (no price of its own, no discount), the rule replaces
+the promo price as described above. A [price list](./price-lists.md) price is final: no rule applies
+on top of it. The full order is in
+[How the price is decided](./customer-groups.md#how-the-price-is-decided).
 
 ### With reserved sales
 
@@ -225,8 +235,10 @@ makes the rule cover nothing, and the back office flags it.
 
 `Thelia\Domain\Pricing\Rule\Audience\AudienceResolverInterface` (tag
 `thelia.catalog_price_rule.audience`) answers, for one `audience_mode` value, which turned-on
-rules a customer is entitled to. The core ships the named customers mode. Customer groups
-(`audience_mode` 2) are modelled and will plug in here.
+rules a customer is entitled to. The core ships the named customers mode and the customer groups
+mode (`audience_mode` 2, `AUDIENCE_MODE_CUSTOMER_GROUPS`), which reads
+`catalog_price_rule_customer_group`. `CatalogPriceRuleCreateEvent` takes the groups through
+`setCustomerGroupIds()`, and the admin API reads them on a single rule as `customerGroupIds`.
 
 ### Pricing by rules of your own
 

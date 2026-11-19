@@ -271,11 +271,11 @@ asked a third party to run.
 | `401` | No token, or a token the firewall will not take. |
 | `403` | The shop no longer allows this cart to be ordered without an account. |
 | `404` | No such cart, no such address — and the same answer, word for word, for a cart or an address of another account. |
-| `409` | Another request is placing this very cart, or the shop no longer holds what the cart asks for. The shortage names the product reference. Both are worth retrying. |
+| `409` | Another request is placing this very cart, the shop no longer holds what the cart asks for, or the price of a line moved since it was added (a customer group, a price list, a rule or a sale). The shortage names the product reference. In the last case the lines were priced again, and the same request, posted again, is placed on the new prices. All of them are worth retrying. |
 | `422` | On a selection: the identifier names nothing the checkout can take — no such activated module, or none given. On a placement: the cart still has something to settle, a mandatory consent included, and the body is the one the verdict answers with. |
 | `400` | The body is not JSON, or is a JSON array where an object is expected. |
 
-Nothing else that goes wrong while placing is answered with a 409. Every other failure inside the
+Nothing else that goes wrong while placing is answered with a 409 (the three cases above). Every other failure inside the
 placement — a module that answered nothing, a third-party module raising its own — is a defect of
 the shop: it stays a 500 with no message, rather than telling a client to retry something that
 will never work.

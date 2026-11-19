@@ -21,7 +21,9 @@ erases the identity instead: name, email, password, tokens, address book, cart a
 the identity frozen on the order addresses (including SIRET and VAT number), carts,
 newsletter subscription, account version history, and the identity copied into the admin
 log. The orders keep their reference, invoice number and date, amounts, taxes, coupons and
-status history, and stay attached to the now anonymous account.
+status history, and stay attached to the now anonymous account. The account goes back to the
+default [customer group](../../features/customer-groups.md), and `CUSTOMER_GROUP_CHANGED` is
+dispatched once the erasure is committed. The orders keep the group frozen on them.
 
 The whole operation runs in a single Propel transaction: if a module fails, nothing is
 written. `customer.anonymized_at` records the date of the first erasure, so running the
