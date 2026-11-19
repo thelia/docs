@@ -756,6 +756,97 @@ Match the class instead of the wording of the message to tell a shortage from an
 
 See [Breaking changes](../upgrading/breaking-changes.md#thelia-32) for the constructors that changed.
 
+## Journal and deferred capture
+
+Added in Thelia 3.4.
+
+Every money movement of an order is written to the payment journal (`order_payment_transaction`).
+See [Payment journal and deferred capture](../features/payment-journal.md) for what the merchant
+sees. A module that takes the price at once needs no change: when its order reaches a paid status,
+the core writes a succeeded capture of the total, authored by the module.
+
+A module that reserves the amount first and takes it later implements optional interfaces.
+Each one is separate from `PaymentModuleInterface`, so every published module keeps working
+untouched.
+
+| Interface | Method | The module answers |
+| --- | --- | --- |
+| `Thelia\Module\PaymentModuleWithCaptureInterface` | `supportsDeferredCapture(): bool` | Whether, as configured now, the module authorizes first. When it turns `false`, authorizations the journal still holds open can still be captured and released. |
+| | `capture(Order $order, float $amount, OrderPaymentTransaction $transaction): PaymentOperationResult` | Takes `$amount` from the authorization. `$transaction` is the pending line the core already wrote. |
+| | `voidAuthorization(Order $order, OrderPaymentTransaction $transaction): PaymentOperationResult` | Releases what the authorization still holds. |
+| `Thelia\Module\PaymentModuleCapturingOnceInterface` | `capturesOnce(): bool` | `true` when the provider takes a single capture per authorization. Once a capture is asked, the core offers no other. |
+| `Thelia\Module\PaymentModuleCancellingOnReleaseInterface` | `cancelsOrderOnRelease(): bool` | `true` when the module cancels the order itself once its provider ended the authorization with nothing taken. |
+| `Thelia\Module\PaymentModuleManagingOrderStatusInterface` | `managesOrderStatus(): bool` | `true` when the module moves the order status itself, from its own configuration. The core then leaves the status alone and the module still writes its journal lines. |
+
+`PaymentModuleCapturingOnceInterface` extends `PaymentModuleWithCaptureInterface`. The two others
+extend `PaymentModuleInterface`.
+
+The core calls these methods with the configuration of the sale unit the order was placed on, so a
+module whose keys or mode are set per sale unit reads the right ones from the back office and the
+admin API as from the checkout. A deactivated module is not called.
+
+### Writing the authorization
+
+The module writes the authorization itself when the provider confirms it, usually from its
+notification controller, through `Thelia\Domain\Payment\Service\PaymentTransactionRecorder`:
+
+```php
+$recorder->recordAuthorization(
+    $order,
+    '120.00',
+    $providerReference, // required
+    moduleCode: 'MyPayment',
+);
+```
+
+The recorder has one method per movement: `recordAuthorization()`, `recordCapture()`,
+`recordRefund()`, `recordVoid()`, `recordExpiry()`, `settle()` and `attachReference()`.
+
+- A movement reported with an outcome carries the reference the provider gave it. Without it, a
+  replayed notification cannot be told from a second movement
+  (`MissingProviderReferenceException`). A reference holds at most 100 characters and no control
+  character.
+- A movement reported again is answered with the line already written. A reference the journal
+  holds with another outcome or amount is refused (`ConflictingPaymentReferenceException`): a new
+  attempt carries a new reference.
+- A capture never exceeds what the authorization holds, and a refund never exceeds what was taken.
+- Never call the recorder inside a database transaction your module opened.
+- When an authorization lapses at the provider, record it with `recordExpiry()`.
+
+### Answering a capture
+
+`capture()` and `voidAuthorization()` call the provider and return a `PaymentOperationResult`:
+
+- `PaymentOperationResult::succeeded(?string $pspReference)`;
+- `PaymentOperationResult::failed(?string $errorCode, ?string $errorMessage, ?string $pspReference)`;
+- `PaymentOperationResult::pending(?string $pspReference)`, when the outcome comes later. The
+  module then reports it through the recorder under the same reference, which settles the line.
+
+A `PaymentRefusedException` thrown by the module is a refusal: the line is settled as failed. Build
+it with `PaymentRefusedException::withProviderCode($message, $code)` to keep the provider's code
+on the line. Any other exception, a timeout for instance, leaves the line pending, because the
+call may have reached the provider. The caller receives a `PaymentProviderUnreachableException`,
+and the technical message goes to the log only.
+
+### Listening to the journal
+
+| Event | Class | When |
+| --- | --- | --- |
+| `TheliaEvents::ORDER_PAYMENT_TRANSACTION_RECORDED` | `OrderPaymentTransactionEvent` | After each write, settlement and replay. It can fire twice for the same line, so a listener must stand being called twice. |
+| `TheliaEvents::ORDER_PAYMENT_CAPTURE` | `OrderPaymentCaptureEvent` | A capture is asked, from the back office or the admin API. |
+| `TheliaEvents::ORDER_PAYMENT_TRANSACTION_SETTLE` | `OrderPaymentSettlementEvent` | An administrator records by hand the outcome of a pending line. |
+
+### Orders with nothing to pay
+
+When a coupon covers the whole order, the core marks it paid and does not call `pay()`. A module
+with a reason to be called anyway listens to `TheliaEvents::ORDER_NOTHING_TO_PAY` and calls
+`OrderNothingToPayEvent::refuse()`. See [Checkout](../features/checkout.md#orders-with-nothing-to-pay).
+
+### Express payment
+
+A wallet module also implements `Thelia\Module\ExpressPaymentModuleInterface`. See
+[Express payment](../features/express-payment.md).
+
 ## Subscriptions
 
 A module that stores payment methods can also be asked to charge one without the customer, for the
