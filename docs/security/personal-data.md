@@ -117,7 +117,8 @@ class LoyaltyPersonalData implements CustomerPersonalDataProviderInterface
 Three rules apply:
 
 - The section name must not collide with a core section (`customer`, `addresses`,
-  `orders`, `carts`, `newsletter`) nor with another provider. Prefer the module code.
+  `orders`, `order_returns`, `carts`, `newsletter`, `customer_lists`, `payment_methods`,
+  `subscriptions`) nor with another provider. Prefer the module code.
 - `exportPersonalData()` returns a structure suitable for JSON serialization, or an empty
   array when there is nothing.
 - `anonymizePersonalData()` runs inside the anonymization transaction. Throwing rolls the
