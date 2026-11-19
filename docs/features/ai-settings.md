@@ -31,7 +31,7 @@ A connection is the link between your shop and a company that runs AI models, wi
 | Server address | Empty for the usual address of the provider. Fill it in for your own server or a compatible service. The address must use `https`. Plain `http` is accepted only for a server on a private network, or when a developer has turned on the `thelia.ai.allow_insecure_urls` parameter of the shop. |
 | Where the data is processed | Asked only for a compatible service or your own server, with the choices "In the European Union" and "Outside the European Union". For the other providers it is deduced (see [AI and the AI Act](./ai-act.md#providers-and-where-data-goes)). |
 | API key | Stored encrypted. It is never displayed again, not even to administrators. Leave the field empty when you edit a connection to keep the stored key. |
-| Environment variable holding the key | Optional, for a server that keeps its secrets out of the database. The name must start with `THELIA_AI_` and end with `_KEY` or `_TOKEN`. The usual variable of the provider (`ANTHROPIC_API_KEY`, `MISTRAL_API_KEY`, `OPENAI_API_KEY`) is accepted too, but only while the connection uses the default address of that provider. Any other name is refused. When set, it wins over the saved key. |
+| Environment variable holding the key | Optional, for a server that keeps its secrets out of the database. The name must start with `THELIA_AI_` and end with `_KEY` or `_TOKEN`. The usual variable of the provider (`ANTHROPIC_API_KEY`, `MISTRAL_API_KEY`, `OPENAI_API_KEY`) is accepted too, but only while the connection uses the default address of that provider. Any other name is refused. When set, it wins over the saved key. Since 3.4, a `THELIA_AI_*` variable is sent only to the usual address of the provider or to the address the server sets next to it. For your own server, an OpenAI-compatible service or a proxy, set `THELIA_AI_X_BASE_URL` to the server address of the connection, next to `THELIA_AI_X_KEY` (or `THELIA_AI_X_TOKEN`). Without it the call, the test and the save stop and the message names the variable to set. |
 | The server is on a private network | Tick it only for a server of your own network (Ollama, for example). Otherwise addresses of a private network are refused. |
 | Connection in use | Untick to stop using a connection without deleting it. A connection or a model that a range or a usage uses cannot be deleted: assign another one to the range, or free the usage, first. |
 
@@ -70,6 +70,20 @@ In the **Ranges** tab you choose, once, which model serves each range. Change it
 
 In **Configuration > Artificial intelligence > Ranges**, the page has one drop-down per range, labelled **Fast and economical range**, **Standard range** and **Advanced range**, each with the choice "No model" and the models of your active connections, and a **Save** button. While you have no active connection, a message says so and asks you to add one in the Connections tab.
 
+### Reasoning effort
+
+Added in Thelia 3.4.
+
+Each range has a **Reasoning effort** drop-down under its model, in the **Ranges** tab. The choices are Provider default, Low, Medium, High, Very high and Maximum. Provider default sends nothing and the provider keeps its own setting, which is what every shop ran before 3.4.
+
+A usage takes its own effort when you set one, else the effort of its range. The internal calls of Thelia itself (the connection test and the safety judge) take none.
+
+Only Anthropic models use the setting. The other providers ignore it: the value is kept, nothing is sent, and the screen says so. A module that sets its own effort in its request keeps it.
+
+On an Anthropic model that cannot stop thinking, the effort you set replaces the lowest effort Thelia used to force, so such a model thinks at the effort you chose. For the other Anthropic models thinking stays off from Low to High and is kept at Very high and Maximum.
+
+The admin API exposes the value as `effort` on `/api/admin/ai/tiers` and `/api/admin/ai/usage-settings`. It holds `low`, `medium`, `high`, `xhigh` or `max`, or is empty.
+
 ### A different range for one usage
 
 A module declares the range it needs, but you can choose another one for a given usage. Open the usage in the **Usages** tab and pick the range in **Range of this usage**. Pick a stronger range if a feature writes poorly, or a cheaper one to save money.
@@ -97,7 +111,8 @@ Open a usage to change:
 | Keep the prompts in the log | Off by default: the log keeps the cost, the model and the checks, not the text sent. |
 | Days the prompts are kept | Retention period, used only when the prompts are kept (30 days by default). |
 | Tell people they are talking to an AI | The notice of Article 50(1). On by default. |
-| Mark generated content as made by an AI | The mark of Article 50(2). On by default. |
+| Mark generated content as made by an AI | The mark of Article 50(2). Off by default since 3.4: a usage that writes content for your visitors shows as not compliant until you turn it on. A usage whose settings you saved before keeps the value you saved. |
+| Reasoning effort for this usage | How hard the model thinks before it answers: Low, Medium, High, Very high or Maximum. "Follow the range" (the default) uses the effort of the range of the usage. See [Reasoning effort](#reasoning-effort). |
 
 Amounts are written in the currency of the prices of the model, US dollars for the models that come with Thelia. Nothing is converted. The budget of a usage and the cap of the shop add up the amounts as they were written, whatever their currency, so a budget only means something for a usage whose models are priced in one currency.
 

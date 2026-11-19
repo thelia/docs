@@ -62,7 +62,7 @@ final readonly class ShoppingAssistant
 | Argument | Meaning |
 | --- | --- |
 | `id` | `<module>.<purpose>`, lower case, unique in the shop. Each part starts with a letter and holds letters, digits and `_`; the module part is 55 characters at most and the purpose 72. By convention the first part is the module code in lower case. |
-| `purpose` | One sentence saying what the usage does. It is shown in the register of AI usages. |
+| `purpose` | One sentence saying what the usage does. It is shown in the register of AI usages, in the language of the reader when your module translates it in its own catalogue (`I18n/<locale>.php`, in the domain of the module code in lower case), else in the `core` catalogue, else as written. The register, its export and `/api/admin/ai/usages` read it this way. |
 | `audience` | Who the usage answers to: `Public` (anonymous visitors), `Customer`, `Admin` or `System` (jobs and commands). |
 | `tier` | The range of model: `Fast`, `Standard` or `Advanced`. |
 | `capabilities` | What the model must be able to do: `StructuredOutput`, `Tools`, `Vision`, `Streaming`. The model assigned to the range must have all of them, or the usage is inactive. A request can only use the capabilities its usage declared. |
@@ -314,7 +314,7 @@ To let the model read a URL, write a local tool that fetches the page with the s
 providerOptions: ['anthropic' => ['effort' => 'high']],
 ```
 
-The options are applied only when the connection resolved for the request is of that provider. With a Mistral connection, the `anthropic` entry is not sent.
+The options are applied only when the connection resolved for the request is of that provider. The merchant also sets a reasoning effort per range and per usage (see [Reasoning effort](../features/ai-settings#reasoning-effort)). It applies only to Anthropic, as `output_config.effort`, and only when the request names no `effort` or `output_config.effort` of its own: yours wins. OpenAI, Mistral, Ollama and the OpenAI-compatible providers ignore it. The usages of the core (`core.*`) take none. With a Mistral connection, the `anthropic` entry is not sent.
 
 With Anthropic, reasoning is off by default: when the request has no `thinking` option, the adapter sends the setting that turns reasoning off for the model, read from the catalogue. It is `disabled` for most models, `between_tools` for some, and for a model that accepts neither, `adaptive` at the lowest effort. Some models otherwise reason on their own and spend the whole `maxOutputTokens` without writing any text. A `thinking` option that your module passes is never changed. At the effort `xhigh` or `max`, the adapter sends no `thinking` field, because the API refuses `disabled` there. To ask for reasoning, use the adaptive mode and an effort:
 
@@ -427,7 +427,7 @@ final readonly class SuggestTitleController
 
 ## Showing that an AI is involved
 
-The EU AI Act asks a shop to tell people when they talk with an AI and to mark generated content. The core provides the tools, turns them on by default and never blocks a usage; your module declares which duty applies and uses the tools.
+The EU AI Act asks a shop to tell people when they talk with an AI and to mark generated content. The core provides the tools and never blocks a usage. The notice is on by default; the mark is off until the merchant turns it on; your module declares which duty applies and uses the tools.
 
 **`AiTransparency::Interactive`**: a person talks with the model. Show the notice before the person writes, on every state of your interface.
 
@@ -464,7 +464,7 @@ The Flexy theme has a component that does this for you. It arrives with Thelia 3
 
 It renders the notice as the informative message of the design system (the `Molecules:SnackBar:Base` component, with its icon), so it looks the same as the other messages of the theme.
 
-**`AiTransparency::Generative`**: the module publishes what the model writes. Each response carries a provenance mark, unless the merchant turned it off.
+**`AiTransparency::Generative`**: the module publishes what the model writes. Each response carries a provenance mark once the merchant turned it on for the usage. It is off by default, and the usage shows as not compliant until then.
 
 ```php
 $provenance = $response->provenance?->toArray();
@@ -472,7 +472,7 @@ $provenance = $response->provenance?->toArray();
 //  'generated_at' => '2026-10-28T10:15:00+01:00', 'log_id' => 9002]
 ```
 
-Store the array (or its JSON) with the content, and expose it as machine-readable metadata wherever the content is shown. `provenance` is `null` when the merchant turned the mark off for the usage. `AiProvenance::fromStored()` reads a stored array or JSON back and returns `null` if it is invalid.
+Store the array (or its JSON) with the content, and expose it as machine-readable metadata wherever the content is shown. `provenance` is `null` while the mark is off for the usage, which is the default. `AiProvenance::fromStored()` reads a stored array or JSON back and returns `null` if it is invalid.
 
 Two Twig functions take what you stored, as an array, as JSON or as an `AiProvenance`, and return an empty string if it is not a valid mark:
 
@@ -582,6 +582,8 @@ final readonly class LegacySettingsImporter
 - A connection to a public server must use `https`. `http` is accepted only when the parameter `thelia.ai.allow_insecure_urls` is `true` (see [Connections to a plain `http` server](#connections-to-a-plain-http-server)). A connection flagged `allowPrivateNetwork` may use `http` or `https` without it.
 
 ### The environment variable of a key
+
+From 3.4, a `THELIA_AI_*` variable is also sent only to the usual address of the provider or to the address in the variable of the same name ending in `_BASE_URL` (`THELIA_AI_X_KEY` goes with `THELIA_AI_X_BASE_URL`). A connection with another base URL and no such variable stops at its next call, test or save, with a message that names the variable.
 
 `saveConnection()` and the admin API refuse an `apiKeyEnv` that does not follow the rule of the screen: a name that starts with `THELIA_AI_` and ends with `_KEY` or `_TOKEN`, or the usual variable of the provider (`ANTHROPIC_API_KEY`, `MISTRAL_API_KEY`, `OPENAI_API_KEY`) while the connection calls the default address of that provider. A connection saved earlier with another name is read with the same rule: its calls fail with the same message, and so does the test of the connection.
 
