@@ -199,6 +199,31 @@ Neither field is mandatory in the core: an association, a VAT-exempt business or
 
 On the guest checkout the server never requires the two fields; the setting only decides whether the form marks them as required.
 
+## Orders with nothing to pay
+
+Added in Thelia 3.4.
+
+A coupon can cover the whole order. Before 3.4 such an order still went to the payment module the
+buyer chose, a card gateway included, to charge 0.00.
+
+Now the core reads the total the payment modules would read, postage and discount included, just
+before it asks the module to pay. When nothing is left to pay, the core moves the order to the paid
+status itself. The stock and the listeners of a paid order follow, and the module's `pay()` is not
+called. The order keeps the payment module the buyer chose, and the checkout goes on to the
+confirmation page.
+
+An order paid in several parts is left to its parts.
+
+A module with a reason to be called anyway refuses the shortcut by listening to
+`TheliaEvents::ORDER_NOTHING_TO_PAY` and calling `OrderNothingToPayEvent::refuse()`. The service
+behind it is `Thelia\Domain\Payment\Service\OrderWithNothingToPay`.
+
+## Express payment
+
+A payment module can offer a wallet button, such as Google Pay or Apple Pay, in place of the order
+button at the payment step. It is off until the merchant sets `express_payment_zones`. See
+[Express payment](./express-payment.md).
+
 ## The confirmation page
 
 Added in Flexy 1.3.

@@ -264,6 +264,18 @@ that hands the buyer over to the gateway. Injected into any other screen it is a
 asked a third party to run.
 :::
 
+## Express payment buttons
+
+Added in Thelia 3.4.
+
+`GET /api/front/payment/express-buttons?zone=checkout` lists the express payment buttons of the
+payment modules for the cart in hand. Each button carries the routes of the shop and the signed
+token the module's script needs to ask the amount and confirm the payment. The list is empty
+unless the merchant turned the zone on with the `express_payment_zones` setting.
+
+A module that only offers its wallet is refused by the ordinary `POST …/place`: the order is
+placed by the wallet's own confirmation. See [Express payment](../features/express-payment.md).
+
 ## Errors
 
 | Status | When |
