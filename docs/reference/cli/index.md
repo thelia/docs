@@ -91,6 +91,7 @@ through `php Thelia`, and empties the Symfony cache only.
 | --- | --- |
 | `thelia:config` | Manage configuration variables. |
 | [`maintenance:purge`](./maintenance_purge.md) | Purge old data: carts without orders, anonymous carts, admin logs, form firewall records, and the identity of accounts nobody uses anymore. |
+| [`stock:reservation:purge`](./stock_reservation_purge.md) | Clear the stock reservations of cart lines that have run out. |
 | `sale:check-activation` | Check the activation/deactivation dates of sales and apply the required action. |
 | `currency:update-rates` | Update currency exchange rates. |
 | [`report:send-due`](./report_send_due.md) | Send the scheduled reports that are due, each period once. |
