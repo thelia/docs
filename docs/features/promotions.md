@@ -23,7 +23,7 @@ A coupon carries a trigger mode, stored in `coupon.trigger_mode` and defaulting 
 
 An automatic promotion is a coupon with no code, so `coupon.code` is nullable from 3.1. It is
 kept only when it is enabled, inside its date window, and within the per-customer usage limit,
-then joins the coupons the shopper entered before the usual sorting and stacking rules apply.
+then joins the coupons the shopper entered before the [stacking rules](#priority-and-stacking) apply.
 
 Since the promotion has no code, the shopper never sees one: the cart shows the public title
 the merchant wrote.
@@ -76,6 +76,80 @@ applying.
 Stock is respected. The offered quantity is reduced to what is left, and a gift with nothing
 left in stock never blocks the order: the promotion is skipped and the shopper is told which
 promotion could not be granted.
+
+## Priority and stacking
+
+Added in Thelia 3.4.
+
+When several promotions could apply to the same cart, Thelia decides which ones are kept. Three
+settings on each promotion drive that choice:
+
+| Setting | Meaning |
+| --- | --- |
+| Priority | A whole number, `0` by default. The smallest is evaluated first. |
+| Combination | One of three choices: **Combines with the others**, **Stops the next promotions**, **Applies alone**. |
+| Incompatible promotions | Promotions this one is never applied with. |
+
+### How the cart is evaluated
+
+The promotions of the cart are put in order: by increasing priority, then, at the same priority,
+the automatic promotions before the codes, then by increasing promotion id. The order in which the
+shopper typed the codes does not matter.
+
+Thelia then goes through them one by one:
+
+1. A promotion whose conditions are not met is ignored.
+2. A promotion declared incompatible with one that is already kept is set aside.
+3. A promotion that applies alone is set aside when another one is already kept.
+4. Otherwise the promotion is kept. If it stops the next promotions, or applies alone, the
+   evaluation ends there and the following promotions are set aside.
+
+A promotion that is set aside does not use up its usage limit. Free shipping follows the same
+selection as the discount.
+
+An incompatibility works in both directions: declaring A incompatible with B also makes B
+incompatible with A. Saving the incompatibilities locks the promotions they touch, and an edit
+that still collides with another one is refused.
+
+### Updating from an earlier version
+
+Every existing promotion gets the priority `0` and no incompatibility. A promotion that was not
+cumulative now has the choice **Applies alone**. A cart with no code or one code, plus automatic
+promotions, keeps its discount as long as none of those promotions has a priority, a stop or an
+incompatibility. A cart that held several codes, one of them not cumulative, no longer depends on
+the order the codes were typed in.
+
+### In the back office
+
+The promotion form replaces the former cumulative checkbox with the combination choice. It also
+has the priority and a filterable list of incompatible promotions. The list of promotions shows
+and sorts by priority.
+
+### What the shopper sees
+
+In the Flexy cart summary, a code the shopper typed that was set aside is named, together with
+the promotion applied in its place. An automatic promotion that was set aside is never shown.
+
+A theme reads these codes from the cart attribute `excluded_promotions`. Each entry holds `code`,
+`title` and `winner_title`.
+
+### For developers
+
+| Piece | Where |
+| --- | --- |
+| The selection | `Thelia\Domain\Promotion\Coupon\Service\PromotionSelector::select()` |
+| The columns | `coupon.priority`, `coupon.stop_processing` and the table `coupon_exclusion`, added by `setup/update/sql/3.4.0.sql` |
+| What was set aside | `CouponManager::getSelection()->discarded`, a list of `DiscardedPromotion` with its winner |
+
+`Thelia\Domain\Promotion\Coupon\Type\CouponInterface` declares `getPriority(): int` and
+`isStopProcessing(): bool`. A promotion type that extends `CouponAbstract` inherits them, with
+priority `0` and no stop. A type that implements the interface directly has to add them.
+`CouponManager::__construct()` takes an optional `PromotionSelector` as its last argument.
+
+The priority cannot be read or sorted from the front API. The operations `GET
+/api/front/coupons`, `GET /api/front/coupons/{id}` and `GET /api/front/coupons/{code}/by-code`
+no longer exist: a customer enters a code through the cart, and `Thelia\Api\Resource\Coupon` is
+no longer an API resource.
 
 ## What an order keeps
 
