@@ -377,6 +377,20 @@ GET /api/admin/my_project_items?code=test
 GET /api/admin/my_project_items?isActive=true
 ```
 
+## Query extensions
+
+A module can change what a collection reads by adding a Propel collection extension. Two things changed in 3.4.
+
+### Front or admin
+
+`Thelia\Api\Bridge\Propel\FrontOperation::isFront($operation)` tells whether an API Platform operation is served under `/front/`. Use it in a processor, a provider or an extension that behaves differently on the storefront than on the admin side. It answers `false` for `null`.
+
+### Result extensions
+
+An extension that implements `QueryResultCollectionExtensionInterface` can answer for the whole collection through `getResult()`. Not all of them run any more, with the last answer winning: they are asked in the order of `getDefaultPriority()`, and the first one that answers something other than `null` is served. Return `null` to leave the collection to the next one.
+
+The pagination extension has the priority `-100`, so it is asked last. An extension of a module at the default priority (0) is asked, and served, before it.
+
 ## Best practices
 
 1. Name serialization groups consistently.

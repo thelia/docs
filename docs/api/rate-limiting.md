@@ -7,7 +7,9 @@ sidebar_position: 8
 
 Thelia caps how fast a single caller can use the API, and how many login attempts it gets. The caps are on by default, and every figure is an environment variable so the person who runs the shop can move it without touching code.
 
-Three things are capped: login attempts on both API login endpoints, token refreshes on both refresh endpoints, and every other call under `/api` on a wider budget that depends on who is calling.
+Four things are capped: login attempts on both API login endpoints, token refreshes on both refresh endpoints, captures of an authorized payment, and every other call under `/api` on a wider budget that depends on who is calling.
+
+The capture cap is on top of the administration budget, which is sized for screens that fan out into reads. A capture takes money and calls the payment provider, so each administrator account gets its own budget of captures. The same amount asked twice within a minute is refused on its own with a `409`. A shop whose reconciliation tool captures in batches raises the figure.
 
 One more cap is not a rate limit but belongs with them: a collection page never returns more than 100 items, whatever `itemsPerPage` asks for. See [Filters & Pagination](./filters).
 
@@ -40,6 +42,7 @@ All figures are per minute. Set them in `.env.local`, in the web server's enviro
 | `THELIA_API_RATE_LIMIT_ANONYMOUS` | `200` | caller address | `/api/**` when the caller is not authenticated |
 | `THELIA_API_RATE_LIMIT_FRONT_AUTHENTICATED` | `800` | customer account | `/api/**` for a logged-in customer |
 | `THELIA_API_RATE_LIMIT_ADMIN` | `2000` | administrator account | `/api/**` for a logged-in administrator |
+| `THELIA_API_RATE_LIMIT_ORDER_CAPTURE` | `10` | administrator account | `POST /api/admin/orders/{orderId}/capture` |
 | `THELIA_API_RATE_LIMIT_ALLOWLIST` | *(empty)* | n/a | see [Exempting a caller](#exempting-a-caller) |
 
 ```bash

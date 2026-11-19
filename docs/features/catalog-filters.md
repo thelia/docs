@@ -121,3 +121,24 @@ Only the services of an active module reach the container, so a deactivated modu
 sort. A provider that reuses a value the theme already declares replaces that sort.
 
 The Comment module ships one: `best_rated`, labelled "Best rated", at position 30.
+
+## Narrowing the facets from a module
+
+Added in Thelia 3.4.
+
+The facets of a listing follow the visibility rules of the catalogue. A project whose listings show only part of the catalogue (the points of sale a product is sold in, a market, a customer segment) can narrow them further, without touching the cart or the product page. The module ships a service implementing `Thelia\Api\Bridge\Propel\Filter\CustomFilters\FacetScopeInterface`. It is autoconfigured under the `api.thelia.facet_scope` tag.
+
+```php
+public function restrict(ModelCriteria $query, string $resource): void;
+```
+
+`FilterService` calls `restrict()` of each scope next to the product visibility rules. It does so for the narrowed set and for each set relaxed of a checked group, so that a value held only by a product the listing does not show is neither offered nor counted. The query is the one of the filtered resource (a `ProductQuery` for `products`), and `$resource` is its name.
+
+- Add the condition with `where()` or `addAnd()`, never `add()`, which would replace a condition already set on the same column.
+- Do nothing for a query or a resource the scope does not concern.
+- Bind a value that comes from the request or the session (`where('column = ?', $value)`) or cast it, and never write it into the SQL as it is.
+- Write one SQL condition, not a loop over the products. The scope is called several times per response, so keep what it reads about the visitor for the request.
+
+A scope adds a condition to the statements the facets already run and costs no statement of its own. A shop that declares no scope runs the statements it ran before. `FilterService` takes the scopes as a new, optional, last constructor argument.
+
+The facets endpoint is not among the paths of the data access cache, so a scope needs no cache key on that side. A theme that renders the facets on a page served from the shared HTTP cache needs the scope to follow something the cache keys on, such as the URL or a cookie, or the page has to leave that cache. The list the facets accompany is another matter: a module that restricts `/api/front/products` with a collection extension must keep it out of the data access cache or key it.

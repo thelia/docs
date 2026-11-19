@@ -44,6 +44,10 @@ Full CRUD operations requiring authentication.
 | Subscription plans | `/api/admin/subscription_plans` | GET, POST, PUT, PATCH, DELETE |
 | Customer tags | `/api/admin/tags` | GET, POST, PUT, PATCH, DELETE |
 | Customer tag attachments | `/api/admin/tag-elements` | GET, POST, DELETE |
+| Newsletter subscribers | `/api/admin/news_letters` | GET, POST, PUT, PATCH, DELETE |
+| Payment journal of an order | `/api/admin/orders/{orderId}/payment_transactions` | GET (collection) |
+| Payment summary of an order | `/api/admin/orders/{orderId}/payment` | GET |
+| Capture of an order | `/api/admin/orders/{orderId}/capture` | POST |
 
 ### Front endpoints (`/api/front/`)
 
@@ -81,6 +85,29 @@ Customer and order personal-data routes (`/api/front/account/customers/{id}`, `/
 :::
 
 The checkout operations are documented on their own page: [Checkout over the front API](../checkout.md).
+
+### Promotions are not served by the front API
+
+Since 3.4 the front API no longer serves promotions. `GET /api/front/coupons`, `GET /api/front/coupons/{id}` and `GET /api/front/coupons/{code}/by-code` answer 404, and the serialization groups `front:coupon:read` and `front:coupon:read:single` are gone with them. `Thelia\Api\Resource\Coupon` is no longer an API resource. A customer enters a code through the cart. A module that used those groups, extended the resource through an addon or built its IRI has to drop that use.
+
+### Registering an account
+
+`POST /api/front/customers` takes this body:
+
+```json
+{
+    "firstname": "Ada",
+    "lastname": "Lovelace",
+    "email": "ada@example.com",
+    "password": "a long passphrase",
+    "langId": 1,
+    "registrationToken": "optional-token-of-a-registration-link"
+}
+```
+
+`firstname`, `lastname`, `email` and `password` are required. `langId` is optional and must be an existing language. `registrationToken` is optional: left out, the account joins the default customer group, and a token that opens no group is refused with nothing created. The fields `customerTitle` and `lang` (an IRI) are not read. The e-mail address must not belong to an account yet, and the password must reach the length set by `password.length`.
+
+An account read from `/api/front/account/customers/{id}` no longer carries `confirmationToken`. A client that read it must use the link sent by e-mail.
 
 ## Subscriptions
 
@@ -203,6 +230,55 @@ every price when it is sent, and a price in the default currency is required:
   "prices": [{"currencyId": 1, "price": 12.5, "fromDefaultCurrency": false}]
 }
 ```
+
+## Newsletter subscribers
+
+`/api/admin/news_letters` lists and edits the subscribers. It needs the rights on customers. It filters on `id`, `email` and `unsubscribed`. It keeps working when the shop has turned its newsletter off. See [Newsletter](../../features/newsletter.md).
+
+## Payment journal and capture
+
+Added in Thelia 3.4. Every order keeps a journal of its money movements. These operations read it and let an administrator take money held by an authorization. Nothing of it is exposed on the front API.
+
+| Request | Right | Effect |
+| --- | --- | --- |
+| `GET /api/admin/orders/{orderId}/payment_transactions` | `admin.order` | The journal, latest movement first, twenty a page. |
+| `GET /api/admin/orders/{orderId}/payment` | `admin.order` | The sums of the journal, and whether the payment module can capture. |
+| `POST /api/admin/orders/{orderId}/capture` | `admin.order.payment-capture` (create) | Captures through the payment module. |
+
+A line of the journal has the fields `id`, `type`, `state`, `amount`, `currencyId`, `pspReference`, `parentId`, `paymentModuleId`, `actorType`, `actorLabel`, `adminId`, `errorCode`, `errorMessage` and `createdAt`. `amount` is a decimal string.
+
+The summary holds `transactionRef`, `paymentModuleId`, `paymentModuleCode`, `authorized`, `captured`, `voided`, `refunded`, `pendingCapture` and `remainingToCapture`, all amounts as decimal strings, and `supportsCapture`. `remainingToCapture` is what the authorization still holds once the captures waiting for their answer are set aside. It is zero when the module took the price at once, or when its provider takes a single capture and one was asked.
+
+### Capturing
+
+```http
+POST /api/admin/orders/42/capture
+Authorization: Bearer <administrator JWT>
+Content-Type: application/json
+
+{"amount": 50.0}
+```
+
+`amount` is in the currency of the order. Send `{}` or `{"amount": null}` to capture everything still held. The answer is `201` with the line of the journal the capture wrote. The line is succeeded, failed with the code and the message of the provider, or pending when the provider answers later.
+
+| Status | When |
+| --- | --- |
+| `403` | The administrator lacks the `admin.order.payment-capture` right. |
+| `404` | No such order. |
+| `409` | The same amount was captured on the order within the last minute, or another worker is writing its journal. A repeated call is not taken twice. |
+| `422` | The module takes the price at once, nothing is left to capture (a capture waiting for its answer counts as taken), the amount is not positive, has more decimals than the currency or exceeds the authorization, or the provider refused. |
+| `429` | The administrator account asked more captures than `THELIA_API_RATE_LIMIT_ORDER_CAPTURE` allows in a minute, 10 by default. The answer carries `Retry-After` and the module is not called. See [Rate limiting](../rate-limiting.md). |
+| `502` | The module could not reach its provider. The capture stays pending in the journal. |
+| `500` | Any other failure. It is a fault of the shop, not the silence of the provider. |
+
+The back office and the API share these guards, so neither a double click nor a retried call takes the money twice. An administrator who signs in with a JWT is the author of the journal and history lines the call writes.
+
+### Updating an order
+
+`PUT` or `PATCH /api/admin/orders/{id}` follows two rules:
+
+- It answers `422` when it changes the `transactionRef` or the `paymentModule` of an order whose journal holds a line. A refund or a release would otherwise go to the transaction of another order. An order without a journal takes them as before. The orders paid before 3.4.0 get a journal line on update, so an integration that rewrites their `transactionRef` is refused too. No reference and an empty one count as the same.
+- With a new status, it checks the transition graph first, and the capture right when the status cancels an order whose authorization still holds an amount (`403`). A refused transition answers `422`. Nothing of the request is written before these checks. The other fields are then written in the transaction that writes the status, under the lock of the order. The listeners of the status change run after it is committed, since they call payment modules and write the journal.
 
 ## Common patterns
 

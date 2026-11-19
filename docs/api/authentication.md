@@ -295,6 +295,8 @@ Or for invalid/expired tokens:
 }
 ```
 
+The admin API answers `403` to anything that is not an administrator: a customer token, or no user at all. The listener `AdminApiPermissionListener` checks it itself, so the answer does not depend on the `ROLE_ADMIN` rule of the firewall. A firewall rule that a module edits, reorders or shadows no longer opens the admin API to a customer. With the shipped firewall a caller sees no change, since that rule still answers first.
+
 ## Best practices
 
 1. Always use HTTPS in production to protect tokens in transit.
