@@ -30,6 +30,7 @@ The journal records:
 | Invoice reference | "Invoice reference … allocated", whichever path numbered the invoice. |
 | E-mail sent | That a message was sent to the customer, by its message code only, never its body or address. |
 | Note | A note written by the merchant. |
+| Order edited | The lines, quantities, prices, discount and postage that moved in an [order edit](../features/order-edition.md), written with the type `order_edited`. |
 | Return opened, status changed, received | The gestures of a [product return](../features/order-returns.md), so the whole history of the order is in one place. |
 
 A line whose type the theme cannot phrase, such as one written by a module, shows a generic icon
