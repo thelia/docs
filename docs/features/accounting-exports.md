@@ -158,6 +158,14 @@ reference: a journal exported again after it has the same pieces and the same am
 name of the customer (`CompAuxLib`) reads `anonymous anonymous`. The credit notes keep the
 address the CreditNote module copied, which the anonymization of the core does not reach.
 
+## For module authors
+
+An export of your own can report what it produced and what it left out. Implement `Thelia\Domain\DataTransfer\Export\ReportingExportInterface`: `report()` returns an `ExportReport`, read once the export has run. Add lines with `addLine()` and warnings with `addWarning()`. The `export` command prints the lines, then the warnings.
+
+The export job keeps the report in the `export_job.report` column, added by the `3.4.0` update script. `ExportJob::getExportReport()` reads it. A replayed job starts with an empty report. A report holds at most 100 warnings (`ExportReport::MAX_WARNINGS`) and is cut to the size of the column, so a journal with many faulty orders still ends as done, with its file. A job whose row cannot be saved is marked failed instead of staying running.
+
+A serializer made for some exports only implements `Thelia\Core\Serializer\ExportOnlySerializerInterface` and its `supportsExport()`. The FEC serializer (`thelia.fec`) does so. Such a serializer is refused for any other export and is never offered to an import. `SerializerManager::getExportSerializers()` returns the serializers an export can be written with.
+
 ## Not covered
 
 - Matching (`EcritureLet`), the payments received and the bank reconciliation.
