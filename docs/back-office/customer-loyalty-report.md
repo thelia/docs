@@ -5,7 +5,7 @@ sidebar_position: 6
 
 # Customer Loyalty Report
 
-Added in Thelia 3.4. The customer loyalty report shows whether customers come back: the cohort table, the lifetime value of the customers, and the new, returning and dormant customers of a period.
+Added in Thelia 3.4. The customer loyalty report shows whether customers come back: the cohort table, the lifetime value of the customers, and the new, returning, lapsing and dormant customers of a period.
 
 ## Open the report
 
@@ -16,13 +16,13 @@ In the back office, open **Reports** then **Customer loyalty** (`/admin/reports/
 | Cohorts | `/admin/reports/customers/cohorts` |
 | Lifetime value | `/admin/reports/customers/lifetime` |
 | Segments | `/admin/reports/customers/segments` |
-| Top customers | the **By customer** tab of the [sales report](./sales-report.md), over the days and on the orders on screen |
+| Top customers | the **By customer** tab of the [sales report](./sales-report.md), over the days on screen, on the paid orders: its totals are those of the customer list |
 
 The three tabs need `admin.customer`: without it, the menu entry is not shown and the addresses answer 403. The export button needs `admin.export`, and the link to the dormancy setting needs `admin.configuration`.
 
 ## Orders counted
 
-By default the report counts every order created, whatever its status, as the sales report does. A switch counts the paid orders only: those whose status is `paid`, `processing` or `sent`. The screen says which orders it counts.
+By default the report counts every order except the cancelled and refunded ones, a status of the shop standing for one of them included. The sales report counts them: its figures of every order are then higher. A switch counts the paid orders only: those whose status is `paid`, `processing` or `sent`. The screen says which orders it counts.
 
 The amounts are revenue including taxes, not margin: the cost of the goods is not kept with the order. Each order counts what its customer was charged (goods, less the discount, plus the shipping costs), rounded by the rule of the order as its invoice was.
 
@@ -60,9 +60,10 @@ The segments follow the period of the screen, a preset or two free dates as in t
 |---------|-----------|
 | New customers | Their first order falls in the period |
 | Returning customers | They ordered in the period and before it |
-| Dormant customers | Their last order is older than the dormancy threshold at the end of the period |
+| Lapsing customers | They did not order in the period, and their last order is within the dormancy threshold at its end |
+| Dormant customers | They did not order in the period, and their last order is older than the dormancy threshold at its end |
 
-Each segment gives its customers, their revenue in the period and its share of the revenue of the period, and their revenue since their first order and its share of what every customer spent up to the end of the period. New and returning customers share the revenue of the period.
+Each segment gives its customers, their revenue in the period and its share of the revenue of the period, and their revenue since their first order and its share of what every customer spent up to the end of the period. Each customer who ordered up to the end of the period is in one segment, so both shares add up to 100 %. New and returning customers share the revenue of the period. A customer who ordered in the period is new or returning, even when that order is older than the threshold at the end of a long period.
 
 The dormancy threshold is the configuration variable `customer_dormant_after_days`, 180 days by default. A value that is not a positive number of days reads as 180. The link beside the table opens the variable in its edit dialog.
 
@@ -102,7 +103,7 @@ php Thelia export thelia.export.customer_cohorts thelia.csv --start=2025-01-01 -
 |--------|---------|
 | `cohorts($criteria, $granularity)` | A `CohortTable`: a `CohortRow` per cohort whose first order falls between start and end, with a `CohortCell` per month (`CohortGranularity::Month`) or quarter (`CohortGranularity::Quarter`) elapsed, null when it has not come yet |
 | `lifetime($criteria)` | A `LifetimeSummary`: customers, orders, revenue, average lifetime value, lifespan in days, repeat rate |
-| `segments($criteria, $dormantAfterDays)` | A `SegmentRow` per `CustomerSegment`: new, returning, dormant |
+| `segments($criteria, $dormantAfterDays)` | A `SegmentRow` per `CustomerSegment`: new, returning, lapsing, dormant |
 
 `CustomerDormancy::days()` reads the dormancy threshold of the shop.
 
@@ -110,4 +111,4 @@ php Thelia export thelia.export.customer_cohorts thelia.csv --start=2025-01-01 -
 
 - The figures are revenue, not margin.
 - Amounts in several currencies are added up without conversion.
-- Refunds are not taken off the revenue: a refunded order counts unless the paid orders only are counted.
+- A refunded order is left out as a whole, in both views; the sales report of every order counts it.
