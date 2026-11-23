@@ -5,7 +5,7 @@ sidebar_position: 6
 
 # Customer Loyalty Report
 
-Added in Thelia 3.4. The customer loyalty report shows whether customers come back: the cohort table, the lifetime value of the customers, and the new, returning, lapsing and dormant customers of a period.
+Added in Thelia 3.5. The customer loyalty report shows whether customers come back: the cohort table, the lifetime value of the customers, and the new, returning, lapsing and dormant customers of a period.
 
 ## Open the report
 
@@ -58,12 +58,12 @@ The segments follow the period of the screen, a preset or two free dates as in t
 
 | Segment | Customers |
 |---------|-----------|
-| New customers | Their first order falls in the period |
-| Returning customers | They ordered in the period and before it |
+| New customers | Their first order falls in the period, and their last order is within the dormancy threshold at its end |
+| Returning customers | They ordered in the period and before it, and their last order is within the dormancy threshold at its end |
 | Lapsing customers | They did not order in the period, and their last order is within the dormancy threshold at its end |
-| Dormant customers | They did not order in the period, and their last order is older than the dormancy threshold at its end |
+| Dormant customers | Their last order is older than the dormancy threshold at the end of the period, even when it falls in the period |
 
-Each segment gives its customers, their revenue in the period and its share of the revenue of the period, and their revenue since their first order and its share of what every customer spent up to the end of the period. Each customer who ordered up to the end of the period is in one segment, so both shares add up to 100 %. New and returning customers share the revenue of the period. A customer who ordered in the period is new or returning, even when that order is older than the threshold at the end of a long period.
+Each segment gives its customers, their revenue in the period and its share of the revenue of the period, and their revenue since their first order and its share of what every customer spent up to the end of the period. Each customer who ordered up to the end of the period is in one segment, so both shares add up to 100 %. A customer whose last order is older than the threshold at the end of the period is dormant, even when that order falls in a long period: its revenue in the period then counts in the dormant segment.
 
 The dormancy threshold is the configuration variable `customer_dormant_after_days`, 180 days by default. A value that is not a positive number of days reads as 180. The link beside the table opens the variable in its edit dialog.
 
